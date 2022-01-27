@@ -1,0 +1,21 @@
+minutes: 2022-01-26
+scribe: Tom
+Attendees: 
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+			
+Items discussed
+Project Plan document - collaboration on completion during meeting
+  Want additional clarification for section 3.1
+  tabled some items for clarification and further development
+Team contract - polished and finished
+Discussed workarounds for not having to have our own VM during development
+  temporary DB instance to point development branch at until ready to deploy to actual VM
+how will testing be done?
+  front end
+  back end
+  automation options
+  frameworks
