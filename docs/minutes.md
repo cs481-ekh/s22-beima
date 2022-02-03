@@ -1,3 +1,30 @@
+## Minutes: 2022-02-2
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+* Worked on cleaning up remaining sections of the Project Plan
+	* Each of us will read over the plan before class on Thursday so we can submit
+* Discussed UI layout
+	* Login page
+	* Main page with left side navigation bar
+	* Nav bar
+		* List View off all entries with search
+			* limited amount of entries per page
+			* small map view on the right of the list
+		* Single entry View
+			* all entry data
+			* small map with entry pin only
+		* Add
+		* Edit
+		* Map (if we get to it)
+	* Will use BSU colors
+	* Made some mock ups to send to Brian
+
 ## Minutes: 2022-01-28
 ### scribe: Tom
 ### Attendees:
