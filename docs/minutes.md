@@ -11,10 +11,10 @@
 * Covered what was already completed for front/back end initial setup
 * Discussed functional testing being added as API calls
 * Started planning of Sprint 0
-    * Assigned Scrum Roles:
-        * Scrum Master: Ashlyn
-        * Product Owner: Joseph
-        * Scribe: Tom
+	* Assigned Scrum Roles:
+		* Scrum Master: Ashlyn
+		* Product Owner: Joseph
+		* Scribe: Tom
 	* Need templates for Issue/Bug/Story
 	* Create Task for the Build/Test/CI Setup
 	* Minimal build.sh commands for node/DB installs
