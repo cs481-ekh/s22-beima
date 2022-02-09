@@ -2,7 +2,7 @@
 name: 4 Epic
 about: Epic that will be refined into one or more user stories
 title: ''
-labels: epic-story
+labels: epic
 assignees: ''
 
 ---
