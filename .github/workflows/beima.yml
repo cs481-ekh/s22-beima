@@ -19,6 +19,6 @@ jobs:
 
       # Runs the build and test scripts
       - name: Build
-        run: build.sh
+        run: ../build.sh
       - name: Test
-        run: test.sh
+        run: ../test.sh
