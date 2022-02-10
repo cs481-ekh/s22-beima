@@ -1,3 +1,74 @@
+## Minutes: 2022-02-09
+### scribe: Tom
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+## standup
+* Joe
+    * working on test frameworks, pr soon
+* Keelan
+    * db schema plans progressing
+    * sample schema is going well, pr soon
+
+* Kenny
+    * working on deployments hooked in, when branch merged it gets deployed to cloud
+    * 2 more actions/yaml files will be needed
+
+* Tom
+    * remove restriction for PRs for sprint 0
+    * looked at CI to see why the build.sh "wasn't found" but still failed with exit code 127 as expected
+    * put in templates
+
+
+* Ashlyn
+    * pulled code down
+    * trying to set up project
+    * getting ready to look at cypress
+
+
+## Action Items 
+* see if we can reduce # of notifications  on PRs/CI - all
+
+* look at putting reviewers on automatically to all PRs based on the template - Tom
+
+## General
+* VS code versions/upgrade/ignore version number on proj file
+* nothing new from sponsor
+* discussed rubric for build/test/ci submission
+
+## Minutes: 2022-02-08
+### scribe: Tom
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	
+* Making relevant branch names
+* Covered what was already completed for front/back end initial setup
+* Discussed functional testing being added as API calls
+* Started planning of Sprint 0
+	* Assigned Scrum Roles:
+		* Scrum Master: Ashlyn
+		* Product Owner: Joseph
+		* Scribe: Tom
+	* Need templates for Issue/Bug/Story
+	* Create Task for the Build/Test/CI Setup
+	* Minimal build.sh commands for node/DB installs
+	* Set up a test stub for the back end
+	* Add commands required for Build
+	* Add commands required for Test
+	* Cypress setup
+	* React setup command
+	* Minimal Database Schema
+	* Base app setup stubs
+	* Setup Main branch Protection
+
 ## Minutes: 2022-02-2
 ### scribe: Ashlyn
 ### Attendees:
