@@ -1,3 +1,45 @@
+## Minutes: 2022-02-09
+### scribe: Tom
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+## standup
+* Joe
+    * working on test frameworks, pr soon
+* Keelan
+    * db schema plans progressing
+    * sample schema is going well, pr soon
+
+* Kenny
+    * working on deployments hooked in, when branch merged it gets deployed to cloud
+    * 2 more actions/yaml files will be needed
+
+* Tom
+    * remove restrict for sprint 0
+    * looked at CI to see why the build.sh "wasn't found" but still failed with exit code 127 as expected
+    * put in templates
+
+
+* Ashlyn
+    * pulled code down
+    * trying to set up project
+    * getting ready to look at cypress
+
+
+## Action Items 
+* see if we can reduce # of notifications  on PRs/CI - all
+
+* look at putting reviewers on automatically to all PRs based on the template - Tom
+
+## General
+* VS code versions/upgrade/ignore version number on proj file
+* nothing new from sponsor
+* discussed rubric for build/test/ci submission
+
 ## Minutes: 2022-02-08
 ### scribe: Tom
 ### Attendees:
