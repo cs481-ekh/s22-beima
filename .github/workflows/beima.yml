@@ -1,9 +1,8 @@
 name: beima
 
 on:
-  pull_request:
-    branches: [ main ]
-
+  push:
+  
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -20,6 +19,6 @@ jobs:
 
       # Runs the build and test scripts
       - name: Build
-        run: build.sh
+        run: ./build.sh
       - name: Test
-        run: test.sh
+        run: ./test.sh
