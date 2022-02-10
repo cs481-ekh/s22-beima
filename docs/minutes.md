@@ -1,3 +1,32 @@
+## Minutes: 2022-02-08
+### scribe: Tom
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	
+* Making relevant branch names
+* Covered what was already completed for front/back end initial setup
+* Discussed functional testing being added as API calls
+* Started planning of Sprint 0
+	* Assigned Scrum Roles:
+		* Scrum Master: Ashlyn
+		* Product Owner: Joseph
+		* Scribe: Tom
+	* Need templates for Issue/Bug/Story
+	* Create Task for the Build/Test/CI Setup
+	* Minimal build.sh commands for node/DB installs
+	* Set up a test stub for the back end
+	* Add commands required for Build
+	* Add commands required for Test
+	* Cypress setup
+	* React setup command
+	* Minimal Database Schema
+	* Base app setup stubs
+	* Setup Main branch Protection
+
 ## Minutes: 2022-02-2
 ### scribe: Ashlyn
 ### Attendees:
