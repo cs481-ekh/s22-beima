@@ -24,7 +24,7 @@ jobs:
     
     steps:
     - name: 'Checkout GitHub Action'
-    - uses: actions/checkout@main
+      uses: actions/checkout@main
 
     - name: Use Node.js ${{ env.NODE_VERSION }}
       uses: actions/setup-node@v1
