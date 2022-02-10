@@ -3,7 +3,8 @@ name: Deploy Backend to Cloud
 on : 
   push:
     branches: 
-    - main 
+    - main
+    - feature/* 
     paths:
     - 'BEIMA.Backend/**'
   pull_request:
