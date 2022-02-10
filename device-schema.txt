@@ -1,0 +1,18 @@
+{
+    "templateId": String,
+    "description": String,
+    "serialNumber": String,
+    "location": {
+        "latitude": String,
+        "longitude": String
+    },
+    "lastModified": {
+        "date": Date,
+        "user": String
+    },
+    fields: {
+        "customFieldUid1": String,
+        "customFieldUid2": String,
+        "customFieldUid3": String
+    }
+}
