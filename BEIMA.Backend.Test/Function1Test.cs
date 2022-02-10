@@ -28,7 +28,6 @@ namespace BEIMA.Backend.Test
         [Test]
         public void InitialState_Action_ExpectedResult()
         {
-            Assert.Pass();
             Assert.IsTrue(true);
         }
     }
