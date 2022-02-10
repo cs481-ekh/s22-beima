@@ -5,13 +5,11 @@ on :
     branches: 
     - main
     - feature/* 
-    paths:
-    - 'BEIMA.Backend/**'
+    
   pull_request:
     branches: 
     - main 
-    paths:
-    - 'BEIMA.Backend/**'
+    
 
 env:
   AZURE_WEBAPP_NAME: beima-services

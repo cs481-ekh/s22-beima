@@ -3,12 +3,14 @@ name: Deploy Client to Cloud
 on : 
   push:
     branches: 
-    - main 
-    - feature/*
+    - main
+    paths:
+    - 'BEIMA.Client/**'
   pull_request:
     branches: 
-    - main
-    - feature/* 
+    - main 
+    paths:
+    - 'BEIMA.Client/**'
 
 env:
   APP_LOCATION: "./BEIMA.Client"      
