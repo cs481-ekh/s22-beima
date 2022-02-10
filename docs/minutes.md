@@ -19,7 +19,7 @@
     * 2 more actions/yaml files will be needed
 
 * Tom
-    * remove restrict for sprint 0
+    * remove restriction for PRs for sprint 0
     * looked at CI to see why the build.sh "wasn't found" but still failed with exit code 127 as expected
     * put in templates
 
