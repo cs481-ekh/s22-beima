@@ -43,6 +43,7 @@ namespace BEIMA.Backend.FT
             _httpClient = new HttpClient();
             BaseAddress = new Uri(baseUrl);
             _httpClient.Timeout = new TimeSpan(0, 1, 0);
+            _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
         }
 
         /// <summary>
@@ -86,9 +87,10 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="response">The given http response message.</param>
         /// <returns>The response content in the form of a C# object.</returns>
-        public static object ExtractObject(HttpResponseMessage response)
+        public static async Task<object> ExtractObject(HttpResponseMessage response)
         {
-            return JsonConvert.DeserializeObject(response.Content.ToString());
+            string content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject(content);
         }
 
         /// <summary>

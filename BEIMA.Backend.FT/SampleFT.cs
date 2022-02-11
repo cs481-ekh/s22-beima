@@ -1,3 +1,4 @@
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -11,7 +12,7 @@ namespace BEIMA.Backend.FT
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            Client = new BeimaClient("http://localhost:3000");
+            Client = new BeimaClient("https://beima-service.azurewebsites.net");
         }
 
         [OneTimeTearDown]
@@ -24,6 +25,7 @@ namespace BEIMA.Backend.FT
         public async Task BackendRunning_PingBackend_ResponseRecieved()
         {
             var response = await Client.SendRequest("/api/Function1", HttpVerb.GET);
+            var thing = BeimaClient.ExtractObject(response);
             Assert.IsNotNull(response);
         }
     }
