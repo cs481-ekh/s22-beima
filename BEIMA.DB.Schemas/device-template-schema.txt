@@ -2,6 +2,7 @@
     "templateId": String,
     "name": String,
     "description": String,
+    "notes": String,
     "fields": {
         "customFieldUid1": String,
         "customFieldUid2": String,

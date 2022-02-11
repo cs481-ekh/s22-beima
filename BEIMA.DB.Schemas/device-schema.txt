@@ -1,8 +1,15 @@
 {
     "templateId": String,
-    "description": String,
     "serialNumber": String,
+    "deviceTag": String,
+    "manufacturer": String,
+    "modelNum": String,
+    "serialNum": String,
+    "yearManufactured": int,
+    "notes": String,
     "location": {
+        "buildingId": String,
+        "notes": String,
         "latitude": String,
         "longitude": String
     },
