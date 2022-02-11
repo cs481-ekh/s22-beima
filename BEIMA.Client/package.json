@@ -6,10 +6,12 @@
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "cypress": "^9.4.1",
     "jest-watch-typeahead": "^0.6.5",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "^5.0.0",
+    "start-server-and-test": "^1.14.0",
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.17"
   },
@@ -17,6 +19,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "cypress:test": "cypress run -b chrome && cypress run -b firefox && cypress run -b edge",
+    "cypress": "start-server-and-test start http://localhost:3000 cypress:test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
