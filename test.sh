@@ -6,7 +6,7 @@ dotnet test ./BEIMA.Backend.Test.csproj || { echo "Unit tests failed"; exit 1; }
 # Switch to FT directory
 cd ../BEIMA.Backend.FT
 # Run backend FTs
-start-test 3000 || { echo "Failed to start application."; exit 1; }
+#start-test 3000 || { echo "Failed to start application."; exit 1; }
 dotnet test ./BEIMA.Backend.FT.csproj || { echo "FT tests failed"; exit 1; }
 # Go back to root directory
 cd ../
