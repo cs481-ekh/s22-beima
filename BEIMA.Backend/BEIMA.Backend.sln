@@ -5,7 +5,9 @@ VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BEIMA.Backend", "BEIMA.Backend.csproj", "{251D598D-30D4-4270-8FD5-8A77192A94A3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BEIMA.Backend.Test", "..\BEIMA.Backend.Test\BEIMA.Backend.Test.csproj", "{7625EF25-65B6-4EF9-B1FD-54802EFF8707}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BEIMA.Backend.Test", "..\BEIMA.Backend.Test\BEIMA.Backend.Test.csproj", "{7625EF25-65B6-4EF9-B1FD-54802EFF8707}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BEIMA.Backend.FT", "..\BEIMA.Backend.FT\BEIMA.Backend.FT.csproj", "{42A5B7E8-C6FC-4562-A670-02C03C191091}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{7625EF25-65B6-4EF9-B1FD-54802EFF8707}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7625EF25-65B6-4EF9-B1FD-54802EFF8707}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7625EF25-65B6-4EF9-B1FD-54802EFF8707}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42A5B7E8-C6FC-4562-A670-02C03C191091}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42A5B7E8-C6FC-4562-A670-02C03C191091}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42A5B7E8-C6FC-4562-A670-02C03C191091}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42A5B7E8-C6FC-4562-A670-02C03C191091}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
