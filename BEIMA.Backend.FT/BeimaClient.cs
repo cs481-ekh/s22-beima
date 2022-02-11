@@ -97,7 +97,6 @@ namespace BEIMA.Backend.FT
         public void Dispose()
         {
             _httpClient?.Dispose();
-            Dispose();
         }
     }
 }
