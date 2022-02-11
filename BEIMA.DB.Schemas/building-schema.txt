@@ -1,0 +1,14 @@
+{
+    "buildingId": String,
+    "name": String,
+    "description": String,
+    "notes": String,
+    "location": {
+        "latitude": String,
+        "longitude": String
+    },
+    "lastModified": {
+        "date": Date,
+        "user": String
+    }
+}

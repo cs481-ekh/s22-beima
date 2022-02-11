@@ -3,6 +3,10 @@
     "name": String,
     "description": String,
     "notes": String,
+    "lastModified": {
+        "date": Date,
+        "user": String
+    },
     "fields": {
         "customFieldUid1": String,
         "customFieldUid2": String,
