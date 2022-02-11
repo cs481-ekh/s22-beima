@@ -12,7 +12,8 @@ namespace BEIMA.Backend.FT
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            Client = new BeimaClient("https://beima-service.azurewebsites.net");
+            //Client = new BeimaClient("https://beima-service.azurewebsites.net");
+            Client = new BeimaClient("http://localhost:3000");
         }
 
         [OneTimeTearDown]
