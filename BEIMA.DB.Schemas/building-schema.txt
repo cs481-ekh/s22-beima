@@ -1,7 +1,7 @@
 {
     "buildingId": String,
     "name": String,
-    "description": String,
+    "number": String,
     "notes": String,
     "location": {
         "latitude": String,

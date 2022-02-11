@@ -1,11 +1,11 @@
 {
-    "templateId": String,
+    "deviceTypeId": String,
     "name": String,
     "description": String,
     "notes": String,
     "lastModified": {
         "date": Date,
-        "user": String
+        "username": String
     },
     "fields": {
         "customFieldUid1": String,
