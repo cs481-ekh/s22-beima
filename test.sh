@@ -9,3 +9,4 @@ cd ../
 cd ./BEIMA.Client || { echo "Changing directories failed"; exit 1; }
 # Run react tests
 npm test
+npm run cypress
