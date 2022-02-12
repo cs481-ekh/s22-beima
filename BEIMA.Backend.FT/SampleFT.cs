@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using NUnit.Framework;
 using System.Threading.Tasks;
 
@@ -12,7 +11,9 @@ namespace BEIMA.Backend.FT
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            //Client = new BeimaClient("https://beima-service.azurewebsites.net");
+            // Uncomment for Azure server:
+            // Client = new BeimaClient("https://beima-service.azurewebsites.net");
+
             Client = new BeimaClient("http://localhost:7071");
         }
 
