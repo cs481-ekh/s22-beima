@@ -1,12 +1,14 @@
 #!/bin/bash
 # Change directory to BEIMA.Backend.Test
-cd ./BEIMA.Backend.Test
-# Run backend unit tests
-dotnet test ./BEIMA.Backend.Test.csproj || { echo "Unit tests failed"; exit 1; }
-# Change back to root directory
-cd ../
+cd ./BEIMA.Backend
+# Start up the backend API locally
+func start BEIMA.Backend.csproj --csharp &
+# Give enough time for local API to finish starting up
+sleep 20
+# Run all backend tests
+dotnet test || { echo "Backend tests failed"; exit 1; }
 # Change directories to BEIMA.Client
-cd ./BEIMA.Client || { echo "Changing directories failed"; exit 1; }
+cd ../BEIMA.Client || { echo "Changing directories failed"; exit 1; }
 # Run react tests
 npm test
 npm run cypress
