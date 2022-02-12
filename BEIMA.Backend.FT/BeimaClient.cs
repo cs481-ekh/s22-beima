@@ -25,11 +25,14 @@ namespace BEIMA.Backend.FT
         /// <summary>
         /// Gets and sets the base address of the client.
         /// </summary>
-        public Uri? BaseAddress { 
-            get { 
+        public Uri? BaseAddress
+        {
+            get
+            {
                 return _httpClient.BaseAddress;
-            } 
-            set {
+            }
+            set
+            {
                 _httpClient.BaseAddress = value;
             }
         }
@@ -50,9 +53,9 @@ namespace BEIMA.Backend.FT
         /// Sends an http request to the backend server and returns the http response.
         /// </summary>
         /// <param name="route">The url route excluding the base address.</param>
-        /// <param name="verb">The </param>
-        /// <param name="body"></param>
-        /// <returns></returns>
+        /// <param name="verb">The http verb of the request (i.e. GET/POST).</param>
+        /// <param name="body">The object to send with the request.</param>
+        /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
         public async Task<HttpResponseMessage> SendRequest(string route, HttpVerb verb, object? body = null)
         {
@@ -75,7 +78,6 @@ namespace BEIMA.Backend.FT
                     break;
                 default:
                     throw new HttpRequestException($"Invalid request verb: {verb}.");
-                    break;
             }
 
             response.EnsureSuccessStatusCode();

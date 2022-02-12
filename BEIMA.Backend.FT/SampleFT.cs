@@ -4,29 +4,22 @@ using System.Threading.Tasks;
 namespace BEIMA.Backend.FT
 {
     [TestFixture]
-    public class SampleFT
+    public class SampleFT : FunctionalTestBase
     {
-        BeimaClient Client;
-
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            // Uncomment for Azure server:
-            // Client = new BeimaClient("https://beima-service.azurewebsites.net");
-
-            Client = new BeimaClient("http://localhost:7071");
         }
 
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
-            Client.Dispose();
         }
 
         [Test]
         public async Task BackendRunning_PingBackend_ResponseRecieved()
         {
-            var response = await Client.SendRequest("/api/Function1", HttpVerb.GET);
+            var response = await TestClient.SendRequest("/api/Function1", HttpVerb.GET);
             Assert.IsNotNull(response);
         }
     }
