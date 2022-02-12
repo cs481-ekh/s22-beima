@@ -4,7 +4,7 @@ cd ./BEIMA.Backend
 # Start up the backend API locally
 func start BEIMA.Backend.csproj --csharp &
 # Give enough time for local API to finish starting up
-sleep 15
+sleep 20
 # Run all backend tests
 dotnet test || { echo "Backend tests failed"; exit 1; }
 # Change directories to BEIMA.Client
