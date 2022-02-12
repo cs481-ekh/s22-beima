@@ -13,7 +13,7 @@ namespace BEIMA.Backend.FT
         public void OneTimeSetUp()
         {
             //Client = new BeimaClient("https://beima-service.azurewebsites.net");
-            Client = new BeimaClient("http://localhost:3000");
+            Client = new BeimaClient("http://localhost:7071");
         }
 
         [OneTimeTearDown]
@@ -26,7 +26,6 @@ namespace BEIMA.Backend.FT
         public async Task BackendRunning_PingBackend_ResponseRecieved()
         {
             var response = await Client.SendRequest("/api/Function1", HttpVerb.GET);
-            var thing = BeimaClient.ExtractObject(response);
             Assert.IsNotNull(response);
         }
     }
