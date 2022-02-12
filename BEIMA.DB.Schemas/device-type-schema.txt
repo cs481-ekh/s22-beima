@@ -1,0 +1,15 @@
+{
+    "deviceTypeId": String,
+    "name": String,
+    "description": String,
+    "notes": String,
+    "lastModified": {
+        "date": Date,
+        "username": String
+    },
+    "fields": {
+        "customFieldUid1": String,
+        "customFieldUid2": String,
+        "customFieldUid3": String
+    }
+}

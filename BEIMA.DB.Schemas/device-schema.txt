@@ -1,0 +1,25 @@
+{
+    "deviceTypeId": String,
+    "serialNumber": String,
+    "deviceTag": String,
+    "manufacturer": String,
+    "modelNum": String,
+    "serialNum": String,
+    "yearManufactured": int,
+    "notes": String,
+    "location": {
+        "buildingId": String,
+        "notes": String,
+        "latitude": String,
+        "longitude": String
+    },
+    "lastModified": {
+        "date": Date,
+        "user": String
+    },
+    fields: {
+        "customFieldUid1": String,
+        "customFieldUid2": String,
+        "customFieldUid3": String
+    }
+}
