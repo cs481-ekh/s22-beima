@@ -5,7 +5,7 @@ cd ./BEIMA.Backend.Test
 dotnet test ./BEIMA.Backend.Test.csproj || { echo "Unit tests failed"; exit 1; }
 cd ../
 cd ./BEIMA.Backend
-func start BEIMA.Backend.csproj &
+func start BEIMA.Backend.csproj --csharp &
 # Switch to FT directory
 cd ../
 cd ./BEIMA.Backend.FT
