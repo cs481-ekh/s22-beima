@@ -1,5 +1,6 @@
 #!/bin/bash
 run_backend_locally(){
+    echo "STARTING LOCAL API"
     func start
 }
 
