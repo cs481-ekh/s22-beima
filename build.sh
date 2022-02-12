@@ -18,6 +18,12 @@ sudo apt install microsoft-edge-dev || { echo "Install edge failed"; exit 1; }
 sudo apt install nodejs || { echo "Installing NodeJS failed"; exit 1; }
 # Install npm
 sudo apt install npm || { echo "Installing npm failed"; exit 1; }
+# Change directory to BEIMA.Backend
+cd ./BEIMA.Backend || { echo "Changing directories failed"; exit 1; }
+# Build all backend projects 
+dotnet build || { echo "Building backend projects failed"; exit 1; }
+# Change back to root directory
+cd ../
 # Change directory to BEIMA.Client
 cd ./BEIMA.Client || { echo "Changing directories failed"; exit 1; }
 # Install node_modules
@@ -28,3 +34,5 @@ npm add --exact jest-watch-typeahead@0.6.5 || { echo "Installing version 0.6.5 o
 npm install start-server-and-test || { echo "Install start-server-and-test node_module failed"; exit 1; }
 # Install cypress
 npm install cypress || { echo "Install cypress failed"; exit 1; }
+# Build client
+npm run build || { echo "Building client failed"; exit 1; }
