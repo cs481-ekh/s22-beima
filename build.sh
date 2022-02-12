@@ -19,7 +19,7 @@ sudo apt install nodejs || { echo "Installing NodeJS failed"; exit 1; }
 # Install npm
 sudo apt install npm || { echo "Installing npm failed"; exit 1; }
 # Install Azure functions core tools
-npm i -g azure-functions-core-tools@4
+npm i -g azure-functions-core-tools@4 || { echo "Installing Azure functions core tools failed"; exit 1; }
 # Change directory to BEIMA.Client
 cd ./BEIMA.Client || { echo "Changing directories failed"; exit 1; }
 # Install node_modules
