@@ -18,7 +18,7 @@ sudo apt install microsoft-edge-dev || { echo "Install edge failed"; exit 1; }
 sudo apt install nodejs || { echo "Installing NodeJS failed"; exit 1; }
 # Install npm
 sudo apt install npm || { echo "Installing npm failed"; exit 1; }
-# Change directory to BEIMA.Client
+# Change directory to BEIMA.Backend
 cd ./BEIMA.Backend || { echo "Changing directories failed"; exit 1; }
 # Build all backend projects 
 dotnet build || { echo "Building backend projects failed"; exit 1; }
