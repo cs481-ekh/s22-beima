@@ -21,11 +21,11 @@ namespace BEIMA.Backend.Test
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string[] paths = { "..", "..", "..", "..", "BEIMA.Backend" };
+            string[] paths = { "..", "..", "..", "..", "BEIMA.Backend", "local.settings.json" };
             string combinedPath = Path.Combine(paths);
             string fullPath = Path.GetFullPath(combinedPath);
             var settings = JsonConvert.DeserializeObject<LocalSettings>(
-                File.ReadAllText(fullPath + "\\local.settings.json"));
+                File.ReadAllText(fullPath));
 
             foreach (var setting in settings.Values)
             {
