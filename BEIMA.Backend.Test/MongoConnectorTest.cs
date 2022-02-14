@@ -21,9 +21,11 @@ namespace BEIMA.Backend.Test
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string basePath = Path.GetFullPath(@"..\..\..\..\BEIMA.Backend");
+            string[] paths = { "..", "..", "..", "..", "BEIMA.Backend" };
+            string combinedPath = Path.Combine(paths);
+            string fullPath = Path.GetFullPath(combinedPath);
             var settings = JsonConvert.DeserializeObject<LocalSettings>(
-                File.ReadAllText(basePath + "\\local.settings.json"));
+                File.ReadAllText(fullPath + "\\local.settings.json"));
 
             foreach (var setting in settings.Values)
             {
@@ -126,7 +128,25 @@ namespace BEIMA.Backend.Test
             Assert.IsTrue(deleteResult);
         }
 
+        [Test]
+        public void DocumentNotInserted_InsertDocumentAndUpdateDocument_DocumentHasBeenUpdated()
+        {
+            var mongo = MongoConnector.Instance;
+            BsonDocument doc = new BsonDocument
+            {
+                { "deviceTypeId", "a" },
+                { "serialNumber", "a12345"}
+            };
+            //Insert device
+            var insertResult = mongo.InsertDevice(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.IsTrue(insertResult is ObjectId);
 
+            //Update device
+            doc.AddRange(new BsonDocument { { "updatedDeviceField", "123" } });
+            var updateResult = mongo.UpdateDevice(doc);
+            Assert.IsTrue(updateResult);
+        }
 
     }
 }
