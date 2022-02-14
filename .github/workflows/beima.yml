@@ -6,6 +6,13 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+env:
+  LocalMongoConnection: mongodb://localhost:27017
+  CurrentEnv: dev-cloud
+  DatabaseName: beima
+  DeviceCollectionName: devices
+  AzureCosmosConnection: ${{ secrets.AZURE_COSMOS_CONNECTION }}
+
 jobs:
   build:
     # The type of runner that the job will run on
