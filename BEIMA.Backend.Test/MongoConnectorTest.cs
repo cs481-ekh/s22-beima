@@ -21,16 +21,24 @@ namespace BEIMA.Backend.Test
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
-            string[] paths = { "..", "..", "..", "..", "BEIMA.Backend", "local.settings.json" };
-            string combinedPath = Path.Combine(paths);
-            string fullPath = Path.GetFullPath(combinedPath);
-            var settings = JsonConvert.DeserializeObject<LocalSettings>(
-                File.ReadAllText(fullPath));
-
-            foreach (var setting in settings.Values)
+            try
             {
-                Environment.SetEnvironmentVariable(setting.Key, setting.Value);
+                string[] paths = { "..", "..", "..", "..", "BEIMA.Backend", "local.settings.json" };
+                string combinedPath = Path.Combine(paths);
+                string fullPath = Path.GetFullPath(combinedPath);
+                var settings = JsonConvert.DeserializeObject<LocalSettings>(
+                    File.ReadAllText(fullPath));
+
+                foreach (var setting in settings.Values)
+                {
+                    Environment.SetEnvironmentVariable(setting.Key, setting.Value);
+                }
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
+            
         }
 
         [OneTimeTearDown]
