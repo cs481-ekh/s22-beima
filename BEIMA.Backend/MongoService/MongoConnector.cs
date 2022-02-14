@@ -57,7 +57,7 @@ namespace BEIMA.Backend.MongoService
          * Parameter: BsonDocument that contains the fully formed device document (including all required and optional fields)
          * Returns: true if success, false if failed
          */
-        public bool InsertDevice(BsonDocument doc)
+        public ObjectId? InsertDevice(BsonDocument doc)
         {
             if (!IsConnected())
             {
@@ -69,12 +69,12 @@ namespace BEIMA.Backend.MongoService
                 var db = client.GetDatabase(dbName);
                 var devices = db.GetCollection<BsonDocument>(deviceCollection);
                 devices.InsertOne(doc);
-                return true;
+                return (ObjectId) doc["_id"];
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
 
@@ -83,14 +83,13 @@ namespace BEIMA.Backend.MongoService
          * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
          * Returns: BsonDocument that was requested
          */
-        public BsonDocument GetDevice(string objectIdString)
+        public BsonDocument GetDevice(ObjectId objectId)
         {
             if (!IsConnected())
             {
                 throw new Exception("MongoConnector is not currently connected");
             }
 
-            var objectId = new ObjectId(objectIdString);
             var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
 
             try
@@ -111,14 +110,13 @@ namespace BEIMA.Backend.MongoService
          * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
          * Returns: true if successful, false if not successful
          */
-        public bool DeleteDevice(string objectIdString)
+        public bool DeleteDevice(ObjectId objectId)
         {
             if (!IsConnected())
             {
                 throw new Exception("MongoConnector is not currently connected");
             }
 
-            var objectId = new ObjectId(objectIdString);
             var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
 
             try
