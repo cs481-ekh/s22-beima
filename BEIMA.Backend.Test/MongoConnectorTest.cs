@@ -70,7 +70,7 @@ namespace BEIMA.Backend.Test
         public void ConnectorCreated_GetDeviceGivenDeviceId_DeviceDocumentReturned()
         {
             var mongo = MongoConnector.Instance;
-            var doc = mongo.GetDevice("61f4882f42dab933544849d3");
+            var doc = mongo.GetDevice(new ObjectId("61f4882f42dab933544849d3"));
             Assert.IsNotNull(doc);
             Assert.IsTrue(doc is BsonDocument);
         }
@@ -98,10 +98,33 @@ namespace BEIMA.Backend.Test
                 { "serialNumber", "a12345"}
             };
             var result = mongo.InsertDevice(doc);
-            Assert.IsTrue(result);
+            Console.WriteLine(result.ToString());
+            Assert.IsNotNull(result);
+            Assert.IsTrue(result is ObjectId);
         }
 
+        [Test]
+        public void DocumentNotInserted_InsertDocumentAndDeleteDocument_DocumentHasBeenDeleted()
+        {
+            var mongo = MongoConnector.Instance;
+            BsonDocument doc = new BsonDocument
+            {
+                { "deviceTypeId", "a" },
+                { "serialNumber", "a12345"}
+            };
+            //Insert device
+            var insertResult = mongo.InsertDevice(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.IsTrue(insertResult is ObjectId);
 
+            //Delete device
+            bool deleteResult = false;
+            if(insertResult != null)
+            {
+                deleteResult = mongo.DeleteDevice((ObjectId) insertResult);
+            }
+            Assert.IsTrue(deleteResult);
+        }
 
 
 
