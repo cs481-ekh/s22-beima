@@ -46,11 +46,10 @@ namespace BEIMA.Backend.MongoService
             client = new MongoClient(credentials);
         }
 
-        /*
-         * Checks if the client has been instantiated.
-         * Parameter: none
-         * Returns: true if client is not null, false if client is null.
-         */
+        /// <summary>
+        /// Checks if the client has been instantiated.
+        /// </summary>
+        /// <returns>true if client is not null, false if client is null.</returns>
         public bool IsConnected()
         {
             return (client != null);
@@ -64,11 +63,11 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        /*
-         * Inserts a device into the "devices" collection
-         * Parameter: BsonDocument that contains the fully formed device document (including all required and optional fields)
-         * Returns: ObjectId of the newly inserted object if successful, null if failed
-         */
+        /// <summary>
+        /// Inserts a device into the "devices" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertDevice(BsonDocument doc)
         {
             CheckIsConnected();
@@ -87,11 +86,11 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        /*
-         * Gets a device from the "devices" collection, given an objectID.
-         * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
-         * Returns: BsonDocument that was requested
-         */
+        /// <summary>
+        /// Gets a device from the "devices" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetDevice(ObjectId objectId)
         {
             CheckIsConnected();
@@ -111,11 +110,10 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        /*
-         * Gets a device from the "devices" collection, given an objectID.
-         * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
-         * Returns: BsonDocument that was requested
-         */
+        /// <summary>
+        /// Gets a device from the "devices" collection, given an objectID.
+        /// </summary>
+        /// <returns>BsonDocument that was requested</returns>
         public List<BsonDocument> GetAllDevices()
         {
             CheckIsConnected();
@@ -136,11 +134,11 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        /*
-         * Deletes from the "devices" collection, given the objectID.
-         * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
-         * Returns: true if successful, false if not successful
-         */
+        /// <summary>
+        /// Deletes from the "devices" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
         public bool DeleteDevice(ObjectId objectId)
         {
             CheckIsConnected();
@@ -161,11 +159,11 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        /*
-         * Updates a device in the "devices" collection, given a fully formed updated device.
-         * Parameters: BsonDocument containing the updated BsonDocument.
-         * Returns: true if successful, false if unsuccessful
-         */
+        /// <summary>
+        /// Updates a device in the "devices" collection, given a fully formed updated device.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>true if successful, false if unsuccessful</returns>
         public bool UpdateDevice(BsonDocument doc)
         {
             CheckIsConnected();
