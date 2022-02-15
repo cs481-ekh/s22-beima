@@ -40,6 +40,16 @@
 * nothing new from sponsor
 * discussed rubric for build/test/ci submission
 
+## Sprint 0 Objective
+
+	By the end of this sprint we will be able to complile the 
+	back end and launch the front end. The build, test, and CI 
+	will run when creating a PR at a minimum. Testing frameworks 
+	will be set up and have at least 1 test set up. PRs will 
+	automatically request reviews from all other members and 
+	templates will be accessible for selection when creating new 
+	bugs, tasks, stories, and epics.
+
 ## Minutes: 2022-02-08
 ### scribe: Tom
 ### Attendees:
