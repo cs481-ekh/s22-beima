@@ -81,37 +81,17 @@ namespace BEIMA.Backend.Test
         }
 
         [Test]
-        public void ConnectorCreated_GetDeviceGivenInvalidDeviceId_NullReturned()
+        public void ConnectorNotCreated_CallConstructorOnce_InstanceConnectedToCorrectEnvironment()
         {
             var mongo = MongoConnector.Instance;
-            //This is a valid ObjectId, but this is not in the database
-            var doc = mongo.GetDevice(new ObjectId("61f4882f42dab933544849d3"));
-            Assert.IsNull(doc);
-        }
-
-        [Test]
-        public void ConnectorCreated_DeleteInvalidObject_FalseReturned()
-        {
-            var mongo = MongoConnector.Instance;
-            //This is a valid ObjectId, but this is not in the database
-            var result = mongo.DeleteDevice(new ObjectId("61f4882f42dab933544849d3"));
-            Assert.IsFalse(result);
-        }
-
-        [Test]
-        public void ConnectorCreated_InsertNull_NullReturned()
-        {
-            var mongo = MongoConnector.Instance;
-            var result = mongo.InsertDevice(null);
-            Assert.IsNull(result);
-        }
-
-        [Test]
-        public void ConnectorCreated_UpdateNull_NullReturned()
-        {
-            var mongo = MongoConnector.Instance;
-            var result = mongo.UpdateDevice(null);
-            Assert.IsFalse(result);
+            if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
+            {
+                Assert.IsTrue(mongo.CurrentServerType == ServerType.Local);
+            }
+            else
+            {
+                Assert.IsTrue(mongo.CurrentServerType == ServerType.Cloud);
+            }
         }
 
         [Test]
@@ -150,20 +130,6 @@ namespace BEIMA.Backend.Test
             var retrievedDocs = mongo.GetAllDevices();
             Assert.IsNotNull(retrievedDocs);
             Assert.IsTrue(retrievedDocs is List<BsonDocument>);
-        }
-
-        [Test]
-        public void ConnectorNotCreated_CallConstructorOnce_InstanceConnectedToCorrectEnvironment()
-        {
-            var mongo = MongoConnector.Instance;
-            if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
-            {
-                Assert.IsTrue(mongo.CurrentServerType == ServerType.Local);
-            }
-            else
-            {
-                Assert.IsTrue(mongo.CurrentServerType == ServerType.Cloud);
-            }
         }
 
         [Test]
@@ -221,6 +187,40 @@ namespace BEIMA.Backend.Test
             doc.AddRange(new BsonDocument { { "updatedDeviceField", "123" } });
             var updateResult = mongo.UpdateDevice(doc);
             Assert.IsTrue(updateResult);
+        }
+
+        [Test]
+        public void ConnectorCreated_GetDeviceGivenInvalidDeviceId_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var doc = mongo.GetDevice(new ObjectId("61f4882f42dab933544849d3"));
+            Assert.IsNull(doc);
+        }
+
+        [Test]
+        public void ConnectorCreated_DeleteInvalidObject_FalseReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var result = mongo.DeleteDevice(new ObjectId("61f4882f42dab933544849d3"));
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_InsertNull_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.InsertDevice(null);
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_UpdateNull_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.UpdateDevice(null);
+            Assert.IsFalse(result);
         }
 
     }
