@@ -84,12 +84,12 @@ namespace BEIMA.Backend.Test
             };
             var insertResult = mongo.InsertDevice(doc);
             Assert.IsNotNull(insertResult);
-            Assert.IsTrue(insertResult is ObjectId);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve the document)
             var retrievedDoc = mongo.GetDevice((ObjectId) doc["_id"]);
             Assert.IsNotNull(retrievedDoc);
-            Assert.IsTrue(retrievedDoc is BsonDocument);
+            Assert.That(retrievedDoc, Is.TypeOf(typeof(BsonDocument)));
         }
 
         [Test]
@@ -103,12 +103,12 @@ namespace BEIMA.Backend.Test
             };
             var insertResult = mongo.InsertDevice(doc);
             Assert.IsNotNull(insertResult);
-            Assert.IsTrue(insertResult is ObjectId);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve all documents)
             var retrievedDocs = mongo.GetAllDevices();
             Assert.IsNotNull(retrievedDocs);
-            Assert.IsTrue(retrievedDocs is List<BsonDocument>);
+            Assert.That(retrievedDocs, Is.TypeOf(typeof(List<BsonDocument>)));
         }
 
         [Test]
@@ -122,7 +122,7 @@ namespace BEIMA.Backend.Test
             var result = mongo.InsertDevice(doc);
             Console.WriteLine(result.ToString());
             Assert.IsNotNull(result);
-            Assert.IsTrue(result is ObjectId);
+            Assert.That(result, Is.TypeOf(typeof(ObjectId)));
         }
 
         [Test]
@@ -137,7 +137,7 @@ namespace BEIMA.Backend.Test
             //Insert device
             var insertResult = mongo.InsertDevice(doc);
             Assert.IsNotNull(insertResult);
-            Assert.IsTrue(insertResult is ObjectId);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Delete device
             bool deleteResult = false;
@@ -160,7 +160,7 @@ namespace BEIMA.Backend.Test
             //Insert device
             var insertResult = mongo.InsertDevice(doc);
             Assert.IsNotNull(insertResult);
-            Assert.IsTrue(insertResult is ObjectId);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Update device
             doc.AddRange(new BsonDocument { { "updatedDeviceField", "123" } });
