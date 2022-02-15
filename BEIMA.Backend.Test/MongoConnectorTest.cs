@@ -68,6 +68,7 @@ namespace BEIMA.Backend.Test
         [Test]
         public void ConnectorNotCreated_CallConstructorFiveTimes_FiveInstancesAreEqual()
         {
+            //Tests to make sure singleton is working
             var connector1 = MongoConnector.Instance;
             var connector2 = MongoConnector.Instance;
             var connector3 = MongoConnector.Instance;
@@ -117,7 +118,7 @@ namespace BEIMA.Backend.Test
         public void ConnectorCreated_GetDeviceGivenValidDeviceId_DeviceDocumentReturned()
         {
             var mongo = MongoConnector.Instance;
-            //Test setup
+            //Setup (inserting a document)
             BsonDocument doc = new BsonDocument {
                 { "deviceTypeId", "a" },
                 { "serialNumber", "a12345"}
@@ -126,7 +127,7 @@ namespace BEIMA.Backend.Test
             Assert.IsNotNull(insertResult);
             Assert.IsTrue(insertResult is ObjectId);
 
-            //Test
+            //Test (retrieve the document)
             var retrievedDoc = mongo.GetDevice((ObjectId) doc["_id"]);
             Assert.IsNotNull(retrievedDoc);
             Assert.IsTrue(retrievedDoc is BsonDocument);
