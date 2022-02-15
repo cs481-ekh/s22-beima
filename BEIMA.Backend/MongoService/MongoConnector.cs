@@ -164,7 +164,7 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>true if successful, false if unsuccessful</returns>
-        public bool UpdateDevice(BsonDocument doc)
+        public BsonDocument UpdateDevice(BsonDocument doc)
         {
             CheckIsConnected();
 
@@ -175,12 +175,19 @@ namespace BEIMA.Backend.MongoService
                 var db = client.GetDatabase(dbName);
                 var devices = db.GetCollection<BsonDocument>(deviceCollection);
                 var result = devices.ReplaceOne(filter, doc);
-                return result.ModifiedCount > 0;
+                if (result.ModifiedCount > 0)
+                {
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
             }
             catch (Exception ex)
             {
                 Console.Error.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
     }

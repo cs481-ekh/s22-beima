@@ -165,7 +165,7 @@ namespace BEIMA.Backend.Test
             //Update device
             doc.AddRange(new BsonDocument { { "updatedDeviceField", "123" } });
             var updateResult = mongo.UpdateDevice(doc);
-            Assert.IsTrue(updateResult);
+            Assert.IsNotNull(updateResult);
         }
 
         [Test]
@@ -199,7 +199,7 @@ namespace BEIMA.Backend.Test
         {
             var mongo = MongoConnector.Instance;
             var result = mongo.UpdateDevice(null);
-            Assert.IsFalse(result);
+            Assert.IsNull(result);
         }
 
     }
