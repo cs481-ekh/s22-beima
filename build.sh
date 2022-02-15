@@ -14,6 +14,14 @@ wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add
 sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" || { echo "Add microsoft key failed"; exit 1; }
 # Install edge
 sudo apt install microsoft-edge-dev || { echo "Install edge failed"; exit 1; }
+# Install gnupg (for MongoDB key)
+sudo apt install gnupg || { echo "Install gnupg failed"; exit 1; }
+# Install MongoDB key
+wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add - || { echo "Download MongoDB using wget failed"; exit 1; }
+# Create list file for MongoDB
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list || { echo "Create list file for MongoDB failed"; exit 1; } 
+# Install MongoDB
+sudo apt install -y mongodb-org || { echo "Install MongoDB failed"; exit 1; }
 # Install NodeJS
 sudo apt install nodejs || { echo "Installing NodeJS failed"; exit 1; }
 # Install npm
