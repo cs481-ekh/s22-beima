@@ -106,6 +106,34 @@ namespace BEIMA.Backend.MongoService
         }
 
         /*
+         * Gets a device from the "devices" collection, given an objectID.
+         * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
+         * Returns: BsonDocument that was requested
+         */
+        public List<BsonDocument> GetAllDevices()
+        {
+            if (!IsConnected())
+            {
+                throw new Exception("MongoConnector is not currently connected");
+            }
+
+            var filter = Builders<BsonDocument>.Filter.Empty;
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceCollection);
+                var docs = devices.Find(filter).ToList();
+                return docs;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /*
          * Deletes from the "devices" collection, given the objectID.
          * Parameter: objectId, corresponds to the "_id" field for a given document inside of MongoDB
          * Returns: true if successful, false if not successful
