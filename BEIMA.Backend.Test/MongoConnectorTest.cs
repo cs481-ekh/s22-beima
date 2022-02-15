@@ -5,17 +5,29 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System;
 using MongoDB.Bson;
+using System.Linq;
+using MongoDB.Driver;
 
 namespace BEIMA.Backend.Test
 {
     [TestFixture]
     public class MongoConnectorTest
     {
-        //private MongoConnector? mongo;
+        private static readonly Random random = new Random();
+        private string? dbName;
+        private string? devicesName;
+
+        public static string RandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            return new string(Enumerable.Repeat(chars, length)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
         class LocalSettings
         {
             public bool IsEncrypted { get; set; }
-            public Dictionary<string, string> Values { get; set; }
+            public Dictionary<string, string>? Values { get; set; }
         }
 
         [OneTimeSetUp]
@@ -32,16 +44,42 @@ namespace BEIMA.Backend.Test
                 var settings = JsonConvert.DeserializeObject<LocalSettings>(
                     File.ReadAllText(fullPath));
 
-                foreach (var setting in settings.Values)
+                if(settings != null && settings.Values != null)
                 {
-                    Environment.SetEnvironmentVariable(setting.Key, setting.Value);
+                    foreach (var setting in settings.Values)
+                    {
+                        Environment.SetEnvironmentVariable(setting.Key, setting.Value);
+                    }
                 }
+                
             }
             catch (IOException ex)
             {
                 Console.WriteLine(ex.ToString());
             }
-            
+
+            dbName = "beima-test" + Guid.NewGuid().ToString();
+            devicesName = "devices-test" + Guid.NewGuid().ToString();
+
+            Environment.SetEnvironmentVariable("DatabaseName", dbName);
+            Environment.SetEnvironmentVariable("DeviceCollectionName", devicesName);
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            string? credentials;
+
+            if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
+            {
+                credentials = Environment.GetEnvironmentVariable("LocalMongoConnection");
+            }
+            else
+            {
+                credentials = Environment.GetEnvironmentVariable("AzureCosmosConnection");
+            }
+            var client = new MongoClient(credentials);
+            client.DropDatabase(dbName);
         }
 
         [Test]
