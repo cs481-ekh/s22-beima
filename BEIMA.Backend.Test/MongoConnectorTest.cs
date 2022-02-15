@@ -21,6 +21,9 @@ namespace BEIMA.Backend.Test
         [OneTimeSetUp]
         public void OneTimeSetUp()
         {
+            //For local testing, the try block will be used to instantiate local variables.
+            //For cloud testing, this will throw an exception, and it will use the env variables
+            //defined in beima.yml.
             try
             {
                 string[] paths = { "..", "..", "..", "..", "BEIMA.Backend", "local.settings.json" };
@@ -83,6 +86,31 @@ namespace BEIMA.Backend.Test
             //This is a valid ObjectId, but this is not in the database
             var doc = mongo.GetDevice(new ObjectId("61f4882f42dab933544849d3"));
             Assert.IsNull(doc);
+        }
+
+        [Test]
+        public void ConnectorCreated_DeleteInvalidObject_FalseReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var result = mongo.DeleteDevice(new ObjectId("61f4882f42dab933544849d3"));
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_InsertNull_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.InsertDevice(null);
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_UpdateNull_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.UpdateDevice(null);
+            Assert.IsFalse(result);
         }
 
         [Test]

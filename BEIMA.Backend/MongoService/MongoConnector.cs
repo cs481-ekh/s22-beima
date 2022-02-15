@@ -55,7 +55,7 @@ namespace BEIMA.Backend.MongoService
         /*
          * Inserts a device into the "devices" collection
          * Parameter: BsonDocument that contains the fully formed device document (including all required and optional fields)
-         * Returns: true if success, false if failed
+         * Returns: ObjectId of the newly inserted object if successful, null if failed
          */
         public ObjectId? InsertDevice(BsonDocument doc)
         {
@@ -124,7 +124,7 @@ namespace BEIMA.Backend.MongoService
                 var db = client.GetDatabase(dbName);
                 var devices = db.GetCollection<BsonDocument>(deviceCollection);
                 var result = devices.DeleteOne(filter);
-                return result.IsAcknowledged;
+                return result.DeletedCount > 0;
             }
             catch (Exception ex)
             {
@@ -145,15 +145,14 @@ namespace BEIMA.Backend.MongoService
                 throw new Exception("MongoConnector is not currently connected");
             }
 
-            ObjectId objectId = (ObjectId)doc["_id"];
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
             try
             {
+                ObjectId objectId = (ObjectId)doc["_id"];
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
                 var db = client.GetDatabase(dbName);
                 var devices = db.GetCollection<BsonDocument>(deviceCollection);
                 var result = devices.ReplaceOne(filter, doc);
-                return result.IsAcknowledged;
+                return result.ModifiedCount > 0;
             }
             catch (Exception ex)
             {
