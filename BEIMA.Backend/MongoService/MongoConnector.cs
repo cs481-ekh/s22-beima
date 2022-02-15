@@ -52,6 +52,14 @@ namespace BEIMA.Backend.MongoService
             return (client != null);
         }
 
+        private void CheckIsConnected()
+        {
+            if (!IsConnected())
+            {
+                throw new Exception("MongoConnector is not currently connected");
+            }
+        }
+
         /*
          * Inserts a device into the "devices" collection
          * Parameter: BsonDocument that contains the fully formed device document (including all required and optional fields)
@@ -59,10 +67,7 @@ namespace BEIMA.Backend.MongoService
          */
         public ObjectId? InsertDevice(BsonDocument doc)
         {
-            if (!IsConnected())
-            {
-                throw new Exception("MongoConnector is not currently connected");
-            }
+            CheckIsConnected();
 
             try
             {
@@ -85,10 +90,7 @@ namespace BEIMA.Backend.MongoService
          */
         public BsonDocument GetDevice(ObjectId objectId)
         {
-            if (!IsConnected())
-            {
-                throw new Exception("MongoConnector is not currently connected");
-            }
+            CheckIsConnected();
 
             var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
 
@@ -112,10 +114,7 @@ namespace BEIMA.Backend.MongoService
          */
         public List<BsonDocument> GetAllDevices()
         {
-            if (!IsConnected())
-            {
-                throw new Exception("MongoConnector is not currently connected");
-            }
+            CheckIsConnected();
 
             var filter = Builders<BsonDocument>.Filter.Empty;
 
@@ -140,10 +139,7 @@ namespace BEIMA.Backend.MongoService
          */
         public bool DeleteDevice(ObjectId objectId)
         {
-            if (!IsConnected())
-            {
-                throw new Exception("MongoConnector is not currently connected");
-            }
+            CheckIsConnected();
 
             var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
 
@@ -168,10 +164,7 @@ namespace BEIMA.Backend.MongoService
          */
         public bool UpdateDevice(BsonDocument doc)
         {
-            if (!IsConnected())
-            {
-                throw new Exception("MongoConnector is not currently connected");
-            }
+            CheckIsConnected();
 
             try
             {
