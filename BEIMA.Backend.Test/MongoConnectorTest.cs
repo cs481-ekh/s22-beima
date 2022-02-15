@@ -134,6 +134,25 @@ namespace BEIMA.Backend.Test
         }
 
         [Test]
+        public void ConnectorCreated_GetAllDevices_DeviceDocumentListReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            BsonDocument doc = new BsonDocument {
+                { "deviceTypeId", "a" },
+                { "serialNumber", "a12345"}
+            };
+            var insertResult = mongo.InsertDevice(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.IsTrue(insertResult is ObjectId);
+
+            //Test (retrieve all documents)
+            var retrievedDocs = mongo.GetAllDevices();
+            Assert.IsNotNull(retrievedDocs);
+            Assert.IsTrue(retrievedDocs is List<BsonDocument>);
+        }
+
+        [Test]
         public void ConnectorNotCreated_CallConstructorOnce_InstanceConnectedToCorrectEnvironment()
         {
             var mongo = MongoConnector.Instance;
