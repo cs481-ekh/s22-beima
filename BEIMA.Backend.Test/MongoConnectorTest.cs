@@ -37,32 +37,11 @@ namespace BEIMA.Backend.Test
                     Environment.SetEnvironmentVariable(setting.Key, setting.Value);
                 }
             }
-            catch (Exception ex)
+            catch (DirectoryNotFoundException ex)
             {
                 Console.WriteLine(ex.ToString());
             }
             
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-        }
-
-        [Test]
-        public void InitialState_Action_ExpectedResult()
-        {
-            Assert.IsTrue(true);
         }
 
         [Test]
@@ -74,10 +53,10 @@ namespace BEIMA.Backend.Test
             var connector3 = MongoConnector.Instance;
             var connector4 = MongoConnector.Instance;
             var connector5 = MongoConnector.Instance;
-            Assert.IsTrue(connector1 == connector2);
-            Assert.IsTrue(connector1 == connector3);
-            Assert.IsTrue(connector1 == connector4);
-            Assert.IsTrue(connector1 == connector5);
+            Assert.That(connector1, Is.EqualTo(connector2));
+            Assert.That(connector1, Is.EqualTo(connector3));
+            Assert.That(connector1, Is.EqualTo(connector4));
+            Assert.That(connector1, Is.EqualTo(connector5));
         }
 
         [Test]
