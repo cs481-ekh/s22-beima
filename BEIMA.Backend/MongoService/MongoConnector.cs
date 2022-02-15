@@ -10,19 +10,25 @@ namespace BEIMA.Backend.MongoService
 {
     public sealed class MongoConnector
     {
+        //Public class members
         public ServerType CurrentServerType { get; }
 
-        private MongoClient client = null;
-        private static MongoConnector instance = null;
+        //Contains instance variables
+        private readonly MongoClient client = null;
+        private static readonly Lazy<MongoConnector> instance = new(() => new MongoConnector());
+
+        //Environment variables
         private readonly string dbName = Environment.GetEnvironmentVariable("DatabaseName");
         private readonly string deviceCollection = Environment.GetEnvironmentVariable("DeviceCollectionName");
 
-        //Private constructor, used for singleton pattern
+        //Singleton design pattern, used to get an instance of the MongoConnector
+        public static MongoConnector Instance { get { return instance.Value; } }
+
+        //Private constructor, used for singleton pattern. Cannot be called externally.
         private MongoConnector()
         {
             string credentials;
 
-            //TODO: implement check to see if using local or cloud database
             if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
             {
                 CurrentServerType = ServerType.Local;
@@ -34,12 +40,6 @@ namespace BEIMA.Backend.MongoService
                 credentials = Environment.GetEnvironmentVariable("AzureCosmosConnection");
             }
             client = new MongoClient(credentials);
-        }
-
-        //Singleton design pattern
-        public static MongoConnector Instance
-        {
-            get { return instance ??= new MongoConnector(); }
         }
 
         /*
