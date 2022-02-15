@@ -8,6 +8,10 @@ using MongoDB.Bson;
 
 namespace BEIMA.Backend.MongoService
 {
+    /// <summary>
+    /// This class abstracts basic CRUD operations for MongoDB. It is implemented as a 
+    /// singleton class, so to instantiate, use this syntax: "var mongo = MongoConnector.Instance;".
+    /// </summary>
     public sealed class MongoConnector
     {
         //Public class members

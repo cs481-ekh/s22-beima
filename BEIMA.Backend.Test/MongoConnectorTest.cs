@@ -37,7 +37,7 @@ namespace BEIMA.Backend.Test
                     Environment.SetEnvironmentVariable(setting.Key, setting.Value);
                 }
             }
-            catch (DirectoryNotFoundException ex)
+            catch (IOException ex)
             {
                 Console.WriteLine(ex.ToString());
             }
