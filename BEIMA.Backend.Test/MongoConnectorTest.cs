@@ -98,20 +98,6 @@ namespace BEIMA.Backend.Test
         }
 
         [Test]
-        public void ConnectorNotCreated_CallConstructorOnce_InstanceConnectedToCorrectEnvironment()
-        {
-            var mongo = MongoConnector.Instance;
-            if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
-            {
-                Assert.IsTrue(mongo.CurrentServerType == ServerType.Local);
-            }
-            else
-            {
-                Assert.IsTrue(mongo.CurrentServerType == ServerType.Cloud);
-            }
-        }
-
-        [Test]
         public void ConnectorCreated_GetDeviceGivenValidDeviceId_DeviceDocumentReturned()
         {
             var mongo = MongoConnector.Instance;
@@ -240,5 +226,12 @@ namespace BEIMA.Backend.Test
             Assert.IsNull(result);
         }
 
+        [Test]
+        public void ConnectorCreated_CheckIsConnected_TrueReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.IsConnected();
+            Assert.IsTrue(result);
+        }
     }
 }
