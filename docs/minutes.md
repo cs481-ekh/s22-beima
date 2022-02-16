@@ -1,5 +1,5 @@
-## Minutes: 2022-02-09
-### scribe: Tom
+## Sprint 0 Retrospective Minutes: 2022-02-09
+### Scribe: Tom
 ### Attendees:
 	Joseph Moore
 	Kenny Miller
@@ -7,7 +7,57 @@
 	Keelan Chen
 	Ashlyn Adamson
 
-## standup
+### What went well
+	* code review
+	* all pieces were set up/all tasks complete
+
+### What could be improved
+	* delete branches automatically
+	* when closing PR, consistent messages
+
+### Decisions
+	* Will be using the /// command to generate headers in Visual Studio
+	* Ensure folder/file structure for tests is consistent with main structure
+		*naming example.cs and example.test.cs, change namespaces in test files to reflect the test structure
+	* When closing a PR the subject will be structured as "<description> Closes (#<linked item number>)"
+		* if description is too long - "<description>... Closes (#<linked item number>)"
+	* Part of the next sprint goal should include the front end being able to display a device (even if static/demo device)
+	* Came up wth a planning process
+		* discuss story and tasks one at a time so all are aware of what needs to be accomplished
+		* make sure to coordinate with project plan/timeline
+
+### Agenda/Action Items for next meeting
+	* Delete orphaned branches (completed 2022-02-15 <Ashlyn>)
+	* Place main branch protection back in effect (completed 2022-02-15 <Ashlyn>)
+	* Exception handling: need to decide a standard
+	* Workflow needs to be changed to "on PR" rather than "on push"
+	* Workflow needs to be changed to ignore docs folder as shown in class
+
+
+
+### Sprint goal template
+	By the end of this sprint we will be able to run a
+	simple version of our [app / webpage / data
+	analysis / pipeline ] to demonstrate the initial
+	functionality. We will have all interfaces between
+	our [ components ] connected and roughed-in. We
+	will have our testing framework implemented with
+	1 unit test stub for each of our [ components ].
+
+
+
+
+
+## Minutes: 2022-02-09
+### Scribe: Tom
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+## Standup
 * Joe
     * working on test frameworks, pr soon
 * Keelan
