@@ -1,4 +1,4 @@
-## Sprint 0 Retrospective Minutes: 2022-02-09
+## Sprint 0 Retrospective Minutes: 2022-02-15
 ### Scribe: Tom
 ### Attendees:
 	Joseph Moore
