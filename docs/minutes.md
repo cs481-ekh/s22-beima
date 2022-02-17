@@ -1,3 +1,40 @@
+## Minutes: 2022-02-16
+### scribe: Joseph
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	
+### General
+* Ashlyn made a checklist in google drive to track overall progress
+
+### Sprint 1 Planning
+* Started planning of Sprint 1
+	* Assigned Scrum Roles:
+		* Scrum Master: Tom
+		* Product Owner: Keelan
+		* Scribe: Joseph
+	* Need to be able to upload/remove a device and its data
+	* Need to have factories in the backend to translate data into BSON documents
+	* Need to add necessary functionality to DB client
+	* Need to create an initial frontend framework/template
+		* Setup shared HTML components/templates
+		* Add initial HTML pages
+			* List view
+			* Create Device
+			* View/Edit Device
+			* Create Type
+			* View/Edit Type
+	* Need to set up GET/POST interactions between frontend/backend
+	* Add associated testing
+	* Ashlynn/Kenny/Tom on front end, Joseph/Keelan on backend - (subject to change)
+
+### Upcoming meetings:
+* Thursday @15:10 - Meet with Henderson
+* Tuesday @15:00 - Meet to re-evaluate sprint scope/standup
+
 ## Minutes: 2022-02-09
 ### scribe: Tom
 ### Attendees:
