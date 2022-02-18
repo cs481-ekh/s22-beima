@@ -274,6 +274,8 @@ __pycache__/
 
 # testing
 /coverage
+BEIMA.Client/cypress/videos
+BEIMA.Client/cypress/screenshots
 
 # production
 /build
@@ -288,3 +290,4 @@ __pycache__/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
