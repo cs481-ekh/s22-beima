@@ -1,0 +1,15 @@
+.sharedNavBar {
+    background-color: #0033A0;
+    align-items: center;
+}
+.bsu-logo {
+    align-self: center;
+}
+.sharedText, .sharedHeader {
+    font-family: Arial;
+    font-weight:bolder;
+    color: white;
+}
+.sharedText:hover {
+    color: #D64309;
+}
