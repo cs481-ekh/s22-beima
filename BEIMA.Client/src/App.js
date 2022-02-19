@@ -32,7 +32,7 @@ function AppLayout(){
   path = path.replace('/','');
   return (
     <div className="page">
-        <NavBar/>
+      <NavBar/>
       <div className="content">
         <PageTitle pageName={path}/>
         <Outlet/>
