@@ -79,35 +79,32 @@ async function InsertDevice(newDevice) {
             'msg': 'Hello World!'
         });
 
-        var req = https.request('http://localhost:7071/api/Function2/', (res) => {
-            console.log('statusCode:', res.statusCode);
-            console.log('headers:', res.headers);
+        var request = https.request('http://localhost:7071/api/Function2/', (response) => {
+            console.log('statusCode:', response.statusCode);
+            console.log('headers:', response.headers);
 
-            res.on('data', (d) => {
+            response.on('data', (d) => {
                 console.log("attempted to insert");
                 console.log("inserted: " + d);
-                process.stdout.write(d);
                 console.log();
                 console.log();
             });
-        });
 
-        req.on('error', (e) => {
+            return d;
+
+
+        }).on('error', (e) => {
             console.error(e);
-        });
+        });;
 
         req.write(postData);
         req.end();
+
+
     }
     catch (e) {
         console.error(e);
     }
-
-
-    //const deviceClass = require('../../BEIMA.DB.Schemas/device-schema.txt');
-    //console.log(deviceClass);
-    //const result = await client.db("sample_airbnb").collection("listingsAndReviews").insertOne(newListing);
-    //console.log(`New listing created with the following id: ${result.insertedId}`);
 }
 
 GetDevice('620aeb22f50067dd0535bab1').catch(console.error);
