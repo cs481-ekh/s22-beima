@@ -35,15 +35,13 @@ function AppLayout(){
   var path = location.pathname;
   path = path.replace('/','');
   return (
-    <Row>
-      <Col>
+    <div className="page">
         <NavBar/>
-      </Col>
-      <Col>
-        <Row className="titlePage"><PageTitle pageName={path}/></Row>
-        <Row><Outlet/></Row>
-      </Col>
-    </Row>    
+      <div className="content">
+        <PageTitle pageName={path}/>
+        <Outlet/>
+      </div>
+    </div>
   )
 }
 

@@ -1,4 +1,6 @@
-.titlePage {
-  border: thin solid gray;
-  margin: 1%;
+.page {
+  display: flex;
+}
+.content {
+  width: 73%;
 }

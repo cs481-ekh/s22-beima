@@ -1,7 +1,5 @@
 .logo, .sharedNavBar {
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
 }
 .logo {
     text-align: center;
@@ -9,11 +7,12 @@
 .sharedNavBar {
     background-color: #0033A0;
     display: flex;
+    max-width: 27%;
 }
 .bsu-logo {
     justify-content: center;
-    max-width: 48%;
-    max-height: 14%;
+    max-width: 72%;
+    max-height: 21%;
     width: auto;
     height: auto;
 }
@@ -27,6 +26,8 @@
     font-family: Arial;
     text-align: left;
     padding-left: 1%;
+    border: thin solid gray;
+    margin: 1%;
 }
 .sharedHeader, .pageLink {
     padding: 2% 
