@@ -25,17 +25,24 @@
 //
 //main().catch(console.error);
 
+var DEBUG = true;
+var debugUrl = 'http://localhost:7071/api/';
+var prodURL = '';
+
+
 /// <summary>
 /// Gets a device with the specified ID
 /// </summary>
 /// <param name="objectId">The device ID to retrieve from the database (UUID)</param>
 /// <returns>The device with the specified ID from the DB API</returns>
-async function GetDevice(objectId) {
+async function GetDevice(deviceId) {
     try {
         const https = require('http');
 
-        //https.get('http://localhost:7071/api/Function1/?objectId=' + objectId, response => {
-        https.get('http://localhost:7071/api/Function1/?name=' + objectId, response => {
+        var resource = DEBUG ? debugUrl + 'GetDevice/?deviceId=' + deviceId : prodURL + 'GetDevice/?deviceId=' + deviceId;
+
+        //https.get('http://localhost:7071/api/Function1/?queryStringVar=' + objectId, response => {
+        https.get(resource, response => {
             let data = [];
             const headerDate = response.headers && response.headers.date ? response.headers.date : 'no response date';
             //console.log('DEBUG Status Code:', response.statusCode);
@@ -50,7 +57,7 @@ async function GetDevice(objectId) {
 
                 const device = JSON.parse(Buffer.concat(data).toString());
                 //console.log("DEBUG " + Buffer.concat(data).toString());
-
+                console.log(device);
                 for (part of device) {
                     for (key in part) {
                         if (part.hasOwnProperty(key)) {
@@ -75,37 +82,103 @@ async function InsertDevice(newDevice) {
     try {
         const https = require('http');
 
-        var postData = JSON.stringify({
-            'msg': 'Hello World!'
-        });
+        var resource = DEBUG ? debugUrl + 'InsertDevice/?deviceId=' + newDevice : prodURL + 'InsertDevice/?deviceId=' + newDevice;
 
-        var request = https.request('http://localhost:7071/api/Function2/', (response) => {
-            console.log('statusCode:', response.statusCode);
-            console.log('headers:', response.headers);
+        //var request = https.request('http://localhost:7071/api/Function2/?queryStringVar=' + JSON.stringify(newDevice)
+        var request = https.request(resource, (response) => {
+            //console.log('DEBUG statusCode:', response.statusCode);
+            //console.log('DEBUG headers:', response.headers);
 
-            response.on('data', (d) => {
-                console.log("attempted to insert");
-                console.log("inserted: " + d);
+            response.on('data', (data) => {
                 console.log();
-                console.log();
+                console.log("DEBUG attempted to insert");
+                console.log("DEBUG inserted: " + data);
+                console.log();                
+
+                return data;
             });
+        })
 
-            return d;
-
-
-        }).on('error', (e) => {
-            console.error(e);
-        });;
-
-        req.write(postData);
-        req.end();
-
-
+        request.end();
     }
     catch (e) {
         console.error(e);
     }
 }
 
-GetDevice('620aeb22f50067dd0535bab1').catch(console.error);
-InsertDevice().catch(console.error);
+async function DeleteDevice(deviceId) {
+    try {
+        const https = require('http');
+
+        var resource = DEBUG ? debugUrl + 'DeleteDevice/?deviceId=' + deviceId : prodURL + 'DeleteDevice/?deviceId=' + deviceId;
+
+        var request = https.request(resource, (response) => {
+            //console.log('DEBUG statusCode:', response.statusCode);
+            //console.log('DEBUG headers:', response.headers);
+
+            response.on('data', (data) => {
+                console.log();
+                console.log("DEBUG attempted to delete: " + deviceId);
+                console.log("DEBUG deleted?: " + data);
+                console.log();
+
+                return data;
+            });
+        })
+
+        request.end();
+    }
+    catch (e) {
+        console.error(e);
+    }
+}
+
+async function UpdateDevice(device) {
+    try {
+        const https = require('http');
+
+        var string = JSON.stringify(device);
+
+        var resource = DEBUG ? debugUrl + 'UpdateDevice/?device=' + deviceId : prodURL + 'UpdateDevice/?device=' + deviceId;
+
+        var request = https.request(resource, (response) => {
+            //console.log('DEBUG statusCode:', response.statusCode);
+            //console.log('DEBUG headers:', response.headers);
+
+            response.on('data', chunk => {
+                data.push(chunk);
+            });
+
+            response.on('end', () => {
+                //console.log('DEBUG Response ended: ');
+
+                const device = JSON.parse(Buffer.concat(data).toString());
+                //console.log("DEBUG " + Buffer.concat(data).toString());
+                console.log(device);
+                //for (part of device) {
+                //    for (key in part) {
+                //        if (part.hasOwnProperty(key)) {
+                //            console.log("DEBUG Got device with key:  " + part[key] + "");
+                //        }
+                //    }
+
+                //}
+
+                return device;
+            });
+        })
+
+        request.end();
+    }
+    catch (e) {
+        console.error(e);
+    }
+}
+
+
+
+//GetDevice('620aeb22f50067dd0535bab1').catch(console.error);
+//InsertDevice('[{ name: \'deviceTypeId\', value: \'testInsert\' },{ name: \'serialNumber\', value: \'insert12345\' }]').catch(console.error);
+//DeleteDevice('620b24c100319b2622228230').catch(console.error);
+UpdateDevice('[{ name: \'_id\', value: \'620aeb22f50067dd0535bab1\' },{ name: \'deviceTypeId\', value: \'a\' },{ name: \'serialNumber\', value: \'b12345\' }]').catch(console.error);
+//UpdateDevice('[{ name: \'serialNumber\', value: \'b12345\' }]').catch(console.error);
