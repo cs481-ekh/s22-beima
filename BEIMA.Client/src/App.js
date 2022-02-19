@@ -7,10 +7,6 @@ import {
   Outlet,
   useLocation
 } from "react-router-dom";
-import {  
-  Row, 
-  Col
-} from 'react-bootstrap';
 import HomePage from './pages/Home/HomePage';
 import HelpPage from './pages/Help/HelpPage';
 import NavBar from './shared/NavBar';

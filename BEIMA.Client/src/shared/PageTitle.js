@@ -4,7 +4,7 @@ import './shared.css';
 const PageTitle = (props) => {
     const { pageName } = props;
     var name;
-    if(pageName == ''){
+    if(pageName === ''){
         name = "Home";
     } else {
         name = pageName;
