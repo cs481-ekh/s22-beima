@@ -39,9 +39,9 @@ async function GetDevice(deviceId) {
     try {
         const https = require('http');
 
-        var resource = DEBUG ? debugUrl + 'GetDevice/?deviceId=' + deviceId : prodURL + 'GetDevice/?deviceId=' + deviceId;
+        var resource = DEBUG ? debugUrl + 'Device/?id=' + deviceId : prodURL + 'Device/?id=' + deviceId;
 
-        //https.get('http://localhost:7071/api/Function1/?queryStringVar=' + objectId, response => {
+        //https.get('http://localhost:7071/api/Device/?queryStringVar=' + objectId, response => {
         https.get(resource, response => {
             let data = [];
             const headerDate = response.headers && response.headers.date ? response.headers.date : 'no response date';
@@ -52,9 +52,12 @@ async function GetDevice(deviceId) {
                 data.push(chunk);
             });
 
+            
+
             response.on('end', () => {
                 //console.log('DEBUG Response ended: ');
 
+                if (Buffer.concat(data).toString() === 'Invalid id.') { console.log("invalid"); return device }
                 const device = JSON.parse(Buffer.concat(data).toString());
                 //console.log("DEBUG " + Buffer.concat(data).toString());
                 console.log(device);
@@ -177,8 +180,8 @@ async function UpdateDevice(device) {
 
 
 
-//GetDevice('620aeb22f50067dd0535bab1').catch(console.error);
+GetDevice('620aeb22f50067dd0535bab1').catch(console.error);
 //InsertDevice('[{ name: \'deviceTypeId\', value: \'testInsert\' },{ name: \'serialNumber\', value: \'insert12345\' }]').catch(console.error);
 //DeleteDevice('620b24c100319b2622228230').catch(console.error);
-UpdateDevice('[{ name: \'_id\', value: \'620aeb22f50067dd0535bab1\' },{ name: \'deviceTypeId\', value: \'a\' },{ name: \'serialNumber\', value: \'b12345\' }]').catch(console.error);
+//UpdateDevice('[{ name: \'_id\', value: \'620aeb22f50067dd0535bab1\' },{ name: \'deviceTypeId\', value: \'a\' },{ name: \'serialNumber\', value: \'b12345\' }]').catch(console.error);
 //UpdateDevice('[{ name: \'serialNumber\', value: \'b12345\' }]').catch(console.error);
