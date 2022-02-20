@@ -41,7 +41,6 @@ async function GetDevice(deviceId) {
 
         var resource = DEBUG ? debugUrl + 'Device/?id=' + deviceId : prodURL + 'Device/?id=' + deviceId;
 
-        //https.get('http://localhost:7071/api/Device/?queryStringVar=' + objectId, response => {
         https.get(resource, response => {
             let data = [];
             const headerDate = response.headers && response.headers.date ? response.headers.date : 'no response date';
@@ -57,20 +56,25 @@ async function GetDevice(deviceId) {
             response.on('end', () => {
                 //console.log('DEBUG Response ended: ');
 
-                if (Buffer.concat(data).toString() === 'Invalid id.') { console.log("invalid"); return device }
-                const device = JSON.parse(Buffer.concat(data).toString());
-                //console.log("DEBUG " + Buffer.concat(data).toString());
-                console.log(device);
-                for (part of device) {
-                    for (key in part) {
-                        if (part.hasOwnProperty(key)) {
-                            console.log("DEBUG Got device with key:  "    + part[key] + "");
+                var response = Buffer.concat(data).toString()
+
+                if (response === 'Invalid id.' || response === "Device could not be found." ) {
+                    console.log(response);
+                    return response;
+                } else {
+                    const device = JSON.parse(response);
+                    //console.log("DEBUG " + Buffer.concat(data).toString());
+                    console.log(device);
+                    for (part of device) {
+                        for (key in part) {
+                            if (part.hasOwnProperty(key)) {
+                                console.log("DEBUG Got device with key:  " + part[key] + "");
+                            }
                         }
+
                     }
-
+                    return device;
                 }
-
-                return device;
             });
         }).on('error', err => {
             console.log('Error: ', err.message);
@@ -180,7 +184,7 @@ async function UpdateDevice(device) {
 
 
 
-GetDevice('620aeb22f50067dd0535bab1').catch(console.error);
+GetDevice('620aeb23f50067dd0535bab3').catch(console.error);
 //InsertDevice('[{ name: \'deviceTypeId\', value: \'testInsert\' },{ name: \'serialNumber\', value: \'insert12345\' }]').catch(console.error);
 //DeleteDevice('620b24c100319b2622228230').catch(console.error);
 //UpdateDevice('[{ name: \'_id\', value: \'620aeb22f50067dd0535bab1\' },{ name: \'deviceTypeId\', value: \'a\' },{ name: \'serialNumber\', value: \'b12345\' }]').catch(console.error);
