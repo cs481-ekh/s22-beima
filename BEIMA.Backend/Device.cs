@@ -35,8 +35,8 @@ namespace BEIMA.Backend
             {
                 string id = req.Query["id"];
 
-                // Check if the id is a valid guid.
-                if (string.IsNullOrEmpty(id) || !Guid.TryParse(id, out _))
+                // Check if the id is valid.
+                if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
                 {
                     response = new BadRequestObjectResult("Invalid id.");
                     return response;
