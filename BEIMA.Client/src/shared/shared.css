@@ -1,0 +1,49 @@
+.logo, .sharedNavBar {
+    flex-direction: column;
+}
+.logo {
+    text-align: center;
+    margin-top: 4%;
+}
+.sharedNavBar {
+    background-color: #0033A0;
+    display: flex;
+    max-width: 23%;
+    min-height: 100%;
+    overflow: hidden;
+}
+.bsu-logo {
+    justify-content: center;
+    max-width: 72%;
+    max-height: 21%;
+    width: auto;
+    height: auto;
+}
+.sharedText, .sharedHeader {
+    font-family: Arial;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+}
+.pageTitle {
+    font-family: Arial;
+    text-align: left;
+    padding-left: 1%;
+    border: thin solid gray;
+    margin: 1%;
+}
+.sharedHeader, .pageLink {
+    padding: 2% 
+}
+.sharedText {
+    font-weight: bolder;
+}
+.sharedHeader {
+    font-size:x-large;
+    font-weight: bolder;
+    border-bottom: thin solid white;
+    letter-spacing: .2rem;
+}
+.sharedText:hover {
+    color: #D64309;
+}

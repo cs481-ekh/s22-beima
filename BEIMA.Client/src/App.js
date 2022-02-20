@@ -4,12 +4,15 @@ import {
   Routes,
   Navigate,
   Route,
-  Outlet
+  Outlet,
+  useLocation
 } from "react-router-dom";
 import HomePage from './pages/Home/HomePage';
 import HelpPage from './pages/Help/HelpPage';
 import DevicesPage from './pages/Devices/DevicesPage'
 import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
+import NavBar from './shared/NavBar';
+import PageTitle from './shared/PageTitle';
 
 const App = () => {
   return (
@@ -27,12 +30,18 @@ const App = () => {
   );
 }
 
-const AppLayout = () => {
+function AppLayout() {
+  var location = useLocation();
+  var path = location.pathname;
+  path = path.replace('/', '');
   return (
-    <div>
-      <div>Sidebar and navbar go here</div>
-      <Outlet/>
-    </div>    
+    <div className="page">
+      <NavBar />
+      <div className="content">
+        <PageTitle pageName={path} />
+        <Outlet />
+      </div>
+    </div>
   )
 }
 
