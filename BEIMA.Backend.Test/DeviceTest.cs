@@ -23,7 +23,7 @@ namespace BEIMA.Backend.Test
 
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            var testGuid = "1234567890abcdef1234567890abcdef";
+            var testGuid = "1234567890abcdef12345678";
             mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testGuid))))
                   .Returns<BsonDocument>(null)
                   .Verifiable();
@@ -46,7 +46,8 @@ namespace BEIMA.Backend.Test
         }
 
         [TestCase("")]
-        [TestCase("1234")]
+        [TestCase("xxx")]
+        [TestCase("123")]
         public async Task InvalidId_GetDevice_ReturnsInvalidId(string id)
         {
             // ARRANGE
