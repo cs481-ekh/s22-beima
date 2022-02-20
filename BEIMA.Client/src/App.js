@@ -16,26 +16,26 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<AppLayout/>}>
-          <Route index element={<HomePage/>}/>
-          <Route path="Help" element={<HelpPage/>}/>
-          <Route path="*" element={<Navigate to="/"/>}/>
+        <Route path="/" element={<AppLayout />}>
+          <Route index element={<HomePage />} />
+          <Route path="Help" element={<HelpPage />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
 
-function AppLayout(){
-  var location  = useLocation();
+function AppLayout() {
+  var location = useLocation();
   var path = location.pathname;
-  path = path.replace('/','');
+  path = path.replace('/', '');
   return (
     <div className="page">
-      <NavBar/>
+      <NavBar />
       <div className="content">
-        <PageTitle pageName={path}/>
-        <Outlet/>
+        <PageTitle pageName={path} />
+        <Outlet />
       </div>
     </div>
   )
