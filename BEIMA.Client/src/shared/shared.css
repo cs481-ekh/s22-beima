@@ -8,7 +8,9 @@
 .sharedNavBar {
     background-color: #0033A0;
     display: flex;
-    max-width: 27%;
+    max-width: 23%;
+    min-height: 100%;
+    overflow: hidden;
 }
 .bsu-logo {
     justify-content: center;
