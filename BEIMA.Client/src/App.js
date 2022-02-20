@@ -14,7 +14,7 @@ import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
 
-const App = () => {
+function App() {
   return (
     <BrowserRouter>
       <Routes>

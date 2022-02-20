@@ -2,7 +2,7 @@
 
 
 
-const DevicesPage = () => {
+function DevicesPage() {
   return (
     <div>
 
