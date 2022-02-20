@@ -13,8 +13,9 @@ import DevicesPage from './pages/Devices/DevicesPage'
 import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-function App() {
+const App = () => {
   return (
     <BrowserRouter>
       <Routes>
@@ -30,12 +31,13 @@ function App() {
   );
 }
 
-function AppLayout() {
+const AppLayout = () => {
   var location = useLocation();
   var path = location.pathname;
   path = path.replace('/', '');
   return (
     <div className="page">
+      
       <NavBar />
       <div className="content">
         <PageTitle pageName={path} />

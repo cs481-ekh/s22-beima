@@ -1,8 +1,7 @@
 
 
 
-
-function DeviceTypesPage() {
+const DeviceTypesPage = () => {
   return (
     <div>
 

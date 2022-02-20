@@ -1,7 +1,7 @@
 import logo from '../../logo.svg';
 import './HomePage.css';
 
-function HomePage() {
+const HomePage = () => {
   return (
     <div className="App">
       <header className="App-header">

@@ -1,10 +1,15 @@
+import { Card } from "react-bootstrap";
+import './HelpPage.css'
 
-
-function HelpPage() {
+const HelpPage = () => {
   return (
-    <div page="home">
-      If you don't know how the app works, just look at the code lol
-    </div>
+    <Card className="pageContent">
+      <Card.Body>
+        <h2>Overview</h2>
+        The Beima App is your way to view and manage equipment all across campus. 
+        <h5>Devices</h5>
+      </Card.Body>
+    </Card>
   );
 }
 

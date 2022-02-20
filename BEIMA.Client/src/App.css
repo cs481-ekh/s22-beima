@@ -9,4 +9,5 @@ html, body, #root {
 }
 .content {
   width: 77%;
+  background-color: #fafafa;
 }
