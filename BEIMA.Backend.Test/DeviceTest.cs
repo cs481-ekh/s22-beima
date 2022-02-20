@@ -81,7 +81,7 @@ namespace BEIMA.Backend.Test
         {
             // ARRANGE
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            var testGuid = "1234567890abcdef1234567890abcdef";
+            var testGuid = "1234567890abcdef12345678";
             var dictionary = new Dictionary<string, object>()
             {
                 //TODO: add more properties
