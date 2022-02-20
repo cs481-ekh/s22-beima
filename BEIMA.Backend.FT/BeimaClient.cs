@@ -57,7 +57,7 @@ namespace BEIMA.Backend.FT
         /// <param name="body">The object to send with the request.</param>
         /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<HttpResponseMessage> SendRequest(string route, HttpVerb verb, object? body = null)
+        public async Task<HttpResponseMessage> SendRequest(string route, HttpVerb verb, object? body = null, string queryString = "")
         {
             StringContent? jsonString = null;
             HttpResponseMessage response;
@@ -66,6 +66,11 @@ namespace BEIMA.Backend.FT
             {
                 var jsonObject = JsonConvert.SerializeObject(body);
                 jsonString = new StringContent(jsonObject, Encoding.UTF8, "application/json");
+            }
+
+            if (!string.IsNullOrEmpty(queryString))
+            {
+                route = $"{route}?{queryString}";
             }
 
             switch (verb)

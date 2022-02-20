@@ -1,10 +1,8 @@
-﻿using System;
+﻿using MongoDB.Bson;
+using MongoDB.Driver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using MongoDB.Driver;
-using MongoDB.Bson;
 
 namespace BEIMA.Backend.MongoService
 {
@@ -12,7 +10,7 @@ namespace BEIMA.Backend.MongoService
     /// This class abstracts basic CRUD operations for MongoDB. It is implemented as a 
     /// singleton class, so to instantiate, use this syntax: "var mongo = MongoConnector.Instance;".
     /// </summary>
-    public sealed class MongoConnector
+    public sealed class MongoConnector : IMongoConnector
     {
         //Public class members
         public ServerType CurrentServerType { get; }
@@ -77,7 +75,7 @@ namespace BEIMA.Backend.MongoService
                 var db = client.GetDatabase(dbName);
                 var devices = db.GetCollection<BsonDocument>(deviceCollection);
                 devices.InsertOne(doc);
-                return (ObjectId) doc["_id"];
+                return (ObjectId)doc["_id"];
             }
             catch (Exception ex)
             {

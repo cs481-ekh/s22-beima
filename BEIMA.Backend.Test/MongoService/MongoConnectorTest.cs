@@ -1,87 +1,14 @@
-﻿using NUnit.Framework;
-using BEIMA.Backend.MongoService;
-using System.IO;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System;
+﻿using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
-using System.Linq;
-using MongoDB.Driver;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
 
-namespace BEIMA.Backend.Test
+namespace BEIMA.Backend.Test.MongoService
 {
     [TestFixture]
-    public class MongoConnectorTest
+    public class MongoConnectorTest : UnitTestBase
     {
-        private static readonly Random random = new Random();
-        private string? dbName;
-        private string? devicesName;
-
-        public static string RandomString(int length)
-        {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-            return new string(Enumerable.Repeat(chars, length)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
-        }
-
-        class LocalSettings
-        {
-            public bool IsEncrypted { get; set; }
-            public Dictionary<string, string>? Values { get; set; }
-        }
-
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-            //For local testing, the try block will be used to instantiate local variables.
-            //For cloud testing, this will throw an exception, and it will use the env variables
-            //defined in beima.yml.
-            try
-            {
-                string[] paths = { "..", "..", "..", "..", "BEIMA.Backend", "local.settings.json" };
-                string combinedPath = Path.Combine(paths);
-                string fullPath = Path.GetFullPath(combinedPath);
-                var settings = JsonConvert.DeserializeObject<LocalSettings>(
-                    File.ReadAllText(fullPath));
-
-                if(settings != null && settings.Values != null)
-                {
-                    foreach (var setting in settings.Values)
-                    {
-                        Environment.SetEnvironmentVariable(setting.Key, setting.Value);
-                    }
-                }
-                
-            }
-            catch (IOException ex)
-            {
-                Console.WriteLine(ex.ToString());
-            }
-
-            dbName = "beima-test" + Guid.NewGuid().ToString();
-            devicesName = "devices-test" + Guid.NewGuid().ToString();
-
-            Environment.SetEnvironmentVariable("DatabaseName", dbName);
-            Environment.SetEnvironmentVariable("DeviceCollectionName", devicesName);
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-            string? credentials;
-
-            if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
-            {
-                credentials = Environment.GetEnvironmentVariable("LocalMongoConnection");
-            }
-            else
-            {
-                credentials = Environment.GetEnvironmentVariable("AzureCosmosConnection");
-            }
-            var client = new MongoClient(credentials);
-            client.DropDatabase(dbName);
-        }
-
         [Test]
         public void ConnectorNotCreated_CallConstructorFiveTimes_FiveInstancesAreEqual()
         {
@@ -111,7 +38,7 @@ namespace BEIMA.Backend.Test
             Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve the document)
-            var retrievedDoc = mongo.GetDevice((ObjectId) doc["_id"]);
+            var retrievedDoc = mongo.GetDevice((ObjectId)doc["_id"]);
             Assert.IsNotNull(retrievedDoc);
             Assert.That(retrievedDoc, Is.TypeOf(typeof(BsonDocument)));
         }
@@ -139,7 +66,7 @@ namespace BEIMA.Backend.Test
         public void DocumentNotInserted_InsertDocument_DocumentHasBeenInserted()
         {
             var mongo = MongoConnector.Instance;
-            BsonDocument doc = new BsonDocument { 
+            BsonDocument doc = new BsonDocument {
                 { "deviceTypeId", "a" },
                 { "serialNumber", "a12345"}
             };
@@ -165,9 +92,9 @@ namespace BEIMA.Backend.Test
 
             //Delete device
             bool deleteResult = false;
-            if(insertResult != null)
+            if (insertResult != null)
             {
-                deleteResult = mongo.DeleteDevice((ObjectId) insertResult);
+                deleteResult = mongo.DeleteDevice((ObjectId)insertResult);
             }
             Assert.IsTrue(deleteResult);
         }
