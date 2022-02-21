@@ -1,6 +1,3 @@
-
-
-
 function HelpPage(){
   return (
     <div page="home">
