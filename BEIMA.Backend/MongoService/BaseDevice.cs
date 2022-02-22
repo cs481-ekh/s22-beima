@@ -16,31 +16,31 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         public BaseDevice()
         {
+            //TODO: change the way this exception message is structured
+            //if (DeviceTag == null)
+            //{
+            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(DeviceTag));
+            //}
 
-            if (DeviceTag == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(DeviceTag));
-            }
+            //if (Manufacturer == null)
+            //{
+            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Manufacturer));
+            //}
 
-            if (Manufacturer == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Manufacturer));
-            }
+            //if (ModelNum == null)
+            //{
+            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(ModelNum));
+            //}
 
-            if (ModelNum == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(ModelNum));
-            }
+            //if (SerialNum == null)
+            //{
+            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(SerialNum));
+            //}
 
-            if (SerialNum == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(SerialNum));
-            }
-
-            if (Notes == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Notes));
-            }
+            //if (Notes == null)
+            //{
+            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Notes));
+            //}
 
             Fields = new BsonDocument();
             Location = new BsonDocument();
@@ -115,7 +115,31 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that represents the current state of the BaseDevice object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
         public BsonDocument GetBsonDocument()
         {
-            if(Location.ElementCount == 0)
+            if (DeviceTag == null)
+            {
+                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(DeviceTag));
+            }
+
+            if (Manufacturer == null)
+            {
+                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Manufacturer));
+            }
+
+            if (ModelNum == null)
+            {
+                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(ModelNum));
+            }
+
+            if (SerialNum == null)
+            {
+                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(SerialNum));
+            }
+
+            if (Notes == null)
+            {
+                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Notes));
+            }
+            if (Location.ElementCount == 0)
             {
                 throw new ArgumentNullException("BaseDevice - SetLocation has not been called yet!");
             }
