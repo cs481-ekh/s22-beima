@@ -1,4 +1,9 @@
 {
+  "routes": [
+    {
+        "route": "/deviceTypes"
+    }
+],
   "navigationFallback": {
     "rewrite": "/index.html"
   }
