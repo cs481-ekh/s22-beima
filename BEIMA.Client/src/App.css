@@ -6,7 +6,9 @@ html, body, #root {
 .page {
   display: flex;
   min-height: 100vh;
+  max-width: 100vw;
+  --page-width: 100vw;
 }
 .content {
-  width: 77%;
+  width: calc(77% + (var(--page-width) - 77vw));
 }

@@ -8,7 +8,9 @@
 .sharedNavBar {
     background-color: #0033A0;
     display: flex;
-    max-width: 23%;
+    max-width: 245px;
+    min-width: 160px;
+    width: 27%;
     min-height: 100%;
     overflow: hidden;
 }
@@ -39,7 +41,7 @@
     font-weight: bolder;
 }
 .sharedHeader {
-    font-size:x-large;
+    font-size: x-large;
     font-weight: bolder;
     border-bottom: thin solid white;
     letter-spacing: .2rem;
