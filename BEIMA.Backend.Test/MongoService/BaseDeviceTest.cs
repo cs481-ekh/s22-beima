@@ -34,7 +34,17 @@ namespace BEIMA.Backend.MongoService.Test
             var device = new BaseDevice(objId, "asd", "asd", "xcsd", "cvliokj", "asd", 1, "sadloifk");
             device.AddField("asdfwefsdf", "test-value");
             device.AddField("abc", "test2");
+            device.SetLastModified(DateTime.Now, "gooduser0");
+            device.SetLastModified(DateTime.Now, "gooduser1");
+            device.SetLastModified(DateTime.Now, "gooduser2");
             Console.WriteLine(device.GetBsonDocument().ToString());
+
+
+            var testDevice = new BaseDevice
+            {
+                DeviceTypeId = "dslkfj",
+                Fields = new BsonDocument()
+            };
         }
     }
 }
