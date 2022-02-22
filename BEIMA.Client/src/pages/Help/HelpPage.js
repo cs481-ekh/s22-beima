@@ -1,7 +1,15 @@
 import { Card } from "react-bootstrap";
+import { useOutletContext } from 'react-router-dom';
+import { useEffect } from 'react';
 import './HelpPage.css'
 
 const HelpPage = () => {
+  const [setPageName] = useOutletContext();
+
+  useEffect(() => {
+    setPageName('Help')
+  },[])
+
   return (
     <Card className="pageContent">
       <Card.Body>

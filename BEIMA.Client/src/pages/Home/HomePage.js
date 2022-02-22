@@ -1,7 +1,15 @@
+import { useEffect } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import logo from '../../logo.svg';
 import './HomePage.css';
 
 const HomePage = () => {
+  const [setPageName] = useOutletContext();
+
+  useEffect(() => {
+    setPageName('Home')
+  },[])
+
   return (
     <div className="App">
       <header className="App-header">

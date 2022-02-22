@@ -1,13 +1,21 @@
 import { useEffect, useState } from "react"
 import styles from './DeviceTypesPage.module.css'
 import ItemList from "../../shared/ItemList/ItemList";
+import { useOutletContext } from 'react-router-dom';
 
 
 const DeviceTypesPage = () => {
   const [deviceTypes, setDeviceTypes] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+  const [setPageName] = useOutletContext();
 
+  useEffect(() => {
+    setPageName('Device Types')
+  },[])
+ 
+ 
+  
+ 
   const mockCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(1000)

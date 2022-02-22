@@ -1,4 +1,5 @@
 import './App.css';
+import { useEffect, useState } from "react"
 import {
   BrowserRouter,
   Routes,
@@ -23,14 +24,12 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AppLayout/>}>
           <Route index element={<HomePage/>}/>
-          <Route path="devices" >
-            <Route index element={<DevicesPage/>}/>  
-            <Route path=":id" element={<DevicePage/>}/>
-          </Route>
-          <Route path="deviceTypes">
-            <Route index element={<DeviceTypesPage/>}/>  
-            <Route path=":typeId" element={<DeviceTypePage/>}/>
-          </Route>
+
+          <Route path="devices" element={<DevicesPage/>}/>  
+          <Route path="devices/:id" element={<DevicePage/>}/>
+
+          <Route path="deviceTypes" element={<DeviceTypesPage/>}/>  
+          <Route path="deviceTypes/:typeId" element={<DeviceTypePage/>}/>
           
           <Route path="help" element={<HelpPage/>}/>
           <Route path="*" element={<Navigate to="/"/>}/>
@@ -41,16 +40,13 @@ const App = () => {
 }
 
 const AppLayout = () => {
-  var location = useLocation();
-  var path = location.pathname;
-  path = path.replace('/', '');
+  const [pageName, setPageName] = useState('')
   return (
     <div className="page">
-      
       <NavBar />
       <div className="content">
-        <PageTitle pageName={path} />
-        <Outlet />
+        <PageTitle pageName={pageName} />
+        <Outlet context={[setPageName]}/>
       </div>
     </div>
   )
