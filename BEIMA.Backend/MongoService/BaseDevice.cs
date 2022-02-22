@@ -26,15 +26,14 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="id">ObjectId of the object itself.</param>
         /// <param name="deviceTypeId">ObjectId of the DeviceType this Device is linked to.</param>
-        /// <param name="deviceTag"></param>
-        /// <param name="manufacturer"></param>
-        /// <param name="modelNum"></param>
-        /// <param name="serialNum"></param>
-        /// <param name="yearManufactured"></param>
-        /// <param name="notes"></param>
+        /// <param name="deviceTag">The device tag.</param>
+        /// <param name="manufacturer">The manufacturer of the device.</param>
+        /// <param name="modelNum">The model number of the device.</param>
+        /// <param name="serialNum">The serial number of the device.</param>
+        /// <param name="yearManufactured">The year the device was manufactured.</param>
+        /// <param name="notes">Notes related to the device.</param>
         public BaseDevice(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int yearManufactured, string notes)
         {
-            //BsonClassMap.RegisterClassMap<BaseDevice>();
 
             Id = id;
             DeviceTypeId = deviceTypeId;
@@ -138,10 +137,10 @@ namespace BEIMA.Backend.MongoService
         /// <summary>
         /// Sets all of the fields in the "location" object of the BaseDevice.
         /// </summary>
-        /// <param name="buildingId"></param>
-        /// <param name="notes"></param>
-        /// <param name="latitude"></param>
-        /// <param name="longitude"></param>
+        /// <param name="buildingId">ObjectId of the Building document this device is related to.</param>
+        /// <param name="notes">Notes related to the location of the device.</param>
+        /// <param name="latitude">The latitude of the physical location of the device.</param>
+        /// <param name="longitude">The longitude of the physical location of the device.</param>
         public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
