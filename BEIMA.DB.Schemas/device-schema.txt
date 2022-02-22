@@ -1,6 +1,5 @@
 {
     "deviceTypeId": String,
-    "serialNumber": String,
     "deviceTag": String,
     "manufacturer": String,
     "modelNum": String,
