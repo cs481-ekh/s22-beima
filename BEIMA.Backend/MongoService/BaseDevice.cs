@@ -16,32 +16,6 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         public BaseDevice()
         {
-            //TODO: change the way this exception message is structured
-            //if (DeviceTag == null)
-            //{
-            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(DeviceTag));
-            //}
-
-            //if (Manufacturer == null)
-            //{
-            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Manufacturer));
-            //}
-
-            //if (ModelNum == null)
-            //{
-            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(ModelNum));
-            //}
-
-            //if (SerialNum == null)
-            //{
-            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(SerialNum));
-            //}
-
-            //if (Notes == null)
-            //{
-            //    throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(Notes));
-            //}
-
             Fields = new BsonDocument();
             Location = new BsonDocument();
             LastModified = new BsonDocument();

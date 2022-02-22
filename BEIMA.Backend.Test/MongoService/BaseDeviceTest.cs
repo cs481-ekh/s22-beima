@@ -33,26 +33,6 @@ namespace BEIMA.Backend.MongoService.Test
         readonly int validValue3 = 123;
 
         [Test]
-        public void InitialState_Action_ExpectedResult()
-        {
-            //var objId = new ObjectId("61f4882f42dab933544849d3");
-            //var device = new BaseDevice(objId, "asd", "asd", "xcsd", "cvliokj", "asd", 1, "sadloifk");
-            //device.AddField("asdfwefsdf", "test-value");
-            //device.AddField("abc", "test2");
-            //device.SetLastModified(DateTime.Now, "gooduser0");
-            //device.SetLastModified(DateTime.Now, "gooduser1");
-            //device.SetLastModified(DateTime.Now, "gooduser2");
-            //Console.WriteLine(device.GetBsonDocument().ToString());
-
-
-            //var testDevice = new BaseDevice
-            //{
-            //    DeviceTypeId = "dslkfj",
-            //    Fields = new BsonDocument()
-            //};
-        }
-
-        [Test]
         public void BaseDeviceNotInstantiated_InstantiateUsingFullConstructor_BaseDeviceInstantiatedWithCorrectValues()
         {
             var device = new BaseDevice(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, validModelNum, validSerialNum, validYearManufactured, validNotes);
