@@ -10,7 +10,9 @@ import {
 import HomePage from './pages/Home/HomePage';
 import HelpPage from './pages/Help/HelpPage';
 import DevicesPage from './pages/Devices/DevicesPage'
+import DevicePage from './pages/Devices/DevicePage'
 import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
+import DeviceTypePage from './pages/DeviceTypes/DeviceTypePage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -21,8 +23,15 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AppLayout/>}>
           <Route index element={<HomePage/>}/>
-          <Route path="devices" element={<DevicesPage/>}/>
-          <Route path="deviceTypes" element={<DeviceTypesPage/>}/>
+          <Route path="devices" >
+            <Route index element={<DevicesPage/>}/>  
+            <Route path=":id" element={<DevicePage/>}/>
+          </Route>
+          <Route path="deviceTypes">
+            <Route index element={<DeviceTypesPage/>}/>  
+            <Route path=":typeId" element={<DeviceTypePage/>}/>
+          </Route>
+          
           <Route path="help" element={<HelpPage/>}/>
           <Route path="*" element={<Navigate to="/"/>}/>
         </Route>
