@@ -16,10 +16,6 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         public BaseDevice()
         {
-            if(DeviceTypeId == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {0} is null", nameof(DeviceTypeId));
-            }
 
             if (DeviceTag == null)
             {
@@ -49,38 +45,34 @@ namespace BEIMA.Backend.MongoService
             Fields = new BsonDocument();
             Location = new BsonDocument();
             LastModified = new BsonDocument();
-            SetLocation(null, null, null, null);
-            SetLastModified(null, null);
         }
 
         /// <summary>
         /// Full constructor to instantiate a Device object.
         /// </summary>
-        /// <param name="id">ObjectId of the object</param>
-        /// <param name="deviceTypeId"></param>
+        /// <param name="id">ObjectId of the object itself.</param>
+        /// <param name="deviceTypeId">ObjectId of the DeviceType this Device is linked to.</param>
         /// <param name="deviceTag"></param>
         /// <param name="manufacturer"></param>
         /// <param name="modelNum"></param>
         /// <param name="serialNum"></param>
         /// <param name="yearManufactured"></param>
         /// <param name="notes"></param>
-        public BaseDevice(ObjectId id, string deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int yearManufactured, string notes)
+        public BaseDevice(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int yearManufactured, string notes)
         {
             //BsonClassMap.RegisterClassMap<BaseDevice>();
 
             Id = id;
             DeviceTypeId = deviceTypeId;
-            DeviceTag = deviceTag;
-            Manufacturer = manufacturer;
-            ModelNum = modelNum;
-            SerialNum = serialNum;
+            DeviceTag = deviceTag ?? string.Empty;
+            Manufacturer = manufacturer ?? string.Empty;
+            ModelNum = modelNum ?? string.Empty;
+            SerialNum = serialNum ?? string.Empty;
             YearManufactured = yearManufactured;
-            Notes = notes;
+            Notes = notes ?? string.Empty;
             Fields = new BsonDocument();
             Location = new BsonDocument();
             LastModified = new BsonDocument();
-            SetLocation(null, null, null, null);
-            SetLastModified(null, null);
         }
 
 
@@ -88,7 +80,7 @@ namespace BEIMA.Backend.MongoService
         public ObjectId Id { get; set; }
 
         [BsonElement("deviceTypeId")]
-        public string DeviceTypeId { get; set; }
+        public ObjectId DeviceTypeId { get; set; }
 
         [BsonElement("deviceTag")]
         public string DeviceTag { get; set; }
@@ -123,6 +115,14 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that represents the current state of the BaseDevice object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
         public BsonDocument GetBsonDocument()
         {
+            if(Location.ElementCount == 0)
+            {
+                throw new ArgumentNullException("BaseDevice - SetLocation has not been called yet!");
+            }
+            if (LastModified.ElementCount == 0)
+            {
+                throw new ArgumentNullException("BaseDevice - SetLastModified has not been called yet!");
+            }
             return this.ToBsonDocument();
         }
 
@@ -143,10 +143,9 @@ namespace BEIMA.Backend.MongoService
         /// <param name="notes"></param>
         /// <param name="latitude"></param>
         /// <param name="longitude"></param>
-        public void SetLocation(string buildingId, string notes, string latitude, string longitude)
+        public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
-            buildingId ??= string.Empty;
             notes ??= string.Empty;
             latitude ??= string.Empty;
             longitude ??= string.Empty;
@@ -165,7 +164,7 @@ namespace BEIMA.Backend.MongoService
         public void SetLastModified(DateTime? date, string user)
         {
             //Check if null, if they are, then use defualt values
-            date ??= DateTime.Now;
+            date ??= DateTime.Now.ToUniversalTime();
             user ??= string.Empty;
 
             LastModified.Set("date", date);
