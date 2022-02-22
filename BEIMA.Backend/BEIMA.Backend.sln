@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BEIMA.Backend", "BEIMA.Back
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BEIMA.Backend.Test", "..\BEIMA.Backend.Test\BEIMA.Backend.Test.csproj", "{7625EF25-65B6-4EF9-B1FD-54802EFF8707}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BEIMA.Backend.FT", "..\BEIMA.Backend.FT\BEIMA.Backend.FT.csproj", "{42A5B7E8-C6FC-4562-A670-02C03C191091}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BEIMA.Backend.FT", "..\BEIMA.Backend.FT\BEIMA.Backend.FT.csproj", "{42A5B7E8-C6FC-4562-A670-02C03C191091}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
