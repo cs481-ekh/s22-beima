@@ -32,28 +32,6 @@ namespace BEIMA.Backend.MongoService.Test
         readonly bool validValue2 = true;
         readonly int validValue3 = 123;
 
-
-        [OneTimeSetUp]
-        public void OneTimeSetUp()
-        {
-
-        }
-
-        [OneTimeTearDown]
-        public void OneTimeTearDown()
-        {
-        }
-
-        [SetUp]
-        public void SetUp()
-        {
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-        }
-
         [Test]
         public void InitialState_Action_ExpectedResult()
         {
