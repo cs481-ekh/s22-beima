@@ -10,6 +10,39 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public class BaseDevice
     {
+        //Properties of a BaseDevice object
+        [BsonId]
+        public ObjectId Id { get; set; }
+
+        [BsonElement("deviceTypeId")]
+        public ObjectId DeviceTypeId { get; set; }
+
+        [BsonElement("deviceTag")]
+        public string DeviceTag { get; set; }
+
+        [BsonElement("manufacturer")]
+        public string Manufacturer { get; set; }
+
+        [BsonElement("modelNum")]
+        public string ModelNum { get; set; }
+
+        [BsonElement("serialNum")]
+        public string SerialNum { get; set; }
+
+        [BsonElement("yearManufactured")]
+        public int YearManufactured { get; set; }
+
+        [BsonElement("notes")]
+        public string Notes { get; set; }
+
+        [BsonElement("fields")]
+        public BsonDocument Fields { get; set; }
+
+        [BsonElement("location")]
+        public BsonDocument Location { get; set; }
+
+        [BsonElement("lastModified")]
+        public BsonDocument LastModified { get; set; }
 
         /// <summary>
         /// Empty constructor, this allows for a device to be instantiated through Object Initializers.
@@ -47,40 +80,6 @@ namespace BEIMA.Backend.MongoService
             Location = new BsonDocument();
             LastModified = new BsonDocument();
         }
-
-
-        [BsonId]
-        public ObjectId Id { get; set; }
-
-        [BsonElement("deviceTypeId")]
-        public ObjectId DeviceTypeId { get; set; }
-
-        [BsonElement("deviceTag")]
-        public string DeviceTag { get; set; }
-
-        [BsonElement("manufacturer")]
-        public string Manufacturer { get; set; }
-
-        [BsonElement("modelNum")]
-        public string ModelNum { get; set; }
-
-        [BsonElement("serialNum")]
-        public string SerialNum { get; set; }
-
-        [BsonElement("yearManufactured")]
-        public int YearManufactured { get; set; }
-
-        [BsonElement("notes")]
-        public string Notes { get; set; }
-
-        [BsonElement("fields")]
-        public BsonDocument Fields { get; set; }
-
-        [BsonElement("location")]
-        public BsonDocument Location { get; set; }
-
-        [BsonElement("lastModified")]
-        public BsonDocument LastModified { get; set; }
 
         /// <summary>
         /// Gets a BsonDocument that represents the current state of the BaseDevice object.
