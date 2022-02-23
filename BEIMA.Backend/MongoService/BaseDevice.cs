@@ -67,7 +67,6 @@ namespace BEIMA.Backend.MongoService
         /// <param name="notes">Notes related to the device.</param>
         public BaseDevice(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int? yearManufactured, string notes)
         {
-
             Id = id;
             DeviceTypeId = deviceTypeId;
             DeviceTag = deviceTag ?? string.Empty;
@@ -89,12 +88,12 @@ namespace BEIMA.Backend.MongoService
         /// <exception cref="ArgumentNullException"></exception>
         private void CheckNullArgument(dynamic arg, string name = "")
         {
-            if(arg == null)
+            if (arg == null)
             {
                 throw new ArgumentNullException($"BaseDevice - {name} is null");
             }
 
-            if(arg is BsonDocument && arg.ElementCount == 0)
+            if (arg is BsonDocument && arg.ElementCount == 0)
             {
                 throw new ArgumentNullException($"BaseDevice - Set{name} has not been called yet!");
             }
@@ -164,6 +163,6 @@ namespace BEIMA.Backend.MongoService
             LastModified.Set("date", date);
             LastModified.Set("user", user);
         }
-        
+
     }
 }

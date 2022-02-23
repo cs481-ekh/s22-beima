@@ -50,11 +50,11 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.SerialNum, Is.EqualTo(validSerialNum));
             Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
             Assert.That(device.Notes, Is.EqualTo(validNotes));
-            
+
             var lastModified = device.LastModified;
             Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
             Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
-            
+
             var location = device.Location;
             Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
             Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
@@ -198,7 +198,7 @@ namespace BEIMA.Backend.MongoService.Test
             var lastModified = device.LastModified;
             Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(DateTime.UtcNow).Within(10).Seconds);
             Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(string.Empty));
-            
+
             var location = device.Location;
             Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
             Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(string.Empty));
