@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace BEIMA.Backend.MongoService.Test
 {
     [TestFixture]
-    public class BaseDeviceTest
+    public class DeviceTest
     {
         //Instance variables
         readonly ObjectId validObjId = ObjectId.GenerateNewId();
@@ -33,9 +33,9 @@ namespace BEIMA.Backend.MongoService.Test
         readonly int validValue3 = 123;
 
         [Test]
-        public void BaseDeviceNotInstantiated_InstantiateUsingFullConstructor_BaseDeviceInstantiatedWithCorrectValues()
+        public void DeviceNotInstantiated_InstantiateUsingFullConstructor_DeviceInstantiatedWithCorrectValues()
         {
-            var device = new BaseDevice(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, validModelNum, validSerialNum, validYearManufactured, validNotes);
+            var device = new Device(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, validModelNum, validSerialNum, validYearManufactured, validNotes);
             device.SetLastModified(validDate, validUser);
             device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
             device.AddField(validKey1, validValue1);
@@ -68,9 +68,9 @@ namespace BEIMA.Backend.MongoService.Test
         }
 
         [Test]
-        public void BaseDeviceNotInstantiated_InstantiateUsingObjectInitializer_BaseDeviceInstantiatedWithCorrectValues()
+        public void DeviceNotInstantiated_InstantiateUsingObjectInitializer_DeviceInstantiatedWithCorrectValues()
         {
-            var device = new BaseDevice
+            var device = new Device
             {
                 Id = validObjId,
                 DeviceTypeId = validDeviceTypeId,
@@ -113,9 +113,9 @@ namespace BEIMA.Backend.MongoService.Test
         }
 
         [Test]
-        public void BaseDeviceNotInstantiated_InstantiateUsingObjectInitializerWithAllNullStringValues_GetBsonDocumentThrowsException()
+        public void DeviceNotInstantiated_InstantiateUsingObjectInitializerWithAllNullStringValues_GetBsonDocumentThrowsException()
         {
-            var device = new BaseDevice
+            var device = new Device
             {
                 Id = validObjId,
                 DeviceTypeId = validDeviceTypeId,
@@ -139,9 +139,9 @@ namespace BEIMA.Backend.MongoService.Test
         }
 
         [Test]
-        public void BaseDeviceNotInstantiated_InstantiateUsingFullConstructorWithAllNullStringValues_ValuesAreReplacedWithEmptyStrings()
+        public void DeviceNotInstantiated_InstantiateUsingFullConstructorWithAllNullStringValues_ValuesAreReplacedWithEmptyStrings()
         {
-            var device = new BaseDevice(validObjId, validDeviceTypeId, null, null, null, null, null, null);
+            var device = new Device(validObjId, validDeviceTypeId, null, null, null, null, null, null);
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
             Assert.That(device.DeviceTag, Is.EqualTo(string.Empty));
@@ -153,17 +153,17 @@ namespace BEIMA.Backend.MongoService.Test
         }
 
         [Test]
-        public void BaseDeviceInstantiatedWithSomeNullValuesWithFullConstructor_CallGetBsonDocument_ExceptionIsThrown()
+        public void DeviceInstantiatedWithSomeNullValuesWithFullConstructor_CallGetBsonDocument_ExceptionIsThrown()
         {
-            var device = new BaseDevice(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, null, null, validYearManufactured, null);
+            var device = new Device(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, null, null, validYearManufactured, null);
             device.SetLastModified(validDate, validUser);
             Assert.Throws<ArgumentNullException>(() => { device.GetBsonDocument(); });
         }
 
         [Test]
-        public void BaseDeviceInstantiatedWithSomeNullValuesWithObjectInitializer_CallGetBsonDocument_ExceptionIsThrown()
+        public void DeviceInstantiatedWithSomeNullValuesWithObjectInitializer_CallGetBsonDocument_ExceptionIsThrown()
         {
-            var device = new BaseDevice
+            var device = new Device
             {
                 Id = validObjId,
                 DeviceTypeId = validDeviceTypeId,
@@ -179,9 +179,9 @@ namespace BEIMA.Backend.MongoService.Test
         }
 
         [Test]
-        public void BaseDeviceInstantiated_PassInNullsToSetterMethods_NullValuesReplacedWithDefaultValues()
+        public void DeviceInstantiated_PassInNullsToSetterMethods_NullValuesReplacedWithDefaultValues()
         {
-            var device = new BaseDevice
+            var device = new Device
             {
                 Id = validObjId,
                 DeviceTypeId = validDeviceTypeId,

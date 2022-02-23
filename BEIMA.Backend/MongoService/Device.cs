@@ -8,9 +8,9 @@ namespace BEIMA.Backend.MongoService
     /// This class represents a Device. This object contains all the required fields necessary
     /// for a device. This is meant to be used to convert data received from an endpoint, back into a BSON object.
     /// </summary>
-    public class BaseDevice
+    public class Device
     {
-        //Properties of a BaseDevice object
+        //Properties of a Device object
         [BsonId]
         public ObjectId Id { get; set; }
 
@@ -47,7 +47,7 @@ namespace BEIMA.Backend.MongoService
         /// <summary>
         /// Empty constructor, this allows for a device to be instantiated through Object Initializers.
         /// </summary>
-        public BaseDevice()
+        public Device()
         {
             Fields = new BsonDocument();
             Location = new BsonDocument();
@@ -65,7 +65,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="serialNum">The serial number of the device.</param>
         /// <param name="yearManufactured">The year the device was manufactured.</param>
         /// <param name="notes">Notes related to the device.</param>
-        public BaseDevice(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int? yearManufactured, string notes)
+        public Device(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int? yearManufactured, string notes)
         {
             Id = id;
             DeviceTypeId = deviceTypeId;
@@ -90,23 +90,22 @@ namespace BEIMA.Backend.MongoService
         {
             if (arg == null)
             {
-                throw new ArgumentNullException($"BaseDevice - {name} is null");
+                throw new ArgumentNullException($"Device - {name} is null");
             }
 
             if (arg is BsonDocument && arg.ElementCount == 0)
             {
-                throw new ArgumentNullException($"BaseDevice - Set{name} has not been called yet!");
+                throw new ArgumentNullException($"Device - Set{name} has not been called yet!");
             }
         }
 
         /// <summary>
-        /// Gets a BsonDocument that represents the current state of the BaseDevice object.
+        /// Gets a BsonDocument that represents the current state of the Device object.
         /// </summary>
-        /// <returns>BsonDocument that represents the current state of the BaseDevice object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
+        /// <returns>BsonDocument that represents the current state of the Device object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-
             CheckNullArgument(DeviceTag, nameof(DeviceTag));
             CheckNullArgument(Manufacturer, nameof(Manufacturer));
             CheckNullArgument(ModelNum, nameof(ModelNum));
@@ -130,7 +129,7 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Sets all of the fields in the "location" object of the BaseDevice.
+        /// Sets all of the fields in the "location" object of the Device.
         /// </summary>
         /// <param name="buildingId">ObjectId of the Building document this device is related to.</param>
         /// <param name="notes">Notes related to the location of the device.</param>
@@ -150,7 +149,7 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Sets all of the fields in the "lastModified" object of the BaseDevice.
+        /// Sets all of the fields in the "lastModified" object of the Device.
         /// </summary>
         /// <param name="date">Date of when the Device was last modified.</param>
         /// <param name="user">Username of the user who last modified the Device.</param>
