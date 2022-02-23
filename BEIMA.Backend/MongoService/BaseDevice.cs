@@ -85,7 +85,7 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="arg">The Property being null checked.</param>
         /// <param name="name">The name of the Property, to be returned in the exception message.</param>
-        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentNullException">Throws an exception when the passed in argument is null.</exception>
         private void CheckNullArgument(dynamic arg, string name = "")
         {
             if (arg == null)
