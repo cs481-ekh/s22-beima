@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace BEIMA.Backend.Test
 {
     [TestFixture]
-    public class DeviceTest : UnitTestBase
+    public class GetDeviceTest : UnitTestBase
     {
 
         #region FailureTests
@@ -30,12 +30,11 @@ namespace BEIMA.Backend.Test
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Set up the http request.
-            var request = RequestFactory.CreateHttpRequest("id", testGuid);
-            request.Method = "get";
-            var logger = new LoggerFactory();
+            var request = RequestFactory.CreateHttpRequest("GET");
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = await Device.Run(request, logger.CreateLogger("Testing"));
+            var response = await GetDevice.Run(request, testGuid, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
@@ -57,12 +56,11 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var request = RequestFactory.CreateHttpRequest("id", id);
-            request.Method = "get";
-            var logger = new LoggerFactory();
+            var request = RequestFactory.CreateHttpRequest("GET");
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = await Device.Run(request, logger.CreateLogger("Testing"));
+            var response = await GetDevice.Run(request, id, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
@@ -85,19 +83,18 @@ namespace BEIMA.Backend.Test
             var dictionary = new Dictionary<string, object>()
             {
                 //TODO: add more properties
-                ["serialNumber"] = "1234"
+                ["serialNum"] = "1234"
             };
             mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testGuid))))
                   .Returns(new BsonDocument(dictionary))
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var request = RequestFactory.CreateHttpRequest("id", testGuid);
-            request.Method = "get";
-            var logger = new LoggerFactory();
+            var request = RequestFactory.CreateHttpRequest("GET");
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = await Device.Run(request, logger.CreateLogger("Testing"));
+            var response = await GetDevice.Run(request, testGuid, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
@@ -105,7 +102,7 @@ namespace BEIMA.Backend.Test
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             var device = ((OkObjectResult)response).Value.ToBsonDocument();
-            Assert.That(device["serialNumber"].AsString, Is.EqualTo("1234"));
+            Assert.That(device["serialNum"].AsString, Is.EqualTo("1234"));
         }
 
         #endregion SuccessTests

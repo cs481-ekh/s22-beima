@@ -13,7 +13,7 @@ namespace BEIMA.Backend.FT
         public void InvalidId_DeviceGet_ReturnsInvalidId(string id)
         {
             var ex = Assert.ThrowsAsync<HttpRequestException>(async () =>
-                await TestClient.SendRequest("api/device", HttpVerb.GET, queryString: $"id={id}")
+                await TestClient.SendRequest($"api/device/${id}", HttpVerb.GET)
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -23,7 +23,7 @@ namespace BEIMA.Backend.FT
         public void NoDevicesInDatabase_DeviceGet_ReturnsNotFound()
         {
             var ex = Assert.ThrowsAsync<HttpRequestException>(async () =>
-                await TestClient.SendRequest("api/device", HttpVerb.GET, queryString: "id=1234567890abcdef12345678")
+                await TestClient.SendRequest("api/device/1234567890abcdef12345678", HttpVerb.GET)
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
