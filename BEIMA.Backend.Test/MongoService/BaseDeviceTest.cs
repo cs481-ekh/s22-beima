@@ -36,6 +36,12 @@ namespace BEIMA.Backend.MongoService.Test
         public void BaseDeviceNotInstantiated_InstantiateUsingFullConstructor_BaseDeviceInstantiatedWithCorrectValues()
         {
             var device = new BaseDevice(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, validModelNum, validSerialNum, validYearManufactured, validNotes);
+            device.SetLastModified(validDate, validUser);
+            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
+            device.AddField(validKey1, validValue1);
+            device.AddField(validKey2, validValue2);
+            device.AddField(validKey3, validValue3);
+
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
             Assert.That(device.DeviceTag, Is.EqualTo(validDeviceTag));
@@ -44,22 +50,17 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.SerialNum, Is.EqualTo(validSerialNum));
             Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
             Assert.That(device.Notes, Is.EqualTo(validNotes));
-
-            device.SetLastModified(validDate, validUser);
+            
             var lastModified = device.LastModified;
             Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
             Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
-
-            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
+            
             var location = device.Location;
             Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
             Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
             Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(validLatitude));
             Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(validLongitude));
 
-            device.AddField(validKey1, validValue1);
-            device.AddField(validKey2, validValue2);
-            device.AddField(validKey3, validValue3);
             var fields = device.Fields;
             Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
             Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
@@ -80,6 +81,12 @@ namespace BEIMA.Backend.MongoService.Test
                 YearManufactured = validYearManufactured,
                 Notes = validNotes
             };
+            device.SetLastModified(validDate, validUser);
+            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
+            device.AddField(validKey1, validValue1);
+            device.AddField(validKey2, validValue2);
+            device.AddField(validKey3, validValue3);
+
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
             Assert.That(device.DeviceTag, Is.EqualTo(validDeviceTag));
@@ -89,21 +96,16 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
             Assert.That(device.Notes, Is.EqualTo(validNotes));
 
-            device.SetLastModified(validDate, validUser);
             var lastModified = device.LastModified;
             Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
             Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
 
-            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
             var location = device.Location;
             Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
             Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
             Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(validLatitude));
             Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(validLongitude));
 
-            device.AddField(validKey1, validValue1);
-            device.AddField(validKey2, validValue2);
-            device.AddField(validKey3, validValue3);
             var fields = device.Fields;
             Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
             Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
@@ -190,13 +192,13 @@ namespace BEIMA.Backend.MongoService.Test
                 YearManufactured = validYearManufactured,
                 Notes = validNotes
             };
-
             device.SetLastModified(null, null);
+            device.SetLocation(validBuildingId, null, null, null);
+
             var lastModified = device.LastModified;
             Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(DateTime.UtcNow).Within(10).Seconds);
             Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(string.Empty));
-
-            device.SetLocation(validBuildingId, null, null, null);
+            
             var location = device.Location;
             Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
             Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(string.Empty));
