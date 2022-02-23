@@ -1,0 +1,209 @@
+﻿using System;
+using MongoDB.Bson;
+using NUnit.Framework;
+
+namespace BEIMA.Backend.MongoService.Test
+{
+    [TestFixture]
+    public class DeviceTest
+    {
+        //Instance variables
+        readonly ObjectId validObjId = ObjectId.GenerateNewId();
+        readonly ObjectId validDeviceTypeId = ObjectId.GenerateNewId();
+        readonly string validDeviceTag = "DeviceTag123";
+        readonly string validManufacturer = "BSU";
+        readonly string validModelNum = "ABC-123";
+        readonly string validSerialNum = "ABCDEFG123456";
+        readonly int validYearManufactured = 2022;
+        readonly string validNotes = "Example of notes.";
+
+        readonly DateTime validDate = DateTime.Now.ToUniversalTime();
+        readonly string validUser = "User1";
+
+        readonly ObjectId validBuildingId = ObjectId.GenerateNewId();
+        readonly string validLocationNotes = "Example of location notes.";
+        readonly string validLatitude = "-000.21.21";
+        readonly string validLongitude = "-323.32.32";
+
+        readonly string validKey1 = "key1";
+        readonly string validKey2 = "key2";
+        readonly string validKey3 = "key3";
+        readonly string validValue1 = "value1";
+        readonly bool validValue2 = true;
+        readonly int validValue3 = 123;
+
+        [Test]
+        public void DeviceNotInstantiated_InstantiateUsingFullConstructor_DeviceInstantiatedWithCorrectValues()
+        {
+            var device = new Device(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, validModelNum, validSerialNum, validYearManufactured, validNotes);
+            device.SetLastModified(validDate, validUser);
+            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
+            device.AddField(validKey1, validValue1);
+            device.AddField(validKey2, validValue2);
+            device.AddField(validKey3, validValue3);
+
+            Assert.That(device.Id, Is.EqualTo(validObjId));
+            Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
+            Assert.That(device.DeviceTag, Is.EqualTo(validDeviceTag));
+            Assert.That(device.Manufacturer, Is.EqualTo(validManufacturer));
+            Assert.That(device.ModelNum, Is.EqualTo(validModelNum));
+            Assert.That(device.SerialNum, Is.EqualTo(validSerialNum));
+            Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
+            Assert.That(device.Notes, Is.EqualTo(validNotes));
+
+            var lastModified = device.LastModified;
+            Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
+            Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
+
+            var location = device.Location;
+            Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
+            Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
+            Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(validLatitude));
+            Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(validLongitude));
+
+            var fields = device.Fields;
+            Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
+            Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
+            Assert.That((int)fields.GetElement(validKey3).Value, Is.EqualTo(validValue3));
+        }
+
+        [Test]
+        public void DeviceNotInstantiated_InstantiateUsingObjectInitializer_DeviceInstantiatedWithCorrectValues()
+        {
+            var device = new Device
+            {
+                Id = validObjId,
+                DeviceTypeId = validDeviceTypeId,
+                DeviceTag = validDeviceTag,
+                Manufacturer = validManufacturer,
+                ModelNum = validModelNum,
+                SerialNum = validSerialNum,
+                YearManufactured = validYearManufactured,
+                Notes = validNotes
+            };
+            device.SetLastModified(validDate, validUser);
+            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
+            device.AddField(validKey1, validValue1);
+            device.AddField(validKey2, validValue2);
+            device.AddField(validKey3, validValue3);
+
+            Assert.That(device.Id, Is.EqualTo(validObjId));
+            Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
+            Assert.That(device.DeviceTag, Is.EqualTo(validDeviceTag));
+            Assert.That(device.Manufacturer, Is.EqualTo(validManufacturer));
+            Assert.That(device.ModelNum, Is.EqualTo(validModelNum));
+            Assert.That(device.SerialNum, Is.EqualTo(validSerialNum));
+            Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
+            Assert.That(device.Notes, Is.EqualTo(validNotes));
+
+            var lastModified = device.LastModified;
+            Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
+            Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
+
+            var location = device.Location;
+            Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
+            Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
+            Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(validLatitude));
+            Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(validLongitude));
+
+            var fields = device.Fields;
+            Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
+            Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
+            Assert.That((int)fields.GetElement(validKey3).Value, Is.EqualTo(validValue3));
+        }
+
+        [Test]
+        public void DeviceNotInstantiated_InstantiateUsingObjectInitializerWithAllNullStringValues_GetBsonDocumentThrowsException()
+        {
+            var device = new Device
+            {
+                Id = validObjId,
+                DeviceTypeId = validDeviceTypeId,
+                DeviceTag = null,
+                Manufacturer = null,
+                ModelNum = null,
+                SerialNum = null,
+                YearManufactured = null,
+                Notes = null
+            };
+            Assert.That(device.Id, Is.EqualTo(validObjId));
+            Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
+            Assert.That(device.DeviceTag, Is.Null);
+            Assert.That(device.Manufacturer, Is.Null);
+            Assert.That(device.ModelNum, Is.Null);
+            Assert.That(device.SerialNum, Is.Null);
+            Assert.That(device.YearManufactured, Is.Null);
+            Assert.That(device.Notes, Is.Null);
+
+            Assert.Throws<ArgumentNullException>(() => { device.GetBsonDocument(); });
+        }
+
+        [Test]
+        public void DeviceNotInstantiated_InstantiateUsingFullConstructorWithAllNullStringValues_ValuesAreReplacedWithEmptyStrings()
+        {
+            var device = new Device(validObjId, validDeviceTypeId, null, null, null, null, null, null);
+            Assert.That(device.Id, Is.EqualTo(validObjId));
+            Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
+            Assert.That(device.DeviceTag, Is.EqualTo(string.Empty));
+            Assert.That(device.Manufacturer, Is.EqualTo(string.Empty));
+            Assert.That(device.ModelNum, Is.EqualTo(string.Empty));
+            Assert.That(device.SerialNum, Is.EqualTo(string.Empty));
+            Assert.That(device.YearManufactured, Is.EqualTo(-1));
+            Assert.That(device.Notes, Is.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public void DeviceInstantiatedWithSomeNullValuesWithFullConstructor_CallGetBsonDocument_ExceptionIsThrown()
+        {
+            var device = new Device(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, null, null, validYearManufactured, null);
+            device.SetLastModified(validDate, validUser);
+            Assert.Throws<ArgumentNullException>(() => { device.GetBsonDocument(); });
+        }
+
+        [Test]
+        public void DeviceInstantiatedWithSomeNullValuesWithObjectInitializer_CallGetBsonDocument_ExceptionIsThrown()
+        {
+            var device = new Device
+            {
+                Id = validObjId,
+                DeviceTypeId = validDeviceTypeId,
+                DeviceTag = validDeviceTag,
+                Manufacturer = null,
+                ModelNum = null,
+                SerialNum = validSerialNum,
+                YearManufactured = validYearManufactured,
+                Notes = null
+            };
+            device.SetLocation(validBuildingId, validLocationNotes, validLatitude, validLongitude);
+            Assert.Throws<ArgumentNullException>(() => { device.GetBsonDocument(); });
+        }
+
+        [Test]
+        public void DeviceInstantiated_PassInNullsToSetterMethods_NullValuesReplacedWithDefaultValues()
+        {
+            var device = new Device
+            {
+                Id = validObjId,
+                DeviceTypeId = validDeviceTypeId,
+                DeviceTag = validDeviceTag,
+                Manufacturer = validManufacturer,
+                ModelNum = validModelNum,
+                SerialNum = validSerialNum,
+                YearManufactured = validYearManufactured,
+                Notes = validNotes
+            };
+            device.SetLastModified(null, null);
+            device.SetLocation(validBuildingId, null, null, null);
+
+            var lastModified = device.LastModified;
+            Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(DateTime.UtcNow).Within(10).Seconds);
+            Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(string.Empty));
+
+            var location = device.Location;
+            Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
+            Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(string.Empty));
+            Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(string.Empty));
+            Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(string.Empty));
+        }
+    }
+}
