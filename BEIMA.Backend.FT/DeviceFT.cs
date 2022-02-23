@@ -13,7 +13,7 @@ namespace BEIMA.Backend.FT
         public void InvalidId_DeviceGet_ReturnsInvalidId(string id)
         {
             var ex = Assert.ThrowsAsync<HttpRequestException>(async () =>
-                await TestClient.SendRequest($"api/device/${id}", HttpVerb.GET)
+                await TestClient.SendRequest($"api/device/{id}", HttpVerb.GET)
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
