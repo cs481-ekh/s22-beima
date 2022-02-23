@@ -25,7 +25,7 @@ namespace BEIMA.Backend
         /// <returns>An http response containing the device information.</returns>
         [FunctionName("GetDevice")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "device/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device/{id}")] HttpRequest req,
             string id,
             ILogger log)
         {
