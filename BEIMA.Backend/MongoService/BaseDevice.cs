@@ -82,44 +82,42 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
+        /// Internal method to check if a particular property of this class is null
+        /// </summary>
+        /// <param name="arg">The Property being null checked.</param>
+        /// <param name="name">The name of the Property, to be returned in the exception message.</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        private void CheckNullArgument(dynamic arg, string name = "")
+        {
+            if(arg == null)
+            {
+                Console.WriteLine($"BaseDevice - {name} is null");
+                throw new ArgumentNullException($"BaseDevice - {name} is null");
+            }
+
+            if(arg is BsonDocument && arg.ElementCount == 0)
+            {
+                Console.WriteLine($"BaseDevice - Set{name} has not been called yet!");
+                throw new ArgumentNullException($"BaseDevice - Set{name} has not been called yet!");
+            }
+        }
+
+        /// <summary>
         /// Gets a BsonDocument that represents the current state of the BaseDevice object.
         /// </summary>
         /// <returns>BsonDocument that represents the current state of the BaseDevice object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-            if (DeviceTag == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {nameof(DeviceTag)} is null");
-            }
 
-            if (Manufacturer == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {nameof(Manufacturer)} is null");
-            }
+            CheckNullArgument(DeviceTag, nameof(DeviceTag));
+            CheckNullArgument(Manufacturer, nameof(Manufacturer));
+            CheckNullArgument(ModelNum, nameof(ModelNum));
+            CheckNullArgument(SerialNum, nameof(SerialNum));
+            CheckNullArgument(Notes, nameof(Notes));
+            CheckNullArgument(Location, nameof(Location));
+            CheckNullArgument(LastModified, nameof(LastModified));
 
-            if (ModelNum == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {nameof(ModelNum)} is null");
-            }
-
-            if (SerialNum == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {nameof(SerialNum)} is null");
-            }
-
-            if (Notes == null)
-            {
-                throw new ArgumentNullException($"BaseDevice - {nameof(Notes)} is null");
-            }
-            if (Location.ElementCount == 0)
-            {
-                throw new ArgumentNullException("BaseDevice - SetLocation has not been called yet!");
-            }
-            if (LastModified.ElementCount == 0)
-            {
-                throw new ArgumentNullException("BaseDevice - SetLastModified has not been called yet!");
-            }
             return this.ToBsonDocument();
         }
 
