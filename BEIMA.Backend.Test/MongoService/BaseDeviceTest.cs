@@ -123,7 +123,7 @@ namespace BEIMA.Backend.MongoService.Test
                 Manufacturer = null,
                 ModelNum = null,
                 SerialNum = null,
-                YearManufactured = validYearManufactured,
+                YearManufactured = null,
                 Notes = null
             };
             Assert.That(device.Id, Is.EqualTo(validObjId));
@@ -132,7 +132,7 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.Manufacturer, Is.Null);
             Assert.That(device.ModelNum, Is.Null);
             Assert.That(device.SerialNum, Is.Null);
-            Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
+            Assert.That(device.YearManufactured, Is.Null);
             Assert.That(device.Notes, Is.Null);
 
             Assert.Throws<ArgumentNullException>(() => { device.GetBsonDocument(); });
@@ -141,14 +141,14 @@ namespace BEIMA.Backend.MongoService.Test
         [Test]
         public void BaseDeviceNotInstantiated_InstantiateUsingFullConstructorWithAllNullStringValues_ValuesAreReplacedWithEmptyStrings()
         {
-            var device = new BaseDevice(validObjId, validDeviceTypeId, null, null, null, null, validYearManufactured, null);
+            var device = new BaseDevice(validObjId, validDeviceTypeId, null, null, null, null, null, null);
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
             Assert.That(device.DeviceTag, Is.EqualTo(string.Empty));
             Assert.That(device.Manufacturer, Is.EqualTo(string.Empty));
             Assert.That(device.ModelNum, Is.EqualTo(string.Empty));
             Assert.That(device.SerialNum, Is.EqualTo(string.Empty));
-            Assert.That(device.YearManufactured, Is.EqualTo(validYearManufactured));
+            Assert.That(device.YearManufactured, Is.Null);
             Assert.That(device.Notes, Is.EqualTo(string.Empty));
         }
 

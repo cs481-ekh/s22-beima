@@ -30,7 +30,7 @@ namespace BEIMA.Backend.MongoService
         public string SerialNum { get; set; }
 
         [BsonElement("yearManufactured")]
-        public int YearManufactured { get; set; }
+        public int? YearManufactured { get; set; }
 
         [BsonElement("notes")]
         public string Notes { get; set; }
@@ -65,7 +65,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="serialNum">The serial number of the device.</param>
         /// <param name="yearManufactured">The year the device was manufactured.</param>
         /// <param name="notes">Notes related to the device.</param>
-        public BaseDevice(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int yearManufactured, string notes)
+        public BaseDevice(ObjectId id, ObjectId deviceTypeId, string deviceTag, string manufacturer, string modelNum, string serialNum, int? yearManufactured, string notes)
         {
 
             Id = id;
@@ -74,7 +74,7 @@ namespace BEIMA.Backend.MongoService
             Manufacturer = manufacturer ?? string.Empty;
             ModelNum = modelNum ?? string.Empty;
             SerialNum = serialNum ?? string.Empty;
-            YearManufactured = yearManufactured;
+            YearManufactured = yearManufactured ?? -1;
             Notes = notes ?? string.Empty;
             Fields = new BsonDocument();
             Location = new BsonDocument();
@@ -91,13 +91,11 @@ namespace BEIMA.Backend.MongoService
         {
             if(arg == null)
             {
-                Console.WriteLine($"BaseDevice - {name} is null");
                 throw new ArgumentNullException($"BaseDevice - {name} is null");
             }
 
             if(arg is BsonDocument && arg.ElementCount == 0)
             {
-                Console.WriteLine($"BaseDevice - Set{name} has not been called yet!");
                 throw new ArgumentNullException($"BaseDevice - Set{name} has not been called yet!");
             }
         }
@@ -114,6 +112,7 @@ namespace BEIMA.Backend.MongoService
             CheckNullArgument(Manufacturer, nameof(Manufacturer));
             CheckNullArgument(ModelNum, nameof(ModelNum));
             CheckNullArgument(SerialNum, nameof(SerialNum));
+            CheckNullArgument(YearManufactured, nameof(YearManufactured));
             CheckNullArgument(Notes, nameof(Notes));
             CheckNullArgument(Location, nameof(Location));
             CheckNullArgument(LastModified, nameof(LastModified));
