@@ -1,5 +1,6 @@
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from "react"
+import AddDeviceTypeCard from '../../shared/AddDeviceTypeCard/AddDeviceTypeCard';
 
 const AddDeviceTypePage = () => {
   const [setPageName] = useOutletContext();
@@ -9,7 +10,9 @@ const AddDeviceTypePage = () => {
   },[])
 
   return (
-    <div>Add Device Type Page</div>
+    <div>
+      <AddDeviceTypeCard/>
+    </div>
   )
 }
 

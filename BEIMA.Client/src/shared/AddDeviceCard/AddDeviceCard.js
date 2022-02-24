@@ -1,7 +1,7 @@
 import { Placeholder, Form, Card, Button, Dropdown } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from "react";
 import {useDropzone} from 'react-dropzone';
-import styles from './AddItemCard.module.css';
+import styles from './AddDeviceCard.module.css';
 
 const defaultDeviceFields = {
   "Building": "",
@@ -68,14 +68,14 @@ const FieldForm = ({fields}) => {
         )}
         <br/>
         <Button variant="primary" type="submit" className={styles.button}>
-          Save Device
+          Add Device
         </Button>
       </Form> 
     </div>
   )
 }
 
-const AddItemCard = () => {
+const AddDeviceCard = () => {
   const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
   const [deviceImage, setDeviceImage] = useState(defaultDeviceImage);
   const [deviceDocs, setDeviceDocs] = useState(defaultAdditionalDocs);
@@ -86,7 +86,7 @@ const AddItemCard = () => {
         <Card.Body>
           <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" className={styles.button}>
-              Select Device Type
+              Select Device Type 
             </Dropdown.Toggle>
             <Dropdown.Menu>
               <Dropdown.Item href="#/action-1">Default Device Type</Dropdown.Item>
@@ -105,4 +105,4 @@ const AddItemCard = () => {
     
   )
 }
-export default AddItemCard
+export default AddDeviceCard

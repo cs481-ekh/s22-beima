@@ -1,7 +1,7 @@
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from "react"
 import {  } from 'react-bootstrap';
-import AddItemCard from "../../shared/AddItemCard/AddItemCard";
+import AddDeviceCard from "../../shared/AddDeviceCard/AddDeviceCard";
 import styles from './AddDevicePage.module.css';
 
 const AddDevicePage = () => {
@@ -13,7 +13,7 @@ const AddDevicePage = () => {
 
   return (
     <div className={styles.fieldform}>
-      <AddItemCard />
+      <AddDeviceCard />
     </div>
   )
 }
