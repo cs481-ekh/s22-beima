@@ -1,9 +1,7 @@
 import { Placeholder, Form, Card, Button } from 'react-bootstrap';
-import { useEffect, useState } from "react";
-import Dropzone, {useDropzone} from 'react-dropzone';
+import { useCallback, useEffect, useState } from "react";
+import {useDropzone} from 'react-dropzone';
 import styles from './AddItemCard.module.css';
-
-const fileTypes = ["JPG", "PNG"];
 
 const defaultDeviceFields = {
   "Building": "",
@@ -17,7 +15,9 @@ const defaultDeviceFields = {
   "Year Manufactured": "",
   "Notes": ""
 }
-const devicePhoto = [];
+const defaultDeviceImage = [];
+
+const defaultAdditonalDocs = [];
 
 const LoadingContent = () => {
   return (
@@ -25,6 +25,35 @@ const LoadingContent = () => {
       <Placeholder xs={12} size="sm" bg="secondary" />
     </Placeholder>
   )
+}
+
+const ImageFileUpload = ({type, details, multiple, acceptTypes}) => {
+  const {acceptedFiles, getRootProps, getInputProps} = useDropzone({
+    accept: acceptTypes,
+    multiple: multiple,
+    noDrag: true
+  });
+
+  const fileList = acceptedFiles.map(file => (
+      <li key={file.name}>
+        {file.name}
+      </li>
+  ));
+
+  return (
+    <div>
+      <section className={styles.fileupload}>
+        <div {...getRootProps({className: 'dropzone'})}>
+          <input {...getInputProps()} />
+          <div>Click to select {type} {details}</div>
+        </div>
+      </section>
+      <aside>
+        <h6>{type} Uploaded:</h6>
+        <ul>{fileList}</ul>
+      </aside>
+    </div>
+  );
 }
 
 const FieldForm = ({fields}) => {
@@ -48,39 +77,20 @@ const FieldForm = ({fields}) => {
 
 const AddItemCard = () => {
   const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
+  const [deviceImage, setDeviceImage] = useState(defaultDeviceImage);
+  const [deviceDocs, setDeviceDocs] = useState(defaultAdditonalDocs);
 
   return (
     <Card>
       <Card.Body>
-      <h4>Device Image</h4>
-        <Dropzone onDrop={fileTypes => console.log(fileTypes)}>
-          {({getRootProps, getInputProps}) => (
-            <section>
-              <div {...getRootProps()} className={styles.fileupload}>
-                <input {...getInputProps()} />
-                <div>Drag 'n' drop device image here, or click to select device image</div>
-              </div>
-            </section>
-          )}
-        </Dropzone>
-        <br/>
-        <h4>Additonal Documents</h4>
-        <Dropzone onDrop={fileTypes => console.log(fileTypes)}>
-          {({getRootProps, getInputProps}) => (
-            <section>
-              <div {...getRootProps()} className={styles.fileupload}>
-                <input {...getInputProps()} />
-                <div>Drag 'n' drop additional documents here, or click to select additional documents</div>
-              </div>
-            </section>
-          )}
-        </Dropzone>
-        <br/>
+        <h4>Device Image</h4>
+        <ImageFileUpload type="Device Image" details="(Only .png and .jpeg files accepted)" multiple={false} acceptTypes='image/png,image/jpeg'/>
+        <h4>Additional Documents</h4>
+        <ImageFileUpload type="Additional Documents" multiple={true}/>
         <h4>Fields</h4>
         <FieldForm fields={Object.keys(deviceFields)}/>
       </Card.Body>
     </Card>
   )
 }
-
 export default AddItemCard
