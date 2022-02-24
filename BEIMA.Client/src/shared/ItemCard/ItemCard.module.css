@@ -1,8 +1,12 @@
-.cardheader {
+.cardtitle {
   display: flex;
-  align-items: center;
   gap:10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
+
+
 
 .back {
   background-color: #d64309;
@@ -10,3 +14,11 @@
   border-radius: 5px;
   padding: 5px 15px;
 }
+
+.row {
+  display:flex;
+  justify-content: right;
+  gap:10px;
+  flex-direction: row;
+}
+

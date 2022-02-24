@@ -1,5 +1,5 @@
 import { Card, Placeholder, ListGroup, ListGroupItem } from "react-bootstrap"
-import { MdEditNote } from "react-icons/md";
+import { MdMoreHoriz } from "react-icons/md";
 import { IoChevronDownSharp, IoChevronForward } from "react-icons/io5";
 import { useState } from "react"
 import { useNavigate } from "react-router-dom";
@@ -34,7 +34,7 @@ const Item = ({item, RenderItem}) => {
     <div className={styles.item}>
       <div className={styles.row}> 
         <div className={styles.itemName}>{item.name}</div>
-        <MdEditNote color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/>
+        <MdMoreHoriz color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/>
       </div>
 
       <div className={styles.itemContent}>
