@@ -1,9 +1,9 @@
-.button{
+.button, .addButton{
     background-color: #D64309 !important;
     border-color: #D64309 !important;
+    margin-top: 1%;
 }
 
-.listButton {
-    justify-self: right;    
+.listButton, .addButton { 
     float: right;
 }

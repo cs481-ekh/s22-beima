@@ -67,7 +67,7 @@ const FieldForm = ({fields}) => {
           </Form.Group>
         )}
         <br/>
-        <Button variant="primary" type="submit" className={styles.button}>
+        <Button variant="primary" type="submit" className={styles.addButton}>
           Add Device
         </Button>
       </Form> 
