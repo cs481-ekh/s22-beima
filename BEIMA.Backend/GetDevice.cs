@@ -14,27 +14,27 @@ namespace BEIMA.Backend
     /// <summary>
     /// Handles requests involving a single device.
     /// </summary>
-    public static class Device
+    public static class GetDevice
     {
         /// <summary>
-        /// Handles device requests
+        /// Handles a device GET request.
         /// </summary>
         /// <param name="req">The http request.</param>
+        /// <param name="id">The id of the device.</param>
         /// <param name="log">The logger to log to.</param>
-        /// <returns>An http response correlated with the type of device request made.</returns>
-        [FunctionName("Device")]
+        /// <returns>An http response containing the device information.</returns>
+        [FunctionName("GetDevice")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device/{id}")] HttpRequest req,
+            string id,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a device request.");
+            log.LogInformation("C# HTTP trigger function processed a device get request.");
             ObjectResult response;
 
             // Process as device GET request for retrieving device information.
             if (string.Equals(req.Method, "get", StringComparison.OrdinalIgnoreCase))
             {
-                string id = req.Query["id"];
-
                 // Check if the id is valid.
                 if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
                 {
@@ -58,16 +58,9 @@ namespace BEIMA.Backend
                 response = new OkObjectResult(doc);
 
             }
-            // Process as a device POST request for creating, updating, or deleting a device.
-            else if (string.Equals(req.Method, "post", StringComparison.OrdinalIgnoreCase))
-            {
-                // TODO: implement post operation
-                response = new ObjectResult("Not Implemented.");
-                response.StatusCode = (int)HttpStatusCode.NotImplemented;
-            }
             else
             {
-                response = new BadRequestObjectResult("Expected a GET or POST request.");
+                response = new BadRequestObjectResult("Expected a GET request.");
             }
 
             return response;
