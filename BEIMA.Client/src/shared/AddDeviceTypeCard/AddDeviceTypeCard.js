@@ -1,5 +1,6 @@
 import { Placeholder, Form, Card, Button, Dropdown, ListGroup } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from "react";
+import { IoMdCloseCircle } from "react-icons/io";
 import styles from './AddDeviceTypeCard.module.css';
 
 const defaultDeviceFields = {
@@ -21,14 +22,6 @@ const typeAttributes = {
     "Notes": ""
 }
 
-const LoadingContent = () => {
-  return (
-    <Placeholder animation="wave">
-      <Placeholder xs={12} size="sm" bg="secondary" />
-    </Placeholder>
-  )
-}
-
 const TypeAttributeForm = ({attributes}) => {
   return (
     <div>
@@ -47,7 +40,12 @@ const TypeFieldList = ({fields}) => {
   return (
     <div>
       {fields.map(element =>
-        <ListGroup.Item>{element}</ListGroup.Item>
+        <div>
+          <ListGroup.Item>
+            {element}
+            <IoMdCloseCircle className={styles.listButton}></IoMdCloseCircle>
+          </ListGroup.Item>
+        </div>
       )}
       <br/>
     </div>

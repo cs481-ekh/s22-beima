@@ -1,6 +1,7 @@
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from "react"
 import AddDeviceTypeCard from '../../shared/AddDeviceTypeCard/AddDeviceTypeCard';
+import styles from './AddDeviceTypePage.module.css'
 
 const AddDeviceTypePage = () => {
   const [setPageName] = useOutletContext();
@@ -10,7 +11,7 @@ const AddDeviceTypePage = () => {
   },[])
 
   return (
-    <div>
+    <div className={styles.typeform}>
       <AddDeviceTypeCard/>
     </div>
   )
