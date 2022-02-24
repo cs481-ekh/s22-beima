@@ -1,6 +1,8 @@
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from "react"
-import FieldForm from "../../shared/AddItemCard/AddItemCard";
+import {  } from 'react-bootstrap';
+import AddItemCard from "../../shared/AddItemCard/AddItemCard";
+import styles from './AddDevicePage.module.css';
 
 const AddDevicePage = () => {
   const [setPageName] = useOutletContext();
@@ -10,8 +12,8 @@ const AddDevicePage = () => {
   },[])
 
   return (
-    <div>
-      <FieldForm/>
+    <div className={styles.fieldform}>
+      <AddItemCard />
     </div>
   )
 }
