@@ -1,4 +1,4 @@
-import { Placeholder, Form, Card, Button } from 'react-bootstrap';
+import { Placeholder, Form, Card, Button, Dropdown } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from "react";
 import {useDropzone} from 'react-dropzone';
 import styles from './AddItemCard.module.css';
@@ -17,7 +17,7 @@ const defaultDeviceFields = {
 }
 const defaultDeviceImage = [];
 
-const defaultAdditonalDocs = [];
+const defaultAdditionalDocs = [];
 
 const LoadingContent = () => {
   return (
@@ -67,7 +67,7 @@ const FieldForm = ({fields}) => {
           </Form.Group>
         )}
         <br/>
-        <Button variant="primary" type="submit">
+        <Button variant="primary" type="submit" className={styles.button}>
           Save Device
         </Button>
       </Form> 
@@ -78,19 +78,31 @@ const FieldForm = ({fields}) => {
 const AddItemCard = () => {
   const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
   const [deviceImage, setDeviceImage] = useState(defaultDeviceImage);
-  const [deviceDocs, setDeviceDocs] = useState(defaultAdditonalDocs);
+  const [deviceDocs, setDeviceDocs] = useState(defaultAdditionalDocs);
 
   return (
-    <Card>
-      <Card.Body>
-        <h4>Device Image</h4>
-        <ImageFileUpload type="Device Image" details="(Only .png and .jpeg files accepted)" multiple={false} acceptTypes='image/png,image/jpeg'/>
-        <h4>Additional Documents</h4>
-        <ImageFileUpload type="Additional Documents" multiple={true}/>
-        <h4>Fields</h4>
-        <FieldForm fields={Object.keys(deviceFields)}/>
-      </Card.Body>
-    </Card>
+    <div>
+      <Card>
+        <Card.Body>
+          <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic" className={styles.button}>
+              Select Device Type
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              <Dropdown.Item href="#/action-1">Default Device Type</Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+          <br/>
+          <h4>Device Image</h4>
+          <ImageFileUpload type="Device Image" details="(Only .png and .jpeg files accepted)" multiple={false} acceptTypes='image/png,image/jpeg'/>
+          <h4>Additional Documents</h4>
+          <ImageFileUpload type="Additional Documents" multiple={true}/>
+          <h4>Fields</h4>
+          <FieldForm fields={Object.keys(deviceFields)}/>
+        </Card.Body>
+      </Card>
+    </div>
+    
   )
 }
 export default AddItemCard
