@@ -18,7 +18,7 @@ const GetDevice = async (deviceId) => {
   const response = {
     status: dbCall.status,
     response: dbCall.data
-  
+  }
   return response;
 }
 
