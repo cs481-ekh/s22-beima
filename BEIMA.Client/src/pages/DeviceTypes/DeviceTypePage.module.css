@@ -1,3 +1,50 @@
 .item {
   margin: 10px 5% 0px 5%;
 }
+
+.row {
+  display:flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: end;
+  gap:10px;
+}
+
+.editRow {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.form {
+  border-top: 1px solid rgba(0,0,0,.125);
+  padding-top: 5px;
+}
+
+.fields {
+  display:flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap:10px;
+}
+
+.deleteButton {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.saveButton {
+  background: #d64309;
+  box-shadow: 0 1px 1px -2px rgb(0 0 0 / 20%), 0 1px 1px 0 rgb(0 0 0 / 14%), 0 1px 5px 0 rgb(0 0 0 / 12%);
+  border-radius: 5px;
+  padding: 5px 15px;
+}
+
+.between {
+  display:flex;
+  flex-direction: row;
+  align-items: center;
+  gap:10px
+  /* justify-content: space-between; */
+}
