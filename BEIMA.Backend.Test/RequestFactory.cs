@@ -26,6 +26,7 @@ namespace BEIMA.Backend.Test
         public static HttpRequest CreateHttpRequest(RequestMethod requestMethod, Dictionary<string, StringValues>? query = null, string body = "")
         {
             var reqMock = new Mock<HttpRequest>();
+            reqMock.Setup(req => req.Method).Returns(requestMethod.ToString());
 
             if (query != null)
             {
