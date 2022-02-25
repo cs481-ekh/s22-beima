@@ -1,4 +1,4 @@
-import { Placeholder, Form, Card, Button, Dropdown, ListGroup } from 'react-bootstrap';
+import { Placeholder, Form, Card, Button, Dropdown, ListGroup, InputGroup } from 'react-bootstrap';
 import { useCallback, useEffect, useState } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 import styles from './AddDeviceTypeCard.module.css';
@@ -19,14 +19,16 @@ const TypeAttributeForm = ({attributes}) => {
 
 const AddDeviceTypeCard = ({attributes, fields}) => {
   const [deviceFields, setDeviceFields] = useState(fields);
-  const [field, setField] = useState('');
+  var field;
 
   function removeField(field) {
     setDeviceFields(deviceFields.filter(item => item !== field))
   }
 
-  function addField(newField) {
-    setDeviceFields(deviceFields.push(newField));
+  function addField(newField, event) {
+    var newList = deviceFields.concat(newField);
+    setDeviceFields(newList);
+    event.target.form.elements.newField.value = "";
   }
 
   const TypeFieldList = ({fields}) => {
@@ -35,8 +37,8 @@ const AddDeviceTypeCard = ({attributes, fields}) => {
         {fields.map(element =>
           <div>
             <ListGroup.Item>
-              {element}
-              <IoMdCloseCircle className={styles.listButton} onClick={() => removeField(element)}></IoMdCloseCircle>
+                {element}
+                <IoMdCloseCircle className={styles.listButton} onClick={() => removeField(element)}></IoMdCloseCircle>
             </ListGroup.Item>
           </div>
         )}
@@ -57,12 +59,12 @@ const AddDeviceTypeCard = ({attributes, fields}) => {
             <ListGroup>
               <TypeFieldList fields={deviceFields}/>
             </ListGroup>
-            <Form onSubmit={() => addField()}>
+            <Form>
               <Form.Group controlId='newField'>
                 <Form.Label>Add Field</Form.Label>
-                <Form.Control type="text" placeholder="Enter Field Name" onChange={setField}/> 
+                <Form.Control name="newField" type="text" placeholder="Enter Field Name" value={field} onChange={(event) => {field = event.target.value}}/> 
               </Form.Group>
-              <Button variant="primary" type="button" className={styles.button} onClick={() => addField(field)}>
+              <Button variant="primary" type="button" className={styles.button} onClick={(event) => addField(field, event)}>
                 Add Field
               </Button>
             </Form>
