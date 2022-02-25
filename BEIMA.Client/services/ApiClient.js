@@ -14,14 +14,10 @@ const API_URL = process.env.REACT_APP_API_URL;
 /// <returns>JSON object containing the HTTP status code and the API response</returns>
 const GetDevice = async (deviceId) => {
   //performs the get and returns the data or error
-  const response = await axios.get(API_URL + "device/" + deviceId).then(response => { 
-      let stringdata = JSON.stringify(response.data);
-      return JSON.parse('{ "status" : "' + response.status + '", "response" : ' + JSON.stringify(response.data) + '}');
-    }).catch(function (error) {
-        if (error.response) {
-        return JSON.parse('{ "status" : "' + error.response.status + '", "response" : ' + JSON.stringify(error.response.data) + '}');
-      }
-  });
+  const dbCall = await axios.get(API_URL + "device/" + deviceId);
+  const response = {
+    status: dbCall.status,
+    response: dbCall.data
   
   return response;
 }
