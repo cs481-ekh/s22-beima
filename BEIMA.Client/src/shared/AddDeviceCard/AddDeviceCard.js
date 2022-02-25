@@ -3,18 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import {useDropzone} from 'react-dropzone';
 import styles from './AddDeviceCard.module.css';
 
-const defaultDeviceFields = {
-  "Building": "",
-  "Longitude": "",
-  "Latitude": "",
-  "Device Type": "",
-  "Device Tag": "",
-  "Manufacturer": "",
-  "Model Number": "",
-  "Serial Number": "",
-  "Year Manufactured": "",
-  "Notes": ""
-}
 const defaultDeviceImage = [];
 
 const defaultAdditionalDocs = [];
@@ -75,8 +63,8 @@ const FieldForm = ({fields}) => {
   )
 }
 
-const AddDeviceCard = () => {
-  const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
+const AddDeviceCard = ({fields}) => {
+  const [deviceFields, setDeviceFields] = useState(fields);
   const [deviceImage, setDeviceImage] = useState(defaultDeviceImage);
   const [deviceDocs, setDeviceDocs] = useState(defaultAdditionalDocs);
 

@@ -3,26 +3,6 @@ import { useCallback, useEffect, useState } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 import styles from './AddDeviceTypeCard.module.css';
 
-const defaultDeviceFields = [
-  "Building",
-  "Longitude",
-  "Latitude",
-  "Location Notes",
-  "Device Type",
-  "Device Tag",
-  "Manufacturer",
-  "Model Number",
-  "Serial Number",
-  "Year Manufactured",
-  "Device Notes"
-]
-
-const typeAttributes = {
-    "Name": "",
-    "Description": "",
-    "Device Type Notes": ""
-}
-
 const TypeAttributeForm = ({attributes}) => {
   return (
     <div>
@@ -31,15 +11,14 @@ const TypeAttributeForm = ({attributes}) => {
           <Form.Label>{element}</Form.Label>
           <Form.Control type="text" placeholder={"Enter " + element} />
         </Form.Group>
-      )}
+      )} 
       <br/>
     </div>
   )
 }
 
-
-const AddDeviceTypeCard = () => {
-  const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
+const AddDeviceTypeCard = ({attributes, fields}) => {
+  const [deviceFields, setDeviceFields] = useState(fields);
   const [field, setField] = useState('');
 
   function removeField(field) {
@@ -72,7 +51,7 @@ const AddDeviceTypeCard = () => {
         <Card.Body>
           <Form>
             <h4>Device Type Information</h4>
-            <TypeAttributeForm attributes={Object.keys(typeAttributes)}/>
+            <TypeAttributeForm attributes={Object.keys(attributes)}/>
           </Form>  
             <h5>Associated Fields</h5>
             <ListGroup>
