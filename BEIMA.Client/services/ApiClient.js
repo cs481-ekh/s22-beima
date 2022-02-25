@@ -1,0 +1,30 @@
+//pull in the vars file to get the API URL
+require('dotenv').config({ path: '../.env' })
+
+//axios package includes it's own try catch and error output functions 
+//and is declared globally so each request doesn't create its own connection
+const axios = require('axios');
+
+const API_URL = process.env.REACT_APP_API_URL;
+
+/// <summary>
+/// Gets a device with the specified ID
+/// </summary>
+/// <param name="deviceId">The device ID to retrieve from the database</param>
+/// <returns>The device with the specified ID from the DB API as a JSON OBJECT, or the error message from the API</returns>
+const GetDevice = async (deviceId) => {
+  //performs the get and returns the data or error
+  const response = await axios.get(API_URL + "device/" + deviceId).then(response => { 
+    return JSON.parse('{ "status" : "' + response.status + '", "response" : ' + JSON.stringify(response.data) + '}');
+  }).catch(function (error) {
+      if (error.response) {
+      return JSON.parse('{ "status" : "' + error.response.status + '", "response" : ' + JSON.stringify(error.response.data) + '}');
+    }
+  });
+  return response;
+}
+
+//module.exports.<Custom Name> = <Function Name>
+//OR
+//module.exports.<Function Name> = <Function Name>
+module.exports.GetDevice = GetDevice;
