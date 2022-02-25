@@ -38,7 +38,7 @@ namespace BEIMA.Backend
                 // Check if the id is valid.
                 if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
                 {
-                    response = new BadRequestObjectResult("Invalid id.");
+                    response = new BadRequestObjectResult(Resources.InvalidIdMessage);
                     return response;
                 }
 
@@ -49,13 +49,14 @@ namespace BEIMA.Backend
                 // Check that the device returned is not null.
                 if (doc is null)
                 {
-                    response = new ObjectResult("Device could not be found.");
+                    response = new ObjectResult(Resources.DeviceNotFoundMessage);
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     return response;
                 }
 
                 // Return the device.
-                response = new OkObjectResult(doc);
+                var dotNetObj = BsonTypeMapper.MapToDotNetValue(doc);
+                response = new OkObjectResult(dotNetObj);
 
             }
             else

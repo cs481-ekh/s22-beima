@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
-using NUnit.Framework;
-using System;
+using Moq;
 using System.Collections.Generic;
+using System.IO;
 
 namespace BEIMA.Backend.Test
 {
@@ -12,48 +12,36 @@ namespace BEIMA.Backend.Test
     /// </summary>
     public static class RequestFactory
     {
+        public enum RequestMethod
+        {
+            GET,
+            POST
+        }
+
         /// <summary>
         /// Builds a generic http request from the given request method.
         /// </summary>
         /// <param name="requestMethod">The http request method (GET or POST)</param>
         /// <returns>A new http request object.</returns>
-        public static HttpRequest CreateHttpRequest(string requestMethod)
+        public static HttpRequest CreateHttpRequest(RequestMethod requestMethod, Dictionary<string, StringValues>? query = null, string body = "")
         {
-            Assume.That(requestMethod, Is.EqualTo("GET").Or.EqualTo("POST").IgnoreCase);
+            var reqMock = new Mock<HttpRequest>();
 
-            var context = new DefaultHttpContext();
-            var request = context.Request;
-            request.Method = requestMethod;
-            return request;
-        }
-
-        /// <summary>
-        /// Builds an http request object from the given parameters.
-        /// </summary>
-        /// <param name="queryStringKey">Query string key.</param>
-        /// <param name="queryStringValue">Query string value associated with the key.</param>
-        /// <returns>A new http request object.</returns>
-        public static HttpRequest CreateHttpRequest(string queryStringKey, string queryStringValue)
-        {
-            var context = new DefaultHttpContext();
-            var request = context.Request;
-            request.Query = new QueryCollection(CreateDictionary(queryStringKey, queryStringValue));
-            return request;
-        }
-
-        /// <summary>
-        /// Builds a dictionary to store the query string key and value.
-        /// </summary>
-        /// <param name="key">Query string key.</param>
-        /// <param name="value">Query string value.</param>
-        /// <returns>Dictionary holding query string parameters.</returns>
-        private static Dictionary<string, StringValues> CreateDictionary(string key, string value)
-        {
-            var qs = new Dictionary<string, StringValues>
+            if (query != null)
             {
-                { key, value }
-            };
-            return qs;
+                reqMock.Setup(req => req.Query).Returns(new QueryCollection(query));
+            }
+
+            if (requestMethod == RequestMethod.POST && !string.IsNullOrEmpty(body))
+            {
+                var stream = new MemoryStream();
+                var writer = new StreamWriter(stream);
+                writer.Write(body);
+                writer.Flush();
+                stream.Position = 0;
+                reqMock.Setup(req => req.Body).Returns(stream);
+            }
+            return reqMock.Object;
         }
     }
 }

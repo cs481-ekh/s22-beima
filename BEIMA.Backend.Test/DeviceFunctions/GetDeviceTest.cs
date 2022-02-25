@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test
 {
@@ -30,7 +31,7 @@ namespace BEIMA.Backend.Test
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Set up the http request.
-            var request = RequestFactory.CreateHttpRequest("GET");
+            var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -56,7 +57,7 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var request = RequestFactory.CreateHttpRequest("GET");
+            var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -90,7 +91,7 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var request = RequestFactory.CreateHttpRequest("GET");
+            var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
