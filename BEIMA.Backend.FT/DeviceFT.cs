@@ -62,12 +62,16 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice, Is.Not.Null);
             Assert.That(getDevice.DeviceTag, Is.EqualTo(device.DeviceTag));
             Assert.That(getDevice.DeviceTypeId, Is.EqualTo(device.DeviceTypeId));
-            Assert.That(getDevice.Location, Is.EqualTo(device.Location));
             Assert.That(getDevice.Manufacturer, Is.EqualTo(device.Manufacturer));
             Assert.That(getDevice.ModelNum, Is.EqualTo(device.ModelNum));
             Assert.That(getDevice.Notes, Is.EqualTo(device.Notes));
             Assert.That(getDevice.SerialNum, Is.EqualTo(device.SerialNum));
             Assert.That(getDevice.YearManufactured, Is.EqualTo(device.YearManufactured));
+
+            Assert.That(getDevice.Location?.BuildingId, Is.EqualTo(device.Location.BuildingId));
+            Assert.That(getDevice.Location?.Notes, Is.EqualTo(device.Location.Notes));
+            Assert.That(getDevice.Location?.Longitude, Is.EqualTo(device.Location.Longitude));
+            Assert.That(getDevice.Location?.Latitude, Is.EqualTo(device.Location.Latitude));
         }
     }
 }
