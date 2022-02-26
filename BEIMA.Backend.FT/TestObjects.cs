@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.FT
 {
@@ -14,6 +16,12 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "deviceTypeId")]
             public string? DeviceTypeId { get; set; }
+
+            [JsonProperty(PropertyName = "fields")]
+            public Dictionary<string, object>? Fields;
+
+            [JsonProperty(PropertyName = "lastModified")]
+            public LastModified? LastModified { get; set; }
 
             [JsonProperty(PropertyName = "location")]
             public Location? Location { get; set; }
@@ -32,6 +40,15 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "yearManufactured")]
             public int? YearManufactured { get; set; }
+        }
+
+        public class LastModified
+        {
+            [JsonProperty(PropertyName = "date")]
+            public DateTime? Date { get; set; }
+
+            [JsonProperty(PropertyName = "user")]
+            public string? User { get; set; }
         }
 
         public class Location

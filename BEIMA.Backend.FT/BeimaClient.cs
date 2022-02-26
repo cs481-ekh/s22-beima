@@ -24,15 +24,6 @@ namespace BEIMA.Backend.FT
         }
     }
 
-    public class NameValueObject
-    {
-        [JsonProperty(PropertyName = "name")]
-        public string? Name { get; set; }
-
-        [JsonProperty(PropertyName = "value")]
-        public object? Value { get; set; }
-    }
-
     /// <summary>
     /// Class that helps to manage an http client to the backend API.
     /// </summary>
@@ -124,17 +115,6 @@ namespace BEIMA.Backend.FT
             }
 
             return response;
-        }
-
-        /// <summary>
-        /// Convert response content into C# object.
-        /// </summary>
-        /// <param name="response">The given http response message.</param>
-        /// <returns>The response content in the form of a C# object.</returns>
-        public async Task<object> ExtractObject(HttpResponseMessage response)
-        {
-            string content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject(content);
         }
 
         /// <summary>

@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace BEIMA.Backend
 {
     /// <summary>
-    /// Handles requests involving a single device.
+    /// Handles GET requests involving a single device.
     /// </summary>
     public static class GetDevice
     {

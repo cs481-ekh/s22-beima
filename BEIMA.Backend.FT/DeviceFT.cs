@@ -68,6 +68,9 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.SerialNum, Is.EqualTo(device.SerialNum));
             Assert.That(getDevice.YearManufactured, Is.EqualTo(device.YearManufactured));
 
+            Assert.That(getDevice.LastModified?.Date, Is.Not.Null);
+            Assert.That(getDevice.LastModified?.User, Is.EqualTo("Anonymous"));
+
             Assert.That(getDevice.Location?.BuildingId, Is.EqualTo(device.Location.BuildingId));
             Assert.That(getDevice.Location?.Notes, Is.EqualTo(device.Location.Notes));
             Assert.That(getDevice.Location?.Longitude, Is.EqualTo(device.Location.Longitude));

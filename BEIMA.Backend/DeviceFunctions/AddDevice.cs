@@ -13,6 +13,9 @@ using System.Threading.Tasks;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
+    /// <summary>
+    /// Handles a request to add a single device.
+    /// </summary>
     public static class AddDevice
     {
         /// <summary>
