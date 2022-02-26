@@ -160,5 +160,121 @@ namespace BEIMA.Backend.Test.MongoService
             var result = mongo.IsConnected();
             Assert.IsTrue(result);
         }
+
+        //DeviceType tests
+
+        [Test]
+        public void ConnectorCreated_GetDeviceTypeGivenValidDeviceTypeId_DeviceDocumentReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            var doc = new BsonDocument {
+                { "name", "TestDeviceType"},
+                { "description", "This is a test" }
+            };
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Test (retrieve the document)
+            var retrievedDoc = mongo.GetDeviceType((ObjectId)doc["_id"]);
+            Assert.IsNotNull(retrievedDoc);
+            Assert.That(retrievedDoc, Is.TypeOf(typeof(BsonDocument)));
+        }
+
+        [Test]
+        public void ConnectorCreated_GetAllDeviceTypes_DeviceDocumentListReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            var doc = new BsonDocument {
+                { "name", "TestDeviceType"},
+                { "description", "This is a test" }
+            };
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Test (retrieve all documents)
+            var retrievedDocs = mongo.GetAllDeviceTypes();
+            Assert.IsNotNull(retrievedDocs);
+            Assert.That(retrievedDocs, Is.TypeOf(typeof(List<BsonDocument>)));
+        }
+
+        [Test]
+        public void DeviceTypeNotInserted_InsertDeviceTypeAndDeleteDeviceType_DeviceTypeHasBeenDeleted()
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument {
+                { "name", "TestDeviceType"},
+                { "description", "This is a test" }
+            };
+            //Insert device type
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Delete device type
+            bool deleteResult = false;
+            if (insertResult != null)
+            {
+                deleteResult = mongo.DeleteDeviceType((ObjectId)insertResult);
+                Assert.IsNull(mongo.GetDeviceType((ObjectId)insertResult));
+            }
+            Assert.IsTrue(deleteResult);
+        }
+
+        [Test]
+        public void DeviceTypeNotInserted_InsertDeviceTypeAndUpdateDeviceType_DeviceTypeHasBeenUpdated()
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument {
+                { "name", "TestDeviceType"},
+                { "description", "This is a test" }
+            };
+            //Insert device type
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assert.IsNotNull(insertResult);
+            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Update device type
+            doc.AddRange(new BsonDocument { { "updatedDeviceTypeField", "123" } });
+            var updateResult = mongo.UpdateDeviceType(doc);
+            Assert.IsNotNull(updateResult);
+        }
+
+        [Test]
+        public void ConnectorCreated_GetDeviceTypeGivenInvalidDeviceTypeId_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var doc = mongo.GetDeviceType(ObjectId.GenerateNewId());
+            Assert.IsNull(doc);
+        }
+
+        [Test]
+        public void ConnectorCreated_DeleteInvalidDeviceType_FalseReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var result = mongo.DeleteDeviceType(ObjectId.GenerateNewId());
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_InsertNullDeviceType_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.InsertDeviceType(null);
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_UpdateNullDeviceType_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.UpdateDeviceType(null);
+            Assert.IsNull(result);
+        }
     }
 }
