@@ -1,0 +1,17 @@
+.fieldform {
+    margin: 10px 5% 0px 5%;
+}
+
+.addButton, .button{
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+
+}
+
+.addButton {
+  float: right;
+}
+
+.buttonGroup {
+  flex-direction: row;
+}

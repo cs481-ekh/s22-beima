@@ -1,7 +1,9 @@
 import { Form, Card, Button, ListGroup } from 'react-bootstrap';
-import { useState } from "react";
+import { useOutletContext } from 'react-router-dom';
+import { useState, useEffect } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 import styles from './AddDeviceTypePage.module.css';
+import FormList from '../../shared/FormList/FormList.js'
 
 const AddDeviceTypePage = () => {
   const defaultDeviceFields = [
@@ -26,8 +28,13 @@ const AddDeviceTypePage = () => {
 
   const [deviceFields, setDeviceFields] = useState([]);
   const [typeAttributes] = useState(typeAttributes1);
+  const [setPageName] = useOutletContext();
   let fullTypeJSON = {};
   let field;
+
+  useEffect(() => {
+      setPageName('Add Device Type')
+  },[]);
 
   function removeField(field) {
     setDeviceFields(deviceFields.filter(item => item !== field))
@@ -36,11 +43,7 @@ const AddDeviceTypePage = () => {
   function addField(newField, event) {
     let newList = deviceFields.concat(newField);
     setDeviceFields(newList);
-    event.target.form.elements.newField.value = "";
-  }
-
-  function addFields() {
-    return {"Fields" : deviceFields};
+    event.target.form.elements.newFieldForm.value = "";
   }
 
   function createJSON(event){
@@ -56,10 +59,9 @@ const AddDeviceTypePage = () => {
       }
     }
 
-    let fieldsJSON = addFields();
+    let fieldsJSON = {"Fields" : deviceFields};
     fullTypeJSON = Object.assign(attributeValues, fieldsJSON);
     setDeviceFields([]);
-    console.log(fullTypeJSON);
   }
 
   const TypeFieldList = ({fields, mandatory}) => {
@@ -80,20 +82,6 @@ const AddDeviceTypePage = () => {
     )
   }
 
-  const TypeAttributeForm = ({attributes}) => {
-    return (
-      <div>
-        {attributes.map(element =>
-          <Form.Group>
-            <Form.Label>{element}</Form.Label>
-            <Form.Control type="text" name={element} placeholder={"Enter " + element}/>
-          </Form.Group>
-        )} 
-        <br/>
-      </div>
-    )
-  }
-
   return (
     <div className={styles.typeform}>
       <Card>
@@ -105,8 +93,9 @@ const AddDeviceTypePage = () => {
               </Button>
               <h4>Device Type Information</h4>
             </div>
-            <TypeAttributeForm attributes={Object.keys(typeAttributes)}/>
+            <FormList fields={Object.keys(typeAttributes)}/>
           </Form>  
+          <br/>
           <h5>Associated Fields</h5>
           <h6>Mandatory Fields</h6>
           <ListGroup>
@@ -119,7 +108,7 @@ const AddDeviceTypePage = () => {
           <Form>
             <Form.Group controlId='newField'>
               <Form.Label>Add Custom Field</Form.Label>
-              <Form.Control name="newField" type="text" placeholder="Enter Field Name" value={field} onChange={(event) => {field = event.target.value}}/> 
+              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" value={field} onChange={(event) => {field = event.target.value}}/> 
             </Form.Group>
             <Button variant="primary" type="button" className={styles.button} onClick={(event) => addField(field, event)}>
               Add Field
