@@ -63,7 +63,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void DocumentNotInserted_InsertDocument_DocumentHasBeenInserted()
+        public void DeviceNotInserted_InsertDevice_DeviceHasBeenInserted()
         {
             var mongo = MongoConnector.Instance;
             BsonDocument doc = new BsonDocument {
@@ -77,7 +77,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void DocumentNotInserted_InsertDocumentAndDeleteDocument_DocumentHasBeenDeleted()
+        public void DeviceNotInserted_InsertDeviceAndDeleteDevice_DeviceHasBeenDeleted()
         {
             var mongo = MongoConnector.Instance;
             BsonDocument doc = new BsonDocument
@@ -100,7 +100,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void DocumentNotInserted_InsertDocumentAndUpdateDocument_DocumentHasBeenUpdated()
+        public void DeviceNotInserted_InsertDeviceAndUpdateDevice_DeviceHasBeenUpdated()
         {
             var mongo = MongoConnector.Instance;
             BsonDocument doc = new BsonDocument
@@ -129,7 +129,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void ConnectorCreated_DeleteInvalidObject_FalseReturned()
+        public void ConnectorCreated_DeleteInvalidDevice_FalseReturned()
         {
             var mongo = MongoConnector.Instance;
             //This is a valid ObjectId, but this is not in the database
@@ -138,7 +138,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void ConnectorCreated_InsertNull_NullReturned()
+        public void ConnectorCreated_InsertNullDevice_NullReturned()
         {
             var mongo = MongoConnector.Instance;
             var result = mongo.InsertDevice(null);
@@ -146,7 +146,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void ConnectorCreated_UpdateNull_NullReturned()
+        public void ConnectorCreated_UpdateNullDevice_NullReturned()
         {
             var mongo = MongoConnector.Instance;
             var result = mongo.UpdateDevice(null);
@@ -183,7 +183,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void ConnectorCreated_GetAllDeviceTypes_DeviceDocumentListReturned()
+        public void ConnectorCreated_GetAllDeviceTypes_DeviceTypeDocumentListReturned()
         {
             var mongo = MongoConnector.Instance;
             //Setup (inserting a document)
