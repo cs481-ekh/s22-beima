@@ -1,3 +1,13 @@
 .typeform {
   margin: 10px 5% 0px 5%;
 }
+
+.button, .addButton{
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+  margin-top: 1%;
+}
+
+.listButton, .addButton { 
+  float: right;
+}
