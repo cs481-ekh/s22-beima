@@ -6,6 +6,7 @@ import FormList from '../../shared/FormList/FormList.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 
 const AddDevicePage = () => {
+  // this will be replaced with API call based on selected device type to get the fields
   const defaultDeviceFields = {
     "Building": "",
     "Longitude": "",
@@ -28,6 +29,7 @@ const AddDevicePage = () => {
     setPageName('Add Device')
   },[])
 
+  // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(event){
     let formFields = event.target.form.elements;
     let fieldValues = {};

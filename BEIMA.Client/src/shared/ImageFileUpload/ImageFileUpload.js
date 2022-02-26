@@ -1,5 +1,6 @@
 import { Form } from 'react-bootstrap';
 
+// form controls for uploading images
 const ImageFileUpload = ({type, multiple}) => {
   return (
     <div>

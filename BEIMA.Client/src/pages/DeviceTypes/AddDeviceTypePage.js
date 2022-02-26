@@ -6,6 +6,7 @@ import styles from './AddDeviceTypePage.module.css';
 import FormList from '../../shared/FormList/FormList.js'
 
 const AddDeviceTypePage = () => {
+  // will be replaced with API call to get default fields
   const defaultDeviceFields = [
     "Building",
     "Longitude",
@@ -20,14 +21,15 @@ const AddDeviceTypePage = () => {
     "Device Notes"
   ]
 
-  const typeAttributes1 = {
+  // basic fields for all device types
+  const typeFields = {
       "Name": "",
       "Description": "",
       "Device Type Notes": ""
   }
 
   const [deviceFields, setDeviceFields] = useState([]);
-  const [typeAttributes] = useState(typeAttributes1);
+  const [typeAttributes] = useState(typeFields);
   const [setPageName] = useOutletContext();
   let fullTypeJSON = {};
   let field;
@@ -36,16 +38,19 @@ const AddDeviceTypePage = () => {
       setPageName('Add Device Type')
   },[]);
 
+  // allows the user to remove a field they added
   function removeField(field) {
     setDeviceFields(deviceFields.filter(item => item !== field))
   }
 
+  // adds field to list
   function addField(newField, event) {
     let newList = deviceFields.concat(newField);
     setDeviceFields(newList);
     event.target.form.elements.newFieldForm.value = "";
   }
 
+  // gathers input and puts it into JSON
   function createJSON(event){
     let formFields = event.target.form.elements;
     let attributeValues = {};
@@ -65,6 +70,7 @@ const AddDeviceTypePage = () => {
     console.log(fullTypeJSON);
   }
 
+  // list for fields
   const TypeFieldList = ({fields, mandatory}) => {
     return (
       <div>
