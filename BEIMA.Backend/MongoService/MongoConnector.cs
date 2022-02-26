@@ -22,6 +22,7 @@ namespace BEIMA.Backend.MongoService
         //Environment variables
         private readonly string dbName = Environment.GetEnvironmentVariable("DatabaseName");
         private readonly string deviceCollection = Environment.GetEnvironmentVariable("DeviceCollectionName");
+        private readonly string deviceTypeCollection = Environment.GetEnvironmentVariable("DeviceTypeCollectionName");
 
         //Singleton design pattern, used to get an instance of the MongoConnector
         public static MongoConnector Instance { get { return instance.Value; } }
@@ -188,5 +189,134 @@ namespace BEIMA.Backend.MongoService
                 return null;
             }
         }
+
+        /// <summary>
+        /// Gets a device type from the "deviceTypes" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetDeviceType(ObjectId objectId)
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                return devices.Find(filter).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets a device from the "deviceTypes" collection, given an objectID.
+        /// </summary>
+        /// <returns>BsonDocument that was requested</returns>
+        public List<BsonDocument> GetAllDeviceTypes()
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Empty;
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                var docs = devices.Find(filter).ToList();
+                return docs;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Inserts a device into the "deviceTypes" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertDeviceType(BsonDocument doc)
+        {
+            CheckIsConnected();
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                devices.InsertOne(doc);
+                return (ObjectId)doc["_id"];
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Deletes from the "deviceTypes" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteDeviceType(ObjectId objectId)
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                var result = devices.DeleteOne(filter);
+                return result.DeletedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Updates a device in the "deviceTypes" collection, given a fully formed updated device.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>true if successful, false if unsuccessful</returns>
+        public BsonDocument UpdateDeviceType(BsonDocument doc)
+        {
+            CheckIsConnected();
+
+            try
+            {
+                ObjectId objectId = (ObjectId)doc["_id"];
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                var result = devices.ReplaceOne(filter, doc);
+                if (result.ModifiedCount > 0)
+                {
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
     }
 }
