@@ -9,7 +9,7 @@ const TypeAttributeForm = ({attributes}) => {
       {attributes.map(element =>
         <Form.Group>
           <Form.Label>{element}</Form.Label>
-          <Form.Control type="text" placeholder={"Enter " + element} />
+          <Form.Control type="text" name={element} placeholder={"Enter " + element}/>
         </Form.Group>
       )} 
       <br/>
@@ -19,16 +19,48 @@ const TypeAttributeForm = ({attributes}) => {
 
 const AddDeviceTypeCard = ({attributes, fields}) => {
   const [deviceFields, setDeviceFields] = useState(fields);
-  var field;
+  const [typeAttributes, setAttributes] = useState(attributes);
+  let fullTypeJSON = {};
+  let field;
 
   function removeField(field) {
     setDeviceFields(deviceFields.filter(item => item !== field))
   }
 
   function addField(newField, event) {
-    var newList = deviceFields.concat(newField);
+    let newList = deviceFields.concat(newField);
     setDeviceFields(newList);
     event.target.form.elements.newField.value = "";
+  }
+
+  function addFields() {
+    let i = 0;
+    let fieldsJSON = deviceFields.map(field => {
+      let keyName = "field" + i;
+      i++;
+      return {[keyName]: field};
+    })
+
+    return {"Fields" : fieldsJSON};
+  }
+
+  function createJSON(event){
+    let formFields = event.target.form.elements;
+    let attributeValues = {};
+    for(let i = 0; i < formFields.length; i++){
+      let temp = formFields[i].name;
+      let temp2 = Object.keys(typeAttributes);
+      if(temp2.includes(temp)){
+        let formJSON =  {[temp] : formFields[i].value};
+        formFields[i].value = "";
+        Object.assign(attributeValues, formJSON);
+      }
+    }
+
+    setAttributes(attributeValues);
+    let fields = addFields();
+    fullTypeJSON = Object.assign(typeAttributes, fields);
+    console.log(fullTypeJSON);
   }
 
   const TypeFieldList = ({fields}) => {
@@ -52,26 +84,29 @@ const AddDeviceTypeCard = ({attributes, fields}) => {
       <Card>
         <Card.Body>
           <Form>
-            <h4>Device Type Information</h4>
-            <TypeAttributeForm attributes={Object.keys(attributes)}/>
-          </Form>  
-            <h5>Associated Fields</h5>
-            <ListGroup>
-              <TypeFieldList fields={deviceFields}/>
-            </ListGroup>
-            <Form>
-              <Form.Group controlId='newField'>
-                <Form.Label>Add Field</Form.Label>
-                <Form.Control name="newField" type="text" placeholder="Enter Field Name" value={field} onChange={(event) => {field = event.target.value}}/> 
-              </Form.Group>
-              <Button variant="primary" type="button" className={styles.button} onClick={(event) => addField(field, event)}>
-                Add Field
+            <div>
+              <Button variant="primary" type="button" className={styles.addButton} onClick={(event) => createJSON(event)}>
+                Add Device Type
               </Button>
-            </Form>
+              <h4>Device Type Information</h4>
+            </div>
+            <TypeAttributeForm attributes={Object.keys(typeAttributes)}/>
+          </Form>  
+          <h5>Associated Fields</h5>
+          <ListGroup>
+            <TypeFieldList fields={deviceFields}/>
+          </ListGroup>
+          <Form>
+            <Form.Group controlId='newField'>
+              <Form.Label>Add Field</Form.Label>
+              <Form.Control name="newField" type="text" placeholder="Enter Field Name" value={field} onChange={(event) => {field = event.target.value}}/> 
+            </Form.Group>
+            <Button variant="primary" type="button" className={styles.button} onClick={(event) => addField(field, event)}>
+              Add Field
+            </Button>
+          </Form>
           <br/>
-          <Button variant="primary" type="submit" className={styles.addButton}>
-            Add Device Type
-          </Button>
+          
         </Card.Body>
       </Card>
     </div>
