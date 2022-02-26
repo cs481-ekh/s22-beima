@@ -1,11 +1,9 @@
 import { useOutletContext } from 'react-router-dom';
 import {  Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
-import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload';
-import FormList from '../../shared/FormList/FormList.js'
-
-
+import FormList from '../../shared/FormList/FormList.js';
+import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 
 const AddDevicePage = () => {
   const defaultDeviceFields = {
@@ -20,14 +18,11 @@ const AddDevicePage = () => {
     "Notes": ""
   }
 
-  const defaultDeviceImage = [];
-  const defaultAdditionalDocs = [];
-
   const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
-  const [deviceImage, setDeviceImage] = useState(defaultDeviceImage);
-  const [deviceDocs, setDeviceDocs] = useState(defaultAdditionalDocs);
   const [setPageName] = useOutletContext();
-  let fullDeviceJSON = {};
+  const [deviceImage, setDeviceImage] = useState();
+  const [deviceAdditionalDocs, setAdditionalDocs] = useState();
+  const [fullDeviceJSON, setFullDeviceJSON] = useState({});
 
   useEffect(() => {
     setPageName('Add Device')
@@ -43,13 +38,21 @@ const AddDevicePage = () => {
         let formJSON =  {[formName] : formFields[i].value};
         formFields[i].value = "";
         Object.assign(fieldValues, formJSON);
+      } else if (formName == "Device Image"){
+        setDeviceImage(formFields[i].files[0]);
+        formFields[i].value = "";
+      } else if (formName == "Additional Documents"){
+        setAdditionalDocs(formFields[i].files);
+        formFields[i].value = "";
       }
     }
 
-    let fieldsJSON = {"Fields" : deviceFields};
-    fullDeviceJSON = Object.assign(fieldValues, fieldsJSON);
-    setDeviceFields([]);
-  }
+    setDeviceFields(defaultDeviceFields);
+    setFullDeviceJSON(fieldValues);
+    console.log(fieldValues);
+    console.log(deviceImage);
+    console.log(deviceAdditionalDocs);
+  } 
 
   return (
     <div className={styles.fieldform}>
@@ -68,16 +71,18 @@ const AddDevicePage = () => {
               </Dropdown>
               </Col>
               <Col>
-              <Button variant="primary" type="submit" className={styles.addButton} onClick={(event) => createJSON(event)}>
+              <Button variant="primary" type="button" className={styles.addButton} onClick={(event) => createJSON(event)}>
                 Add Device
               </Button>
               </Col>
             </Row>
             <br/>
             <h4>Device Image</h4>
-            <ImageFileUpload type="Device Image" details="(Only .png and .jpeg files accepted)" multiple={false} acceptTypes='image/png,image/jpeg'/>
+            <ImageFileUpload type="Device Image" multiple={false} />
+            <br/>
             <h4>Additional Documents</h4>
             <ImageFileUpload type="Additional Documents" multiple={true}/>
+            <br/>
             <h4>Fields</h4>
             <FormList fields={Object.keys(deviceFields)}/>
           </Form>

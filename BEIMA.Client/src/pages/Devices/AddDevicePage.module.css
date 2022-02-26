@@ -15,3 +15,11 @@
 .buttonGroup {
   flex-direction: row;
 }
+
+.fileupload {
+  border: thin dashed rgb(27, 85, 211);
+  justify-content: center;
+  text-align: center;
+  padding: 2%;
+  margin: 2%;
+}

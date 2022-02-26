@@ -62,13 +62,14 @@ const AddDeviceTypePage = () => {
     let fieldsJSON = {"Fields" : deviceFields};
     fullTypeJSON = Object.assign(attributeValues, fieldsJSON);
     setDeviceFields([]);
+    console.log(fullTypeJSON);
   }
 
   const TypeFieldList = ({fields, mandatory}) => {
     return (
       <div>
         {fields.map(element =>
-          <div>
+          <div key={element}>
             <ListGroup.Item>
                 {element}
                 {mandatory ?
