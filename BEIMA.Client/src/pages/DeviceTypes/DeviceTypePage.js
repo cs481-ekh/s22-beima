@@ -19,7 +19,7 @@ const DeviceTypePage = () => {
   const mockCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(1000)
-    var data = {
+    let data = {
       deviceTypeId: 54,
       name: `Batteries`,
       description: "Battery devices are used to store power that other devices can use.",
@@ -33,7 +33,7 @@ const DeviceTypePage = () => {
     }
     
     // Map data into format supported by list
-    var mapped = {
+    let mapped = {
       id: data.deviceTypeId,
       name: data.name,
       description: data.description,
@@ -49,7 +49,7 @@ const DeviceTypePage = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      var type = await mockCall()
+      let type = await mockCall()
       setDeviceType(type)
       setLoading(false)
     }

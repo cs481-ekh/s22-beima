@@ -267,10 +267,10 @@ const DevicePage = () => {
     }
 
     const onDocumentChange = (event) => {
-      var files = event.target.files
+      let files = event.target.files
       if(files && files.length > 0){
-        var tempAdded = [...addedDocs]
-        var temp = [...files]
+        let tempAdded = [...addedDocs]
+        let temp = [...files]
         temp.forEach(file => {
           tempAdded.push(file)
         })
@@ -279,9 +279,9 @@ const DevicePage = () => {
     }
 
     const deleteDocument = (doc) => {
-      var tempDocs = [...docCopy]
-      var tempAdded = [...addedDocs]
-      var tempDel = [...removedDocs]
+      let tempDocs = [...docCopy]
+      let tempAdded = [...addedDocs]
+      let tempDel = [...removedDocs]
 
       if(tempDocs.includes(doc)){
         tempDocs = tempDocs.filter(val => val !== doc)

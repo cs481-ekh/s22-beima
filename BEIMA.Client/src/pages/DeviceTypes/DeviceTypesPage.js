@@ -16,8 +16,8 @@ const DeviceTypesPage = () => {
   const mockCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(1000)
-    var data = []
-    for(var i = 0; i < 5; i++){
+    let data = []
+    for(let i = 0; i < 5; i++){
       data.push({
         deviceTypeId: i,
         name: `Test Item Type #${i}`,
@@ -26,7 +26,7 @@ const DeviceTypesPage = () => {
       })
     }
     // Map data into format supported by list
-    var mapped = data.map(({deviceTypeId, name, description, numDevices}) => {
+    let mapped = data.map(({deviceTypeId, name, description, numDevices}) => {
       return {
         id: deviceTypeId,
         name: name,
@@ -40,7 +40,7 @@ const DeviceTypesPage = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      var types = await mockCall()
+      let types = await mockCall()
       setLoading(false)
       setDeviceTypes(types)
     }

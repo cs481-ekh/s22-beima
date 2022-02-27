@@ -14,8 +14,8 @@ const LoadingItem = () => {
 }
 
 const LoadingItemList = () => {
-  var rows = []
-  for(var i = 0; i < 6; i++){
+  let rows = []
+  for(let i = 0; i < 6; i++){
     rows.push(<LoadingItem key={i}/>)
   }
   return (
