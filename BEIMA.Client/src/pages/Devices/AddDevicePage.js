@@ -42,10 +42,10 @@ const AddDevicePage = () => {
         let formJSON =  {[formName] : formFields[i].value};
         formFields[i].value = "";
         Object.assign(fieldValues, formJSON);
-      } else if (formName == "Device Image"){
+      } else if (formName === "Device Image"){
         setDeviceImage(formFields[i].files[0]);
         formFields[i].value = "";
-      } else if (formName == "Additional Documents"){
+      } else if (formName === "Additional Documents"){
         setAdditionalDocs(formFields[i].files);
         formFields[i].value = "";
       }
