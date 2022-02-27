@@ -58,7 +58,17 @@ const DeviceTypePage = () => {
 
 
 
-
+  /**
+   * Renders a card styled field in a device type.
+   * Allows the user to update the input inside of it
+   * as well as delete the field in the higher level <DeviceTypePage/>
+   * @param field: field uid
+   * @param value: field value
+   * @param editable: can this input be modified
+   * @param deleteField: function to delete field off the device type
+   * in higher level <DeviceTypePage/>
+   * @returns 
+   */
   const Field = ({field, value, editable, deleteField}) => {
     return (
       <Card>
@@ -79,7 +89,14 @@ const DeviceTypePage = () => {
     )
   }  
 
-
+  /**
+   * Renders a custom form that enables a user
+   * to update a device's type's fields
+   * 
+   * @param item: json device type
+   * @param setitem: function to update item in higher level <DeviceTypePage/>
+   * @returns 
+   */
   const RenderItem = ({item, setItem}) => {
     const [editable, setEditable] = useState(false)
     

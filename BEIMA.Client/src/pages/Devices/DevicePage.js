@@ -93,6 +93,16 @@ const DevicePage = () => {
 
 
 
+  /**
+   * Renders an card styled input that lets a user change a field's input
+   * 
+   * @param editable: can this input be used
+   * @param id: id that should be set on the input
+   * @param label: label of the input
+   * @param value: value of the input
+   * @param onChange: function to update value of the field in higher level <RenderItem>
+   * @returns 
+   */
   const FormCard = ({editable, id, label, value, onChange }) => {
     return (
       <Card>
@@ -106,6 +116,16 @@ const DevicePage = () => {
     )
   }
 
+  /**
+   * Renders an input that lets a user change a field's input
+   * 
+   * @param editable: can this input be used
+   * @param id: id that should be set on the input
+   * @param label: label of the input
+   * @param value: value of the input
+   * @param onChange: function to update value of the field in higher level <RenderItem>
+   * @returns 
+   */
   const FormItem = ({editable, id, label, value, onChange }) => {
     return (
       <Form.Group className="mb-3" controlId={id}>
@@ -115,6 +135,13 @@ const DevicePage = () => {
     )
   }
 
+   /**
+   * Creates an input that allows a user to upload an image
+   * 
+   * @param editable: can this input be used
+   * @param onImageChange: function used to update image in higher level <RenderItem>
+   * @returns html
+   */
   const ImageUpload = ({editable, onImageChange}) => {
     const filetypes = ".png, .tiff, .tiff, .jpg, .jpeg, .png, .gif, .raw"
     return (
@@ -125,6 +152,13 @@ const DevicePage = () => {
     )
   }
 
+  /**
+   * Creates an input that allows a user to upload files
+   * 
+   * @param editable: can this input be used
+   * @param onDocumentChange: function used to update documents in higher level <RenderItem>
+   * @returns html
+   */
   const FileUpload = ({editable, onDocumentchange}) => {
     const ref = useRef();
     
@@ -141,6 +175,14 @@ const DevicePage = () => {
     )
   }
 
+  /**
+   * Renders a document Tile
+   * 
+   * @param editable: can this input be used
+   * @param document: document json
+   * @param deleteDocument: function to delete document in higher level RenderItem
+   * @returns html
+   */
   const DocumentCard = ({editable, document, deleteDocument}) => {
     return (
       <Card>
@@ -154,6 +196,18 @@ const DevicePage = () => {
     )
   }
 
+  /**
+   * Renders a custom form that enables a user
+   * to update a device's fields, image, and documents
+   * @param device: device json
+   * @param setDevice: function to set device in higher level Device Page
+   * @param deviceType: device type json object
+   * @param image: image url
+   * @param setImage: function to set image in higher level Device Page
+   * @param documents: list of document names
+   * @param setDocuments: function to set document names in higher level Device Page
+   * @returns 
+   */
   const RenderItem = ({device, setDevice, deviceType, image, setImage, documents, setDocuments}) => {
     const [editable, setEditable] = useState(false)
     

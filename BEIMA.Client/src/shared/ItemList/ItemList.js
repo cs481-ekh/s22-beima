@@ -5,6 +5,10 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom";
 import styles from './ItemList.module.css'
 
+/**
+ * Renders a custom Placeholder
+ * @returns PlaceHolder
+ */
 const LoadingItem = () => {
   return (
     <div className="loadingItem">
@@ -13,6 +17,10 @@ const LoadingItem = () => {
   )
 }
 
+/**
+ * Creates a list of placeholders
+ * @returns html
+ */
 const LoadingItemList = () => {
   let rows = []
   for(let i = 0; i < 6; i++){
@@ -25,7 +33,14 @@ const LoadingItemList = () => {
   )
 }
 
-
+/**
+ * Renderes a name with a link
+ * as well as the passed in RenderItem
+ * using item for the data.
+ * @param item
+ * @param RenderItem
+ * @returns html
+ */
 const Item = ({item, RenderItem}) => {
   const [visable, setVisibility] = useState(false);
   let navigate = useNavigate();
@@ -50,6 +65,14 @@ const Item = ({item, RenderItem}) => {
   )
 }
 
+/**
+ * Loops through list
+ * and renders an <Item/> for
+ * every object in the list
+ * @param list : json
+ * @parm RenderItem : html model that will render one item in list
+ * @returns html
+ */
 const List = ({list, RenderItem}) => {
   return (
     <div>

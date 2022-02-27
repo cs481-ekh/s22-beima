@@ -47,6 +47,12 @@ const DeviceTypesPage = () => {
    loadData()
   },[])
 
+  /**
+   * Renders a custom description of the item's fields
+   * 
+   * @param item 
+   * @returns html
+   */
   const RenderItem = (item) => {
     return (
       <div className={styles.details}>
