@@ -1,5 +1,7 @@
 #!/bin/bash
 
+#Update the apt package manager
+sudo apt update || { echo "Updating apt failed"; exit 1; }
 # Install software-properties-common apt-transport-https for wget
 sudo apt install software-properties-common apt-transport-https wget || { echo "Install software-properties-common apt-transport-https for wget failed"; exit 1; }
 # Download chrome using wget
