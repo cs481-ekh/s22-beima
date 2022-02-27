@@ -11,7 +11,7 @@ export default async (deviceId) => {
   //performs the get and returns the data or error
   const dbCall = await axios.get(API_URL + "device/" + deviceId).catch(function (error) {
       if (error.response) {
-      return error.response;
+        return error.response;
     }
   });
 
