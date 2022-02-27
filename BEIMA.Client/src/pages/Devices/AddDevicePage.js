@@ -53,6 +53,9 @@ const AddDevicePage = () => {
 
     setDeviceFields(defaultDeviceFields);
     setFullDeviceJSON(fieldValues);
+    console.log(fullDeviceJSON);
+    console.log(deviceImage);
+    console.log(deviceAdditionalDocs);
   } 
 
   return (

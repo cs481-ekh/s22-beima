@@ -66,6 +66,7 @@ const AddDeviceTypePage = () => {
     let fieldsJSON = {"Fields" : deviceFields};
     fullTypeJSON = Object.assign(attributeValues, fieldsJSON);
     setDeviceFields([]);
+    console.log(fullTypeJSON);
   }
 
   // list for fields
