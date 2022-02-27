@@ -6,8 +6,8 @@ const ImageFileUpload = ({type, multiple}) => {
     <div>
       <Form.Group key={type}>
           {multiple ?
-              <Form.Control type="file" name={type} multiple={true}/>
-              : <Form.Control type="file" name={type}/>
+              <Form.Control type="file" name={type} multiple={true} class={type}/>
+              : <Form.Control type="file" name={type} class={type}/>
           }
       </Form.Group>
     </div>

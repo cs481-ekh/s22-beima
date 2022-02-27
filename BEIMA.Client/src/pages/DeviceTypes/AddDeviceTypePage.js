@@ -12,7 +12,6 @@ const AddDeviceTypePage = () => {
     "Longitude",
     "Latitude",
     "Location Notes",
-    "Device Type",
     "Device Tag",
     "Manufacturer",
     "Model Number",
@@ -76,11 +75,11 @@ const AddDeviceTypePage = () => {
       <div>
         {fields.map(element =>
           <div key={element}>
-            <ListGroup.Item>
+            <ListGroup.Item id={element}>
                 {element}
                 {mandatory ?
                 null
-                : <IoMdCloseCircle className={styles.listButton} onClick={() => removeField(element)}></IoMdCloseCircle>}
+                : <IoMdCloseCircle className={styles.listButton} id={"remove" + element} onClick={() => removeField(element)}></IoMdCloseCircle>}
             </ListGroup.Item>
           </div>
         )}
@@ -95,7 +94,7 @@ const AddDeviceTypePage = () => {
         <Card.Body>
           <Form>
             <div>
-              <Button variant="primary" type="button" className={styles.addButton} onClick={(event) => createJSON(event)}>
+              <Button variant="primary" type="button" className={styles.addButton} id="addDeviceType" onClick={(event) => createJSON(event)}>
                 Add Device Type
               </Button>
               <h4>Device Type Information</h4>
@@ -105,19 +104,19 @@ const AddDeviceTypePage = () => {
           <br/>
           <h5>Associated Fields</h5>
           <h6>Mandatory Fields</h6>
-          <ListGroup>
-            <TypeFieldList fields={defaultDeviceFields} mandatory={true}/>
+          <ListGroup id="mandatoryFields">
+            <TypeFieldList fields={defaultDeviceFields} mandatory={true} />
           </ListGroup>
           <h6>Custom Fields</h6>
-          <ListGroup>
-            <TypeFieldList fields={deviceFields} mandatory={false}/>
+          <ListGroup id="customFields">
+            <TypeFieldList fields={deviceFields} mandatory={false} />
           </ListGroup>
           <Form>
             <Form.Group controlId='newField'>
               <Form.Label>Add Custom Field</Form.Label>
-              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" value={field} onChange={(event) => {field = event.target.value}}/> 
+              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" value={field} onChange={(event) => {field = event.target.value}}/> 
             </Form.Group>
-            <Button variant="primary" type="button" className={styles.button} onClick={(event) => addField(field, event)}>
+            <Button variant="primary" type="button" className={styles.button} id="addField" onClick={(event) => addField(field, event)}>
               Add Field
             </Button>
           </Form>

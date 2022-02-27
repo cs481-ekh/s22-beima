@@ -4,7 +4,7 @@ const FormList = ({fields}) => {
     return (
       <div>
         {fields.map(element =>
-          <Form.Group key={element}>
+          <Form.Group key={element} id={element}>
             <Form.Label>{element}</Form.Label>
             <Form.Control type="text" name={element} placeholder={"Enter " + element}/>
           </Form.Group>

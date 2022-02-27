@@ -33,9 +33,11 @@ const AddDevicePage = () => {
   function createJSON(event){
     let formFields = event.target.form.elements;
     let fieldValues = {};
+
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let fieldNames = Object.keys(deviceFields);
+
       if(fieldNames.includes(formName)){
         let formJSON =  {[formName] : formFields[i].value};
         formFields[i].value = "";
@@ -63,7 +65,7 @@ const AddDevicePage = () => {
           <Form>
             <Row className={styles.buttonGroup}>
               <Col>
-              <Dropdown>
+              <Dropdown id="typeDropDown">
                 <Dropdown.Toggle variant="success" id="dropdown-basic" className={styles.button}>
                   Select Device Type 
                 </Dropdown.Toggle>
@@ -73,7 +75,7 @@ const AddDevicePage = () => {
               </Dropdown>
               </Col>
               <Col>
-              <Button variant="primary" type="button" className={styles.addButton} onClick={(event) => createJSON(event)}>
+              <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
                 Add Device
               </Button>
               </Col>
