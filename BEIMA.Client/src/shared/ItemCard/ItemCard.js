@@ -18,7 +18,7 @@ const LoadingContent = () => {
 
 export const ItemCard = ({title, RenderItem, loading, route}) => {
   return (
-    <Card>
+    <Card id="itemCard">
       <Card.Body>
         <Card.Title className={styles.cardtitle}>
           <Link to={route} className={styles.back}>

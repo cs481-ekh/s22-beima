@@ -63,7 +63,7 @@ const DeviceTypePage = () => {
     return (
       <Card>
         <Card.Body >
-            <Form.Group className="mb-3">
+            <Form.Group className="mb-3" id={field}>
               <Form.Label>Field Name</Form.Label>
               <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value}/>
             </Form.Group>                
@@ -157,18 +157,18 @@ const DeviceTypePage = () => {
               </Button>
            </div>
           : 
-            <Button variant="primary" onClick={() => setEditable(true)}>
+            <Button variant="primary" id="editbtn" onClick={() => setEditable(true)}>
               Edit
             </Button>
           }
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="description">
           <Form.Label><b>Description</b></Form.Label>
           <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} value={description} onChange={onDescriptionChange}/>
         </Form.Group>
 
-        <Form.Group className="mb-3">
+        <Form.Group className="mb-3" controlId="notes">
           <Form.Label><b>Notes</b></Form.Label>
           <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} value={notes}  onChange={onNotesChange}/>
         </Form.Group>
@@ -191,7 +191,7 @@ const DeviceTypePage = () => {
             </Button>
           : null}
         </Form.Group>
-        <Form.Group>
+        <Form.Group id="additionalfields">
           <div className={styles.fields}>
             {Object.keys(fields).map((field, i) => <Field key={i} field={field} editable={editable} value={fields[field]} deleteField={deleteField}/>)}
             {Object.keys(addedFields).map((field, i) => <Field key={i} field={field} editable={editable} value={addedFields[field]} deleteField={deleteField}/>)}
@@ -202,15 +202,13 @@ const DeviceTypePage = () => {
   }
 
   return (
-    <div>
-      <div className={styles.item}>
-        <ItemCard 
-          title={loading ? 'Loading' : deviceType.name}
-          RenderItem={<RenderItem item={deviceType} setItem={setDeviceType}/>} 
-          loading={loading}
-          route="/deviceTypes"
-        />
-      </div>
+    <div className={styles.item} id="deviceTypeContent">
+      <ItemCard 
+        title={loading ? 'Loading' : deviceType.name}
+        RenderItem={<RenderItem item={deviceType} setItem={setDeviceType}/>} 
+        loading={loading}
+        route="/deviceTypes"
+      />
     </div>
   )
 }

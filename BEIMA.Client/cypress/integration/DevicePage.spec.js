@@ -1,0 +1,25 @@
+/// <reference types="cypress" />
+
+describe('Device Page', () => {
+  it('Visits a Device Page', () => {
+      cy.visit('http://localhost:3000/devices/5')
+      cy.get('[id=devicePageContent]').should('exist')
+      cy.get('[id=itemCard]').should('exist')
+      cy.wait(1250)
+      cy.get('[id=editbtn]').should('exist')
+      cy.get('[id=imageDisplay]').should('exist')
+      cy.get('[id=imageUpload]').should('exist')
+      cy.get('[id=fileUpload]').should('exist')
+      cy.get('[id=documents]').should('exist')
+      cy.get('[id=deviceNotes]').should('exist')
+      cy.get('[id=deviceBuildingId]').should('exist')
+      cy.get('[id=deviceLatitude]').should('exist')
+      cy.get('[id=deviceLongitude]').should('exist')
+      cy.get('[id=locationNotes]').should('exist')
+      cy.get('[id=deviceTag]').should('exist')
+      cy.get('[id=deviceModelNumber]').should('exist')
+      cy.get('[id=deviceSerialNumber]').should('exist')
+      cy.get('[id=deviceManufacturer]').should('exist')
+      cy.get('[id=deviceYearManufactured]').should('exist')
+  })
+})

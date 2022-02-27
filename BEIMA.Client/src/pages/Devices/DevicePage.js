@@ -118,7 +118,7 @@ const DevicePage = () => {
   const ImageUpload = ({editable, onImageChange}) => {
     const filetypes = ".png, .tiff, .tiff, .jpg, .jpeg, .png, .gif, .raw"
     return (
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-3" controlId='imageUpload'>
         <Form.Label><b>Upload Device Image</b></Form.Label>
         <Form.Control type="file" disabled={!editable} multiple={false} onChange={onImageChange} accept={filetypes}/>
       </Form.Group>
@@ -134,7 +134,7 @@ const DevicePage = () => {
     }
 
     return (
-      <Form.Group className="mb-3">
+      <Form.Group className="mb-3" controlId='fileUpload'>
         <Form.Label><b>Upload Documents</b></Form.Label>
         <Form.Control type="file" multiple={true} disabled={!editable} ref={ref} onChange={(event) => docChange(event)}/>
       </Form.Group>
@@ -307,7 +307,7 @@ const DevicePage = () => {
               </Button>
            </div>
           : 
-            <Button variant="primary" onClick={() => setEditable(true)}>
+            <Button variant="primary" id="editbtn" onClick={() => setEditable(true)}>
               Edit
             </Button>
           }
@@ -317,7 +317,7 @@ const DevicePage = () => {
           <Form.Label><b>Device Image</b></Form.Label>
         </Form.Group>
 
-        <Form.Group className={[styles.image, "mb-3"].join(' ')}>
+        <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
               <Image src={imageCopy} fluid/>
@@ -331,7 +331,7 @@ const DevicePage = () => {
           <Form.Label><b>Documents</b></Form.Label>
         </Form.Group>
 
-        <div className={[styles.fields,'mb-3'].join(' ')}>
+        <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
           {docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )}
           {addedDocs.map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )}
         </div>
@@ -368,15 +368,13 @@ const DevicePage = () => {
   }
 
   return (
-    <div>
-      <div className={styles.item}>
-        <ItemCard 
-          title={loading ? 'Loading' : `${device.deviceTag}:${device.deviceId}`}
-          RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
-          loading={loading}
-          route="/devices"
-        />
-      </div>
+    <div className={styles.item} id="devicePageContent">
+      <ItemCard 
+        title={loading ? 'Loading' : `${device.deviceTag}:${device.deviceId}`}
+        RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
+        loading={loading}
+        route="/devices"
+      />
     </div>
   )
 }

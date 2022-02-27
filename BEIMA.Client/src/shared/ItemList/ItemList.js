@@ -70,9 +70,9 @@ const List = ({list, RenderItem}) => {
  * @param renderItem : details render object
  * @param loading: loading status
  */
-const ItemList = ({title, list, RenderItem, loading}) => {
+const ItemList = ({list, RenderItem, loading}) => {
   return (
-    <Card className="card">
+    <Card className={styles.card} id="itemList">
       <Card.Body>
         {loading ? <LoadingItemList/>: <List list={list} RenderItem={RenderItem}/>}
       </Card.Body>
