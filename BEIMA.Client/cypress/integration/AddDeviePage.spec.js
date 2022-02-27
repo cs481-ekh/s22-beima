@@ -13,16 +13,10 @@ describe("Verify Buttons on Add Device Page", () => {
 })
 
 describe("Verify Data can be entered into fields", () => {
-  it('Enter data into Building field', () => {
+  it('Enter data into Building, Latitude, and Serial Number fields', () => {
     cy.visit('http://localhost:3000/addDevice')
     cy.get('#Building').type("Student Union Building")
-  })
-  it('Enter data into Latitude field', () => {
-    cy.visit('http://localhost:3000/addDevice')
     cy.get('#Latitude').type("10.3445.2345")
-  })
-  it('Enter data into Serial Number field', () => {
-    cy.visit('http://localhost:3000/addDevice')
     cy.get("[id='Serial Number']").type("12345")
   })
 })

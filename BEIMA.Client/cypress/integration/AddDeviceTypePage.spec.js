@@ -13,16 +13,10 @@ describe("Verify Buttons on Add Device Page", () => {
 })
 
 describe("Verify Data can be entered into fields", () => {
-  it('Enter data into Name field', () => {
+  it('Enter data into Name, Description, and Notes field', () => {
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#Name').type("new type")
-  })
-  it('Enter data into Description field', () => {
-    cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#Description').type("newly added type")
-  })
-  it('Enter data into Device Type Notes field', () => {
-    cy.visit('http://localhost:3000/addDeviceType')
     cy.get("[id='Device Type Notes']").type("meter from SEL")
   })
 })
@@ -49,9 +43,11 @@ describe("Verify custom fields can be added", () => {
     cy.get("#addField").scrollIntoView().click()
     cy.get('#newField').type("field3")
     cy.get("#addField").scrollIntoView().click()
-    cy.get('#customFields').contains('field1')
-    cy.get('#customFields').contains('field2')
-    cy.get('#customFields').contains('field3')
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).contains('field1')
+      cy.wrap($custfields).contains('field2')
+      cy.wrap($custfields).contains('field3')
+    })
   })
 })
 
@@ -62,11 +58,13 @@ describe("Verify custom fields can be deleted", () => {
     cy.get("#addField").scrollIntoView().click()
     cy.get('#newField').type("field2")
     cy.get("#addField").scrollIntoView().click()
-    cy.get('#customFields').contains('field1')
-    cy.get('#customFields').contains('field2')
-    cy.get('#customFields').get('#field2').get("#removefield2").click()
-    cy.get('#customFields').contains('field1')
-    cy.get('#customFields').children().should('not.contain', 'field2')
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).contains('field1')
+      cy.wrap($custfields).contains('field2')
+      cy.wrap($custfields).get('#field2').get("#removefield2").click()
+      cy.wrap($custfields).contains('field1')
+      cy.wrap($custfields).children().should('not.contain', 'field2')
+    })
   })
 })
 
@@ -79,12 +77,16 @@ describe("Verify custom fields get cleared when Add Device Type is clicked", () 
     cy.get("#addField").scrollIntoView().click()
     cy.get('#newField').type("field3")
     cy.get("#addField").scrollIntoView().click()
-    cy.get('#customFields').contains('field1')
-    cy.get('#customFields').contains('field2')
-    cy.get('#customFields').contains('field3')
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).contains('field1')
+      cy.wrap($custfields).contains('field2')
+      cy.wrap($custfields).contains('field3')
+    })
     cy.get("#addDeviceType").scrollIntoView().click()
-    cy.get('#customFields').children().should('not.contain', 'field1')
-    cy.get('#customFields').children().should('not.contain', 'field2')
-    cy.get('#customFields').children().should('not.contain', 'field3')
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).children().should('not.contain', 'field1')
+      cy.wrap($custfields).children().should('not.contain', 'field2')
+      cy.wrap($custfields).children().should('not.contain', 'field3')
+    })
   })
 })

@@ -25,20 +25,24 @@ describe("Router Redirects On Invalid Pages", () => {
   it('Visits Invalid Page', () => {
     cy.visit('http://localhost:3000/h3lp')
     cy.url().should('eq','http://localhost:3000/')
-    cy.get('.sharedNavBar').contains('Devices')
-    cy.get('.sharedNavBar').contains('Device Types')
-    cy.get('.sharedNavBar').contains('Add Device')
-    cy.get('.sharedNavBar').contains('Add Device Type')
-    cy.get('.sharedNavBar').contains('Help')
+    cy.get('.sharedNavBar').then(($nav) => {
+      cy.wrap($nav).contains('Devices')
+      cy.wrap($nav).contains('Device Types')
+      cy.wrap($nav).contains('Add Device')
+      cy.wrap($nav).contains('Add Device Type')
+      cy.wrap($nav).contains('Help')
+    })
   })
   it('Visits /', () => {
     cy.visit('http://localhost:3000/')
     cy.url().should('eq','http://localhost:3000/')
-    cy.get('.sharedNavBar').contains('Devices')
-    cy.get('.sharedNavBar').contains('Device Types')
-    cy.get('.sharedNavBar').contains('Add Device')
-    cy.get('.sharedNavBar').contains('Add Device Type')
-    cy.get('.sharedNavBar').contains('Help')
+    cy.get('.sharedNavBar').then(($nav) => {
+      cy.wrap($nav).contains('Devices')
+      cy.wrap($nav).contains('Device Types')
+      cy.wrap($nav).contains('Add Device')
+      cy.wrap($nav).contains('Add Device Type')
+      cy.wrap($nav).contains('Help')
+    })
   })
 })
 
@@ -47,32 +51,38 @@ describe("NavBar links route correctly", () => {
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Help").click();
     cy.url().should('include', '/help')
-    cy.get('.sharedNavBar').contains('Devices')
-    cy.get('.sharedNavBar').contains('Device Types')
-    cy.get('.sharedNavBar').contains('Add Device')
-    cy.get('.sharedNavBar').contains('Add Device Type')
-    cy.get('.sharedNavBar').contains('Help')
+    cy.get('.sharedNavBar').then(($nav) => {
+      cy.wrap($nav).contains('Devices')
+      cy.wrap($nav).contains('Device Types')
+      cy.wrap($nav).contains('Add Device')
+      cy.wrap($nav).contains('Add Device Type')
+      cy.wrap($nav).contains('Help')
+    })
   })
 
   it('Visit Add Device Page', () => {
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Add Device").click();
     cy.url().should('include', '/addDevice')
-    cy.get('.sharedNavBar').contains('Devices')
-    cy.get('.sharedNavBar').contains('Device Types')
-    cy.get('.sharedNavBar').contains('Add Device')
-    cy.get('.sharedNavBar').contains('Add Device Type')
-    cy.get('.sharedNavBar').contains('Help')
+    cy.get('.sharedNavBar').then(($nav) => {
+      cy.wrap($nav).contains('Devices')
+      cy.wrap($nav).contains('Device Types')
+      cy.wrap($nav).contains('Add Device')
+      cy.wrap($nav).contains('Add Device Type')
+      cy.wrap($nav).contains('Help')
+    })
   })
 
   it('Visit Add Device Page', () => {
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Add Device Type").click();
     cy.url().should('include', '/addDeviceType')
-    cy.get('.sharedNavBar').contains('Devices')
-    cy.get('.sharedNavBar').contains('Device Types')
-    cy.get('.sharedNavBar').contains('Add Device')
-    cy.get('.sharedNavBar').contains('Add Device Type')
-    cy.get('.sharedNavBar').contains('Help')
+    cy.get('.sharedNavBar').then(($nav) => {
+      cy.wrap($nav).contains('Devices')
+      cy.wrap($nav).contains('Device Types')
+      cy.wrap($nav).contains('Add Device')
+      cy.wrap($nav).contains('Add Device Type')
+      cy.wrap($nav).contains('Help')
+    })
   })
 })
