@@ -9,6 +9,7 @@ namespace BEIMA.Backend.Test.MongoService
     [TestFixture]
     public class MongoConnectorTest : UnitTestBase
     {
+        #region Class Tests
         [Test]
         public void ConnectorNotCreated_CallConstructorFiveTimes_FiveInstancesAreEqual()
         {
@@ -25,6 +26,16 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
+        public void ConnectorCreated_CheckIsConnected_TrueReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.IsConnected();
+            Assert.IsTrue(result);
+        }
+        #endregion
+
+        #region Device Tests
+        [Test]
         public void ConnectorCreated_GetDeviceGivenValidDeviceId_DeviceDocumentReturned()
         {
             var mongo = MongoConnector.Instance;
@@ -34,8 +45,8 @@ namespace BEIMA.Backend.Test.MongoService
                 { "serialNumber", "a12345"}
             };
             var insertResult = mongo.InsertDevice(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve the document)
             var retrievedDoc = mongo.GetDevice((ObjectId)doc["_id"]);
@@ -53,8 +64,8 @@ namespace BEIMA.Backend.Test.MongoService
                 { "serialNumber", "a12345"}
             };
             var insertResult = mongo.InsertDevice(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve all documents)
             var retrievedDocs = mongo.GetAllDevices();
@@ -66,29 +77,28 @@ namespace BEIMA.Backend.Test.MongoService
         public void DeviceNotInserted_InsertDevice_DeviceHasBeenInserted()
         {
             var mongo = MongoConnector.Instance;
-            BsonDocument doc = new BsonDocument {
+            var doc = new BsonDocument {
                 { "deviceTypeId", "a" },
                 { "serialNumber", "a12345"}
             };
             var result = mongo.InsertDevice(doc);
-            Console.WriteLine(result.ToString());
             Assert.IsNotNull(result);
             Assert.That(result, Is.TypeOf(typeof(ObjectId)));
         }
 
         [Test]
-        public void DeviceNotInserted_InsertDeviceAndDeleteDevice_DeviceHasBeenDeleted()
+        public void InsertDevice_DeleteDevice_DeviceHasBeenDeleted()
         {
             var mongo = MongoConnector.Instance;
-            BsonDocument doc = new BsonDocument
+            var doc = new BsonDocument
             {
                 { "deviceTypeId", "a" },
                 { "serialNumber", "a12345"}
             };
             //Insert device
             var insertResult = mongo.InsertDevice(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Delete device
             bool deleteResult = false;
@@ -100,18 +110,18 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void DeviceNotInserted_InsertDeviceAndUpdateDevice_DeviceHasBeenUpdated()
+        public void InsertDevice_UpdateDevice_DeviceHasBeenUpdated()
         {
             var mongo = MongoConnector.Instance;
-            BsonDocument doc = new BsonDocument
+            var doc = new BsonDocument
             {
                 { "deviceTypeId", "a" },
                 { "serialNumber", "a12345"}
             };
             //Insert device
             var insertResult = mongo.InsertDevice(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Update device
             doc.AddRange(new BsonDocument { { "updatedDeviceField", "123" } });
@@ -153,15 +163,9 @@ namespace BEIMA.Backend.Test.MongoService
             Assert.IsNull(result);
         }
 
-        [Test]
-        public void ConnectorCreated_CheckIsConnected_TrueReturned()
-        {
-            var mongo = MongoConnector.Instance;
-            var result = mongo.IsConnected();
-            Assert.IsTrue(result);
-        }
+        #endregion
 
-        //DeviceType tests
+        #region DeviceType Tests
 
         [Test]
         public void ConnectorCreated_GetDeviceTypeGivenValidDeviceTypeId_DeviceDocumentReturned()
@@ -173,8 +177,8 @@ namespace BEIMA.Backend.Test.MongoService
                 { "description", "This is a test" }
             };
             var insertResult = mongo.InsertDeviceType(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve the document)
             var retrievedDoc = mongo.GetDeviceType((ObjectId)doc["_id"]);
@@ -192,8 +196,8 @@ namespace BEIMA.Backend.Test.MongoService
                 { "description", "This is a test" }
             };
             var insertResult = mongo.InsertDeviceType(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Test (retrieve all documents)
             var retrievedDocs = mongo.GetAllDeviceTypes();
@@ -202,7 +206,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void DeviceTypeNotInserted_InsertDeviceTypeAndDeleteDeviceType_DeviceTypeHasBeenDeleted()
+        public void InsertDeviceType_DeleteDeviceType_DeviceTypeHasBeenDeleted()
         {
             var mongo = MongoConnector.Instance;
             var doc = new BsonDocument {
@@ -211,8 +215,8 @@ namespace BEIMA.Backend.Test.MongoService
             };
             //Insert device type
             var insertResult = mongo.InsertDeviceType(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Delete device type
             bool deleteResult = false;
@@ -225,7 +229,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [Test]
-        public void DeviceTypeNotInserted_InsertDeviceTypeAndUpdateDeviceType_DeviceTypeHasBeenUpdated()
+        public void InsertDeviceType_UpdateDeviceType_DeviceTypeHasBeenUpdated()
         {
             var mongo = MongoConnector.Instance;
             var doc = new BsonDocument {
@@ -234,8 +238,8 @@ namespace BEIMA.Backend.Test.MongoService
             };
             //Insert device type
             var insertResult = mongo.InsertDeviceType(doc);
-            Assert.IsNotNull(insertResult);
-            Assert.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Update device type
             doc.AddRange(new BsonDocument { { "updatedDeviceTypeField", "123" } });
@@ -276,5 +280,6 @@ namespace BEIMA.Backend.Test.MongoService
             var result = mongo.UpdateDeviceType(null);
             Assert.IsNull(result);
         }
+        #endregion
     }
 }

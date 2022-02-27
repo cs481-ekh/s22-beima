@@ -9,8 +9,8 @@ namespace BEIMA.Backend.Test
 {
     public class UnitTestBase
     {
-        private string? dbName;
-        private string? devicesName;
+        private static string? dbName;
+        private static string? devicesName;
 
         class LocalSettings
         {
@@ -46,8 +46,12 @@ namespace BEIMA.Backend.Test
                 Console.WriteLine(ex.ToString());
             }
 
-            dbName = "beima-test" + Guid.NewGuid().ToString();
-            devicesName = "devices-test" + Guid.NewGuid().ToString();
+            // Prevents the environment variable getting changed when running multiple test classes at the same time
+            if(dbName == null && devicesName == null)
+            {
+                dbName = "beima-test" + Guid.NewGuid().ToString();
+                devicesName = "devices-test" + Guid.NewGuid().ToString();
+            }
 
             Environment.SetEnvironmentVariable("DatabaseName", dbName);
             Environment.SetEnvironmentVariable("DeviceCollectionName", devicesName);

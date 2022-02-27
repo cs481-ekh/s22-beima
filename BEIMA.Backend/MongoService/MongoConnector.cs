@@ -54,6 +54,10 @@ namespace BEIMA.Backend.MongoService
             return (client != null);
         }
 
+        /// <summary>
+        /// Private internal method for checking if mongo is connected, will throw an exception if it is not connected.
+        /// </summary>
+        /// <exception cref="Exception">Throws exception if Mongo client is not connected.</exception>
         private void CheckIsConnected()
         {
             if (!IsConnected())
@@ -62,6 +66,7 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
+        #region Device Methods
         /// <summary>
         /// Inserts a device into the "devices" collection
         /// </summary>
@@ -189,7 +194,9 @@ namespace BEIMA.Backend.MongoService
                 return null;
             }
         }
+        #endregion
 
+        #region DeviceType Methods
         /// <summary>
         /// Gets a device type from the "deviceTypes" collection, given an objectID.
         /// </summary>
@@ -317,6 +324,6 @@ namespace BEIMA.Backend.MongoService
                 return null;
             }
         }
-
+        #endregion
     }
 }
