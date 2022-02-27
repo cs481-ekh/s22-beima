@@ -1,3 +1,44 @@
+## Minutes: 2022-02-24
+### scribe: Joseph
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+### Standup
+* Tom
+    * Working on GET request for frontend 
+    * Check if the given object is valid and parse object
+    * Will have a PR up very soon
+
+* Kenny 
+    * Made device/device types list view pages
+    * Will need to communicate with Tom on type formatting
+    * View individual device/device type pages created
+    * Made help page
+
+* Ashlyn
+    * Doing add device/device type pages
+    * Drag/Drop features with file type validation
+    * Device types can add/remove associated fields
+    * Primarily UI for now
+
+* Joe
+    * Working on the device create endpoint
+    * Hitting a few issues but will try to get a PR up tonight
+    * Will continue to work on remaining device endpoints
+
+* Keelan
+    * New functionality for device types in mongo connector
+    * Possibly work on device type class for back end
+    * Will have most everything done by the weekend
+
+### Other Items
+* Remove duplicate titles on pages.
+* Ashlyn/Kenny need to coordinate UI themes
+
 ## Minutes: 2022-02-22
 ### scribe: Joseph
 ### Attendees:

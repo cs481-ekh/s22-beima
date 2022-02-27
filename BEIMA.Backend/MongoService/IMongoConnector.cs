@@ -20,5 +20,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetDevice(ObjectId objectId);
+
+        /// <summary>
+        /// Inserts a device into the "devices" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertDevice(BsonDocument doc);
     }
 }
