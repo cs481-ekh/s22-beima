@@ -34,7 +34,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
-        [Test, Explicit("Must have a cleared database.")]
+        [Test]
         public async Task DeviceNotInDatabase_AddDevice_CreatesNewDevice()
         {
             // ARRANGE
@@ -80,7 +80,7 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Location?.Latitude, Is.EqualTo(device.Location.Latitude));
         }
 
-        [Test]
+        [Test, Explicit("Must have a cleared database.")]
         public async Task DevicesInDatabase_GetDeviceList_ReturnsDeviceList()
         {
             // ARRANGE
