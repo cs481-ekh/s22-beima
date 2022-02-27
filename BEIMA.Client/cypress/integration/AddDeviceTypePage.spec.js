@@ -55,9 +55,9 @@ describe("Verify custom fields can be deleted", () => {
   it('Add new fields', () => {
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#newField').scrollIntoView().type("field1")
-    cy.get("#addField").scrollIntoView().click('left')
+    cy.get("#addField").scrollIntoView().click()
     cy.get('#newField').scrollIntoView().type("field2")
-    cy.get("#addField").scrollIntoView().click('left')
+    cy.get("#addField").scrollIntoView().click()
     cy.get('#customFields').then(($custfields) => {
       cy.wrap($custfields).contains('field1')
       cy.wrap($custfields).contains('field2')
@@ -72,17 +72,17 @@ describe("Verify custom fields get cleared when Add Device Type is clicked", () 
   it('Add new fields', () => {
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#newField').scrollIntoView().type("field1")
-    cy.get("#addField").scrollIntoView().click('left')
+    cy.get("#addField").scrollIntoView().click()
     cy.get('#newField').scrollIntoView().type("field2")
-    cy.get("#addField").scrollIntoView().click('left')
+    cy.get("#addField").scrollIntoView().click()
     cy.get('#newField').scrollIntoView().type("field3")
-    cy.get("#addField").scrollIntoView().click('left')
+    cy.get("#addField").scrollIntoView().click()
     cy.get('#customFields').then(($custfields) => {
       cy.wrap($custfields).contains('field1')
       cy.wrap($custfields).contains('field2')
       cy.wrap($custfields).contains('field3')
     })
-    cy.get("#addDeviceType").scrollIntoView().click('left')
+    cy.get("#addDeviceType").scrollIntoView().click()
     cy.get('#customFields').then(($custfields) => {
       cy.wrap($custfields).children().should('not.contain', 'field1')
       cy.wrap($custfields).children().should('not.contain', 'field2')
