@@ -17,8 +17,6 @@ const DevicePage = () => {
     setPageName('View Device')
   },[setPageName])
   
-
-
   const mockDeviceCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
@@ -90,8 +88,6 @@ const DevicePage = () => {
     }
    loadData()
   },[])
-
-
 
   /**
    * Renders an card styled input that lets a user change a field's input

@@ -15,7 +15,6 @@ const DeviceTypePage = () => {
     setPageName('View Device Type')
   },[setPageName])
 
-
   const mockCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(1000)
@@ -55,8 +54,6 @@ const DeviceTypePage = () => {
     }
     loadData()
   },[])
-
-
 
   /**
    * Renders a card styled field in a device type.
