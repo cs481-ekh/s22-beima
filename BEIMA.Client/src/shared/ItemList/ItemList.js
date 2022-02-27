@@ -74,7 +74,6 @@ const ItemList = ({title, list, RenderItem, loading}) => {
   return (
     <Card className="card">
       <Card.Body>
-        <Card.Title>{title}</Card.Title>
         {loading ? <LoadingItemList/>: <List list={list} RenderItem={RenderItem}/>}
       </Card.Body>
     </Card>

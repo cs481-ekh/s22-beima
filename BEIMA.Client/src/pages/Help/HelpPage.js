@@ -8,7 +8,7 @@ const HelpPage = () => {
 
   
   useEffect(() => {
-    setPageName('Home')
+    setPageName('Help')
   },[setPageName])
 
 

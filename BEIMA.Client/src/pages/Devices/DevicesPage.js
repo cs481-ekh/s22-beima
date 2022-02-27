@@ -9,7 +9,7 @@ const DevicesPage = () => {
   const [setPageName] = useOutletContext();
 
   useEffect(() => {
-    setPageName('Home')
+    setPageName('Devices')
   },[setPageName])
   
   const mockCall = async () => {

@@ -13,7 +13,7 @@ const DeviceTypePage = () => {
 
   useEffect(() => {
     setPageName('View Device Type')
-  },[])
+  },[setPageName])
 
 
   const mockCall = async () => {
