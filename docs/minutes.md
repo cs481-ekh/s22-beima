@@ -1,3 +1,93 @@
+## Minutes: 2022-02-24
+### scribe: Joseph
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+### Standup
+* Tom
+    * Working on GET request for frontend 
+    * Check if the given object is valid and parse object
+    * Will have a PR up very soon
+
+* Kenny 
+    * Made device/device types list view pages
+    * Will need to communicate with Tom on type formatting
+    * View individual device/device type pages created
+    * Made help page
+
+* Ashlyn
+    * Doing add device/device type pages
+    * Drag/Drop features with file type validation
+    * Device types can add/remove associated fields
+    * Primarily UI for now
+
+* Joe
+    * Working on the device create endpoint
+    * Hitting a few issues but will try to get a PR up tonight
+    * Will continue to work on remaining device endpoints
+
+* Keelan
+    * New functionality for device types in mongo connector
+    * Possibly work on device type class for back end
+    * Will have most everything done by the weekend
+
+### Other Items
+* Remove duplicate titles on pages.
+* Ashlyn/Kenny need to coordinate UI themes
+
+## Minutes: 2022-02-22
+### scribe: Joseph
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+
+### Standup
+* Tom
+    * Db connection github issues?
+    * Worked on "backend of the frontend"/hitting API from frontend
+    * Clarifying questions on react export
+    * Need to test post content
+
+* Ashlyn
+    * Finished doing shared components
+    * Put up a new PR to tidy up some css things
+    * Added function to capitalize words of title
+    * Wrote up coding standards document
+
+* Kenny 
+    * List views for device/device types
+    * Single item views for device/device types
+    * Setup Azure server stuff
+
+* Joe
+    * Added device GET endpoint
+    * Endpoint infastructure/test in place
+    * Will continue working on the remaining endpoints for device
+    * Start on device type endpoints if there's time
+
+* Keelan
+    * Keelan finishing up pull request changes for device object
+    * Create C# object for device types next
+    * Add mongoDB support for device types
+
+### Other Items
+* Reassign tasks (had some confusion on who was working on what)
+* Look at sharded device view page depending on type
+* Device endpoints should be split up instead of using query string
+* Start using a sprint branch instead of pushing straight to master
+
+### Meetings
+* Reschedule demo day for next week
+* Will not need a Wednesday meeting this week
+* Scheduled next standup for Thursday
+
 ## Minutes: 2022-02-16
 ### scribe: Joseph
 ### Attendees:
