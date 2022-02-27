@@ -34,7 +34,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
-        [Test]
+        [Test, Explicit("Must have a cleared database.")]
         public async Task DeviceNotInDatabase_AddDevice_CreatesNewDevice()
         {
             // ARRANGE
