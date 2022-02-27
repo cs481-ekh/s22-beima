@@ -1,12 +1,11 @@
 import './App.css';
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import {
   BrowserRouter,
   Routes,
   Navigate,
   Route,
   Outlet,
-  useLocation
 } from "react-router-dom";
 import HomePage from './pages/Home/HomePage';
 import HelpPage from './pages/Help/HelpPage';

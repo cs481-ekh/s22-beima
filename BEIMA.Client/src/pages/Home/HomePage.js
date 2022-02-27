@@ -8,7 +8,7 @@ const HomePage = () => {
 
   useEffect(() => {
     setPageName('Home')
-  },[])
+  },[setPageName])
 
   return (
     <div className="App">

@@ -6,9 +6,11 @@ import './HelpPage.css'
 const HelpPage = () => {
   const [setPageName] = useOutletContext();
 
+  
   useEffect(() => {
-    setPageName('Help')
-  },[])
+    setPageName('Home')
+  },[setPageName])
+
 
   return (
     <Card className="pageContent">

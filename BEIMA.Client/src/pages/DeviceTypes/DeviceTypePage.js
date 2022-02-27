@@ -46,11 +46,14 @@ const DeviceTypePage = () => {
     return mapped
   }
 
-  useEffect(async () => {
-    setLoading(true)
-    var type = await mockCall()
-    setDeviceType(type)
-    setLoading(false)
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      var type = await mockCall()
+      setDeviceType(type)
+      setLoading(false)
+    }
+    loadData()
   },[])
 
 

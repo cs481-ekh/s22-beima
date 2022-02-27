@@ -9,9 +9,9 @@ const DevicesPage = () => {
   const [setPageName] = useOutletContext();
 
   useEffect(() => {
-    setPageName('Devices')
-  },[])
-
+    setPageName('Home')
+  },[setPageName])
+  
   const mockCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(1000)
@@ -40,11 +40,14 @@ const DevicesPage = () => {
     return mapped
   }
 
-  useEffect(async () => {
-    setLoading(true)
-    var devices = await mockCall()
-    setLoading(false)
-    setDevices(devices)
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true)
+      var devices = await mockCall()
+      setLoading(false)
+      setDevices(devices)
+    }
+    loadData()
   },[])
 
   const RenderItem = (item) => {
