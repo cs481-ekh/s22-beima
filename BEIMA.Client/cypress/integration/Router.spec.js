@@ -46,7 +46,7 @@ describe("NavBar links route correctly", () => {
   it('Visits Help Page', () => {
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Help").click();
-    cy.url().should('include', '/Help')
+    cy.url().should('include', '/help')
     cy.get('.sharedNavBar').contains('Devices')
     cy.get('.sharedNavBar').contains('Device Types')
     cy.get('.sharedNavBar').contains('Add Device')
