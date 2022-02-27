@@ -46,7 +46,7 @@ namespace BEIMA.Backend.Test
                 Console.WriteLine(ex.ToString());
             }
 
-            // Prevents the environment variable getting changed when running multiple test classes at the same time 
+            // Prevents the environment variable getting changed when running multiple test classes at the same time
             if(dbName == null && devicesName == null)
             {
                 dbName = "beima-test" + Guid.NewGuid().ToString();
