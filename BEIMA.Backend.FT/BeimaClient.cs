@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using static BEIMA.Backend.FT.TestObjects;
 
 namespace BEIMA.Backend.FT
 {
@@ -10,6 +12,16 @@ namespace BEIMA.Backend.FT
     {
         GET,
         POST,
+    }
+
+    public class BeimaException : Exception
+    {
+        public HttpStatusCode StatusCode { get; private set; }
+
+        public BeimaException(string message, HttpStatusCode status) : base(message)
+        {
+            StatusCode = status;
+        }
     }
 
     /// <summary>
@@ -64,8 +76,15 @@ namespace BEIMA.Backend.FT
 
             if (body != null)
             {
-                var jsonObject = JsonConvert.SerializeObject(body);
-                jsonString = new StringContent(jsonObject, Encoding.UTF8, "application/json");
+                if (body is string)
+                {
+                    jsonString = new StringContent((string)body);
+                }
+                else
+                {
+                    var jsonObject = JsonConvert.SerializeObject(body);
+                    jsonString = new StringContent(jsonObject, Encoding.UTF8, "application/json");
+                }
             }
 
             if (!string.IsNullOrEmpty(queryString))
@@ -85,19 +104,41 @@ namespace BEIMA.Backend.FT
                     throw new HttpRequestException($"Invalid request verb: {verb}.");
             }
 
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new BeimaException(content, response.StatusCode);
+            }
+
             return response;
         }
 
         /// <summary>
-        /// Convert response content into C# object.
+        /// Sends a device get request to the BEIMA api.
         /// </summary>
-        /// <param name="response">The given http response message.</param>
-        /// <returns>The response content in the form of a C# object.</returns>
-        public static async Task<object> ExtractObject(HttpResponseMessage response)
+        /// <param name="id">The id of the device.</param>
+        /// <returns>The device with the given id.</returns>
+        public async Task<Device> GetDevice(string id)
         {
-            string content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject(content);
+            var response = await SendRequest($"api/device/{id}", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Device>(content);
+        }
+
+        /// <summary>
+        /// Sends a device post request to the BEIMA api.
+        /// </summary>
+        /// <param name="device">The device to add.</param>
+        /// <returns>The id of the new device.</returns>
+        public async Task<string> AddDevice(Device device)
+        {
+            var response = await SendRequest("api/device", HttpVerb.POST, device);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
         }
 
         /// <summary>
