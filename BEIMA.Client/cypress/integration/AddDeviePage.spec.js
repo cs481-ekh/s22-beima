@@ -15,21 +15,21 @@ describe("Verify Buttons on Add Device Page", () => {
 describe("Verify Data can be entered into fields", () => {
   it('Enter data into Building, Latitude, and Serial Number fields', () => {
     cy.visit('http://localhost:3000/addDevice')
-    cy.get('#Building').type("Student Union Building")
-    cy.get('#Latitude').type("10.3445.2345")
-    cy.get("[id='Serial Number']").type("12345")
+    cy.get('#inputBuilding').scrollIntoView().type("Student Union Building")
+    cy.get('#inputLatitude').scrollIntoView().type("10.3445.2345")
+    cy.get("[id='inputSerial Number']").scrollIntoView().type("12345")
   })
 })
 
 describe("Verify Data in fields is cleared when Add Device is selected", () => {
   it('Enter data, click Add Device, verify fields are empty', () => {
     cy.visit('http://localhost:3000/addDevice')
-    cy.get('#Building').type("Student Union Building")
-    cy.get('#Latitude').type("10.3445.2345")
-    cy.get("[id='Serial Number']").type("12345")
+    cy.get('#inputBuilding').scrollIntoView().type("Student Union Building")
+    cy.get('#inputLatitude').scrollIntoView().type("10.3445.2345")
+    cy.get("[id='inputSerial Number']").scrollIntoView().type("12345")
     cy.get("#addDevice").scrollIntoView().click()
-    cy.get('#Building').should('have.value', '')
-    cy.get('#Latitude').should('have.value', '')
-    cy.get("[id='Serial Number']").should('have.value', '')
+    cy.get('#inputBuilding').should('have.value', '')
+    cy.get('#inputLatitude').should('have.value', '')
+    cy.get("[id='inputSerial Number']").should('have.value', '')
   })
 })
