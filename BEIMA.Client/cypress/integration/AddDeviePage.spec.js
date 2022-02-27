@@ -33,7 +33,7 @@ describe("Verify Data in fields is cleared when Add Device is selected", () => {
     cy.get('#Building').type("Student Union Building")
     cy.get('#Latitude').type("10.3445.2345")
     cy.get("[id='Serial Number']").type("12345")
-    cy.get("#addDevice").click()
+    cy.get("#addDevice").scrollIntoView().click()
     cy.get('#Building').should('have.value', '')
     cy.get('#Latitude').should('have.value', '')
     cy.get("[id='Serial Number']").should('have.value', '')

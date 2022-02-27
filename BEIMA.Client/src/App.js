@@ -21,10 +21,8 @@ function App() {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<HomePage />} />
-
           <Route path="addDevice" element={<AddDevicePage/>}/>
           <Route path="addDeviceType" element={<AddDeviceTypePage/>}/>
-
           <Route path="Help" element={<HelpPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>
