@@ -50,8 +50,8 @@ const AddDeviceTypePage = () => {
   }
 
   // gathers input and puts it into JSON
-  function createJSON(object){
-    let formFields = object.target.form.elements;
+  function createJSON(addButtonEvent){
+    let formFields = addButtonEvent.target.form.elements;
     let attributeValues = {};
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;

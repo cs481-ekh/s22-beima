@@ -30,8 +30,8 @@ const AddDevicePage = () => {
   })
 
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
-  function createJSON(object){
-    let formFields = object.target.form.elements;
+  function createJSON(addButtonEvent){
+    let formFields = addButtonEvent.target.form.elements;
     let fieldValues = {};
 
     for(let i = 0; i < formFields.length; i++){
