@@ -112,7 +112,7 @@ const AddDeviceTypePage = () => {
             <TypeFieldList fields={deviceFields} mandatory={false} />
           </ListGroup>
           <Form>
-            <Form.Group controlId='newField'>
+            <Form.Group>
               <Form.Label>Add Custom Field</Form.Label>
               <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" value={field} onChange={(event) => {field = event.target.value}}/> 
             </Form.Group>

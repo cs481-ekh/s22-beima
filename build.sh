@@ -36,6 +36,8 @@ cd ../
 cd ./BEIMA.Client || { echo "Changing directories failed"; exit 1; }
 # Install node_modules
 npm install react-scripts || { echo "Installing node_modules failed"; exit 1; }
+# Install icons module
+npm install react-icons --save || { echo "Installing icon module failed"; exit 1; }
 # Install version 0.6.5 of jest-watch-typeahead
 npm add --exact jest-watch-typeahead@0.6.5 || { echo "Installing version 0.6.5 of jest-watch-typeahead failed"; exit 1; }
 # Install start-server-and-test node_module
