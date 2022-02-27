@@ -1,9 +1,8 @@
 import styles from './ItemCard.module.css'
-import { Card, Placeholder, Button, Form,  FormControl, InputGroup, FloatingLabel } from 'react-bootstrap'
+import { Card, Placeholder } from 'react-bootstrap'
 import { IoArrowBack } from "react-icons/io5";
 
 import {Link} from "react-router-dom"
-import { useState } from "react"
 
 
 const LoadingContent = () => {
@@ -18,8 +17,6 @@ const LoadingContent = () => {
 }
 
 export const ItemCard = ({title, RenderItem, loading, route}) => {
-  const [canEdit, setCanEdit] = useState(false)
-
   return (
     <Card>
       <Card.Body>

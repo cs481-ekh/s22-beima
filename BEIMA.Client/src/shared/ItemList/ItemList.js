@@ -1,4 +1,4 @@
-import { Card, Placeholder, ListGroup, ListGroupItem } from "react-bootstrap"
+import { Card, Placeholder, ListGroup } from "react-bootstrap"
 import { MdMoreHoriz } from "react-icons/md";
 import { IoChevronDownSharp, IoChevronForward } from "react-icons/io5";
 import { useState } from "react"

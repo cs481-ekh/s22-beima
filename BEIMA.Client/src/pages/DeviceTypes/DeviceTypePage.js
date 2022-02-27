@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react"
-import {ItemCard, ItemFieldList} from "../../shared/ItemCard/ItemCard"
+import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DeviceTypePage.module.css'
 import { useOutletContext } from 'react-router-dom';
-import { Form, Card,FormGroup, FormLabel,Button, FormControl, InputGroup, DropdownButton} from "react-bootstrap";
-import { MdDelete } from "react-icons/md";
+import { Form, Card, Button, FormControl} from "react-bootstrap";
 import { IoAdd } from "react-icons/io5";
+import { v4 as uuidv4 } from 'uuid';
 
 const DeviceTypePage = () => {
   const [deviceType, setDeviceType] = useState(null)
@@ -25,10 +25,10 @@ const DeviceTypePage = () => {
       description: "The FitnessGram PACER Test is a multistage aerobic capacity test that progressively gets more difficult as it continues.",
       notes: "There are no notes",
       fields: {
-        Weight: "Int",
-        Dimensions: "String",
-        Color: "String",
-        Manufactorer: "String"
+        fieldIdOne: "Dimensions",
+        fieldIdTwo: "Weight",
+        fieldIdThree: "Color",
+        fieldIdFour: "Manufactorer"
       }
     }
     
@@ -38,7 +38,9 @@ const DeviceTypePage = () => {
       name: data.name,
       description: data.description,
       notes: data.notes,
-      fields: data.fields
+      fields: data.fields,
+      addedFields:{},
+      deletedFields:[]
     }
 
     return mapped
@@ -54,28 +56,17 @@ const DeviceTypePage = () => {
 
 
 
-  const Field = ({field, type, editable}) => {
+  const Field = ({field, value, editable, deleteField}) => {
     return (
       <Card className={styles.field}>
         <Card.Body >
-          <div className={[styles.row, 'mb-3'].join(' ')}>
-            <Form.Group>
-              {editable}
+            <Form.Group className="mb-3">
               <Form.Label>Field Name</Form.Label>
-              <FormControl required type="text" plaintext={!editable} disabled={!editable} size="sm" placeholder="Field Name" defaultValue={field}/>
-            </Form.Group>              
-            
-            <Form.Group>
-              <Form.Label>Allowed Values</Form.Label>
-              <Form.Select required size="sm" disabled={!editable} defaultValue={type}>
-                <option value="String">Character and Numbers</option>
-                <option value="Int">Numbers</option>
-              </Form.Select>
-            </Form.Group>
-          </div>         
+              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" defaultValue={value}/>
+            </Form.Group>                
           { editable ? 
            <div className={styles.deleteButton}>
-              <Button variant="danger" >
+              <Button variant="danger" onClick={() => deleteField(field)}>
                 Delete
               </Button>
             </div>
@@ -86,38 +77,75 @@ const DeviceTypePage = () => {
   }  
 
 
-  const RenderItem = ({item}) => {
+  const RenderItem = ({item, setItem}) => {
     const [editable, setEditable] = useState(false)
-    const [itemCopy, setItemCopy] = useState({...item})
-    const [numFields, setNumFields] = useState(Object.keys(item.fields).length)
+    
+    const [description, setDescription] = useState(item.description)
+    const [notes, setNotes] = useState(item.notes)
+    const [fields, setFields] = useState({...item.fields})
+    const [addedFields, setAddedFields] = useState({...item.addedFields})
+    const [deletedFields, setDeletedFields] = useState([...item.deletedFields])
+    
 
-    const handleSubmit = (event) => {
-      const form = event.currentTarget;
-      console.log(form)
+    const handleSubmit = () => {
+      const result = {
+        description: description,
+        notes: notes,
+        fields: fields,
+        addedFields: addedFields,
+        deletedFields: deletedFields
+      }
+      //call endpoint
+      setItem(result)
+      console.log(result)
     }
 
     const addField = () => {
-      const key = `field${numFields+1}`
-      
-      let fields = {...itemCopy.fields}
-      fields[key] = "String"
-      const temp = {...itemCopy, fields}
-      setItemCopy(temp)
-      setNumFields(Object.keys(temp.fields).length)
+      const key = uuidv4()
+      let temp = {...addedFields}
+      temp[key] = ""
+      setAddedFields(temp)
+    }
+
+    const deleteField = (field) => {
+      let tempF = {...fields}
+      let tempAf = {...addedFields}
+      let tempDf = [...deletedFields]
+
+      if(field in tempF){
+        delete tempF[field]
+        tempDf.push(field)
+        setFields(tempF)
+        setDeletedFields(tempDf)
+      } else {
+        delete tempAf[field]
+        setAddedFields(tempAf)
+      }
+    }
+
+    const onDescriptionChange = (event) => {
+      setDescription(event.target.value)
+    }
+
+    const onNotesChange = (event) => {
+      setNotes(event.target.value)
     }
 
     const cancel = () => {
-      setItemCopy({...item})
-      setNumFields(Object.keys(item.fields).length)
       setEditable(false)
+      setDescription(item.description)
+      setNotes(item.notes)
+      setFields({...item.fields})
+      setAddedFields({...item.addedFields})
+      setDeletedFields([...item.deletedFields])
     }
 
     return (
       <Form className={styles.form}>
         <Form.Group>
-           {editable ? 
-           <div>
-              <Button variant="success" onClick={() => {}}>
+          {editable ? 
+           <div className={styles.buttonRow}>
+              <Button onClick={handleSubmit}>
                 Save
               </Button>
               <Button variant="secondary" onClick={cancel}>
@@ -130,23 +158,24 @@ const DeviceTypePage = () => {
             </Button>
           }
         </Form.Group>
+
         <Form.Group className="mb-3">
           <Form.Label><b>Description</b></Form.Label>
-          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} defaultValue={itemCopy.description}/>
+          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} defaultValue={description} onChange={onDescriptionChange}/>
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label><b>Notes</b></Form.Label>
-          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} defaultValue={itemCopy.notes}/>
+          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} defaultValue={notes}  onChange={onNotesChange}/>
         </Form.Group>
 
         <Form.Group  className="mb-3">
           <Form.Label><b>Manditory Fields</b></Form.Label>
           <div className={styles.fields}>
-            <Field field="Manufacturer" type="String" editable={false}/>
-            <Field field="Model Number" type="String" editable={false}/>
-            <Field field="Serial Number" type="String" editable={false}/>
-            <Field field="Year Manufactured" type="Int" editable={false}/>
+            <Field field="manId" value="Manufacturer" editable={false}/>
+            <Field field="modId" value="Model Number" editable={false}/>
+            <Field field="serId" value="Serial Number" editable={false}/>
+            <Field field="yearId" value="Year Manufactured" editable={false}/>
           </div>
         </Form.Group>
         
@@ -160,7 +189,8 @@ const DeviceTypePage = () => {
         </Form.Group>
         <Form.Group>
           <div className={styles.fields}>
-            {Object.keys(itemCopy.fields).map((field, i) => <Field key={i} field={field} editable={editable} type={itemCopy.fields[field]}/>)}
+            {Object.keys(fields).map((field, i) => <Field key={i} field={field} editable={editable} value={fields[field]} deleteField={deleteField}/>)}
+            {Object.keys(addedFields).map((field, i) => <Field key={i} field={field} editable={editable} value={addedFields[field]} deleteField={deleteField}/>)}
           </div>  
         </Form.Group>
       </Form>
@@ -172,7 +202,7 @@ const DeviceTypePage = () => {
       <div className={styles.item}>
         <ItemCard 
           title={loading ? 'Loading' : deviceType.name}
-          RenderItem={<RenderItem item={deviceType} />} 
+          RenderItem={<RenderItem item={deviceType} setItem={setDeviceType}/>} 
           loading={loading}
           route="/deviceTypes"
         />
