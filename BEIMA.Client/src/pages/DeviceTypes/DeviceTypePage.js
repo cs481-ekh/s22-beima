@@ -21,8 +21,8 @@ const DeviceTypePage = () => {
     await sleep(1000)
     var data = {
       deviceTypeId: 54,
-      name: `Test Item Type #32`,
-      description: "The FitnessGram PACER Test is a multistage aerobic capacity test that progressively gets more difficult as it continues.",
+      name: `Batteries`,
+      description: "Battery devices are used to store power that other devices can use.",
       notes: "There are no notes",
       fields: {
         fieldIdOne: "Dimensions",
@@ -61,11 +61,11 @@ const DeviceTypePage = () => {
 
   const Field = ({field, value, editable, deleteField}) => {
     return (
-      <Card className={styles.field}>
+      <Card>
         <Card.Body >
             <Form.Group className="mb-3">
               <Form.Label>Field Name</Form.Label>
-              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" defaultValue={value}/>
+              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value}/>
             </Form.Group>                
           { editable ? 
            <div className={styles.deleteButton}>
@@ -127,6 +127,7 @@ const DeviceTypePage = () => {
     }
 
     const onDescriptionChange = (event) => {
+      console.log('adsf')
       setDescription(event.target.value)
     }
 
@@ -145,7 +146,7 @@ const DeviceTypePage = () => {
 
     return (
       <Form className={styles.form}>
-        <Form.Group>
+        <Form.Group className="mb-3">
           {editable ? 
            <div className={styles.buttonRow}>
               <Button onClick={handleSubmit}>
@@ -164,12 +165,12 @@ const DeviceTypePage = () => {
 
         <Form.Group className="mb-3">
           <Form.Label><b>Description</b></Form.Label>
-          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} defaultValue={description} onChange={onDescriptionChange}/>
+          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} value={description} onChange={onDescriptionChange}/>
         </Form.Group>
 
         <Form.Group className="mb-3">
           <Form.Label><b>Notes</b></Form.Label>
-          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} defaultValue={notes}  onChange={onNotesChange}/>
+          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} value={notes}  onChange={onNotesChange}/>
         </Form.Group>
 
         <Form.Group  className="mb-3">
