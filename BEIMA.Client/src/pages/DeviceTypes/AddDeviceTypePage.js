@@ -35,7 +35,7 @@ const AddDeviceTypePage = () => {
 
   useEffect(() => {
       setPageName('Add Device Type')
-  },[]);
+  });
 
   // allows the user to remove a field they added
   function removeField(field) {

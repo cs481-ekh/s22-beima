@@ -27,7 +27,7 @@ const AddDevicePage = () => {
 
   useEffect(() => {
     setPageName('Add Device')
-  },[])
+  })
 
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(event){
@@ -53,7 +53,7 @@ const AddDevicePage = () => {
 
     setDeviceFields(defaultDeviceFields);
     setFullDeviceJSON(fieldValues);
-    console.log(fieldValues);
+    console.log(fullDeviceJSON);
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
   } 
