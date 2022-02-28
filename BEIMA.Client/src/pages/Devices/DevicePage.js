@@ -134,16 +134,15 @@ const DevicePage = () => {
    /**
    * Creates an input that allows a user to upload an image
    * 
-   * @param editable: can this input be used
    * @param onImageChange: function used to update image in higher level <RenderItem>
    * @returns html
    */
-  const ImageUpload = ({editable, onImageChange}) => {
+  const ImageUpload = ({onImageChange}) => {
     const filetypes = ".png, .tiff, .tiff, .jpg, .jpeg, .png, .gif, .raw"
     return (
       <Form.Group className="mb-3" controlId='imageUpload'>
         <Form.Label><b>Upload Device Image</b></Form.Label>
-        <Form.Control type="file" disabled={!editable} multiple={false} onChange={onImageChange} accept={filetypes}/>
+        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes}/>
       </Form.Group>
     )
   }
@@ -151,11 +150,10 @@ const DevicePage = () => {
   /**
    * Creates an input that allows a user to upload files
    * 
-   * @param editable: can this input be used
    * @param onDocumentChange: function used to update documents in higher level <RenderItem>
    * @returns html
    */
-  const FileUpload = ({editable, onDocumentchange}) => {
+  const FileUpload = ({onDocumentchange}) => {
     const ref = useRef();
     
     const docChange = (event) => {
@@ -166,7 +164,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='fileUpload'>
         <Form.Label><b>Upload Documents</b></Form.Label>
-        <Form.Control type="file" multiple={true} disabled={!editable} ref={ref} onChange={(event) => docChange(event)}/>
+        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)}/>
       </Form.Group>
     )
   }
@@ -375,7 +373,8 @@ const DevicePage = () => {
           </Card>
         </Form.Group>
 
-        <ImageUpload type="Device Image" editable={editable} onImageChange={onImageChange}/>
+        {editable ? <ImageUpload type="Device Image"  onImageChange={onImageChange}/> : null }
+        
 
         <Form.Group>
           <Form.Label><b>Documents</b></Form.Label>
@@ -386,7 +385,7 @@ const DevicePage = () => {
           {addedDocs.map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )}
         </div>
 
-        <FileUpload editable={editable} onDocumentchange={onDocumentChange}/>
+        {editable ? <FileUpload editable={editable} onDocumentchange={onDocumentChange}/> : null }
 
         <FormItem editable={editable} id="deviceNotes" label="Device Notes" value={notes} onChange={onChange}/>
         
