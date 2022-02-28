@@ -53,4 +53,20 @@ describe('Device Type Page', () => {
     cy.get('[id=description]').should('be.enabled')
     cy.get('[id=notes]').should('be.enabled')
   })
+  it('Resets fields on Cancel Button Click', () => {
+    cy.visit('http://localhost:3000/deviceTypes/5')
+    cy.wait(1250)
+    cy.get('[id=editbtn]').click()
+
+    cy.get('[id=description]').scrollIntoView().clear().type("Test Desc")
+    cy.get('[id=notes]').scrollIntoView().clear().type("Test Notes")
+
+    cy.get('[id=description]').should('have.value', 'Test Desc')
+    cy.get('[id=notes]').should('have.value', 'Test Notes')
+
+    cy.get('[id=cancelbtn]').click()
+
+    cy.get('[id=description]').should('not.have.value', 'Test Desc')
+    cy.get('[id=notes]').should('not.have.value', 'Test Notes')
+  })
 })
