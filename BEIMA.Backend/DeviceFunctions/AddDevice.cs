@@ -36,6 +36,7 @@ namespace BEIMA.Backend.DeviceFunctions
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
+                log.LogInformation((string)data.manufacturer);
                 device = new Device(ObjectId.GenerateNewId(),
                                     ObjectId.Parse((string)data.deviceTypeId),
                                     (string)data.deviceTag,
