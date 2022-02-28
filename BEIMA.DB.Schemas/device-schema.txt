@@ -1,4 +1,5 @@
 {
+    "_id": ObjectId,
     "deviceTypeId": String,
     "deviceTag": String,
     "manufacturer": String,
