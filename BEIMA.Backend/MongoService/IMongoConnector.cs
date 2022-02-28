@@ -22,6 +22,12 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetDevice(ObjectId objectId);
 
         /// <summary>
+        /// Gets a device from the "devices" collection, given an objectID.
+        /// </summary>
+        /// <returns>BsonDocument that was requested</returns>
+        public List<BsonDocument> GetAllDevices();
+
+        /// <summary>
         /// Inserts a device into the "devices" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
