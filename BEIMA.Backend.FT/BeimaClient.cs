@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -127,6 +128,17 @@ namespace BEIMA.Backend.FT
             var response = await SendRequest($"api/device/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
+        }
+
+        /// <summary>
+        /// Sends a device get list request to the BEIMA api.
+        /// </summary>
+        /// <returns>The device list.</returns>
+        public async Task<List<Device>> GetDeviceList()
+        {
+            var response = await SendRequest("api/device_list", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Device>>(content);
         }
 
         /// <summary>

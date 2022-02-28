@@ -1,5 +1,5 @@
 {
-    "buildingId": String,
+    "_id": String,
     "name": String,
     "number": String,
     "notes": String,

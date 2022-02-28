@@ -8,7 +8,7 @@ const NavBar = () => {
     <div className="sharedNavBar">
       <Container>
         <Col>
-          <Row className="logo"><img src={logo} className="bsu-logo" alt="bsu-logo" /></Row>
+          <div className="logo"><img src={logo} className="bsu-logo" alt="bsu-logo" /></div>
           <Row><div className="sharedHeader">BEIMA</div></Row>
           <Row>
             <Col className="pageLinks">
@@ -19,10 +19,10 @@ const NavBar = () => {
                 <Link to="/deviceTypes" className="sharedText">Device Types</Link>
               </Row>
               <Row className="pageLink">
-                <Link to="Add Device" className="sharedText">+ Add Device</Link>
+                <Link to="/addDevice" className="sharedText">+ Add Device</Link>
               </Row>
               <Row className="pageLink">
-                <Link to="Add Device Types" className="sharedText">+ Add Device Type</Link>
+                <Link to="/addDeviceType" className="sharedText">+ Add Device Type</Link>
               </Row>
               <Row className="pageLink">
                 <Link to="help" className="sharedText">? Help</Link>
