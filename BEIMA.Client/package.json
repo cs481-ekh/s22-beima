@@ -14,6 +14,7 @@
     "react-bootstrap": "^2.1.2",
     "react-bootstrap-icons": "^1.7.2",
     "react-dom": "^17.0.2",
+    "react-icons": "^4.3.1",
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
     "start-server-and-test": "^1.14.0",
@@ -25,7 +26,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "cypress:test": "cypress run -b chrome && cypress run -b firefox && cypress run -b edge",
-    "cypress": "start-server-and-test start http://localhost:3000 cypress:test",
+    "cypress:chrome" : "cypress run -b chrome",
+    "cypress": "start-server-and-test start http://localhost:3000 cypress:chrome",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

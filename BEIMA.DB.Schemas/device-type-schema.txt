@@ -1,5 +1,5 @@
 {
-    "deviceTypeId": String,
+    "_id": ObjectId,
     "name": String,
     "description": String,
     "notes": String,

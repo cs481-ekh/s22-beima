@@ -17,6 +17,7 @@ env:
   DatabaseName: beima
   DeviceCollectionName: devices
   AzureCosmosConnection: ${{ secrets.AZURE_COSMOS_CONNECTION }}
+  DeviceTypeCollectionName: deviceTypes
 
 jobs:
   build:

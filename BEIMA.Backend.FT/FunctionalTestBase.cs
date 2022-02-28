@@ -1,18 +1,27 @@
-﻿using NUnit.Framework;
+﻿using MongoDB.Driver;
+using NUnit.Framework;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.FT
 {
     /// <summary>
     /// Base FT class that all FT classes should inherit from.
     /// </summary>
-    [SetUpFixture]
     public class FunctionalTestBase
     {
         public BeimaClient TestClient = new BeimaClient("http://localhost:7071");
 
+        class LocalSettings
+        {
+            public bool IsEncrypted { get; set; }
+            public Dictionary<string, string>? Values { get; set; }
+        }
+
         [OneTimeSetUp]
         public void BaseOneTimeSetUp()
         {
+            // HTTP CLIENT SETUP
+
             if (TestClient != null)
             {
                 TestClient.Dispose();
