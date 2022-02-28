@@ -11,6 +11,20 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class DeviceFT : FunctionalTestBase
     {
+        [SetUp]
+        public async Task SetUp()
+        {
+            // Delete all the devices in the database
+            var deviceList = await TestClient.GetDeviceList();
+            foreach (var device in deviceList)
+            {
+                if (device?.Id is not null)
+                {
+                    await TestClient.DeleteDevice(device.Id);
+                }
+            }
+        }
+
         [TestCase("xxx")]
         [TestCase("1234")]
         [TestCase("1234567890abcdef1234567x")]
@@ -80,7 +94,7 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Location?.Latitude, Is.EqualTo(device.Location.Latitude));
         }
 
-        [Test, Explicit("Must have a cleared database.")]
+        [Test]
         public async Task DevicesInDatabase_GetDeviceList_ReturnsDeviceList()
         {
             // ARRANGE
@@ -172,7 +186,39 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
             }
         }
+        
+        public async Task DeviceInDatabase_DeleteDevice_DeviceDeletedSuccessfully()
+        {
+            // ARRANGE
+            var device = new Device
+            {
+                DeviceTag = "D-4",
+                DeviceTypeId = "473830495728394823103456",
+                Location = new Location
+                {
+                    BuildingId = "a19830495728394829103986",
+                    Latitude = "111.001",
+                    Longitude = "8.242",
+                    Notes = "Outside",
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "44tsec",
+                Notes = "Giberish",
+                SerialNum = "dvsd",
+                YearManufactured = 2000,
+            };
 
+            var deviceId = await TestClient.AddDevice(device);
+            Assume.That(await TestClient.GetDevice(deviceId), Is.Not.Null);
+
+            // ACT
+            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId));
+
+            // ASSERT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        
         [Test]
         public async Task DeviceInDatabase_UpdateDevice_ReturnsUpdatedDevice()
         {
