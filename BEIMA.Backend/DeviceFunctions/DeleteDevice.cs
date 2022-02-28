@@ -5,12 +5,21 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
-using System.Net;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
+    /// <summary>
+    /// Handles a delete request involving a single device.
+    /// </summary>
     public static class DeleteDevice
     {
+        /// <summary>
+        /// Handles device delete request.
+        /// </summary>
+        /// <param name="req">The http request.</param>
+        /// <param name="id">The id of the device.</param>
+        /// <param name="log">The logger to log to.</param>
+        /// <returns>An http response indicating whether or not the deletion was successful.</returns>
         [FunctionName("DeleteDevice")]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "device/{id}/delete")] HttpRequest req,
