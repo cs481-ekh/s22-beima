@@ -163,10 +163,10 @@ const DeviceTypePage = () => {
         <Form.Group className="mb-3">
           {editable ? 
            <div className={styles.buttonRow}>
-              <Button onClick={handleSubmit}>
+              <Button id="savebtn" onClick={handleSubmit}>
                 Save
               </Button>
-              <Button variant="secondary" onClick={cancel}>
+              <Button variant="secondary" id="cancelbtn" onClick={cancel}>
                 Cancel
               </Button>
            </div>
@@ -200,7 +200,7 @@ const DeviceTypePage = () => {
         <Form.Group  className={[styles.between, "mb-3" ].join(' ')}>
           <Form.Label><b>Additional Fields</b></Form.Label>
           {editable ? 
-            <Button variant="primary"  onClick={addField} >
+            <Button variant="primary" id="addbtn" onClick={addField} >
              <IoAdd size={20} color="#fff"/>
             </Button>
           : null}

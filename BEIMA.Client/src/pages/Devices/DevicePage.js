@@ -347,10 +347,10 @@ const DevicePage = () => {
         <Form.Group className="mb-3">
           {editable ? 
            <div className={styles.buttonRow}>
-              <Button onClick={submit}>
+              <Button id="savebtn" onClick={submit}>
                 Save
               </Button>
-              <Button variant="secondary" onClick={cancel}>
+              <Button variant="secondary" id="cancelbtn" onClick={cancel}>
                 Cancel
               </Button>
            </div>
