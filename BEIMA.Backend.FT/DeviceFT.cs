@@ -186,7 +186,7 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
             }
         }
-        
+        [Test]
         public async Task DeviceInDatabase_DeleteDevice_DeviceDeletedSuccessfully()
         {
             // ARRANGE
