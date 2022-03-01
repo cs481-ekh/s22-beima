@@ -1,0 +1,49 @@
+.loadingItem {
+  padding: 14px 0px;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.loadingItem span {
+  border-radius: 5px;
+}
+
+.item {
+  /* padding: 14px 0px; */
+  padding: 10px 0px 5px 0px;
+  border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.itemName {
+  font-weight: bold;
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+}
+
+.hover:hover  {
+  background: #ebedf7;
+  box-shadow: 0 0 0px 5px #ebedf7;
+  cursor:pointer;
+  user-select: none;
+}
+
+.hidden {
+  display: none;
+}
+
+.itemContent {
+  padding: 0px 5px;
+}
+
+.smallFont {
+  font-size: small;
+}
+
+.description {
+  padding-top:5px;
+}

@@ -18,6 +18,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
     "start-server-and-test": "^1.14.0",
+    "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.17"
   },

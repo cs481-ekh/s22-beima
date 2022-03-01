@@ -1,0 +1,41 @@
+.item {
+  margin: 10px 5% 0px 5%;
+}
+
+.form {
+  border-top: 1px solid rgba(0,0,0,.125);
+  padding-top: 15px;
+}
+
+.buttonRow {
+  display:flex;
+  flex-direction: row;
+  gap:10px;
+}
+
+.fields {
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap:10px;
+}
+
+.image {
+  display: flex;
+  justify-content: center;
+}
+
+.documentCard {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.deleteDocBtn:hover  {
+  background: #ebedf7;
+  box-shadow: 0 0 0px 5px #ebedf7;
+  cursor:pointer;
+  user-select: none;
+}
