@@ -12,7 +12,7 @@ const DevicesPage = () => {
     setPageName('Devices')
   },[setPageName])
   
-  const dbCall = async () => {
+  const mockCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(1000)
     let data = []
@@ -43,7 +43,7 @@ const DevicesPage = () => {
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      let devices = await dbCall()
+      let devices = await mockCall()
       setLoading(false)
       setDevices(devices)
     }
