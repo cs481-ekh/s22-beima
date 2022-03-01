@@ -14,7 +14,7 @@ export default async (deviceDetails) => {
         return error.response;
     }
   });
-console.log(dbCall);
+
   const response = {
     status: dbCall.status,
     response: dbCall.data
