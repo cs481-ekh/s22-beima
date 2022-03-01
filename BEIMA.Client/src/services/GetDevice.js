@@ -7,7 +7,7 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The device id in the database to retrieve
  * @return JSON document from the DB wrapped in a JSON object with the HTTP response code
  */
-export default async GetDevice(deviceId) => {
+export default async getDevice(deviceId) => {
   //performs the get and returns the data or error
   const dbCall = await axios.get(API_URL + "device/" + deviceId).catch(function (error) {
       if (error.response) {
