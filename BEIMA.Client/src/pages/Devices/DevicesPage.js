@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import styles from  "./DevicesPage.module.css"
 import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext } from 'react-router-dom';
-import GetDeviceList from "../../service/GetDeviceList";
 
 const DevicesPage = () => {
   const [devices, setDevices] = useState([]);
@@ -14,9 +13,19 @@ const DevicesPage = () => {
   },[setPageName])
   
   const dbCall = async () => {
-    let data = await GetDeviceList();
-    console.log(data);
-
+    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+    await sleep(1000)
+    let data = []
+    for(let i = 0; i < 5; i++){
+      data.push({
+        _id: i,
+        name: `Test Item #${i}`,
+        deviceType: "Batteries",
+        buildingName: "Student Union Building",
+        serialNumber: "234asfdsa",
+        manufacturer: "Tesla"
+      })
+    }
     // Map data into format supported by list
     let mapped = data.map(item => {
       return {
