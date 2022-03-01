@@ -186,7 +186,7 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
             }
         }
-
+        
         [Test]
         public async Task DeviceInDatabase_DeleteDevice_DeviceDeletedSuccessfully()
         {
@@ -218,6 +218,57 @@ namespace BEIMA.Backend.FT
             // ASSERT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+        
+        [Test]
+        public async Task DeviceInDatabase_UpdateDevice_ReturnsUpdatedDevice()
+        {
+            // ARRANGE
+            var origDevice = new Device
+            {
+                DeviceTag = "E-6",
+                DeviceTypeId = "abc830495728312323103456",
+                Location = new Location
+                {
+                    BuildingId = "cab830495728394829103986",
+                    Latitude = "11.001",
+                    Longitude = "61.234",
+                    Notes = "Near",
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "avv3ar",
+                Notes = "Giberish",
+                SerialNum = "3dvs",
+                YearManufactured = 2012,
+            };
+
+            var deviceId = await TestClient.AddDevice(origDevice);
+            var updateItem = await TestClient.GetDevice(deviceId);
+
+            updateItem.Notes = "Updated Notes.";
+
+            // ACT
+            var updatedDevice = await TestClient.UpdateDevice(updateItem);
+
+            // ASSERT
+            Assert.That(updatedDevice, Is.Not.Null);
+            Assert.That(updatedDevice.Notes, Is.Not.EqualTo(origDevice.Notes));
+
+            Assert.That(updatedDevice.LastModified?.Date, Is.Not.EqualTo(updateItem.LastModified?.Date));
+            Assert.That(updatedDevice.LastModified?.User, Is.EqualTo(updateItem.LastModified?.User));
+
+            Assert.That(updatedDevice.DeviceTag, Is.EqualTo(updateItem.DeviceTag));
+            Assert.That(updatedDevice.DeviceTypeId, Is.EqualTo(updateItem.DeviceTypeId));
+            Assert.That(updatedDevice.Manufacturer, Is.EqualTo(updateItem.Manufacturer));
+            Assert.That(updatedDevice.ModelNum, Is.EqualTo(updateItem.ModelNum));
+            Assert.That(updatedDevice.SerialNum, Is.EqualTo(updateItem.SerialNum));
+            Assert.That(updatedDevice.Notes, Is.EqualTo(updateItem.Notes));
+            Assert.That(updatedDevice.YearManufactured, Is.EqualTo(updateItem.YearManufactured));
+
+            Assert.That(updatedDevice.Location?.BuildingId, Is.EqualTo(updateItem.Location?.BuildingId));
+            Assert.That(updatedDevice.Location?.Notes, Is.EqualTo(updateItem.Location?.Notes));
+            Assert.That(updatedDevice.Location?.Latitude, Is.EqualTo(updateItem.Location?.Latitude));
+            Assert.That(updatedDevice.Location?.Longitude, Is.EqualTo(updateItem.Location?.Longitude));
         }
     }
 }
