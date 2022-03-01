@@ -2,7 +2,7 @@ import axios from 'axios';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
- * GET API call to get a list of devices in the database 
+ * GET API call to get a list of devices in the database and filters which fields are returned
  *
  * @return JSON with list of all devices or error message on failure
  */
