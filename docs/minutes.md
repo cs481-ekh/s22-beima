@@ -1,3 +1,36 @@
+## Mintues: 2022-03-2
+### scribe: kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Assigned Roles:
+	Kenny: Scribe
+	Keelan: Scrum Master
+	Joseph: Product Owner
+### Spring 2 Planning
+#### Sprint Goals/Tasks
+* Finish up js connector calls to existing CRUD endpoints
+* Finish up device type endpoints
+* Finish upload/edit/view device functionality
+* Setup Storage infrastrucutre for files/photos
+	* Create CRUD endpoints for photos/images
+	* Create storage service to interface between backend and minio server
+	* Add to build/test script
+* Reseach minio as object storage solution
+	* Determine if it can act as an S3 compatible file server
+	* Determine how to send and get objects 
+* Create validation on input fields
+* Create submit warning popup
+	* Shared popup component
+	* Page specific text 	
+* Create basic user mangagement functionaltiy and page
+* Create building CRUD endpoints
+* Fix CORS crossite error
+
+
 ## Minutes: 2022-03-1
 ### scribe: Kenny
 ### Attendees:
