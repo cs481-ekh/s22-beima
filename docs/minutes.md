@@ -1,3 +1,31 @@
+## Minutes: 2022-03-1
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Sprint 1 Retrospective Minutes:
+#### What went wrong
+	Pr size
+	Inexperience with technology
+	Co-dependencies causing blocking
+
+#### What can be improved:
+	Communication
+	Not silioing
+#### What went well:
+	Pull request feedback
+	Reaching out to help fix blockers
+	The amount of work finished
+### New Task Discussions
+	Research minio object storage
+	Fix cors errors
+	Add frontend validation
+	Pages for building, users, and auth
+	Backend integration with frontend
+
 ## Minutes: 2022-02-24
 ### scribe: Joseph
 ### Attendees:
