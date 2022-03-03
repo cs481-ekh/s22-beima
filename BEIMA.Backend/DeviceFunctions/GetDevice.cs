@@ -28,7 +28,6 @@ namespace BEIMA.Backend
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device get request.");
-            ObjectResult response;
 
             // Process as device GET request for retrieving device information.
             if (string.Equals(req.Method, "get", StringComparison.OrdinalIgnoreCase))
@@ -36,8 +35,7 @@ namespace BEIMA.Backend
                 // Check if the id is valid.
                 if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
                 {
-                    response = new BadRequestObjectResult(Resources.InvalidIdMessage);
-                    return response;
+                    return new BadRequestObjectResult(Resources.InvalidIdMessage);
                 }
 
                 // Retrieve the device from the database.
@@ -52,14 +50,12 @@ namespace BEIMA.Backend
 
                 // Return the device.
                 var dotNetObj = BsonTypeMapper.MapToDotNetValue(doc);
-                response = new OkObjectResult(dotNetObj);
+                return new OkObjectResult(dotNetObj);
             }
             else
             {
-                response = new BadRequestObjectResult("Expected a GET request.");
+                return new BadRequestObjectResult("Expected a GET request.");
             }
-
-            return response;
         }
     }
 }
