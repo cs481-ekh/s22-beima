@@ -2,7 +2,7 @@
 # Change directory to BEIMA.Backend.Test
 cd ./BEIMA.Backend
 # Start up the backend API locally
-func start BEIMA.Backend.csproj --csharp --silent &
+func start BEIMA.Backend.csproj --csharp &
 # Give enough time for local API to finish starting up
 sleep 20
 # Run all backend tests
