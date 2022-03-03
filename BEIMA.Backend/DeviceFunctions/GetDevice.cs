@@ -6,8 +6,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using System;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace BEIMA.Backend
 {
@@ -55,7 +53,6 @@ namespace BEIMA.Backend
                 // Return the device.
                 var dotNetObj = BsonTypeMapper.MapToDotNetValue(doc);
                 response = new OkObjectResult(dotNetObj);
-
             }
             else
             {
