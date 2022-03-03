@@ -24,7 +24,7 @@ namespace BEIMA.Backend
         /// <param name="log">The logger to log to.</param>
         /// <returns>An http response containing the device information.</returns>
         [FunctionName("GetDevice")]
-        public static async Task<IActionResult> Run(
+        public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device/{id}")] HttpRequest req,
             string id,
             ILogger log)
@@ -49,9 +49,7 @@ namespace BEIMA.Backend
                 // Check that the device returned is not null.
                 if (doc is null)
                 {
-                    response = new ObjectResult(Resources.DeviceNotFoundMessage);
-                    response.StatusCode = (int)HttpStatusCode.NotFound;
-                    return response;
+                    return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
                 }
 
                 // Return the device.
