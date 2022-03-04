@@ -24,10 +24,20 @@ const AddDevicePage = () => {
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
+  const [latOk, setLatOk] = useState(true);
+  const [lonOk, setLonOk] = useState(true);
 
   useEffect(() => {
     setPageName('Add Device')
   })
+  
+  useEffect(() => {
+    console.log("latOk", latOk);
+  }, [latOk]);
+  
+  useEffect(() => {
+    console.log("lonOk", lonOk);
+  }, [lonOk]);
 
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(addButtonEvent){
@@ -40,7 +50,7 @@ const AddDevicePage = () => {
 
       if(fieldNames.includes(formName)){
         let formJSON =  {[formName] : formFields[i].value};
-        formFields[i].value = "";
+        //formFields[i].value = "";
         Object.assign(fieldValues, formJSON);
       } else if (formName === "Device Image"){
         setDeviceImage(formFields[i].files[0]);
@@ -51,10 +61,7 @@ const AddDevicePage = () => {
       }
     }
     
-    if (!latLonOk()) {
-      //set validation css
-      return;
-    }
+
     
     
 
@@ -63,31 +70,36 @@ const AddDevicePage = () => {
     console.log(fullDeviceJSON);
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
+
+    console.log("calling check");
+    validateLatLon();
+    if (!latOk || !lonOk) {
+      console.log("bad");
+      //set validation css
+      return;
+    }
     
     //call add device api
   } 
   
-  function latLonOk(){
-    let result = true;
+  function validateLatLon(){
     const MAX_LAT = 90;
     const MIN_LAT = -90;
     const MAX_LON = 180;
     const MIN_LON = -180;
     
     let coordFormat = /^((\-?|\+?)?\d+(\.\d+)?)$/;
-    
-    fullDeviceJSON.Latitude = "93.603007486265000000000000000000000000000000000035";    
-    fullDeviceJSON.Longitude = "-116.1959187981161";
-    
-    if (parseFloat(fullDeviceJSON.Latitude) > MAX_LAT || parseFloat(fullDeviceJSON.Latitude) < MIN_LAT || !coordFormat.test(fullDeviceJSON.Latitude)) {
-      result = false;
+
+    if (parseFloat(fullDeviceJSON.Latitude) > MAX_LAT || parseFloat(fullDeviceJSON.Latitude) < MIN_LAT || fullDeviceJSON.Latitude == undefined ? false : !coordFormat.test(fullDeviceJSON.Latitude)) {
+      console.log("set bad lat");
+      setLatOk(false);
     }
     
-    if (fullDeviceJSON.Longitude > MAX_LON || fullDeviceJSON.Longitude < MIN_LON || !(coordFormat.test(fullDeviceJSON.Longitude))) {
-      result = false;
+    if (fullDeviceJSON.Longitude > MAX_LON || fullDeviceJSON.Longitude < MIN_LON || fullDeviceJSON.Longitude == undefined ? false : !coordFormat.test(fullDeviceJSON.Longitude)) {
+      console.log("set bad long");
+      setLonOk(false);
+      //console.log(lonOk);
     }
-    
-    return result;
   }
 
   return (
