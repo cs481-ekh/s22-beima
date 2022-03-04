@@ -28,7 +28,7 @@
 	* Update list pages to call backend API
 
 ### Other Notes
-#### Tomorrow's Sponsorship Metting
+#### Tomorrow's Sponsorship Meeting
 * Should ask about longitude and latitude radius for validation
 
 ## Mintues: 2022-03-2
