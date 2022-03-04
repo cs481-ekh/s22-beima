@@ -152,7 +152,7 @@ namespace BEIMA.Backend.FT
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
-        
+
         /// <summary>
         /// Sends a device delete request to the BEIMA api.
         /// </summary>
@@ -174,6 +174,18 @@ namespace BEIMA.Backend.FT
             var response = await SendRequest($"api/device/{device.Id}/update", HttpVerb.POST, device);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
+        }
+
+        /// <summary>
+        /// Sends a device type post request to the BEIMA api.
+        /// </summary>
+        /// <param name="deviceType">The device type to add.</param>
+        /// <returns>The id of the new device type.</returns>
+        public async Task<string> AddDeviceType(DeviceTypeAdd deviceType)
+        {
+            var response = await SendRequest("api/device_type", HttpVerb.POST, deviceType);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
         }
 
         /// <summary>
