@@ -1,5 +1,38 @@
+## Minutes: 2022-03-3
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Standup
+* Kenny
+	* Fix Cors issue
+	* Fix typo and remove Homepage
+	* Work on storage provider
+
+* Ashlyn
+	* Get PR from pulled over work up
+	* Update pages to call the backend API
+
+* Keelan
+	* Add file and photo properties to the device schema
+
+* Joseph
+	* Get PR for device endpoints up
+	* Work on device type endpoints
+
+* Tom
+	* Add longitude and latitude validation\
+	* Update list pages to call backend API
+
+### Other Notes
+#### Tomorrow's Sponsorship Metting
+* Should ask about longitude and latitude radius for validation
+
 ## Mintues: 2022-03-2
-### scribe: kenny
+### scribe: Kenny
 ### Attendees:
 	Joseph Moore
 	Kenny Miller
