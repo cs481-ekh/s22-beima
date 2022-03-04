@@ -50,6 +50,14 @@ const AddDevicePage = () => {
         formFields[i].value = "";
       }
     }
+    
+    if (!latLonOk()) {
+      //disable add device button
+      //set validation css
+      //leave function
+    }
+    
+    
 
     setDeviceFields(defaultDeviceFields);
     setFullDeviceJSON(fieldValues);
@@ -57,10 +65,11 @@ const AddDevicePage = () => {
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
     
-    validateLatLon();
+    //call add device api
   } 
   
-  function validateLatLon(){
+  function latLonOk(){
+    let result = true;
     const MAX_LAT = 90;
     const MIN_LAT = -90;
     const MAX_LON = 180;
@@ -72,12 +81,14 @@ const AddDevicePage = () => {
     fullDeviceJSON.Longitude = "-116.1959187981161";
     
     if (parseFloat(fullDeviceJSON.Latitude) > MAX_LAT || parseFloat(fullDeviceJSON.Latitude) < MIN_LAT || !coordFormat.test(fullDeviceJSON.Latitude)) {
-      console.log("invalid lat");
+      result = false;
     }
     
     if (fullDeviceJSON.Longitude > MAX_LON || fullDeviceJSON.Longitude < MIN_LON || !(coordFormat.test(fullDeviceJSON.Longitude))) {
-      console.log("invalid lon");
+      result = false;
     }
+    
+    return result;
   }
 
   return (
