@@ -1,9 +1,12 @@
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useParams } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DevicePage.module.css'
 import { Form, Card, Button, FormControl, Image} from "react-bootstrap";
 import { TiDelete } from "react-icons/ti";
+import UpdateDevice from "../../services/UpdateDevice.js";
+import DeleteDevice from "../../services/DeleteDevice.js";
+import getDevice from "../../services/GetDevice.js";
 
 const DevicePage = () => {
   const [setPageName] = useOutletContext();
@@ -17,31 +20,11 @@ const DevicePage = () => {
     setPageName('View Device')
   },[setPageName])
   
-  const mockDeviceCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const result = {
-      deviceId: '43adx',
-      deviceTypeId: '54',
-      deviceTag: 'Battery',
-      manufacturer: 'Tesla',
-      modelNum: '1231dx',
-      serialNum: '423dss',
-      yearManufactured: 2022,
-      notes: 'It is very heavy',
-      location: {
-        buildingId: 'Student Union Building',
-        notes: "",
-        latitude: '43.60149984813998',
-        longitude: '-116.2013672986418'
-      },
-      fields: {
-        customFieldUid1: 'value1',
-        customFieldUid2: 'value2',
-        customFieldUid3: 'value3'
-      }
-    }
-    return result
+  let { id } = useParams();
+
+  const DeviceCall = async () => {
+    const result = await getDevice(id);
+    return result.response;
   }
 
   const mockDeviceImageCall = async () => {
@@ -77,7 +60,7 @@ const DevicePage = () => {
 
   useEffect(() => {
     const loadData = async() => {
-      const [device, image, documents] = await Promise.all([mockDeviceCall(), mockDeviceImageCall(), mockDeviceDocumentsCall()])
+      const [device, image, documents] = await Promise.all([DeviceCall(), mockDeviceImageCall(), mockDeviceDocumentsCall()])
       const deviceType = await mockDeviceTypeCall(device.deviceId)
   
       setDevice(device)
@@ -205,6 +188,8 @@ const DevicePage = () => {
   const RenderItem = ({device, setDevice, deviceType, image, setImage, documents, setDocuments}) => {
     const [editable, setEditable] = useState(false)
     
+    const [deviceID] = useState(device._id)
+    const [deviceTypeID] = useState(device.deviceTypeId)
     const [tag, setTag] = useState(device.deviceTag)
     const [manufacturer, setManufacturer] = useState(device.manufacturer)
     const [modelNum, setModelNum] = useState(device.modelNum)
@@ -227,19 +212,21 @@ const DevicePage = () => {
 
     const submit = () => {
       const newDevice = {
-        tag:tag,
+        _id: deviceID,
+        deviceTypeId: deviceTypeID,
+        deviceTag:tag,
         manufacturer:manufacturer,
         modelNum:modelNum,
         serialNum:serialNum,
         yearManufactured:yearManufactured,
         notes:notes,
+        fields : fields,
         location: {
           buildingId: buildingId,
           notes: locNotes,
           latitude: lat,
           longitude: long
-        },
-        fields : fields
+        }
       }
 
       const newImage = imageCopy
@@ -248,7 +235,8 @@ const DevicePage = () => {
       const delDocs = removedDocs
 
       // Hit endpoints here
-      console.log(newDevice)
+      UpdateDevice(newDevice);
+      console.log(newDevice);
       console.log(newImage)
       console.log(docs)
       console.log(newDocs)
@@ -419,7 +407,7 @@ const DevicePage = () => {
   return (
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${device.deviceTag}:${device.deviceId}`}
+        title={loading ? 'Loading' : `${device.deviceTag}`}
         RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
         loading={loading}
         route="/devices"
