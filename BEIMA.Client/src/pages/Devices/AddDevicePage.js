@@ -61,19 +61,23 @@ const AddDevicePage = () => {
   } 
   
   function validateLatLon(){
-  console.clear();
-  console.log("validate");
-        fullDeviceJSON.Latitude = "43.603007486265035";    
+    const MAX_LAT = 90;
+    const MIN_LAT = -90;
+    const MAX_LON = 180;
+    const MIN_LON = -180;
+    
+    let coordFormat = /^((\-?|\+?)?\d+(\.\d+)?)$/;
+    
+    fullDeviceJSON.Latitude = "93.603007486265000000000000000000000000000000000035";    
     fullDeviceJSON.Longitude = "-116.1959187981161";
-  console.log(fullDeviceJSON);
-  console.log(fullDeviceJSON.Latitude);
-  console.log(fullDeviceJSON.Longitude);
-
-  let validLatLonRegex = /^((\-?|\+?)?\d+(\.\d+)?)$/;
-  
-  console.log(validLatLonRegex.test(fullDeviceJSON.Longitude));
-  console.log(validLatLonRegex.test(fullDeviceJSON.Latitude));
-  
+    
+    if (parseFloat(fullDeviceJSON.Latitude) > MAX_LAT || parseFloat(fullDeviceJSON.Latitude) < MIN_LAT || !coordFormat.test(fullDeviceJSON.Latitude)) {
+      console.log("invalid lat");
+    }
+    
+    if (fullDeviceJSON.Longitude > MAX_LON || fullDeviceJSON.Longitude < MIN_LON || !(coordFormat.test(fullDeviceJSON.Longitude))) {
+      console.log("invalid lon");
+    }
   }
 
   return (
