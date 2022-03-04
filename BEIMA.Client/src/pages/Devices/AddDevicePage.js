@@ -56,7 +56,19 @@ const AddDevicePage = () => {
     console.log(fullDeviceJSON);
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
+    
+    validateLatLon();
   } 
+  
+  function validateLatLon(){
+  console.log("validate");
+  console.log(fullDeviceJSON);
+  console.log(fullDeviceJSON.Latitude);
+  let validLatLonRegex = '(^((\\-?|\\+?)?\\d+(\\.\\d+)?),\s*((\\-?|\\+?)?\d+(\\.\\d+)?)$)';
+  
+  console.log(fullDeviceJSON.Latitude.test(validLatLonRegex));
+  
+  }
 
   return (
     <div className={styles.fieldform}>
