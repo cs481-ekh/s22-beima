@@ -61,12 +61,17 @@ const AddDevicePage = () => {
   } 
   
   function validateLatLon(){
+  console.clear();
   console.log("validate");
   console.log(fullDeviceJSON);
   console.log(fullDeviceJSON.Latitude);
-  let validLatLonRegex = '(^((\\-?|\\+?)?\\d+(\\.\\d+)?),\s*((\\-?|\\+?)?\d+(\\.\\d+)?)$)';
   
-  console.log(fullDeviceJSON.Latitude.test(validLatLonRegex));
+      fullDeviceJSON.Latitude = "43.603007486265035";    
+    fullDeviceJSON.Longitude = "-116.1959187981161";
+  let validLatLonRegex = /^((\-?|\+?)?\d+(\.\d+)?),\s*((\-?|\+?)?\d+(\.\d+)?)$/;
+  
+  console.log(validLatLonRegex.test(fullDeviceJSON.Longitude));
+  console.log(fullDeviceJSON.Latitude.match(validLatLonRegex));
   
   }
 
