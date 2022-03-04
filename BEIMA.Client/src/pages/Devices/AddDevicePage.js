@@ -52,9 +52,8 @@ const AddDevicePage = () => {
     }
     
     if (!latLonOk()) {
-      //disable add device button
       //set validation css
-      //leave function
+      return;
     }
     
     
