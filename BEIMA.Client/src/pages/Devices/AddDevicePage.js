@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import {  Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
+import { Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
 import FormList from '../../shared/FormList/FormList.js';
@@ -20,27 +20,47 @@ const AddDevicePage = () => {
   }
 
   const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
+  const [form, setForm] = useState({})
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
-  const [latOk, setLatOk] = useState(true);
-  const [lonOk, setLonOk] = useState(true);
+  const [errors, setErrors] = useState({})
+  
+  const setField = (field, value) => {
+    setForm({
+      ...form,
+      [field]: value
+    })
+    // Check and see if errors exist, and remove them from the error object:
+    if ( !!errors[field] ) setErrors({
+      ...errors,
+      [field]: null
+    })
+  }
 
   useEffect(() => {
     setPageName('Add Device')
   })
   
-  useEffect(() => {
-    console.log("latOk", latOk);
-  }, [latOk]);
+//  const handleSubmit = e => {
+//    e.preventDefault()
+//    // get our new errors
+//    //const newErrors = findFormErrors()
+//    // Conditional logic:
+//    if ( Object.keys(newErrors).length > 0 ) {
+//      // We got errors!
+//      setErrors(newErrors)
+//    } else {
+//      // No errors! Put any logic here for the form submission!
+//      alert('Thank you for your feedback!')
+//    }
+//  }
   
-  useEffect(() => {
-    console.log("lonOk", lonOk);
-  }, [lonOk]);
-
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(addButtonEvent){
+    let newErrors = {};
+    
     let formFields = addButtonEvent.target.form.elements;
     let fieldValues = {};
 
@@ -50,6 +70,20 @@ const AddDevicePage = () => {
 
       if(fieldNames.includes(formName)){
         let formJSON =  {[formName] : formFields[i].value};
+        
+        
+        if (formName=='Latitude' || formName=='Longitude') {
+          newErrors = validateLatLon(newErrors, formName, formFields[i].value);
+        }
+
+        
+
+
+      
+        
+        //console.log(formName);
+        //console.log(formFields[i].value);
+        //console.log(formJSON);
         //formFields[i].value = "";
         Object.assign(fieldValues, formJSON);
       } else if (formName === "Device Image"){
@@ -68,39 +102,26 @@ const AddDevicePage = () => {
     setDeviceFields(defaultDeviceFields);
     setFullDeviceJSON(fieldValues);
     console.log(fullDeviceJSON);
-    console.log(deviceImage);
-    console.log(deviceAdditionalDocs);
-
-    console.log("calling check");
-    validateLatLon();
-    if (!latOk || !lonOk) {
-      console.log("bad");
-      //set validation css
-      return;
-    }
-    
-    //call add device api
-  } 
-  
-  function validateLatLon(){
-    const MAX_LAT = 90;
-    const MIN_LAT = -90;
-    const MAX_LON = 180;
-    const MIN_LON = -180;
-    
-    let coordFormat = /^((\-?|\+?)?\d+(\.\d+)?)$/;
-
-    if (parseFloat(fullDeviceJSON.Latitude) > MAX_LAT || parseFloat(fullDeviceJSON.Latitude) < MIN_LAT || fullDeviceJSON.Latitude == undefined ? false : !coordFormat.test(fullDeviceJSON.Latitude)) {
-      console.log("set bad lat");
-      setLatOk(false);
-    }
-    
-    if (fullDeviceJSON.Longitude > MAX_LON || fullDeviceJSON.Longitude < MIN_LON || fullDeviceJSON.Longitude == undefined ? false : !coordFormat.test(fullDeviceJSON.Longitude)) {
-      console.log("set bad long");
-      setLonOk(false);
-      //console.log(lonOk);
-    }
+    //findFormErrors(fieldNames);
   }
+  
+  function validateLatLon(newErrors, formName, value){
+    const maxLat = 90;
+    const maxLon = 180;
+    const curentMaxVal = formName == 'Latitude' ? maxLat : maxLon;
+    
+    let errorText = '<latLon> is invalid. Must be a decimal number between -<value> and <value>';
+    
+    //test that it's a number, and inside the bounds for each
+    let valueOk = isFinite(value) && Math.abs(value) <= (formName == 'Latitude' ? maxLat : maxLon);
+    
+    if (!valueOk) {
+      newErrors[formName] = errorText.replace('<latLon>', formName).replaceAll('<value>', curentMaxVal);
+    }
+
+    return newErrors;
+  }
+  
 
   return (
     <div className={styles.fieldform}>
@@ -132,7 +153,12 @@ const AddDevicePage = () => {
             <ImageFileUpload type="Additional Documents" multiple={true}/>
             <br/>
             <h4>Fields</h4>
-            <FormList fields={Object.keys(deviceFields)}/>
+            {Object.keys(deviceFields).map(element =>
+                <Form.Group key={element} id={element}>
+                  <Form.Label>{element}</Form.Label><Form.Control.Feedback type='invalid'> { errors.element } </Form.Control.Feedback>
+                  <Form.Control id={"input" + element} type="text" name={element} placeholder={"Enter " + element} onChange={ e => setField(element, e.target.value) } isInvalid={ !!errors.element }/>
+                </Form.Group>
+              )}
           </Form>
         </Card.Body>
       </Card>
