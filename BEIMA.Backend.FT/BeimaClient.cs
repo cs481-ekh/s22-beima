@@ -177,6 +177,18 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sends a device type get request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the device type.</param>
+        /// <returns>The device type with the given id.</returns>
+        public async Task<DeviceType> GetDeviceType(string id)
+        {
+            var response = await SendRequest($"api/device_type/{id}", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<DeviceType>(content);
+        }
+
+        /// <summary>
         /// Sends a device type post request to the BEIMA api.
         /// </summary>
         /// <param name="deviceType">The device type to add.</param>
