@@ -5,9 +5,10 @@ import styles from './AddDevicePage.module.css';
 import FormList from '../../shared/FormList/FormList.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 
+
 const AddDevicePage = () => {
   // this will be replaced with API call based on selected device type to get the fields
-  const defaultDeviceFields = {
+  const currentDeviceFields = {
     "Building": "",
     "Longitude": "",
     "Latitude": "",
@@ -19,50 +20,23 @@ const AddDevicePage = () => {
     "Notes": ""
   }
 
-  const [deviceFields, setDeviceFields] = useState(defaultDeviceFields);
-  const [form, setForm] = useState({})
+  const [deviceFields, setDeviceFields] = useState(currentDeviceFields);
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
-  const [errors, setErrors] = useState({})
+  const [currentFormValues, setCurrentFormValues] = useState();  
+  const [errors, setErrors] = useState(currentDeviceFields);
   
-  const setField = (field, value) => {
-    setForm({
-      ...form,
-      [field]: value
-    })
-    // Check and see if errors exist, and remove them from the error object:
-    if ( !!errors[field] ) setErrors({
-      ...errors,
-      [field]: null
-    })
-  }
-
   useEffect(() => {
     setPageName('Add Device')
   })
   
-//  const handleSubmit = e => {
-//    e.preventDefault()
-//    // get our new errors
-//    //const newErrors = findFormErrors()
-//    // Conditional logic:
-//    if ( Object.keys(newErrors).length > 0 ) {
-//      // We got errors!
-//      setErrors(newErrors)
-//    } else {
-//      // No errors! Put any logic here for the form submission!
-//      alert('Thank you for your feedback!')
-//    }
-//  }
-  
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(addButtonEvent){
-    let newErrors = {};
-    
     let formFields = addButtonEvent.target.form.elements;
     let fieldValues = {};
+    let newErrors = {};
 
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
@@ -71,19 +45,14 @@ const AddDevicePage = () => {
       if(fieldNames.includes(formName)){
         let formJSON =  {[formName] : formFields[i].value};
         
-        
-        if (formName=='Latitude' || formName=='Longitude') {
-          newErrors = validateLatLon(newErrors, formName, formFields[i].value);
+        //lat lon validation
+        if (formName == 'Latitude' || formName == 'Longitude') {
+          const coordMax = formName == 'Latitude' ? 90 : 180;
+          if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
+            newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
+          }
         }
-
         
-
-
-      
-        
-        //console.log(formName);
-        //console.log(formFields[i].value);
-        //console.log(formJSON);
         //formFields[i].value = "";
         Object.assign(fieldValues, formJSON);
       } else if (formName === "Device Image"){
@@ -94,35 +63,18 @@ const AddDevicePage = () => {
         formFields[i].value = "";
       }
     }
-    
 
-    
-    
-
-    setDeviceFields(defaultDeviceFields);
+    setDeviceFields(currentDeviceFields);
     setFullDeviceJSON(fieldValues);
-    console.log(fullDeviceJSON);
-    //findFormErrors(fieldNames);
-  }
-  
-  function validateLatLon(newErrors, formName, value){
-    const maxLat = 90;
-    const maxLon = 180;
-    const curentMaxVal = formName == 'Latitude' ? maxLat : maxLon;
-    
-    let errorText = '<latLon> is invalid. Must be a decimal number between -<value> and <value>';
-    
-    //test that it's a number, and inside the bounds for each
-    let valueOk = isFinite(value) && Math.abs(value) <= (formName == 'Latitude' ? maxLat : maxLon);
-    
-    if (!valueOk) {
-      newErrors[formName] = errorText.replace('<latLon>', formName).replaceAll('<value>', curentMaxVal);
+
+    if ( Object.keys(newErrors).length > 0 ) {
+      setErrors(newErrors);
+    } else {
+      setErrors({});
+      //alert('add device, refresh page, reset form...');
     }
-
-    return newErrors;
   }
   
-
   return (
     <div className={styles.fieldform}>
       <Card>
@@ -140,9 +92,9 @@ const AddDevicePage = () => {
               </Dropdown>
               </Col>
               <Col>
-              <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
-                Add Device
-              </Button>
+                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
+                  Add Device
+                </Button>
               </Col>
             </Row>
             <br/>
@@ -153,12 +105,15 @@ const AddDevicePage = () => {
             <ImageFileUpload type="Additional Documents" multiple={true}/>
             <br/>
             <h4>Fields</h4>
-            {Object.keys(deviceFields).map(element =>
+            <div>
+              {Object.keys(deviceFields).map(element =>
                 <Form.Group key={element} id={element}>
-                  <Form.Label>{element}</Form.Label><Form.Control.Feedback type='invalid'> { errors.element } </Form.Control.Feedback>
-                  <Form.Control id={"input" + element} type="text" name={element} placeholder={"Enter " + element} onChange={ e => setField(element, e.target.value) } isInvalid={ !!errors.element }/>
+                  <Form.Label>{element}</Form.Label>
+                    <Form.Control id={"input" + element} type="text" name={element} placeholder={"Enter " + element} isInvalid={ errors[element] }/>
+                  <Form.Control.Feedback type='invalid'> { errors[element] }</Form.Control.Feedback>
                 </Form.Group>
               )}
+            </div>
           </Form>
         </Card.Body>
       </Card>
