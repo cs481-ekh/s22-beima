@@ -44,6 +44,12 @@ namespace BEIMA.Backend.MongoService
         [BsonElement("lastModified")]
         public BsonDocument LastModified { get; set; }
 
+        [BsonElement("files")]
+        public BsonArray Files { get; set; }
+
+        [BsonElement("photos")]
+        public BsonArray Photos { get; set; }
+
         /// <summary>
         /// Empty constructor, this allows for a device to be instantiated through Object Initializers.
         /// </summary>
@@ -52,6 +58,8 @@ namespace BEIMA.Backend.MongoService
             Fields = new BsonDocument();
             Location = new BsonDocument();
             LastModified = new BsonDocument();
+            Files = new BsonArray();
+            Photos = new BsonArray();
         }
 
         /// <summary>
@@ -78,6 +86,8 @@ namespace BEIMA.Backend.MongoService
             Fields = new BsonDocument();
             Location = new BsonDocument();
             LastModified = new BsonDocument();
+            Files = new BsonArray();
+            Photos = new BsonArray();
         }
 
         /// <summary>
@@ -163,5 +173,24 @@ namespace BEIMA.Backend.MongoService
             LastModified.Set("user", user);
         }
 
+        public void AddFile(string fileUid, string fileName)
+        {
+            var file = new BsonDocument
+            {
+                new BsonElement("fileName", fileName),
+                new BsonElement("link", fileUid)
+            };
+            Files.Add(file);
+        }
+
+        public void AddPhoto(string fileUid, string fileName)
+        {
+            var photo = new BsonDocument
+            {
+                new BsonElement("fileName", fileName),
+                new BsonElement("link", fileUid)
+            };
+            Photos.Add(photo);
+        }
     }
 }
