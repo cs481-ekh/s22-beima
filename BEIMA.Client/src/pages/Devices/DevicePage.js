@@ -1,4 +1,4 @@
-import { useOutletContext, useParams, Navigate, useNavigate } from 'react-router-dom';
+import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DevicePage.module.css'
