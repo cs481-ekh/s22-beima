@@ -20,7 +20,7 @@ const DevicePage = () => {
     setPageName('View Device')
   },[setPageName])
   
-  let { id } = useParams();
+  const { id } = useParams();
 
   const DeviceCall = async () => {
     const result = await getDevice(id);
@@ -30,31 +30,21 @@ const DevicePage = () => {
   const mockDeviceImageCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
-    const url = 'https://cs482storage.blob.core.windows.net/documents/EAStest_600x300.jpg?sp=r&st=2022-02-27T01:10:39Z&se=2022-09-10T08:10:39Z&sv=2020-08-04&sr=b&sig=PuJcp%2BDi0wnAZkLZuyt23Bse92vAUaY56Z3v%2F1AneIA%3D'
+    const url = ''
     return url
   }
 
   const mockDeviceDocumentsCall = async () => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
-    const docs = ['fileA', 'fileB', 'fileC']
+    const docs = []
     return docs
   }
 
   const mockDeviceTypeCall = async(docId) => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
-    const type = {
-      deviceTypeId: 54,
-      name: `Test Item Type #32`,
-      description: "The FitnessGram PACER Test is a multistage aerobic capacity test that progressively gets more difficult as it continues.",
-      notes: "There are no notes",
-      fields: {
-        customFieldUid1: "Dimensions",
-        customFieldUid2: "Weight",
-        customFieldUid3: "Color",
-      }
-    }
+    const type = {}
     return type
   }
 
@@ -356,7 +346,9 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
+              { imageCopy != '' ?
               <Image src={imageCopy} fluid/>
+              : "No image for device"}
             </Card.Body>
           </Card>
         </Form.Group>
@@ -369,7 +361,9 @@ const DevicePage = () => {
         </Form.Group>
 
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
-          {docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )}
+          { docCopy.length > 0 ?
+          docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )
+          : "No documents for device"}
           {addedDocs.map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )}
         </div>
 
@@ -398,7 +392,9 @@ const DevicePage = () => {
           <FormCard editable={editable} id="deviceSerialNumber" label="Serial Number" value={serialNum} onChange={onChange}/>
           <FormCard editable={editable} id="deviceManufacturer" label="Manufacturer" value={manufacturer} onChange={onChange}/>
           <FormCard editable={editable} id="deviceYearManufactured" label="Year Manufactured" value={yearManufactured} onChange={onChange}/>
-          {Object.keys(deviceType.fields).map((key, i) => <FormCard key={i} editable={editable} id={key} label={deviceType.fields[key]} value={fields[key]} onChange={onCustomFieldChange}/>)}
+          { Object.keys(deviceType).length > 0 ?
+          Object.keys(deviceType.fields).map((key, i) => <FormCard key={i} editable={editable} id={key} label={deviceType.fields[key]} value={fields[key]} onChange={onCustomFieldChange}/>)
+          : null}
         </div>
       </Form>
     )
