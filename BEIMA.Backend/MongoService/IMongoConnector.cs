@@ -63,5 +63,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertDeviceType(BsonDocument doc);
+
+        /// <summary>
+        /// Deletes from the "deviceTypes" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteDeviceType(ObjectId objectId);
     }
 }
