@@ -60,7 +60,7 @@ const DevicePage = () => {
       setLoading(false)
     }
    loadData()
-  },[])
+  })
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -355,7 +355,7 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
-              { imageCopy != '' ?
+              { imageCopy !== '' ?
               <Image src={imageCopy} fluid/>
               : "No image for device"}
             </Card.Body>
