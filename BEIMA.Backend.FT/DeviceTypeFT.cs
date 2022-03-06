@@ -13,9 +13,17 @@ namespace BEIMA.Backend.FT
     public class DeviceTypeFT : FunctionalTestBase
     {
         [SetUp]
-        public void SetUp()
+        public async Task SetUp()
         {
-            // TODO: Remove all device types from database during setup
+            // Delete all the device types in the database
+            var deviceTypeList = await TestClient.GetDeviceTypeList();
+            foreach (var deviceType in deviceTypeList)
+            {
+                if (deviceType?.Id is not null)
+                {
+                    await TestClient.DeleteDeviceType(deviceType.Id);
+                }
+            }
         }
 
         [TestCase("xxx")]
@@ -82,7 +90,7 @@ namespace BEIMA.Backend.FT
             Assert.That(getDeviceType.Fields, Contains.Value(device.Fields[2]));
         }
 
-        [Test, Explicit("Need to implement delete endpoint to clear database before testing.")]
+        [Test]
         public async Task DevicesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
         {
             // ARRANGE
@@ -168,6 +176,34 @@ namespace BEIMA.Backend.FT
                 Assert.That(deviceType.LastModified?.Date, Is.Not.Null);
                 Assert.That(deviceType.LastModified?.User, Is.EqualTo("Anonymous"));
             }
+        }
+
+        [Test]
+        public async Task DeviceTypeInDatabase_DeleteDeviceType_DeviceTypeDeletedSuccessfully()
+        {
+            // ARRANGE
+            var deviceType = new DeviceTypeAdd
+            {
+                Description = "Boiler description.",
+                Name = "Boiler",
+                Notes = "Some other boiler notes.",
+                Fields = new List<string>
+                    {
+                        "Type",
+                        "Fuel Input Rate",
+                        "Output",
+                    },
+            };
+
+            var deviceTypeId = await TestClient.AddDeviceType(deviceType);
+            Assume.That(await TestClient.GetDeviceType(deviceTypeId), Is.Not.Null);
+
+            // ACT
+            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDeviceType(deviceTypeId));
+
+            // ASSERT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDeviceType(deviceTypeId));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
     }
 }
