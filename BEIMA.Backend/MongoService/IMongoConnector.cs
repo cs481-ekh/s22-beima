@@ -45,6 +45,12 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument UpdateDevice(BsonDocument doc);
 
         /// <summary>
+        /// Gets a device from the "deviceTypes" collection, given an objectID.
+        /// </summary>
+        /// <returns>BsonDocument that was requested</returns>
+        public List<BsonDocument> GetAllDeviceTypes();
+
+        /// <summary>
         /// Inserts a device into the "deviceTypes" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
