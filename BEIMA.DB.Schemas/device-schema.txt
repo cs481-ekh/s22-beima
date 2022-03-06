@@ -21,5 +21,17 @@
         "customFieldUid1": String,
         "customFieldUid2": String,
         "customFieldUid3": String
-    }
+    },
+    files: [
+        {
+            "fileName": String,
+            "link": String
+        }
+    ],
+    photos: [
+        {
+            "fileName": String,
+            "link": String
+        }
+    ]
 }
