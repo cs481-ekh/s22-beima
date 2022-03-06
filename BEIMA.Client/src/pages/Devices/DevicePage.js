@@ -203,16 +203,16 @@ const DevicePage = () => {
 
     const updateDeviceCall = () => {
       const newDevice = {
-        _id: deviceID,
-        deviceTypeId: deviceTypeID,
+        _id:deviceID,
+        deviceTypeId:deviceTypeID,
         deviceTag:tag,
         manufacturer:manufacturer,
         modelNum:modelNum,
         serialNum:serialNum,
         yearManufactured:yearManufactured,
         notes:notes,
-        fields : fields,
-        location: {
+        fields:fields,
+        location:{
           buildingId: buildingId,
           notes: locNotes,
           latitude: lat,
