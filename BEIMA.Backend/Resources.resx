@@ -125,6 +125,10 @@
     <value>Device could not be found.</value>
     <comment>Error message for when trying to access a device that could not found in the database.</comment>
   </data>
+  <data name="DeviceTypeNotFoundMessage" xml:space="preserve">
+    <value>Device type could not be found.</value>
+    <comment>Error message for when trying to access a device type that could not be found in the database.</comment>
+  </data>
   <data name="InvalidIdMessage" xml:space="preserve">
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>

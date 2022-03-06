@@ -28,7 +28,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         /// <returns>The id of the newly created device type.</returns>
         [FunctionName("AddDeviceType")]
         public static async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "device_type")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "device-type")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device type POST request.");
