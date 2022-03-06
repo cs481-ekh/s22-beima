@@ -37,5 +37,17 @@
                 "\"yearManufactured\": 2004" +
             "}";
 
+        public const string _testDeviceType =
+            "{" +
+                "\"name\": \"Boiler\"," +
+                "\"description\": \"Device type for boilers\"," +
+                "\"notes\": \"Some notes.\"," +
+                "\"fields\": [" +
+                    "\"MaxTemperature\"," +
+                    "\"MinTemperature\"," +
+                    "\"Capacity\"" +
+                "]" +
+            "}";
+
     }
 }

@@ -1,4 +1,5 @@
-﻿using BEIMA.Backend.MongoService;
+﻿using BEIMA.Backend.DeviceTypeFunctions;
+using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -9,23 +10,21 @@ using System.Collections.Generic;
 using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
 
-namespace BEIMA.Backend.Test
+namespace BEIMA.Backend.Test.DeviceTypeFunctions
 {
-    [TestFixture]
-    public class GetDeviceTest : UnitTestBase
+    public class GetDeviceTypeTest : UnitTestBase
     {
-
         #region FailureTests
 
         [Test]
-        public void IdNotInDatabase_GetDevice_ReturnsNotFound()
+        public void IdNotInDatabase_GetDeviceType_ReturnsNotFound()
         {
             // ARRANGE
 
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             var testId = "1234567890abcdef12345678";
-            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns<BsonDocument>(null)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
@@ -35,14 +34,14 @@ namespace BEIMA.Backend.Test
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, testId, logger);
+            var response = GetDeviceType.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
             Assert.That(((NotFoundObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
-            Assert.That(((NotFoundObjectResult)response).Value, Is.EqualTo("Device could not be found."));
+            Assert.That(((NotFoundObjectResult)response).Value, Is.EqualTo("Device type could not be found."));
         }
 
         [TestCase("")]
@@ -53,7 +52,7 @@ namespace BEIMA.Backend.Test
         {
             // ARRANGE
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(id))))
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == new ObjectId(id))))
                   .Returns<BsonDocument>(null)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
@@ -62,10 +61,10 @@ namespace BEIMA.Backend.Test
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, id, logger);
+            var response = GetDeviceType.Run(request, id, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
             Assert.That(((BadRequestObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
@@ -83,13 +82,15 @@ namespace BEIMA.Backend.Test
 
             var testId = "1234567890abcdef12345678";
 
-            var dbDevice = new Device(new ObjectId(testId), ObjectId.GenerateNewId(), "a", "b", "c", "1234", 2020, "d");
-            dbDevice.SetLocation(ObjectId.GenerateNewId(), "notes", "0", "1");
-            dbDevice.SetLastModified(DateTime.UtcNow, "Anonymous");
+            var dbDeviceType = new DeviceType(new ObjectId(testId), "Boiler", "Describes a boiler.", "Some notes.");
+            dbDeviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            dbDeviceType.AddField(Guid.NewGuid().ToString(), "MaxTemperature");
+            dbDeviceType.AddField(Guid.NewGuid().ToString(), "MinTemperature");
+            dbDeviceType.AddField(Guid.NewGuid().ToString(), "Capacity");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
-                  .Returns(dbDevice.GetBsonDocument())
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(dbDeviceType.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
@@ -97,15 +98,17 @@ namespace BEIMA.Backend.Test
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, testId, logger);
+            var response = GetDeviceType.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             var device = (Dictionary<string, object>)((OkObjectResult)response).Value;
-            Assert.That(device["serialNum"], Is.EqualTo("1234"));
+            Assert.That(device["name"], Is.EqualTo("Boiler"));
+            Assert.That(device["description"], Is.EqualTo("Describes a boiler."));
+            Assert.That(device["notes"], Is.EqualTo("Some notes."));
         }
 
         #endregion SuccessTests
