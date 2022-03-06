@@ -19,7 +19,7 @@ const DevicePage = () => {
   useEffect(() => {
     setPageName('View Device')
   },[setPageName])
-  
+
   const { id } = useParams();
 
   const DeviceCall = async () => {
@@ -47,7 +47,7 @@ const DevicePage = () => {
     const type = {}
     return type
   }
-
+  
   useEffect(() => {
     const loadData = async() => {
       const [device, image, documents] = await Promise.all([DeviceCall(), mockDeviceImageCall(), mockDeviceDocumentsCall()])
@@ -60,7 +60,7 @@ const DevicePage = () => {
       setLoading(false)
     }
    loadData()
-  },[])
+  },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Renders an card styled input that lets a user change a field's input
