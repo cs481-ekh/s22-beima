@@ -177,8 +177,8 @@ namespace BEIMA.Backend.MongoService
         {
             var file = new BsonDocument
             {
-                new BsonElement("fileName", fileName),
-                new BsonElement("link", fileUid)
+                new BsonElement("fileUid", fileUid),
+                new BsonElement("fileName", fileName)
             };
             Files.Add(file);
         }
@@ -187,8 +187,8 @@ namespace BEIMA.Backend.MongoService
         {
             var photo = new BsonDocument
             {
-                new BsonElement("fileName", fileName),
-                new BsonElement("link", fileUid)
+                new BsonElement("fileUid", fileUid),
+                new BsonElement("fileName", fileName)
             };
             Photos.Add(photo);
         }
