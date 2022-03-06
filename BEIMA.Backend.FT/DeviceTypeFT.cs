@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
@@ -79,6 +80,94 @@ namespace BEIMA.Backend.FT
             Assert.That(getDeviceType.Fields, Contains.Value(device.Fields[0]));
             Assert.That(getDeviceType.Fields, Contains.Value(device.Fields[1]));
             Assert.That(getDeviceType.Fields, Contains.Value(device.Fields[2]));
+        }
+
+        [Test, Explicit("Need to implement delete endpoint to clear database before testing.")]
+        public async Task DevicesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
+        {
+            // ARRANGE
+            var deviceTypeList = new List<DeviceTypeAdd>
+            {
+                new DeviceTypeAdd
+                {
+                    Description = "Boiler description.",
+                    Name = "Boiler",
+                    Notes = "Some boiler notes.",
+                    Fields = new List<string>
+                    {
+                        "Type",
+                        "Fuel Input Rate",
+                        "Output",
+                    },
+                },
+                new DeviceTypeAdd
+                {
+                    Description = "Meters description",
+                    Name = "Electric Meters",
+                    Notes = "Some meter notes.",
+                    Fields = new List<string>
+                    {
+                        "Account Number",
+                        "Service ID",
+                        "Voltage",
+                    },
+                },
+                new DeviceTypeAdd
+                {
+                    Description = "Cooling tower description",
+                    Name = "Cooling Tower",
+                    Notes = "Some cooling tower notes.",
+                    Fields = new List<string>
+                    {
+                        "Type",
+                        "Chiller(s) Served",
+                        "Capacity",
+                    },
+                },
+            };
+
+            foreach (var deviceType in deviceTypeList)
+            {
+                await TestClient.AddDeviceType(deviceType);
+            }
+
+            // ACT
+            var actualDeviceTypes = await TestClient.GetDeviceTypeList();
+
+            // ASSERT
+            Assert.That(actualDeviceTypes.Count, Is.EqualTo(3));
+
+            foreach (var deviceType in actualDeviceTypes)
+            {
+                Assert.That(deviceType, Is.Not.Null);
+                var expectedDeviceType = deviceTypeList.Single(dt => dt.Name?.Equals(deviceType.Name) ?? false);
+
+                Assert.That(deviceType.Description, Is.EqualTo(expectedDeviceType.Description));
+                Assert.That(deviceType.Name, Is.EqualTo(expectedDeviceType.Name));
+                Assert.That(deviceType.Notes, Is.EqualTo(expectedDeviceType.Notes));
+
+                Assert.That(deviceType.Fields, Is.Not.Null.And.Not.Empty);
+                if (deviceType.Fields != null)
+                {
+                    foreach (var field in deviceType.Fields)
+                    {
+                        Assert.That(Guid.TryParse(field.Key, out _), Is.True);
+                    }
+                }
+
+                Assume.That(expectedDeviceType.Fields, Is.Not.Null.And.Not.Empty);
+                if (expectedDeviceType.Fields != null)
+                {
+                    foreach (var field in expectedDeviceType.Fields)
+                    {
+                        Assert.That(deviceType.Fields, Contains.Value(field));
+                    }
+                }
+
+                Assert.That(deviceType.LastModified, Is.Not.Null);
+                Assert.That(deviceType.LastModified?.Date, Is.Not.Null);
+                Assert.That(deviceType.LastModified?.User, Is.EqualTo("Anonymous"));
+            }
         }
     }
 }

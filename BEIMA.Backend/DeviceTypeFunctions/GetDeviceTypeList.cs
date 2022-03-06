@@ -22,7 +22,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         /// <returns>An http response containing the device type list.</returns>
         [FunctionName("GetDeviceTypeList")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device_type_list")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device-type-list")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device type get list request.");
