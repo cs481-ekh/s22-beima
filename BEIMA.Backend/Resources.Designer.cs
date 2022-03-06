@@ -79,6 +79,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device type could not be found..
+        /// </summary>
+        internal static string DeviceTypeNotFoundMessage {
+            get {
+                return ResourceManager.GetString("DeviceTypeNotFoundMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Id..
         /// </summary>
         internal static string InvalidIdMessage {

@@ -45,6 +45,13 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument UpdateDevice(BsonDocument doc);
 
         /// <summary>
+        /// Gets a device type from the "deviceTypes" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetDeviceType(ObjectId objectId);
+
+        /// <summary>
         /// Gets a device from the "deviceTypes" collection, given an objectID.
         /// </summary>
         /// <returns>BsonDocument that was requested</returns>
