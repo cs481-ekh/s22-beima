@@ -412,7 +412,7 @@ const DevicePage = () => {
   return (
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${device.deviceTag}`}
+        title={loading ? 'Loading' : `${device.deviceTag} - <Device Type Name> - <Building Name>`}
         RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
         loading={loading}
         route="/devices"
