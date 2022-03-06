@@ -25,13 +25,13 @@
     files: [
         {
             "fileUid": String,
-            "link": String
+            "fileName": String
         }
     ],
     photos: [
         {
             "fileUid": String,
-            "link": String
+            "fileName": String
         }
     ]
 }
