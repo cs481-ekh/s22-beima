@@ -1,3 +1,23 @@
+## Minutes: 2022-03-4
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	Brian Emtman
+### Sponsorship Meeting
+#### Overview
+Gave demo to sponsorship, recieved feedback, and asked questions
+#### Feedback
+* Sponsor likes our current design of the UI.
+* Sponsor would like to have filtering/pagination added to list views
+	* Emphasised flexibility for this
+	* Would like ability to export a csv of this data
+* Asked about integrating with Microsoft Power BI
+* Said to present a warning if longitude and latitude is off campus, but this can be the case
+	
 ## Minutes: 2022-03-3
 ### scribe: Kenny
 ### Attendees:
