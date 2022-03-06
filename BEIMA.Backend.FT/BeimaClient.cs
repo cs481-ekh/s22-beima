@@ -136,7 +136,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The device list.</returns>
         public async Task<List<Device>> GetDeviceList()
         {
-            var response = await SendRequest("api/device_list", HttpVerb.GET);
+            var response = await SendRequest("api/device-list", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Device>>(content);
         }
@@ -183,7 +183,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The device type with the given id.</returns>
         public async Task<DeviceType> GetDeviceType(string id)
         {
-            var response = await SendRequest($"api/device_type/{id}", HttpVerb.GET);
+            var response = await SendRequest($"api/device-type/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DeviceType>(content);
         }
@@ -195,7 +195,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new device type.</returns>
         public async Task<string> AddDeviceType(DeviceTypeAdd deviceType)
         {
-            var response = await SendRequest("api/device_type", HttpVerb.POST, deviceType);
+            var response = await SendRequest("api/device-type", HttpVerb.POST, deviceType);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }

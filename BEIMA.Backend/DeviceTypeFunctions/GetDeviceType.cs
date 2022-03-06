@@ -22,7 +22,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         /// <returns>An http response contataining the device type information.</returns>
         [FunctionName("GetDeviceType")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device_type/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device-type/{id}")] HttpRequest req,
             string id,
             ILogger log)
         {
