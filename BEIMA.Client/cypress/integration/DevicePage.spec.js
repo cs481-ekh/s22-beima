@@ -25,6 +25,11 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').should('exist')
     cy.get('[id=deviceLongitude]').should('exist')
     cy.get('[id=locationNotes]').should('exist')
+    cy.get('[id=deviceTag]').should('exist')
+    cy.get('[id=deviceModelNumber]').should('exist')
+    cy.get('[id=deviceSerialNumber]').should('exist')
+    cy.get('[id=deviceManufacturer]').should('exist')
+
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
         cy.wrap(val).should('exist')
@@ -37,6 +42,10 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').should('be.disabled')
     cy.get('[id=deviceLongitude]').should('be.disabled')
     cy.get('[id=locationNotes]').should('be.disabled')
+    cy.get('[id=deviceTag]').should('be.disabled')
+    cy.get('[id=deviceModelNumber]').should('be.disabled')
+    cy.get('[id=deviceSerialNumber]').should('be.disabled')
+    cy.get('[id=deviceManufacturer]').should('be.disabled')
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
         cy.wrap(val).should('be.disabled')
@@ -72,6 +81,10 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').should('be.enabled')
     cy.get('[id=deviceLongitude]').should('be.enabled')
     cy.get('[id=locationNotes]').should('be.enabled')
+    cy.get('[id=deviceTag]').should('be.enabled')
+    cy.get('[id=deviceModelNumber]').should('be.enabled')
+    cy.get('[id=deviceSerialNumber]').should('be.enabled')
+    cy.get('[id=deviceManufacturer]').should('be.enabled')
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
         cy.wrap(val).should('be.enabled')
@@ -92,6 +105,7 @@ describe('Device Page', () => {
 
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
+        console.log(val)
         cy.wrap(val).scrollIntoView().clear().type("Test")
       })
     })
@@ -102,6 +116,10 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').should('have.value', 'Test Lat')
     cy.get('[id=deviceLongitude]').should('have.value', 'Test Long')
     cy.get('[id=locationNotes]').should('have.value', 'Test Notes')
+    cy.get('[id=deviceTag]').should('have.value', 'Test')
+    cy.get('[id=deviceModelNumber]').should('have.value', 'Test')
+    cy.get('[id=deviceSerialNumber]').should('have.value', 'Test')
+    cy.get('[id=deviceManufacturer]').should('have.value', 'Test')
 
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
@@ -116,6 +134,10 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').should('not.have.value', 'Test Lat')
     cy.get('[id=deviceLongitude]').should('not.have.value', 'Test Long')
     cy.get('[id=locationNotes]').should('not.have.value', 'Test Notes')
+    cy.get('[id=deviceTag]').should('not.have.value', 'Test')
+    cy.get('[id=deviceModelNumber]').should('not.have.value', 'Test')
+    cy.get('[id=deviceSerialNumber]').should('not.have.value', 'Test')
+    cy.get('[id=deviceManufacturer]').should('not.have.value', 'Test')
 
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
