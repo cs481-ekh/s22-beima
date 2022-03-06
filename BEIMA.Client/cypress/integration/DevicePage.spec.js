@@ -3,7 +3,7 @@
 describe('Device Page', () => {
   it('Visits a Device Page', () => {
     // visit
-    cy.visit('http://localhost:3000/devices/5')
+    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICE_ID'))
     cy.get('[id=devicePageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
@@ -18,6 +18,7 @@ describe('Device Page', () => {
 
     // exist
     cy.get('[id=editbtn]').should('exist')
+    cy.get('[id=deletebtn]').should('exist')
     cy.get('[id=imageDisplay]').should('exist')
     cy.get('[id=documents]').should('exist')
     cy.get('[id=deviceNotes]').should('exist')
@@ -45,7 +46,7 @@ describe('Device Page', () => {
   })
   it('Enables inputs on Edit Button Click', () => {
     // visit
-    cy.visit('http://localhost:3000/devices/5')
+    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICE_ID'))
     cy.get('[id=devicePageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
@@ -61,6 +62,7 @@ describe('Device Page', () => {
     // exists
     cy.get('[id=savebtn]').should('exist')
     cy.get('[id=cancelbtn]').should('exist')
+    cy.get('[id=deletebtn]').should('exist')
     cy.get('[id=imageUpload]').should('exist')
     cy.get('[id=fileUpload]').should('exist')
 
@@ -79,7 +81,7 @@ describe('Device Page', () => {
     cy.get('[id=deviceYearManufactured]').should('be.enabled')
   })
   it('Resets fields on Cancel Button Click', () => {
-    cy.visit('http://localhost:3000/devices/5')
+    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICE_ID'))
     cy.wait(1250)
     cy.get('[id=editbtn]').click()
 
