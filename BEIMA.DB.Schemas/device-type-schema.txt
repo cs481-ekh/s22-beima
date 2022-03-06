@@ -17,17 +17,12 @@
 What the front end will send to the endpoint when creating a device type:
 
 {
-    "_id": ObjectId,
     "name": String,
     "description": String,
     "notes": String,
-    "lastModified": {
-        "date": Date,
-        "username": String
-    },
     "fields": [
-        "customFieldUid1",
-        "customFieldUid2",
-        "customFieldUid3"
+        "customFieldName1",
+        "customFieldName2",
+        "customFieldName3"
     ]
 }
