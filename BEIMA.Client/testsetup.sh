@@ -27,6 +27,6 @@ PAYLOAD='{
     }
 }'
 
-RESPONSE=`curl --header "Content-Type: application/json" --request POST --data "${PAYLOAD}" http://localhost:7071/api/device` || { echo "Cannot add device"; exit 1; }
+RESPONSE=$(curl --header "Content-Type: application/json" --request POST --data "${PAYLOAD}" http://localhost:7071/api/device`) || { echo "Cannot add device"; exit 1; }
 
 export CYPRESS_DEVICE_ID=$RESPONSE

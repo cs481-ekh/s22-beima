@@ -60,7 +60,7 @@ const DevicePage = () => {
       setLoading(false)
     }
    loadData()
-  })
+  },[])
 
   /**
    * Renders an card styled input that lets a user change a field's input
