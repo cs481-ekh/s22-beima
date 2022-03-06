@@ -1,11 +1,11 @@
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext, useParams, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DevicePage.module.css'
 import { Form, Card, Button, FormControl, Image} from "react-bootstrap";
 import { TiDelete } from "react-icons/ti";
-import UpdateDevice from "../../services/UpdateDevice.js";
-import DeleteDevice from "../../services/DeleteDevice.js";
+import updateDevice from "../../services/UpdateDevice.js";
+import deleteDevice from "../../services/DeleteDevice.js";
 import getDevice from "../../services/GetDevice.js";
 
 const DevicePage = () => {
@@ -199,8 +199,9 @@ const DevicePage = () => {
     const [docCopy, setDocCopy] = useState(documents)
     const [addedDocs, setAddedDocs] = useState([])
     const [removedDocs, setRemovedDocs] = useState([])
+    const navigate = useNavigate();
 
-    const submit = () => {
+    const updateDeviceCall = () => {
       const newDevice = {
         _id: deviceID,
         deviceTypeId: deviceTypeID,
@@ -225,12 +226,17 @@ const DevicePage = () => {
       const delDocs = removedDocs
 
       // Hit endpoints here
-      UpdateDevice(newDevice);
-      console.log(newDevice);
+      updateDevice(newDevice);
       console.log(newImage)
       console.log(docs)
       console.log(newDocs)
       console.log(delDocs)
+      setEditable(false)
+    }
+
+    const deleteDeviceCall = (id) => {
+      deleteDevice(id);
+      navigate('/devices')
     }
 
     const cancel = () => {      
@@ -323,15 +329,18 @@ const DevicePage = () => {
     return (
       <Form className={styles.form}>
         <Form.Group className="mb-3">
+          <Button variant="danger" id="deletebtn" onClick={() => deleteDeviceCall(id)} className={styles.deleteButton}>
+              Delete Device
+          </Button>
           {editable ? 
-           <div className={styles.buttonRow}>
-              <Button id="savebtn" onClick={submit}>
+          <div className={styles.buttonRow}>
+              <Button id="savebtn" onClick={updateDeviceCall}>
                 Save
               </Button>
               <Button variant="secondary" id="cancelbtn" onClick={cancel}>
                 Cancel
               </Button>
-           </div>
+          </div>
           : 
             <Button variant="primary" id="editbtn" onClick={() => setEditable(true)}>
               Edit
