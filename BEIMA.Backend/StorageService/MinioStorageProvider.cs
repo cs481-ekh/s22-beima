@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Minio;
+using Minio.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reactive.Linq;
 using System.Text;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BEIMA.Backend.StorageService
 {
-    public class MinioStorageProvider : IStorageProvider
+    public sealed class MinioStorageProvider : IStorageProvider
     {
         private static MinioClient client;
         private const string bucket = "files";
@@ -22,48 +24,78 @@ namespace BEIMA.Backend.StorageService
             client = new MinioClient().WithCredentials(accessKey, secretKey).WithEndpoint("localhost",9000);
         }
 
-        public Task DeleteDeviceDocuments(List<string> documents)
+        public async Task<string> PutFile(IFormFile file)
         {
-            throw new NotImplementedException();
+            var fileUid = Guid.NewGuid().ToString();
+            try
+            {
+                var stream = file.OpenReadStream();
+                var putArgs = new PutObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(fileUid)
+                    .WithContentType(file.ContentType)
+                    .WithStreamData(stream)
+                    .WithObjectSize(file.Length);
+                await client.PutObjectAsync(putArgs);
+                return fileUid;
+            } catch (Exception e)
+            {
+                return null;
+            } 
         }
 
-        public Task DeleteDeviceImages(List<string> images)
+        public async Task<string> GetPresignedURL(string fileUid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var uriArgs = new PresignedGetObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(fileUid)
+                    .WithExpiry(60 * 60 * 24);
+                var uri = await client.PresignedGetObjectAsync(uriArgs);
+                return uri;
+            } catch (Exception e)
+            {
+                return null;
+            }
         }
 
-        public Task DownloadDeviceFiles(string fileName)
+        public async Task<MemoryStream> GetFileStream(string fileUid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                MemoryStream ms = new MemoryStream();
+                var getArgs = new GetObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(fileUid)
+                    .WithCallbackStream((stream) =>
+                    {
+                        stream.CopyTo(ms);
+                        ms.Position = 0;
+                    });
+                    
+                await client.GetObjectAsync(getArgs);
+                return ms;
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
         }
 
-        public async Task<List<string>> GetAllFiles()
+        public async Task<bool> DeleteFile(string fileUid)
         {
-            var args = new ListObjectsArgs().WithBucket(bucket);
-            var files = await client.ListObjectsAsync(args).ToList();
-            var x = 1 + 1;
-            return null;
-
-        }
-
-        public Task<List<string>> GetDeviceDocuments(string deviceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<string>> GetDeviceImages(string deviceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PutDeviceDocuments(IFormFileCollection documents)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PutDeviceImages(IFormFileCollection images)
-        {
-            throw new NotImplementedException();
+            try
+            {
+                var delArgs = new RemoveObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(fileUid);
+                await client.RemoveObjectAsync(delArgs);
+                return true;
+            } catch (Exception e)
+            {
+                return false;
+            }
         }
     }
 }

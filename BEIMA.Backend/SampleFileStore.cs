@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Azure.Storage.Blobs;
 using BEIMA.Backend.StorageService;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend
 {
@@ -24,13 +25,29 @@ namespace BEIMA.Backend
 
         [FunctionName("SampleFileStore")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             ILogger log)
         {
             //log.LogInformation("C# HTTP trigger function processed a request.");
+            var file = req.Form.Files[0];
+            var uid = await _storage.PutFile(file);
+            var url = await _storage.GetPresignedURL(uid);
+            var stream = await _storage.GetFileStream(uid);
+            if(stream != null)
+            {
+                return new FileStreamResult(stream, "application/octet-stream");
+            } else
+            {
+                return new BadRequestObjectResult("Expected a GET request.");
+            }
+            
+            
+            
 
+            
             //var connectionString = Environment.GetEnvironmentVariable("AzureStorageConnection");
-            await _storage.GetAllFiles();
+            //req.Form.Files.
+            //await _storage.GetAllFiles();
             //string path = Directory.GetCurrentDirectory();
             //string blobName = "EAStest_600x300.jpg";
             //BlobClient blobClient = new BlobClient(connectionString, "documents", blobName);
@@ -40,7 +57,7 @@ namespace BEIMA.Backend
             //blobClient.DownloadTo(stream);
             //stream.Close();
 
-            return new OkObjectResult("");
+            //return new OkObjectResult("");
         }
     }
 }

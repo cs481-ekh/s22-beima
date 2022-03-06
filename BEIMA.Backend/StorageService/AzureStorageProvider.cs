@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace BEIMA.Backend.StorageService
 {
-    public class AzureStorageProvider : IStorageProvider
+    public sealed class AzureStorageProvider : IStorageProvider
     {
         private static BlobContainerClient client;
 
@@ -17,43 +18,19 @@ namespace BEIMA.Backend.StorageService
             var connectionString = Environment.GetEnvironmentVariable("AzureStorageConnection");
             client = new BlobContainerClient(connectionString, "files");
         }
-  
-        public Task DeleteDeviceDocuments(List<string> documents)
+        public Task<string> PutFile(IFormFile file)
         {
             throw new NotImplementedException();
         }
-
-        public Task DeleteDeviceImages(List<string> images)
+        public Task<MemoryStream> GetFileStream(string fileUid)
         {
             throw new NotImplementedException();
         }
-
-        public Task DownloadDeviceFiles(string fileName)
+        public Task<string> GetPresignedURL(string fileUid)
         {
             throw new NotImplementedException();
         }
-
-        public Task<List<string>> GetAllFiles()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<string>> GetDeviceDocuments(string deviceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<string>> GetDeviceImages(string deviceId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PutDeviceDocuments(IFormFileCollection documents)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task PutDeviceImages(IFormFileCollection images)
+        public Task<bool> DeleteFile(string fileUid)
         {
             throw new NotImplementedException();
         }
