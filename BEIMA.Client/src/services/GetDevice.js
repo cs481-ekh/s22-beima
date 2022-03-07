@@ -15,6 +15,8 @@ export default async function getDevice(deviceId) {
     }
   });
 
+  console.log(dbCall);
+
   const response = {
     status: dbCall.status,
     response: dbCall.data
