@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
@@ -11,28 +12,85 @@ namespace BEIMA.Backend.StorageService
 {
     public sealed class AzureStorageProvider : IStorageProvider
     {
-        private static BlobContainerClient client;
+        private static BlobContainerClient containerClient;
 
         public AzureStorageProvider()
         {
             var connectionString = Environment.GetEnvironmentVariable("AzureStorageConnection");
-            client = new BlobContainerClient(connectionString, "files");
+            var container = Environment.GetEnvironmentVariable("AzureContainer");
+            containerClient = new BlobContainerClient(connectionString, container);
         }
-        public Task<string> PutFile(IFormFile file)
+        public async Task<string> PutFile(IFormFile file)
         {
-            throw new NotImplementedException();
+            try
+            {
+                string fileUid = null;
+                var extension = Path.GetExtension(file.FileName);
+                var exists = false;
+                do
+                {
+                    var uid = Guid.NewGuid().ToString();
+                    fileUid = uid + extension;
+                    var client = containerClient.GetBlobClient(fileUid);
+                    var response = await client.ExistsAsync();
+                    exists = response.Value;
+
+                } while (exists);
+                await containerClient.UploadBlobAsync(fileUid, file.OpenReadStream());
+                return fileUid;
+            } catch (Exception)
+            {
+                return null;
+            }
         }
-        public Task<MemoryStream> GetFileStream(string fileUid)
+        public async Task<MemoryStream> GetFileStream(string fileUid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = containerClient.GetBlobClient(fileUid);
+                var ms = new MemoryStream();
+                var stream = await client.OpenReadAsync();
+                stream.CopyTo(ms);
+                ms.Position = 0;
+                return ms;
+
+            } catch (Exception)
+            {
+                return null;
+            }
         }
         public Task<string> GetPresignedURL(string fileUid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = containerClient.GetBlobClient(fileUid);
+                var sasBuilder = new BlobSasBuilder()
+                {
+                    BlobContainerName = containerClient.Name,
+                    Resource = "c",
+                    ExpiresOn = DateTimeOffset.UtcNow.AddHours(4),
+                };
+                sasBuilder.SetPermissions(BlobContainerSasPermissions.Read);
+                var url = client.GenerateSasUri(sasBuilder);
+
+                return Task.FromResult(url.AbsoluteUri);
+            } catch (Exception)
+            {
+                return null;
+            }
+           
         }
-        public Task<bool> DeleteFile(string fileUid)
+        public async Task<bool> DeleteFile(string fileUid)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var client = containerClient.GetBlobClient(fileUid);
+                var result = await client.DeleteIfExistsAsync();
+                return result.Value;
+            } catch(Exception)
+            {
+                return false;
+            }
         }
     }
 }
