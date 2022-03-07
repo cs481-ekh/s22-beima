@@ -1,4 +1,6 @@
 ﻿using BEIMA.Backend.MongoService;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace BEIMA.Backend
@@ -45,6 +47,13 @@ namespace BEIMA.Backend
             message = string.Empty;
             httpStatusCode = HttpStatusCode.OK;
             // TODO: Check max string lengths?
+            var fields = deviceType.Fields.ToDictionary();
+            if (fields.Values.Distinct().Count() != fields.Count)
+            {
+                isValid = false;
+                message = "Cannot have matching field names";
+                httpStatusCode = HttpStatusCode.BadRequest;
+            }
             return isValid;
         }
     }

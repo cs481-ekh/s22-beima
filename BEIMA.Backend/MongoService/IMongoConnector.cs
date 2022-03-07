@@ -63,5 +63,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertDeviceType(BsonDocument doc);
+
+        /// <summary>
+        /// Updates a device in the "deviceTypes" collection, given a fully formed updated device.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>true if successful, false if unsuccessful</returns>
+        public BsonDocument UpdateDeviceType(BsonDocument doc);
     }
 }
