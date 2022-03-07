@@ -18,6 +18,7 @@ env:
   DeviceCollectionName: devices
   AzureCosmosConnection: ${{ secrets.AZURE_COSMOS_CONNECTION }}
   DeviceTypeCollectionName: deviceTypes
+  REACT_APP_API_URL: http://localhost:7071/api/
 
 jobs:
   build:
