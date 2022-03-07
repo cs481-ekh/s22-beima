@@ -11,10 +11,10 @@ namespace MyNamespace
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            var environment = Environment.GetEnvironmentVariable("Environment");
+            var environment = Environment.GetEnvironmentVariable("CurrentEnv");
 
             
-            if (environment == "local")
+            if (environment == "dev-local")
             {
                 builder.Services.AddSingleton<IStorageProvider, MinioStorageProvider>();
             } else

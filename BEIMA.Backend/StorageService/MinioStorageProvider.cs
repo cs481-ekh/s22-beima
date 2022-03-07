@@ -1,12 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Minio;
-using Minio.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reactive.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BEIMA.Backend.StorageService
@@ -36,20 +31,9 @@ namespace BEIMA.Backend.StorageService
                 {
                     var uid = Guid.NewGuid().ToString();
                     fileUid = uid + extension;
-                    var statArgs = new StatObjectArgs()
-                        .WithBucket(bucket)
-                        .WithObject(fileUid);
-
-                    // Check if object exists. Will throw exception if it doesn't. There is no objectExists method in minio
-                    try
-                    {
-                        await client.StatObjectAsync(statArgs);
-                        exists = true;
-                    } catch (ObjectNotFoundException)
-                    {
-                        exists = false;
-                    }
+                    exists = await GetFileExists(fileUid);
                 } while (exists);
+
                 var stream = file.OpenReadStream();
                 var putArgs = new PutObjectArgs()
                     .WithBucket(bucket)
@@ -69,6 +53,11 @@ namespace BEIMA.Backend.StorageService
         {
             try
             {
+                var exists = await GetFileExists(fileUid);
+                if (!exists)
+                {
+                    return null;
+                }
                 var uriArgs = new PresignedGetObjectArgs()
                     .WithBucket(bucket)
                     .WithObject(fileUid)
@@ -103,7 +92,22 @@ namespace BEIMA.Backend.StorageService
                 return null;
             }
         }
-
+        public async Task<bool> GetFileExists(string fileUid)
+        {
+            var statArgs = new StatObjectArgs()
+                    .WithBucket(bucket)
+                    .WithObject(fileUid);
+            try
+            {
+                // Checks if object exists. Will throw exception if it doesn't. There is no objectExists method in minio
+                await client.StatObjectAsync(statArgs);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
         public async Task<bool> DeleteFile(string fileUid)
         {
             try

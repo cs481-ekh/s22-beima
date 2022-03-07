@@ -40,5 +40,11 @@ namespace BEIMA.Backend.StorageService
         /// <param name="fileUid">Corresponds the target file's uid filename</param>
         /// <returns>True if target file was deleted or false if request failed</returns>
         Task<bool> DeleteFile(string fileUid);
+        /// <summary>
+        /// Checks if the specified file exists in storage
+        /// </summary>
+        /// <param name="fileUid">Corresponds the target file's uid filename</param>
+        /// <returns>True if target file exists or false if it doesn't</returns>
+        Task<bool> GetFileExists(string fileUid);
     }
 }

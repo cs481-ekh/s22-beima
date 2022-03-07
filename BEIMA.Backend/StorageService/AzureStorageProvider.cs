@@ -31,9 +31,7 @@ namespace BEIMA.Backend.StorageService
                 {
                     var uid = Guid.NewGuid().ToString();
                     fileUid = uid + extension;
-                    var client = containerClient.GetBlobClient(fileUid);
-                    var response = await client.ExistsAsync();
-                    exists = response.Value;
+                    exists = await GetFileExists(fileUid);
 
                 } while (exists);
                 await containerClient.UploadBlobAsync(fileUid, file.OpenReadStream());
@@ -59,10 +57,15 @@ namespace BEIMA.Backend.StorageService
                 return null;
             }
         }
-        public Task<string> GetPresignedURL(string fileUid)
+        public async Task<string> GetPresignedURL(string fileUid)
         {
             try
             {
+                var exists = await GetFileExists(fileUid);
+                if (!exists)
+                {
+                    return null;
+                }
                 var client = containerClient.GetBlobClient(fileUid);
                 var sasBuilder = new BlobSasBuilder()
                 {
@@ -73,17 +76,34 @@ namespace BEIMA.Backend.StorageService
                 sasBuilder.SetPermissions(BlobContainerSasPermissions.Read);
                 var url = client.GenerateSasUri(sasBuilder);
 
-                return Task.FromResult(url.AbsoluteUri);
+                return url.AbsoluteUri;
             } catch (Exception)
             {
                 return null;
             }
            
         }
+        public async Task<bool> GetFileExists(string fileUid)
+        {
+            try
+            {
+                var client = containerClient.GetBlobClient(fileUid);
+                var response = await client.ExistsAsync();
+                return response.Value;
+            } catch (Exception)
+            {
+                return false;
+            }
+        }
         public async Task<bool> DeleteFile(string fileUid)
         {
             try
             {
+                var exists = await GetFileExists(fileUid);
+                if (!exists)
+                {
+                    return true;
+                }
                 var client = containerClient.GetBlobClient(fileUid);
                 var result = await client.DeleteIfExistsAsync();
                 return result.Value;
