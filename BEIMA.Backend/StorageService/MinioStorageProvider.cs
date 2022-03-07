@@ -14,11 +14,12 @@ namespace BEIMA.Backend.StorageService
     public sealed class MinioStorageProvider : IStorageProvider
     {
         private static MinioClient client;
-        private const string bucket = "files";
+        private string bucket;
         public MinioStorageProvider()
         {
             var accessKey = Environment.GetEnvironmentVariable("MinioAccessKey");
             var secretKey = Environment.GetEnvironmentVariable("MinioSecretKey");
+            bucket = Environment.GetEnvironmentVariable("MinioBucket");
 
             // Will need to have endpoint changed and .WithSSL() added based off of vm configurations
             client = new MinioClient().WithCredentials(accessKey, secretKey).WithEndpoint("localhost",9000);
@@ -26,9 +27,29 @@ namespace BEIMA.Backend.StorageService
 
         public async Task<string> PutFile(IFormFile file)
         {
-            var fileUid = Guid.NewGuid().ToString();
             try
             {
+                string fileUid = null;
+                var extension = Path.GetExtension(file.FileName);
+                var exists = false;
+                do
+                {
+                    var uid = Guid.NewGuid().ToString();
+                    fileUid = uid + extension;
+                    var statArgs = new StatObjectArgs()
+                        .WithBucket(bucket)
+                        .WithObject(fileUid);
+
+                    // Check if object exists. Will throw exception if it doesn't. There is no objectExists method in minio
+                    try
+                    {
+                        await client.StatObjectAsync(statArgs);
+                        exists = true;
+                    } catch (ObjectNotFoundException)
+                    {
+                        exists = false;
+                    }
+                } while (exists);
                 var stream = file.OpenReadStream();
                 var putArgs = new PutObjectArgs()
                     .WithBucket(bucket)
@@ -38,7 +59,7 @@ namespace BEIMA.Backend.StorageService
                     .WithObjectSize(file.Length);
                 await client.PutObjectAsync(putArgs);
                 return fileUid;
-            } catch (Exception e)
+            } catch (Exception)
             {
                 return null;
             } 
@@ -51,10 +72,10 @@ namespace BEIMA.Backend.StorageService
                 var uriArgs = new PresignedGetObjectArgs()
                     .WithBucket(bucket)
                     .WithObject(fileUid)
-                    .WithExpiry(60 * 60 * 24);
+                    .WithExpiry(60 * 60 * 4);
                 var uri = await client.PresignedGetObjectAsync(uriArgs);
                 return uri;
-            } catch (Exception e)
+            } catch (Exception)
             {
                 return null;
             }
@@ -77,7 +98,7 @@ namespace BEIMA.Backend.StorageService
                 await client.GetObjectAsync(getArgs);
                 return ms;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
@@ -92,7 +113,7 @@ namespace BEIMA.Backend.StorageService
                     .WithObject(fileUid);
                 await client.RemoveObjectAsync(delArgs);
                 return true;
-            } catch (Exception e)
+            } catch (Exception)
             {
                 return false;
             }
