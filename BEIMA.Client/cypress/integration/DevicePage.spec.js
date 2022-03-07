@@ -12,7 +12,7 @@ describe('Device Page', () => {
     cy.get('[id=itemCard]').should('exist')
 
     // wait for loading to finish
-    cy.wait(5000)
+    cy.wait(10000)
     
     // not exists
     cy.get('[id=savebtn]').should('not.exist')
@@ -58,7 +58,7 @@ describe('Device Page', () => {
     cy.get('[id=itemCard]').should('exist')
 
     // wait for loading to finish
-    cy.wait(5000)
+    cy.wait(10000)
 
     // click
     cy.get('[id=editbtn]').click()
@@ -92,7 +92,7 @@ describe('Device Page', () => {
     cy.on('uncaught:exception', () => {
       return false;
     })
-    cy.wait(5000)
+    cy.wait(10000)
     cy.get('[id=editbtn]').click()
 
     // Set fields
