@@ -33,7 +33,7 @@ mkdir Minio || { echo "Creating Minio directory failed"; exit 1; }
 # Change directory to Minio
 cd ./Minio || { echo  "Changing directories failed", exit 1; }
 # Download minio server client using wget
-wget -q https://dl.min.io/server/minio/release/darwin-amd64/minio || { echo "Download Minio using wget failed"; exit 1; }
+wget -q https://dl.min.io/server/minio/release/linux-amd64/minio || { echo "Download Minio using wget failed"; exit 1; }
 # Set minio server file to allow executing
 chmod +x minio || { echo "Setting minio execute permissions failed"; exit 1; }
 # Make storage directory
