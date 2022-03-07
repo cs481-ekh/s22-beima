@@ -64,7 +64,7 @@ const DevicePage = () => {
       setLoading(false)
     }
    loadData();
-  },[]) // eslint-disable-line react-hooks/exhaustive-deps
+  },[id]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Renders an card styled input that lets a user change a field's input
