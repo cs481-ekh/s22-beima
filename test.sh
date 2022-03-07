@@ -9,8 +9,6 @@ sleep 20
 dotnet test || { echo "Backend tests failed"; exit 1; }
 # Change directories to BEIMA.Client
 cd ../BEIMA.Client || { echo "Changing directories failed"; exit 1; }
-# Allow execution for scripts
-chmod +x *.sh
 # Add device to DB
 PAYLOAD='{
     "deviceTypeId": "473830495728394823103456",
