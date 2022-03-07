@@ -34,7 +34,7 @@ PAYLOAD='{
 }'
 
 RESPONSE=$(curl --header "Content-Type: application/json" --request POST --data "${PAYLOAD}" http://localhost:7071/api/device) || { echo "Cannot add device"; exit 1; }
-export CYPRESS_DEVICE_ID=$RESPONSE
+echo '{ "env": {"DEVICE_ID": "'${RESPONSE}'"} }' > cypress.json
 # Run react tests
 npm test || { echo "Frontend tests failed"; exit 1; }
 npm run cypress || { echo "Cypress tests failed"; exit 1; }
