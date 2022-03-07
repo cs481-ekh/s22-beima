@@ -67,9 +67,34 @@ namespace BEIMA.Backend.FT
 
         }
 
-        public class DeviceType
+        public abstract class DeviceTypeBase
         {
-            // TODO: Add device type testing object
+            [JsonProperty(PropertyName = "_id")]
+            public string? Id { get; set; }
+
+            [JsonProperty(PropertyName = "name")]
+            public string? Name { get; set; }
+
+            [JsonProperty(PropertyName = "description")]
+            public string? Description { get; set; }
+
+            [JsonProperty(PropertyName = "notes")]
+            public string? Notes { get; set; }
+        }
+
+        public class DeviceTypeAdd : DeviceTypeBase
+        {
+            [JsonProperty(PropertyName = "fields")]
+            public List<string>? Fields { get; set; }
+        }
+
+        public class DeviceType : DeviceTypeBase
+        {
+            [JsonProperty(PropertyName = "lastModified")]
+            public LastModified? LastModified { get; set; }
+
+            [JsonProperty(PropertyName = "fields")]
+            public Dictionary<string, string>? Fields { get; set; }
         }
     }
 }

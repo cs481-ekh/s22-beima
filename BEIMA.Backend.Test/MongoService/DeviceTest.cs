@@ -32,6 +32,20 @@ namespace BEIMA.Backend.MongoService.Test
         readonly bool validValue2 = true;
         readonly int validValue3 = 123;
 
+        readonly string validFileName1 = "manual.pdf";
+        readonly string validFileName2 = "information.txt";
+        readonly string validFileName3 = "document.docx";
+        readonly string validFileUid1 = Guid.NewGuid().ToString();
+        readonly string validFileUid2 = Guid.NewGuid().ToString();
+        readonly string validFileUid3 = Guid.NewGuid().ToString();
+
+        readonly string validPhotoName1 = "manual.pdf";
+        readonly string validPhotoName2 = "information.txt";
+        readonly string validPhotoName3 = "document.docx";
+        readonly string validPhotoUid1 = Guid.NewGuid().ToString();
+        readonly string validPhotoUid2 = Guid.NewGuid().ToString();
+        readonly string validPhotoUid3 = Guid.NewGuid().ToString();
+
         [Test]
         public void DeviceNotInstantiated_InstantiateUsingFullConstructor_DeviceInstantiatedWithCorrectValues()
         {
@@ -41,6 +55,45 @@ namespace BEIMA.Backend.MongoService.Test
             device.AddField(validKey1, validValue1);
             device.AddField(validKey2, validValue2);
             device.AddField(validKey3, validValue3);
+            device.AddFile(validFileUid1, validFileName1);
+            device.AddFile(validFileUid2, validFileName2);
+            device.AddFile(validFileUid3, validFileName3);
+            device.AddPhoto(validPhotoUid1, validPhotoName1);
+            device.AddPhoto(validPhotoUid2, validPhotoName2);
+            device.AddPhoto(validPhotoUid3, validPhotoName3);
+
+            //These variables are used during testing to see if the files and photos were correctly inserted into a BsonArray
+            var file1 = new BsonDocument
+            {
+                new BsonElement("fileUid", validFileUid1),
+                new BsonElement("fileName", validFileName1)
+            };
+            var file2 = new BsonDocument
+            {
+                new BsonElement("fileUid", validFileUid2),
+                new BsonElement("fileName", validFileName2)
+            };
+            var file3 = new BsonDocument
+            {
+                new BsonElement("fileUid", validFileUid3),
+                new BsonElement("fileName", validFileName3)
+            };
+
+            var photo1 = new BsonDocument
+            {
+                new BsonElement("fileUid", validPhotoUid1),
+                new BsonElement("fileName", validPhotoName1)
+            };
+            var photo2 = new BsonDocument
+            {
+                new BsonElement("fileUid", validPhotoUid2),
+                new BsonElement("fileName", validPhotoName2)
+            };
+            var photo3 = new BsonDocument
+            {
+                new BsonElement("fileUid", validPhotoUid3),
+                new BsonElement("fileName", validPhotoName3)
+            };
 
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
@@ -65,6 +118,16 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
             Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
             Assert.That((int)fields.GetElement(validKey3).Value, Is.EqualTo(validValue3));
+
+            var files = device.Files;
+            Assert.That(files.Contains(file1), Is.True);
+            Assert.That(files.Contains(file2), Is.True);
+            Assert.That(files.Contains(file3), Is.True);
+
+            var photos = device.Photos;
+            Assert.That(photos.Contains(photo1), Is.True);
+            Assert.That(photos.Contains(photo2), Is.True);
+            Assert.That(photos.Contains(photo3), Is.True);
         }
 
         [Test]
@@ -86,6 +149,45 @@ namespace BEIMA.Backend.MongoService.Test
             device.AddField(validKey1, validValue1);
             device.AddField(validKey2, validValue2);
             device.AddField(validKey3, validValue3);
+            device.AddFile(validFileUid1, validFileName1);
+            device.AddFile(validFileUid2, validFileName2);
+            device.AddFile(validFileUid3, validFileName3);
+            device.AddPhoto(validPhotoUid1, validPhotoName1);
+            device.AddPhoto(validPhotoUid2, validPhotoName2);
+            device.AddPhoto(validPhotoUid3, validPhotoName3);
+
+            //These variables are used during testing to see if the files and photos were correctly inserted into a BsonArray
+            var file1 = new BsonDocument
+            {
+                new BsonElement("fileUid", validFileUid1),
+                new BsonElement("fileName", validFileName1)
+            };
+            var file2 = new BsonDocument
+            {
+                new BsonElement("fileUid", validFileUid2),
+                new BsonElement("fileName", validFileName2)
+            };
+            var file3 = new BsonDocument
+            {
+                new BsonElement("fileUid", validFileUid3),
+                new BsonElement("fileName", validFileName3)
+            };
+
+            var photo1 = new BsonDocument
+            {
+                new BsonElement("fileUid", validPhotoUid1),
+                new BsonElement("fileName", validPhotoName1)
+            };
+            var photo2 = new BsonDocument
+            {
+                new BsonElement("fileUid", validPhotoUid2),
+                new BsonElement("fileName", validPhotoName2)
+            };
+            var photo3 = new BsonDocument
+            {
+                new BsonElement("fileUid", validPhotoUid3),
+                new BsonElement("fileName", validPhotoName3)
+            };
 
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
@@ -110,6 +212,16 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
             Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
             Assert.That((int)fields.GetElement(validKey3).Value, Is.EqualTo(validValue3));
+
+            var files = device.Files;
+            Assert.That(files.Contains(file1), Is.True);
+            Assert.That(files.Contains(file2), Is.True);
+            Assert.That(files.Contains(file3), Is.True);
+
+            var photos = device.Photos;
+            Assert.That(photos.Contains(photo1), Is.True);
+            Assert.That(photos.Contains(photo2), Is.True);
+            Assert.That(photos.Contains(photo3), Is.True);
         }
 
         [Test]

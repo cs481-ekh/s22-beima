@@ -7,32 +7,32 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using System.Collections.Generic;
 
-namespace BEIMA.Backend.DeviceFunctions
+namespace BEIMA.Backend.DeviceTypeFunctions
 {
     /// <summary>
-    /// Handles a get request involving multiple devices.
+    /// Handles a get request involving multiple device types.
     /// </summary>
-    public static class GetDeviceList
+    public static class GetDeviceTypeList
     {
         /// <summary>
-        /// Handles a device GET list request.
+        /// Handles a device type GET list request.
         /// </summary>
         /// <param name="req">The http request.</param>
         /// <param name="log">The logger to log to.</param>
-        /// <returns>An http response containing the device information.</returns>
-        [FunctionName("GetDeviceList")]
+        /// <returns>An http response containing the device type list.</returns>
+        [FunctionName("GetDeviceTypeList")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device-list")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device-type-list")] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a device list request.");
+            log.LogInformation("C# HTTP trigger function processed a device type get list request.");
 
             var mongo = MongoDefinition.MongoInstance;
-            var devices = mongo.GetAllDevices();
+            var deviceTypes = mongo.GetAllDeviceTypes();
             var dotNetObjList = new List<object>();
-            foreach (var device in devices)
+            foreach (var deviceType in deviceTypes)
             {
-                var dotNetObj = BsonTypeMapper.MapToDotNetValue(device);
+                var dotNetObj = BsonTypeMapper.MapToDotNetValue(deviceType);
                 dotNetObjList.Add(dotNetObj);
             }
 
