@@ -52,7 +52,6 @@ namespace BEIMA.Backend.Test
                 dbName = "beima-test" + Guid.NewGuid().ToString();
                 devicesName = "devices-test" + Guid.NewGuid().ToString();
             }
-
             Environment.SetEnvironmentVariable("DatabaseName", dbName);
             Environment.SetEnvironmentVariable("DeviceCollectionName", devicesName);
         }
