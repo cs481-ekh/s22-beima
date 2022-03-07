@@ -19,9 +19,9 @@ env:
   AzureCosmosConnection: ${{ secrets.AZURE_COSMOS_CONNECTION }}
   DeviceTypeCollectionName: deviceTypes
   REACT_APP_API_URL: http://localhost:7071/api/
-  Host: {
-	  CORS : "*"
-  }
+  Host: 
+	  - CORS : "*"
+  
 
 jobs:
   build:
