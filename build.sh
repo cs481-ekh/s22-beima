@@ -35,15 +35,15 @@ cd ./Minio || { echo  "Changing directories failed", exit 1; }
 # Download minio server client using wget
 wget -q https://dl.min.io/server/minio/release/darwin-amd64/minio || { echo "Download Minio using wget failed"; exit 1; }
 # Set minio server file to allow executing
-chmod +x minio || { echo "Setting minio execute permissions failed"; exit 1}
+chmod +x minio || { echo "Setting minio execute permissions failed"; exit 1; }
 # Make storage directory
-mkdir storage || { echo "Creating storage directory failed"; exit 1 }
+mkdir storage || { echo "Creating storage directory failed"; exit 1; }
 # Change directory to storage
 cd ./storage || { echo  "Changing directories failed", exit 1; }
 # Make files 'bucket' directory
-mkdir files || { echo "Creating files directory failed"; exit 1 }
+mkdir files || { echo "Creating files directory failed"; exit 1; }
 # Make test 'bucket' directory
-mkdir test-files || { echo "Creating test-files directory failed"; exit 1 }
+mkdir test-files || { echo "Creating test-files directory failed"; exit 1; }
 # Change back to root directory
 cd ../../
 # Change directory to BEIMA.Backend
