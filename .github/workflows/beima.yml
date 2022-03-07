@@ -41,4 +41,4 @@ jobs:
         if: failure()
         with:
             name: cypress-snapshots
-            path: BEIMA.Client
+            path: BEIMA.Client/cypress/screenshots
