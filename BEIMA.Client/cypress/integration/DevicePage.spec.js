@@ -3,12 +3,13 @@
 describe('Device Page', () => {
   it('Visits a Device Page', () => {
     // visit
-    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICE_ID'))
+    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
+    cy.log(Cypress.env('DEVICE_ID'));
     cy.get('[id=devicePageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
     // wait for loading to finish
-    cy.wait(1250)
+    cy.wait(1000)
     
     // not exists
     cy.get('[id=savebtn]').should('not.exist')
@@ -46,12 +47,12 @@ describe('Device Page', () => {
   })
   it('Enables inputs on Edit Button Click', () => {
     // visit
-    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICE_ID'))
+    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
     cy.get('[id=devicePageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
     // wait for loading to finish
-    cy.wait(1250)
+    cy.wait(1000)
 
     // click
     cy.get('[id=editbtn]').click()
@@ -81,8 +82,8 @@ describe('Device Page', () => {
     cy.get('[id=deviceYearManufactured]').should('be.enabled')
   })
   it('Resets fields on Cancel Button Click', () => {
-    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICE_ID'))
-    cy.wait(1250)
+    cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
+    cy.wait(1000)
     cy.get('[id=editbtn]').click()
 
     // Set fields
