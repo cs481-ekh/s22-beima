@@ -12,8 +12,9 @@ cd ../BEIMA.Client || { echo "Changing directories failed"; exit 1; }
 # Allow execution for scripts
 chmod +x *.sh
 # Call setup script
-./testsetup.sh
+./testsetup.sh || { echo "Test setup failed"; exit 1; }
 # Run react tests
-npm test
-npm run cypress
-./testcleanup.sh
+npm test || { echo "Frontend tests failed"; exit 1; }
+npm run cypress || { echo "Cypress tests failed"; exit 1; }
+# Call cleanup script
+./testcleanup.sh || { echo "Test cleanup failed"; exit 1; }
