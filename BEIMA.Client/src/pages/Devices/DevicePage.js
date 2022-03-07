@@ -59,7 +59,7 @@ const DevicePage = () => {
       setDeviceType(deviceType)
       setLoading(false)
     }
-   loadData()
+   loadData();
   },[]) // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
