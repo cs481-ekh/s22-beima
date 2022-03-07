@@ -29,7 +29,12 @@ describe('Device Page', () => {
     cy.get('[id=deviceModelNumber]').should('exist')
     cy.get('[id=deviceSerialNumber]').should('exist')
     cy.get('[id=deviceManufacturer]').should('exist')
-    cy.get('[id=deviceYearManufactured]').should('exist')
+
+    cy.get('[id=fields]').within(() => {
+      cy.get('input').each((val, index, collection) => {
+        cy.wrap(val).should('exist')
+      })
+    })
 
     // disabled
     cy.get('[id=deviceNotes]').should('be.disabled')
@@ -41,7 +46,11 @@ describe('Device Page', () => {
     cy.get('[id=deviceModelNumber]').should('be.disabled')
     cy.get('[id=deviceSerialNumber]').should('be.disabled')
     cy.get('[id=deviceManufacturer]').should('be.disabled')
-    cy.get('[id=deviceYearManufactured]').should('be.disabled')
+    cy.get('[id=fields]').within(() => {
+      cy.get('input').each((val, index, collection) => {
+        cy.wrap(val).should('be.disabled')
+      })
+    })
   })
   it('Enables inputs on Edit Button Click', () => {
     // visit
@@ -76,7 +85,11 @@ describe('Device Page', () => {
     cy.get('[id=deviceModelNumber]').should('be.enabled')
     cy.get('[id=deviceSerialNumber]').should('be.enabled')
     cy.get('[id=deviceManufacturer]').should('be.enabled')
-    cy.get('[id=deviceYearManufactured]').should('be.enabled')
+    cy.get('[id=fields]').within(() => {
+      cy.get('input').each((val, index, collection) => {
+        cy.wrap(val).should('be.enabled')
+      })
+    })
   })
   it('Resets fields on Cancel Button Click', () => {
     cy.visit('http://localhost:3000/devices/5')
@@ -89,23 +102,30 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').scrollIntoView().clear().type("Test Lat")
     cy.get('[id=deviceLongitude]').scrollIntoView().clear().type("Test Long")
     cy.get('[id=locationNotes]').scrollIntoView().clear().type("Test Notes")
-    cy.get('[id=deviceTag]').scrollIntoView().clear().type("Test Tag")
-    cy.get('[id=deviceModelNumber]').scrollIntoView().clear().type("Test Model Nbr")
-    cy.get('[id=deviceSerialNumber]').scrollIntoView().clear().type("Test Ser Nbr")
-    cy.get('[id=deviceManufacturer]').scrollIntoView().clear().type("Test Manu")
-    cy.get('[id=deviceYearManufactured]').scrollIntoView().clear().type("Test Year Manu")
 
-    // Set input
+    cy.get('[id=fields]').within(() => {
+      cy.get('input').each((val, index, collection) => {
+        console.log(val)
+        cy.wrap(val).scrollIntoView().clear().type("Test")
+      })
+    })
+
+    // Validate input
     cy.get('[id=deviceNotes]').should('have.value', 'Test Notes')
     cy.get('[id=deviceBuildingId]').should('have.value', 'Test BId')
     cy.get('[id=deviceLatitude]').should('have.value', 'Test Lat')
     cy.get('[id=deviceLongitude]').should('have.value', 'Test Long')
     cy.get('[id=locationNotes]').should('have.value', 'Test Notes')
-    cy.get('[id=deviceTag]').should('have.value', 'Test Tag')
-    cy.get('[id=deviceModelNumber]').should('have.value', 'Test Model Nbr')
-    cy.get('[id=deviceSerialNumber]').should('have.value', 'Test Ser Nbr')
-    cy.get('[id=deviceManufacturer]').should('have.value', 'Test Manu')
-    cy.get('[id=deviceYearManufactured]').should('have.value', 'Test Year Manu')
+    cy.get('[id=deviceTag]').should('have.value', 'Test')
+    cy.get('[id=deviceModelNumber]').should('have.value', 'Test')
+    cy.get('[id=deviceSerialNumber]').should('have.value', 'Test')
+    cy.get('[id=deviceManufacturer]').should('have.value', 'Test')
+
+    cy.get('[id=fields]').within(() => {
+      cy.get('input').each((val, index, collection) => {
+        cy.wrap(val).should('have.value', 'Test')
+      })
+    })
 
     cy.get('[id=cancelbtn]').click()
 
@@ -114,10 +134,15 @@ describe('Device Page', () => {
     cy.get('[id=deviceLatitude]').should('not.have.value', 'Test Lat')
     cy.get('[id=deviceLongitude]').should('not.have.value', 'Test Long')
     cy.get('[id=locationNotes]').should('not.have.value', 'Test Notes')
-    cy.get('[id=deviceTag]').should('not.have.value', 'Test Tag')
-    cy.get('[id=deviceModelNumber]').should('not.have.value', 'Test Model Nbr')
-    cy.get('[id=deviceSerialNumber]').should('not.have.value', 'Test Ser Nbr')
-    cy.get('[id=deviceManufacturer]').should('not.have.value', 'Test Manu')
-    cy.get('[id=deviceYearManufactured]').should('not.have.value', 'Test Year Manu')
+    cy.get('[id=deviceTag]').should('not.have.value', 'Test')
+    cy.get('[id=deviceModelNumber]').should('not.have.value', 'Test')
+    cy.get('[id=deviceSerialNumber]').should('not.have.value', 'Test')
+    cy.get('[id=deviceManufacturer]').should('not.have.value', 'Test')
+
+    cy.get('[id=fields]').within(() => {
+      cy.get('input').each((val, index, collection) => {
+        cy.wrap(val).should('not.have.value', 'Test')
+      })
+    })
   })
 })

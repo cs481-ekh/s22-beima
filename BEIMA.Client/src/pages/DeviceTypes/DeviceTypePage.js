@@ -66,13 +66,13 @@ const DeviceTypePage = () => {
    * in higher level <DeviceTypePage/>
    * @returns 
    */
-  const Field = ({field, value, editable, deleteField}) => {
+  const Field = ({field, value, editable, fieldChange, deleteField}) => {
     return (
       <Card>
         <Card.Body >
-            <Form.Group className="mb-3" id={field}>
+            <Form.Group className="mb-3" controlId={field}>
               <Form.Label>Field Name</Form.Label>
-              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value}/>
+              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}/>
             </Form.Group>                
           { editable ? 
            <div className={styles.deleteButton}>
@@ -141,12 +141,25 @@ const DeviceTypePage = () => {
     }
 
     const onDescriptionChange = (event) => {
-      console.log('adsf')
       setDescription(event.target.value)
     }
 
     const onNotesChange = (event) => {
       setNotes(event.target.value)
+    }
+
+    const onFieldChange = (event) => {
+      let id = event.target.id
+      let temp = {...fields}
+      temp[id] = event.target.value
+      setFields(temp)
+    }
+
+    const onAddedFieldChange = (event) => {
+      let id = event.target.id
+      let temp = {...addedFields}
+      temp[id] = event.target.value
+      setAddedFields(temp)
     }
 
     const cancel = () => {
@@ -207,8 +220,8 @@ const DeviceTypePage = () => {
         </Form.Group>
         <Form.Group id="additionalfields">
           <div className={styles.fields}>
-            {Object.keys(fields).map((field, i) => <Field key={i} field={field} editable={editable} value={fields[field]} deleteField={deleteField}/>)}
-            {Object.keys(addedFields).map((field, i) => <Field key={i} field={field} editable={editable} value={addedFields[field]} deleteField={deleteField}/>)}
+            {Object.keys(fields).map((field, i) => <Field key={i} field={field} editable={editable} value={fields[field]} fieldChange={onFieldChange} deleteField={deleteField}/>)}
+            {Object.keys(addedFields).map((field, i) => <Field key={i} field={field} editable={editable} value={addedFields[field]} fieldChange={onAddedFieldChange} deleteField={deleteField}/>)}
           </div>  
         </Form.Group>
       </Form>
