@@ -49,7 +49,7 @@ const Item = ({item, RenderItem}) => {
     <div className={styles.item}>
       <div className={styles.row}> 
         <div className={styles.itemName}>{item.deviceTag} - {"<Device Type Name>"} - {"<Building Name>"}</div>
-        <MdMoreHoriz color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/>
+        <MdMoreHoriz id={item.id} color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/>
       </div>
 
       <div className={styles.itemContent}>
