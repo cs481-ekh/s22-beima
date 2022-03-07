@@ -29,7 +29,9 @@ sudo apt install npm || { echo "Installing npm failed"; exit 1; }
 # Install Azure functions core tools
 npm i -g azure-functions-core-tools@4 || { echo "Installing Azure functions core tools failed"; exit 1; }
 # install axios for http requests
-npm install axios || { echo "Installing axios for http requests failed"; exit 1; }
+npm install axios || { echo "Installing axios for http requests failed"; exit 1; }\
+# Allow executable for test.sh
+chmod +x test.sh
 # Change directory to BEIMA.Backend
 cd ./BEIMA.Backend || { echo "Changing directories failed"; exit 1; }
 # Build all backend projects 

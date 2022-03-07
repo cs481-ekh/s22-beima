@@ -28,7 +28,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "cypress:test": "cypress run -b chrome && cypress run -b firefox && cypress run -b edge",
-    "cypress:chrome": "cypress run -b chrome",
+    "cypress:chrome": "cypress run -b chrome --headed",
     "cypress": "start-server-and-test start http://localhost:3000 cypress:chrome",
     "eject": "react-scripts eject"
   },
