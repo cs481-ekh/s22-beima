@@ -4,9 +4,6 @@ describe('Device Page', () => {
   it('Visits a Device Page', () => {
     // visit
     cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
-    cy.on('uncaught:exception', () => {
-      return false;
-    })
     cy.log(Cypress.env('DEVICE_ID'));
     cy.get('[id=devicePageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
@@ -51,9 +48,6 @@ describe('Device Page', () => {
   it('Enables inputs on Edit Button Click', () => {
     // visit
     cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
-    cy.on('uncaught:exception', () => {
-      return false;
-    })
     cy.get('[id=devicePageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
@@ -89,9 +83,6 @@ describe('Device Page', () => {
   })
   it('Resets fields on Cancel Button Click', () => {
     cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
-    cy.on('uncaught:exception', () => {
-      return false;
-    })
     cy.wait(10000)
     cy.get('[id=editbtn]').click()
 
