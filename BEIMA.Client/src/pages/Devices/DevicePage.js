@@ -23,8 +23,12 @@ const DevicePage = () => {
   const { id } = useParams();
 
   const DeviceCall = async () => {
-    const result = await getDevice(id);
-    return result.response;
+    if(id === '' || id === null){
+      return {};
+    } else {
+      const result = await getDevice(id);
+      return result.response;
+    }
   }
 
   const mockDeviceImageCall = async () => {
