@@ -13,3 +13,16 @@
         "customFieldUid3": String
     }
 }
+
+What the front end will send to the endpoint when creating a device type:
+
+{
+    "name": String,
+    "description": String,
+    "notes": String,
+    "fields": [
+        "customFieldName1",
+        "customFieldName2",
+        "customFieldName3"
+    ]
+}

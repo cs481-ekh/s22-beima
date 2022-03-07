@@ -399,7 +399,7 @@ const DevicePage = () => {
           <Form.Label><b>Fields</b></Form.Label>
         </Form.Group>
 
-        <div className={styles.fields}>
+        <div className={styles.fields} id="fields">
           <FormCard editable={editable} id="deviceTag" label="Tag" value={tag} onChange={onChange}/>
           <FormCard editable={editable} id="deviceModelNumber" label="Model Number" value={modelNum} onChange={onChange}/>
           <FormCard editable={editable} id="deviceSerialNumber" label="Serial Number" value={serialNum} onChange={onChange}/>

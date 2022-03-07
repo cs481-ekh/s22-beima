@@ -189,6 +189,17 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sends a device type get list request to the BEIMA api.
+        /// </summary>
+        /// <returns>The device type list.</returns>
+        public async Task<List<DeviceType>> GetDeviceTypeList()
+        {
+            var response = await SendRequest("api/device-type-list", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<DeviceType>>(content);
+        }
+
+        /// <summary>
         /// Sends a device type post request to the BEIMA api.
         /// </summary>
         /// <param name="deviceType">The device type to add.</param>
@@ -198,6 +209,17 @@ namespace BEIMA.Backend.FT
             var response = await SendRequest("api/device-type", HttpVerb.POST, deviceType);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
+        }
+
+        /// <summary>
+        /// Sends a device type delete request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the device type to delete.</param>
+        /// <returns>True if the deletion was successful, otherwise false.</returns>
+        public async Task<bool> DeleteDeviceType(string id)
+        {
+            var response = await SendRequest($"api/device-type/{id}/delete", HttpVerb.POST);
+            return response.IsSuccessStatusCode;
         }
 
         /// <summary>
