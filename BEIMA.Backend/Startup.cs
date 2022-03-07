@@ -3,9 +3,9 @@ using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 
-[assembly: FunctionsStartup(typeof(MyNamespace.Startup))]
+[assembly: FunctionsStartup(typeof(BEIMA.Backend.Startup))]
 
-namespace MyNamespace
+namespace BEIMA.Backend
 {
     public class Startup : FunctionsStartup
     {
