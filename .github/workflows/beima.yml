@@ -37,7 +37,7 @@ jobs:
       - name: Test
         run: ./test.sh
       - name: Upload screenshots
-        uses: actions/upload-artifact@latest
+        uses: actions/upload-artifact@v3
         if: failure()
         with:
             name: cypress-snapshots
