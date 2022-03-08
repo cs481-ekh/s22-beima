@@ -56,7 +56,11 @@ namespace BEIMA.Backend.StorageService
                     .WithObjectSize(file.Length);
 
                 var buckets = await client.ListBucketsAsync();
-                Console.Error.WriteLine(buckets.Buckets.Count);
+                foreach(var bucket in buckets.Buckets)
+                {
+                    Console.Error.WriteLine(bucket.Name);
+                }
+                
                 await client.PutObjectAsync(putArgs);
                 return fileUid;
             } catch (Exception e)
