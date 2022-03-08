@@ -56,8 +56,6 @@ namespace BEIMA.Backend.StorageService
                 return fileUid;
             } catch (Exception e)
             {
-                Console.Error.WriteLine(e.Message);
-                Console.Error.WriteLine(e.StackTrace);
                 return null;
             }
         }
