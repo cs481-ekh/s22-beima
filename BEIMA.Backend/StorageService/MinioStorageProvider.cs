@@ -54,10 +54,16 @@ namespace BEIMA.Backend.StorageService
                     .WithContentType(file.ContentType)
                     .WithStreamData(stream)
                     .WithObjectSize(file.Length);
+
+                var buckets = await client.ListBucketsAsync();
+                Console.Error.WriteLine(buckets.Buckets.Count);
                 await client.PutObjectAsync(putArgs);
                 return fileUid;
-            } catch (Exception)
+            } catch (Exception e)
             {
+                Console.Error.WriteLine(bucket);
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
                 return null;
             } 
         }
@@ -111,11 +117,8 @@ namespace BEIMA.Backend.StorageService
                 await client.GetObjectAsync(getArgs);
                 return ms;
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.Error.WriteLine(bucket);
-                Console.Error.WriteLine(e.Message);
-                Console.Error.WriteLine(e.StackTrace);
                 return null;
             }
         }
