@@ -18,6 +18,7 @@ env:
   DeviceCollectionName: devices
   AzureCosmosConnection: ${{ secrets.AZURE_COSMOS_CONNECTION }}
   AzureStorageConnection: ${{ secrets.AZURE_STORAGE_CONNECTION }}
+  AzureContainer: "test-files"
   DeviceTypeCollectionName: deviceTypes
   MinioAccessKey: "minioadmin"
   MinioSecretKey: "minioadmin"
