@@ -20,7 +20,6 @@ const GetDeviceType = async(deviceTypeId) => {
     response: deviceTypeCall.data
   }
 
-  console.log(response);
   return response;
 }
 
