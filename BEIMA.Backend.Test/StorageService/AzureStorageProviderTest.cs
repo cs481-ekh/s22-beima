@@ -15,7 +15,7 @@ namespace BEIMA.Backend.Test.StorageService
     {
         private readonly IStorageProvider _storage = SetupStorageProvider();
 
-        public static IStorageProvider SetupStorageProvider()
+        private static IStorageProvider SetupStorageProvider()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IStorageProvider, AzureStorageProvider>();
