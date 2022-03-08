@@ -28,8 +28,6 @@ const GetDeviceTypeList = async() => {
     response: filteredFields
   }
 
-  console.log(response);
-
   return response;
 }
 
