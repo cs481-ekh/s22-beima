@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 
 namespace BEIMA.Backend.StorageService
 {
+    /// <summary>
+    /// This class abstracts basic file storage operations. It is implemented as a 
+    /// singleton dependancy injected object that uses Minio Storage. 
+    /// </summary>
     public sealed class MinioStorageProvider : IStorageProvider
     {
         private static MinioClient client;
         private string bucket;
+
+        /// <summary>
+        /// Constructor for the MinioStorageProvider
+        /// </summary>
         public MinioStorageProvider()
         {
             var accessKey = Environment.GetEnvironmentVariable("MinioAccessKey");
@@ -20,6 +28,11 @@ namespace BEIMA.Backend.StorageService
             client = new MinioClient().WithCredentials(accessKey, secretKey).WithEndpoint("localhost",9000);
         }
 
+        /// <summary>
+        /// Puts a file into the the storage bucket
+        /// </summary>
+        /// <param name="file">Corresponds to a file sent as part of a multipart/form-data post</param>
+        /// <returns>Uid of the file created or null if request failed</returns>
         public async Task<string> PutFile(IFormFile file)
         {
             try
@@ -49,6 +62,11 @@ namespace BEIMA.Backend.StorageService
             } 
         }
 
+        /// <summary>
+        /// Creates a presigned url for the specified file
+        /// </summary>
+        /// <param name="fileUid">Corresponds the target file's uid filename</param>
+        /// <returns>Presigned url or null if request failed</returns>
         public async Task<string> GetPresignedURL(string fileUid)
         {
             try
@@ -70,6 +88,12 @@ namespace BEIMA.Backend.StorageService
             }
         }
 
+        /// <summary>
+        /// Gets a stream to the requested file. Used for downloading a file. Will be
+        /// used in conjuction with return new FileStreamResult(stream, "application/octet-stream");
+        /// </summary>
+        /// <param name="fileUid">Corresponds the target file's uid filename</param>
+        /// <returns>Memorystream of the target file or null if request failed</returns>
         public async Task<MemoryStream> GetFileStream(string fileUid)
         {
             try
@@ -92,6 +116,12 @@ namespace BEIMA.Backend.StorageService
                 return null;
             }
         }
+
+        /// <summary>
+        /// Checks if the specified file exists in storage
+        /// </summary>
+        /// <param name="fileUid">Corresponds the target file's uid filename</param>
+        /// <returns>True if target file exists or false if it doesn't</returns>
         public async Task<bool> GetFileExists(string fileUid)
         {
             var statArgs = new StatObjectArgs()
@@ -108,6 +138,12 @@ namespace BEIMA.Backend.StorageService
                 return false;
             }
         }
+
+        /// <summary>
+        /// Deletes the target file from storage
+        /// </summary>
+        /// <param name="fileUid">Corresponds the target file's uid filename</param>
+        /// <returns>True if target file was deleted or false if request failed</returns>
         public async Task<bool> DeleteFile(string fileUid)
         {
             try

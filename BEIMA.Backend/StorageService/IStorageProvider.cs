@@ -35,16 +35,17 @@ namespace BEIMA.Backend.StorageService
         /// <returns>Memorystream of the target file or null if request failed</returns>
         Task<MemoryStream> GetFileStream(string fileUid);
         /// <summary>
-        /// Deletes the target file from storage
-        /// </summary>
-        /// <param name="fileUid">Corresponds the target file's uid filename</param>
-        /// <returns>True if target file was deleted or false if request failed</returns>
-        Task<bool> DeleteFile(string fileUid);
-        /// <summary>
         /// Checks if the specified file exists in storage
         /// </summary>
         /// <param name="fileUid">Corresponds the target file's uid filename</param>
         /// <returns>True if target file exists or false if it doesn't</returns>
         Task<bool> GetFileExists(string fileUid);
+        /// <summary>
+        /// Deletes the target file from storage
+        /// </summary>
+        /// <param name="fileUid">Corresponds the target file's uid filename</param>
+        /// <returns>True if target file was deleted or false if request failed</returns>
+        Task<bool> DeleteFile(string fileUid);
+        
     }
 }
