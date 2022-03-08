@@ -21,12 +21,12 @@ const AddDevicePage = () => {
   }
 
   const [deviceFields, setDeviceFields] = useState(currentDeviceFields);
+  const [errors, setErrors] = useState(currentDeviceFields);
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
   const [currentFormValues, setCurrentFormValues] = useState();  
-  const [errors, setErrors] = useState(currentDeviceFields);
   
   useEffect(() => {
     setPageName('Add Device')
@@ -48,6 +48,7 @@ const AddDevicePage = () => {
         //lat lon validation
         if (formName == 'Latitude' || formName == 'Longitude') {
           const coordMax = formName == 'Latitude' ? 90 : 180;
+          console.log("??");
           if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
             newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
           }
@@ -106,13 +107,7 @@ const AddDevicePage = () => {
             <br/>
             <h4>Fields</h4>
             <div>
-              {Object.keys(deviceFields).map(element =>
-                <Form.Group key={element} id={element}>
-                  <Form.Label>{element}</Form.Label>
-                    <Form.Control id={"input" + element} type="text" name={element} placeholder={"Enter " + element} isInvalid={ errors[element] }/>
-                  <Form.Control.Feedback type='invalid'> { errors[element] }</Form.Control.Feedback>
-                </Form.Group>
-              )}
+              <FormList fields={Object.keys(deviceFields)} errors={errors} />
             </div>
           </Form>
         </Card.Body>
