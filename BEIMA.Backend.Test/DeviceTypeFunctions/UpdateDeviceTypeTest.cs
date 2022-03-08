@@ -77,7 +77,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
         }
 
         [Test]
-        public async Task ExistingDevice_UpdatesDeviceType_ReturnsOKResponse()
+        public async Task ExistingDeviceType_UpdatesDeviceType_ReturnsOKResponse()
         {
             // ARRANGE
             var testId = "abcdef123456789012345678";

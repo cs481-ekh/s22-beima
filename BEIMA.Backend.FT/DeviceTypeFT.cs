@@ -91,7 +91,7 @@ namespace BEIMA.Backend.FT
         }
 
         [Test]
-        public async Task DevicesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
+        public async Task DeviceTypesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
         {
             // ARRANGE
             var deviceTypeList = new List<DeviceTypeAdd>
