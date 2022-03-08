@@ -22,29 +22,6 @@ const DevicePage = () => {
 
   const { id } = useParams();
 
-  const DeviceCall = async () => {
-    if(id === '' || id === null){
-      return {};
-    } else {
-      const result = await getDevice(id);
-      return result.response;
-    }
-  }
-
-  const mockDeviceImageCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const url = ''
-    return url
-  }
-
-  const mockDeviceDocumentsCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const docs = []
-    return docs
-  }
-
   const mockDeviceTypeCall = async(docId) => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
@@ -54,17 +31,18 @@ const DevicePage = () => {
   
   useEffect(() => {
     const loadData = async() => {
-      const [device, image, documents] = await Promise.all([DeviceCall(), mockDeviceImageCall(), mockDeviceDocumentsCall()])
-      const deviceType = await mockDeviceTypeCall(device.deviceId)
+      let deviceCall = await getDevice(id);
+      const device = deviceCall.response;
+      const deviceType = await mockDeviceTypeCall(device.deviceTypeId)
   
       setDevice(device)
-      setImage(image)
-      setDocuments(documents)
+      setImage('')
+      setDocuments([])
       setDeviceType(deviceType)
       setLoading(false)
     }
    loadData();
-  },[id]) // eslint-disable-line react-hooks/exhaustive-deps
+  },[id]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input

@@ -1,9 +1,7 @@
 /// <reference types="cypress" />
-import { skipOn } from '@cypress/skip-test'
 
 describe('Device Page', () => {
   it('Visits a Device Page', () => {
-    skipOn('linux')
     // visit
     cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
     cy.get('[id=devicePageContent]').should('exist')
@@ -56,7 +54,6 @@ describe('Device Page', () => {
     })
   })
   it('Enables inputs on Edit Button Click', () => {
-    skipOn('linux')
     // visit
     cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
     cy.get('[id=devicePageContent]').should('exist')
@@ -97,7 +94,6 @@ describe('Device Page', () => {
     })
   })
   it('Resets fields on Cancel Button Click', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/devices/' + Cypress.env('DEVICEID'))
     cy.wait(2000)
     cy.get('[id=editbtn]').click()
