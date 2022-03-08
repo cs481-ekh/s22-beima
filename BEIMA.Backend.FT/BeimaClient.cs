@@ -223,6 +223,18 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sends a device type update request to the BEIMA api.
+        /// </summary>
+        /// <param name="device">The device type to update.</param>
+        /// <returns>The id of the new device type.</returns>
+        public async Task<DeviceType> UpdateDeviceType(DeviceTypeUpdate device)
+        {
+            var response = await SendRequest($"api/device-type/{device.Id}/update", HttpVerb.POST, device);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<DeviceType>(content);
+        }
+
+        /// <summary>
         /// Disposes the http client.
         /// </summary>
         public void Dispose()
