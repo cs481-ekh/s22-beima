@@ -13,14 +13,14 @@ namespace BEIMA.Backend.Test.StorageService
     [TestFixture]
     public class MinioStorageTest : UnitTestBase
     {
-        private readonly IStorageProvider _storage;
+        private readonly IStorageProvider _storage = SetupStorageProvider();
 
-        public MinioStorageTest()
+        public static IStorageProvider SetupStorageProvider()
         {
             var services = new ServiceCollection();
             services.AddSingleton<IStorageProvider, MinioStorageProvider>();
             var serviceProivder = services.BuildServiceProvider();
-            _storage = serviceProivder.GetRequiredService<IStorageProvider>();
+            return serviceProivder.GetRequiredService<IStorageProvider>();
         }
 
         [Test]
@@ -31,30 +31,34 @@ namespace BEIMA.Backend.Test.StorageService
         }
 
         [Test]
-        public async Task GetFileStream_FileExists()
+        public async Task FileExists_GetFileStream_StreamExists()
         {
             //Arrange
-            IFormFile file;
+            string fileUid;
             var testString = "Hello World";
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString));
-            file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
             {
-                Headers = new HeaderDictionary(),
-                ContentType = "text/plain"
-            };
-            var fileUid = await _storage.PutFile(file);
+                var file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "text/plain"
+                };
+
+                // Needs to be inside using as closing memory stream won't allow file stream to be openned.
+                fileUid = await _storage.PutFile(file);
+            }
 
             //Act
             var fileStream = await _storage.GetFileStream(fileUid);
+            var fileContent = Encoding.UTF8.GetString(fileStream.ToArray());
 
             //Assert
-            Assert.IsNotNull(fileStream);
-            var fileContent = Encoding.UTF8.GetString(fileStream.ToArray());
-            Assert.AreEqual(testString, fileContent);
+            Assert.That(fileStream, Is.Not.Null);
+            Assert.That(testString, Is.EqualTo(fileContent));
         }
 
         [Test]
-        public async Task GetFileStream_FileNotExists()
+        public async Task FileNotExists_GetFileStream_StreamNotExists()
         {
             //Arrange
             var fileUid = Guid.NewGuid().ToString();
@@ -63,32 +67,36 @@ namespace BEIMA.Backend.Test.StorageService
             var stream = await _storage.GetFileStream(fileUid);
 
             //Assert
-            Assert.IsNull(stream);
+            Assert.That(stream, Is.Null);
         }
 
         [Test]
-        public async Task GetPresignedUrl_ObjectExists()
+        public async Task FileExists_GetPresignedUrl_PresignedUrlExists()
         {
             //Arrange
-            IFormFile file;
+            string fileUid;
             var testString = "Hello World";
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString));
-            file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
             {
-                Headers = new HeaderDictionary(),
-                ContentType = "text/plain"
-            };
-            var fileUid = await _storage.PutFile(file);
+                var file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "text/plain"
+                };
+
+                // Needs to be inside using as closing memory stream won't allow file stream to be openned.
+                fileUid = await _storage.PutFile(file);
+            }
 
             //Act
             var url = await _storage.GetPresignedURL(fileUid);
 
             //Assert
-            Assert.NotNull(url);
+            Assert.That(url, Is.Not.Null);
         }
 
         [Test]
-        public async Task GetPresignedUrl_FileNotExists()
+        public async Task FileNotExists_GetPresignedUrl_PresignedUrlNotExists()
         {
             //Arranges
             var fileUid = Guid.NewGuid().ToString();
@@ -97,57 +105,64 @@ namespace BEIMA.Backend.Test.StorageService
             var url = await _storage.GetPresignedURL(fileUid);
 
             //Assert
-            Assert.IsNull(url);
+            Assert.That(url, Is.Null);
         }
 
         [Test]
-        public async Task PutFile()
+        public async Task FileNotExists_PutFile_FileUidExists()
         {
             //Arrange
-            IFormFile file;
+            string fileUid;
             var testString = "Hello World";
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString));
-            file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
             {
-                Headers = new HeaderDictionary(),
-                ContentType = "text/plain"
-            };
+                var file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "text/plain"
+                };
 
-            //Act
-            var fileUid = await _storage.PutFile(file);
+                //Act
+                // Needs to be inside using as closing memory stream won't allow file stream to be openned.
+                fileUid = await _storage.PutFile(file);
+            }
 
             //Assert
-            Assert.NotNull(fileUid);
+            Assert.That(fileUid, Is.Not.Null);
         }
 
         [Test]
-        public async Task DeleteObject_FileExists()
+        public async Task FileExists_DeleteObject_DeletedTrue()
         {
             //Arrange
-            IFormFile file;
+            string fileUid;
             var testString = "Hello World";
-            MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString));
-            file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+            using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
             {
-                Headers = new HeaderDictionary(),
-                ContentType = "text/plain"
-            };
+                var file = new FormFile(stream, 0, stream.Length, "testfile", "helloworld.txt")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "text/plain"
+                };
+
+                // Needs to be inside using as closing memory stream won't allow file stream to be openned.
+                fileUid = await _storage.PutFile(file);
+            }
 
             //Act
-            var fileUid = await _storage.PutFile(file);
             var preDelExists = await _storage.GetFileExists(fileUid);
             var delRes = await _storage.DeleteFile(fileUid);
             var postDelExists = await _storage.GetFileExists(fileUid);
 
             //Assert
-            Assert.NotNull(fileUid);
-            Assert.IsTrue(preDelExists);
-            Assert.IsTrue(delRes);
-            Assert.IsFalse(postDelExists);
+            Assert.That(fileUid, Is.Not.Null);
+            Assert.That(preDelExists, Is.True);
+            Assert.That(delRes, Is.True);
+            Assert.That(postDelExists, Is.False);
         }
 
         [Test]
-        public async Task DeleteFile_FileNotExists()
+        public async Task FileNotExists_DeleteObject_DeletedTrue()
         {
             //Arrange
             var fileUid = Guid.NewGuid().ToString();
@@ -157,8 +172,8 @@ namespace BEIMA.Backend.Test.StorageService
             var postDelExists = await _storage.GetFileExists(fileUid);
 
             //Assert
-            Assert.IsTrue(result);
-            Assert.IsFalse(postDelExists);
+            Assert.That(result, Is.True);
+            Assert.That(postDelExists, Is.False);
         }
     }
 }
