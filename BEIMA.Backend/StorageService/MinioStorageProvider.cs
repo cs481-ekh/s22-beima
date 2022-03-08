@@ -111,8 +111,11 @@ namespace BEIMA.Backend.StorageService
                 await client.GetObjectAsync(getArgs);
                 return ms;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Console.Error.WriteLine(bucket);
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
                 return null;
             }
         }
