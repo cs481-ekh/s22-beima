@@ -2,7 +2,7 @@
 # Change directory to Minio
 cd ./Minio
 # Start up the minio server locally
-./minio server ./teststorage &
+./minio server ./storage &
 # Change directory to root
 cd ../
 # Change directory to BEIMA.Backend.Test
