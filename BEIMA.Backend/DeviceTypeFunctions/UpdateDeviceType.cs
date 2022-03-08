@@ -41,8 +41,12 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                                             (string)data.description,
                                             (string)data.notes);
 
-                var fieldDictionary = ((Dictionary<string, string>)data.fields);
+                var fieldDictionary = ((JObject)data.fields).ToObject<Dictionary<string, string>>();
                 var currentDeviceType = mongo.GetDeviceType(new ObjectId(id));
+                if (currentDeviceType == null)
+                {
+                    return new NotFoundObjectResult(Resources.DeviceTypeNotFoundMessage);
+                }
                 foreach (var field in fieldDictionary)
                 {
                     // Check that field ids exist in the current device type.
@@ -52,8 +56,6 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                     }
                     deviceType.AddField(new Guid(field.Key).ToString(), field.Value);
                 }
-
-
 
                 var newFieldList = ((JArray)data.newFields).ToObject<List<string>>();
                 foreach (var newField in newFieldList)
@@ -65,6 +67,8 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
+
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
 
             string message;
             HttpStatusCode statusCode;
