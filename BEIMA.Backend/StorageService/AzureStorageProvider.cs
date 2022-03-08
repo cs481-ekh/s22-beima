@@ -49,8 +49,10 @@ namespace BEIMA.Backend.StorageService
                 } while (exists);
                 await containerClient.UploadBlobAsync(fileUid, file.OpenReadStream());
                 return fileUid;
-            } catch (Exception)
+            } catch (Exception e)
             {
+                Console.Error.WriteLine(e.Message);
+                Console.Error.WriteLine(e.StackTrace);
                 return null;
             }
         }
