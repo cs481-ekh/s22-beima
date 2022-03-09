@@ -1,3 +1,23 @@
+## Minutes: 2022-03-9
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Standup
+* Kenny
+	* Working on hooking storage into endpoints
+* Keelan
+	* Working on pocos for user and mongo connection calls
+* Tom
+	* Working on device types warning/errors
+* Joseph
+	* Working on building endpoints
+* Ashlyn
+	* Working on hooking pages up with api calls
+
 ## Minutes: 2022-03-4
 ### scribe: Kenny
 ### Attendees:
