@@ -1,4 +1,10 @@
 #!/bin/bash
+# Change directory to Minio
+cd ./Minio
+# Start up the minio server locally
+./minio server ./storage &
+# Change directory to root
+cd ../
 # Change directory to BEIMA.Backend.Test
 cd ./BEIMA.Backend
 # Start up the backend API locally
@@ -9,6 +15,8 @@ sleep 20
 dotnet test || { echo "Backend tests failed"; exit 1; }
 # Change directories to BEIMA.Client
 cd ../BEIMA.Client || { echo "Changing directories failed"; exit 1; }
+# Allow execution for scripts
+chmod +x *.sh
 # Run react tests
 npm test
 npm run cypress

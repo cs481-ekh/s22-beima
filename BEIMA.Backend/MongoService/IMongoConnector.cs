@@ -52,10 +52,23 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetDeviceType(ObjectId objectId);
 
         /// <summary>
+        /// Gets a device from the "deviceTypes" collection, given an objectID.
+        /// </summary>
+        /// <returns>BsonDocument that was requested</returns>
+        public List<BsonDocument> GetAllDeviceTypes();
+
+        /// <summary>
         /// Inserts a device into the "deviceTypes" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertDeviceType(BsonDocument doc);
+
+        /// <summary>
+        /// Deletes from the "deviceTypes" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteDeviceType(ObjectId objectId);
     }
 }
