@@ -70,5 +70,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteDeviceType(ObjectId objectId);
+
+        /// <summary>
+        /// Updates a device in the "deviceTypes" collection, given a fully formed updated device.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>true if successful, false if unsuccessful</returns>
+        public BsonDocument UpdateDeviceType(BsonDocument doc);
     }
 }
