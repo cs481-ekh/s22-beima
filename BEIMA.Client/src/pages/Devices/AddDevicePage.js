@@ -74,8 +74,10 @@ const AddDevicePage = () => {
       setErrors(newErrors);
     } else {
       setErrors({});
+      for(let i = 0; i < formFields.length; i++){
+        formFields[i].value = "";
+      }
       
-      setDeviceFields(currentDeviceFields);
     }
   }
   
