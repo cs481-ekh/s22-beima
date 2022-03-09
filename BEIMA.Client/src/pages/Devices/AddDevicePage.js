@@ -53,7 +53,6 @@ const AddDevicePage = () => {
           }
         }
         
-        //formFields[i].value = "";
         Object.assign(fieldValues, formJSON);
       } else if (formName === "Device Image"){
         setDeviceImage(formFields[i].files[0]);
@@ -71,7 +70,6 @@ const AddDevicePage = () => {
       setErrors(newErrors);
     } else {
       setErrors({});
-      //alert('add device, refresh page, reset form...');
     }
   }
   
