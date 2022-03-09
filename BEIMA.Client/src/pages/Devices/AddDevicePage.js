@@ -48,7 +48,6 @@ const AddDevicePage = () => {
         //lat lon validation
         if (formName == 'Latitude' || formName == 'Longitude') {
           const coordMax = formName == 'Latitude' ? 90 : 180;
-          console.log("??");
           if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
             newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
           }
