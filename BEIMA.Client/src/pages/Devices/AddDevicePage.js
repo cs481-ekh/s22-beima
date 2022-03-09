@@ -74,6 +74,8 @@ const AddDevicePage = () => {
       setErrors(newErrors);
     } else {
       setErrors({});
+      
+      setDeviceFields(currentDeviceFields);
     }
   }
   
