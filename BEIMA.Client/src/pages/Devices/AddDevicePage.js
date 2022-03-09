@@ -26,7 +26,6 @@ const AddDevicePage = () => {
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
-  const [currentFormValues, setCurrentFormValues] = useState();  
   
   useEffect(() => {
     setPageName('Add Device')
@@ -46,7 +45,7 @@ const AddDevicePage = () => {
         let formJSON =  {[formName] : formFields[i].value};
         
         //lat lon validation
-        if (formName == 'Latitude' || formName == 'Longitude') {
+        if (formName === 'Latitude' || formName === 'Longitude') {
           const coordMax = formName == 'Latitude' ? 90 : 180;
           if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
             newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
@@ -65,6 +64,11 @@ const AddDevicePage = () => {
 
     setDeviceFields(currentDeviceFields);
     setFullDeviceJSON(fieldValues);
+    
+    //won't deploy to azure without these until they're used elsewhere
+    console.log(fullDeviceJSON);
+    console.log(deviceImage);
+    console.log(deviceAdditionalDocs);
 
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
