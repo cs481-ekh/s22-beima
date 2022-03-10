@@ -15,7 +15,6 @@ using BEIMA.Backend.Models;
 using MongoDB.Bson.Serialization;
 using System.Linq;
 using System.Collections.Generic;
-using static BEIMA.Backend.MongoService.Device;
 
 namespace BEIMA.Backend.DeviceFunctions
 {

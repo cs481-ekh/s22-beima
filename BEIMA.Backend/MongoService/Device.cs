@@ -6,6 +6,46 @@ using MongoDB.Bson.Serialization.Attributes;
 namespace BEIMA.Backend.MongoService
 {
     /// <summary>
+    /// Object representation of a last modified document in a device document
+    /// </summary>
+    public class DeviceLastModified
+    {
+        [BsonElement("date")]
+        public DateTime Date { get; set; }
+        [BsonElement("user")]
+        public string User { get; set; }
+    }
+
+    /// <summary>
+    /// Object representation of a photo/file document in a device document's photo and file list.
+    /// Nothing is stored in Url only used when device is returned as a view model.
+    /// </summary>
+    public class DeviceFile
+    {
+        [BsonElement("fileName")]
+        public string FileName { get; set; }
+        [BsonElement("fileUid")]
+        public string FileUid { get; set; }
+        [BsonElement("fileUrl")]
+        public string Url { get; set; }
+    }
+
+    /// <summary>
+    /// Object representation of the location field in a device document
+    /// </summary>
+    public class DeviceLocation
+    {
+        [BsonElement("buildingId")]
+        public ObjectId BuildingId { get; set; }
+        [BsonElement("notes")]
+        public string Notes { get; set; }
+        [BsonElement("latitude")]
+        public string Latitude { get; set; }
+        [BsonElement("longitude")]
+        public string Longitude { get; set; }
+    }
+
+    /// <summary>
     /// This class represents a Device. This object contains all the required fields necessary
     /// for a device. This is meant to be used to convert data received from an endpoint, back into a BSON object.
     /// </summary>
@@ -49,48 +89,7 @@ namespace BEIMA.Backend.MongoService
         public List<DeviceFile> Files { get; set; }
 
         [BsonElement("photos")]
-        public List<DeviceFile> Photos { get; set; }
-
-
-        /// <summary>
-        /// Object representation of a last modified document in a device document
-        /// </summary>
-        public class DeviceLastModified
-        {
-            [BsonElement("date")]
-            public DateTime Date { get; set; }
-            [BsonElement("user")]
-            public string User { get; set; }
-        }
-
-        /// <summary>
-        /// Object representation of a photo/file document in a device document's photo and file list.
-        /// Nothing is stored in Url only used when device is returned as a view model.
-        /// </summary>
-        public class DeviceFile
-        {
-            [BsonElement("fileName")]
-            public string FileName { get; set; }
-            [BsonElement("fileUid")]
-            public string FileUid { get; set; }
-            [BsonElement("fileUrl")]
-            public string Url { get; set; }
-        }
-
-        /// <summary>
-        /// Object representation of the location field in a device document
-        /// </summary>
-        public class DeviceLocation
-        {
-            [BsonElement("buildingId")]
-            public ObjectId BuildingId { get; set; }
-            [BsonElement("notes")]
-            public string Notes { get; set; }
-            [BsonElement("latitude")]
-            public string Latitude { get; set; }
-            [BsonElement("longitude")]
-            public string Longitude { get; set; }
-        }
+        public List<DeviceFile> Photos { get; set; }       
 
         /// <summary>
         /// Empty constructor, this allows for a device to be instantiated through Object Initializers.
