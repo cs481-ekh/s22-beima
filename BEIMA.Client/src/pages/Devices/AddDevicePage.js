@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import { Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
+import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
@@ -26,7 +26,6 @@ const AddDevicePage = () => {
   const [errors, setErrors] = useState(currentDeviceFields);
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
-  const [loading, setLoading] = useState(true);
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
   const [deviceTypes, setDeviceTypes] = useState([]);
@@ -34,9 +33,7 @@ const AddDevicePage = () => {
   useEffect(() => {
     setPageName('Add Device');
     const loadData = async () => {
-      setLoading(true);
       let types = await getDeviceTypes();
-      setLoading(false);
       setDeviceTypes(types);
     }
    loadData()
