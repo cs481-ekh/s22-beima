@@ -33,3 +33,18 @@ describe("Verify Data in fields is cleared when Add Device is selected", () => {
     cy.get("[id='inputSerial Number']").should('have.value', '')
   })
 })
+
+describe("Verify Data in fields is still present when invalid coords exist and Add Device is selected", () => {
+  it('Enter data, click Add Device, verify fields are empty', () => {
+    cy.visit('http://localhost:3000/addDevice')
+    cy.get('#inputBuilding').scrollIntoView().type("Student Union Building")
+    cy.get('#inputLatitude').scrollIntoView().type("200")
+    cy.get('#inputLongitude').scrollIntoView().type("200")
+    cy.get("[id='inputSerial Number']").scrollIntoView().type("12345")
+    cy.get("#addDevice").scrollIntoView().click()
+    cy.get('#inputBuilding').should('have.value', 'Student Union Building')
+    cy.get('#inputLatitude').should('have.value', '200')
+    cy.get('#inputLongitude').should('have.value', '200')
+    cy.get("[id='inputSerial Number']").should('have.value', '12345')
+  })
+})
