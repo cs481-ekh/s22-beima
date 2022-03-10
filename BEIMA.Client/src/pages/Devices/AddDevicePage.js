@@ -55,8 +55,7 @@ const AddDevicePage = () => {
   }
   
   const getFieldsForTypeId = (deviceTypeId) => {
-    //const deviceFieldData = await GetDeviceTypeList();
-    //setDeviceFields();
+
   }
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
