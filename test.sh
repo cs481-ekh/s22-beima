@@ -1,4 +1,10 @@
 #!/bin/bash
+# Change directory to Minio
+cd ./Minio
+# Start up the minio server locally
+./minio server ./storage &
+# Change directory to root
+cd ../
 # Change directory to BEIMA.Backend.Test
 cd ./BEIMA.Backend
 # Start up the backend API locally
