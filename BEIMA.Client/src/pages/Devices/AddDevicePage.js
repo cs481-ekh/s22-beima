@@ -2,7 +2,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
-import FormList from '../../shared/FormList/FormList.js';
+import FormList from '../../shared/FormList/FormListWithErrorFeedback.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 
 
