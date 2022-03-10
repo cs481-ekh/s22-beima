@@ -1,6 +1,6 @@
 import { Dropdown } from 'react-bootstrap';
 
-const FilledDropDown = ({items, selectFunction, buttonStyle, ddId}) => {
+const FilledDropDown = ({items, selectFunction, buttonStyle}) => {
   return (
     <Dropdown onSelect={selectFunction}>
       <Dropdown.Toggle variant="success" id="dropdown-basic" className={buttonStyle}>

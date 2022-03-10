@@ -55,7 +55,6 @@ const AddDevicePage = () => {
   }
   
   const getFieldsForTypeId = (deviceTypeId) => {
-    console.log("get fields for device type");
     //const deviceFieldData = await GetDeviceTypeList();
     //setDeviceFields();
   }
