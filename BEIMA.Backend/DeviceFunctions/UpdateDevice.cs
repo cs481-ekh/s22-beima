@@ -10,14 +10,32 @@ using Newtonsoft.Json;
 using MongoDB.Bson;
 using BEIMA.Backend.MongoService;
 using System.Net;
+using BEIMA.Backend.StorageService;
+using BEIMA.Backend.Models;
+using MongoDB.Bson.Serialization;
+using System.Linq;
+using System.Collections.Generic;
+using static BEIMA.Backend.MongoService.Device;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
     /// <summary>
     /// Handles update requests involving a single device.
     /// </summary>
-    public static class UpdateDevice
+    public class UpdateDevice
     {
+
+        private readonly IStorageProvider _storage;
+
+        /// <summary>
+        /// Constructor for the DeleteDevice Function
+        /// </summary>
+        /// <param name="storage">Depedency injected storage provider</param>
+        public UpdateDevice(IStorageProvider storage)
+        {
+            _storage = storage;
+        }
+
         /// <summary>
         /// Handles device update request.
         /// </summary>
@@ -26,7 +44,7 @@ namespace BEIMA.Backend.DeviceFunctions
         /// <param name="log">The logger to log to.</param>
         /// <returns>An object representing the updated device.</returns>
         [FunctionName("UpdateDevice")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "device/{id}/update")] HttpRequest req,
             string id,
             ILogger log)
@@ -38,32 +56,83 @@ namespace BEIMA.Backend.DeviceFunctions
                 return new BadRequestObjectResult(Resources.InvalidIdMessage);
             }
 
+            var reqForm = await req.ReadFormAsync();
+            var mongo = MongoDefinition.MongoInstance;
+
+            // Parse out necessary data
+            UpdateDeviceRequest data;
             Device device;
+            ObjectId devieTypeId;
+            ObjectId buildingId;
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
-                device = new Device(new ObjectId(id),
-                                    ObjectId.Parse((string)data.deviceTypeId),
-                                    (string)data.deviceTag,
-                                    (string)data.manufacturer,
-                                    (string)data.modelNum,
-                                    (string)data.serialNum,
-                                    (int)data.yearManufactured,
-                                    (string)data.notes);
+                data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);
+                devieTypeId = ObjectId.Parse(data.DeviceTypeId);
+                buildingId = ObjectId.Parse(data.Location.BuildingId);
 
-                device.SetLocation(ObjectId.Parse((string)data.location.buildingId),
-                                   (string)data.location.notes,
-                                   (string)data.location.latitude,
-                                   (string)data.location.longitude);
-
-                device.SetLastModified(DateTime.UtcNow, "Anonymous");
-                // TODO: include device type attributes
+                var deviceDocument = mongo.GetDevice(new ObjectId(id));
+                device = BsonSerializer.Deserialize<Device>(deviceDocument);
             }
             catch (Exception)
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
+
+            // Set Data to new values
+            device.DeviceTypeId = devieTypeId;
+            device.DeviceTag = data.DeviceTag;
+            device.Manufacturer = data.Manufacturer;
+            device.ModelNum = data.ModelNum;
+            device.SerialNum = data.SerialNum;
+            device.YearManufactured = data.YearManufactured;
+            device.Notes = data.Notes;
+            device.SetLocation(
+                buildingId,
+                data.Location.Notes,
+                data.Location.Latitude,
+                data.Location.Longitude
+            );
+
+            // Check if there is a new photo, if so remove all others on the device
+            // Frontend only supports 1 photo, but a device can contain more
+            var updatePhoto = reqForm.Files.Any(file => file.Name == "photos");
+            if (updatePhoto && device.Photos.Count > 0)
+            {
+                foreach(var file in device.Photos)
+                {
+                    await _storage.DeleteFile(file.FileUid);
+                    // Log if file delete failed.
+                }                
+                device.Photos = new List<DeviceFile>();
+            }
+            
+            // Remove files from device's file list
+            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));
+
+            // Removed deleted files from storage
+            foreach (var fileUid in data.DeletedFiles)
+            {
+                await _storage.DeleteFile(fileUid);
+                // Log to file if fails
+            }
+
+            // Add new files and photos
+            foreach (var file in reqForm.Files)
+            {
+                var fileUid = await _storage.PutFile(file);
+                if (file.Name == "files")
+                {
+                    device.AddFile(fileUid, file.FileName);
+                }
+                else if (file.Name == "photos")
+                {
+                    device.AddPhoto(fileUid, file.FileName);
+                }
+            }
+
+            device.SetLastModified(DateTime.UtcNow, "Anonymous");
+            // TODO: include device type attributes
+
 
             string message;
             HttpStatusCode statusCode;
@@ -74,14 +143,12 @@ namespace BEIMA.Backend.DeviceFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
-            var updatedDevice = mongo.UpdateDevice(device.GetBsonDocument());
-            if (updatedDevice is null)
+            var updatedDeviceDocument = mongo.UpdateDevice(device.GetBsonDocument());
+            if (updatedDeviceDocument is null)
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
             }
-            var dotNetObj = BsonTypeMapper.MapToDotNetValue(updatedDevice);
-            return new OkObjectResult(dotNetObj);
+            return new OkObjectResult(device);
         }
     }
 }

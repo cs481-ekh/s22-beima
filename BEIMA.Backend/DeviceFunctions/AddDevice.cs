@@ -1,4 +1,6 @@
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -7,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -16,8 +17,19 @@ namespace BEIMA.Backend.DeviceFunctions
     /// <summary>
     /// Handles a request to add a single device.
     /// </summary>
-    public static class AddDevice
+    public class AddDevice
     {
+        private readonly IStorageProvider _storage;
+
+        /// <summary>
+        /// Constructor for the AddDevice Function
+        /// </summary>
+        /// <param name="storage">Depedency injected storage provider</param>
+        public AddDevice(IStorageProvider storage)
+        {
+            _storage = storage;
+        }
+
         /// <summary>
         /// Handles device create request.
         /// </summary>
@@ -25,36 +37,60 @@ namespace BEIMA.Backend.DeviceFunctions
         /// <param name="log">The logger to log to.</param>
         /// <returns>An http response containing the id of the newly created device.</returns>
         [FunctionName("AddDevice")]
-        public static async Task<IActionResult> Run(
+        public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "device")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device post request.");
 
+            var reqForm = await req.ReadFormAsync();
+
             Device device;
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
-                device = new Device(ObjectId.GenerateNewId(),
-                                    ObjectId.Parse((string)data.deviceTypeId),
-                                    (string)data.deviceTag,
-                                    (string)data.manufacturer,
-                                    (string)data.modelNum,
-                                    (string)data.serialNum,
-                                    (int)data.yearManufactured,
-                                    (string)data.notes);
+                var data = JsonConvert.DeserializeObject<AddDeviceRequest>(reqForm["data"]);
+                device = new Device(
+                    ObjectId.GenerateNewId(),
+                    ObjectId.Parse(data.DeviceTypeId),
+                    data.DeviceTag,
+                    data.Manufacturer,
+                    data.ModelNum,
+                    data.SerialNum,
+                    data.YearManufactured,
+                    data.Notes
+                );
 
-                device.SetLocation(ObjectId.Parse((string)data.location.buildingId),
-                                   (string)data.location.notes,
-                                   (string)data.location.latitude,
-                                   (string)data.location.longitude);
+                device.SetLocation(
+                    ObjectId.Parse(data.Location.BuildingId),
+                    data.Location.Notes,
+                    data.Location.Latitude,
+                    data.Location.Longitude
+                );
+
                 // TODO: include device type attributes
             }
             catch (Exception)
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
+
+            // Store attached files and add file uid to device
+            foreach (var file in reqForm.Files)
+            {
+                var fileUid = await _storage.PutFile(file);
+                if (fileUid != null)
+                {
+                    if (file.Name == "photos")
+                    {
+                        device.AddPhoto(fileUid, file.FileName);
+                    }
+                    else if (file.Name == "files")
+                    {
+                        device.AddFile(fileUid, file.FileName);
+                    }
+                }
+            }
+
             // TODO: Use actual user.
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
 
@@ -68,7 +104,8 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             var mongo = MongoDefinition.MongoInstance;
-            var id = mongo.InsertDevice(device.GetBsonDocument());
+            var deviceDocument = device.GetBsonDocument();
+            var id = mongo.InsertDevice(deviceDocument);
 
             return new OkObjectResult(id.ToString());
         }
