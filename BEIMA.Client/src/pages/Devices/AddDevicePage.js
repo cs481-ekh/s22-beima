@@ -3,7 +3,9 @@ import { Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
+import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
+import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 
 
 const AddDevicePage = () => {
@@ -24,12 +26,39 @@ const AddDevicePage = () => {
   const [errors, setErrors] = useState(currentDeviceFields);
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
+  const [loading, setLoading] = useState(true);
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
+  const [deviceTypes, setDeviceTypes] = useState([]);
   
   useEffect(() => {
-    setPageName('Add Device')
-  })
+    setPageName('Add Device');
+    const loadData = async () => {
+      setLoading(true);
+      let types = await getDeviceTypes();
+      setLoading(false);
+      setDeviceTypes(types);
+    }
+   loadData()
+  },[])
+  
+  const getDeviceTypes = async () => {
+    const deviceTypeData = await GetDeviceTypeList();
+    let data = []
+    for(let i = 0; i < deviceTypeData.response.length; i++){
+      data.push({
+        name: deviceTypeData.response[i].name,
+        id: deviceTypeData.response[i].id
+      });
+    }
+    return data
+  }
+  
+  const getFieldsForTypeId = (deviceTypeId) => {
+    console.log("get fields for device type");
+    //const deviceFieldData = await GetDeviceTypeList();
+    //setDeviceFields();
+  }
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(addButtonEvent){
@@ -88,14 +117,7 @@ const AddDevicePage = () => {
           <Form>
             <Row className={styles.buttonGroup}>
               <Col>
-              <Dropdown id="typeDropDown">
-                <Dropdown.Toggle variant="success" id="dropdown-basic" className={styles.button}>
-                  Select Device Type 
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  <Dropdown.Item href="#/action-1">Default Device Type</Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown>
+                <FilledDropDown items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} />
               </Col>
               <Col>
                   <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
