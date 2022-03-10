@@ -2,7 +2,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Card, Button, Dropdown, Row, Col, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
-import FormList from '../../shared/FormList/FormListWithErrorFeedback.js';
+import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 
 
@@ -112,7 +112,7 @@ const AddDevicePage = () => {
             <br/>
             <h4>Fields</h4>
             <div>
-              <FormList fields={Object.keys(deviceFields)} errors={errors} />
+              <FormListWithErrorFeedback fields={Object.keys(deviceFields)} errors={errors} />
             </div>
           </Form>
         </Card.Body>
