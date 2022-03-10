@@ -61,12 +61,12 @@ namespace BEIMA.Backend.DeviceFunctions
             // Parse out necessary data
             UpdateDeviceRequest data;
             Device device;
-            ObjectId devieTypeId;
+            ObjectId deviceTypeId;
             ObjectId buildingId;
             try
             {
                 data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);
-                devieTypeId = ObjectId.Parse(data.DeviceTypeId);
+                deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
                 buildingId = ObjectId.Parse(data.Location.BuildingId);
 
                 var deviceDocument = mongo.GetDevice(new ObjectId(id));
@@ -78,7 +78,7 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             // Set Data to new values
-            device.DeviceTypeId = devieTypeId;
+            device.DeviceTypeId = deviceTypeId;
             device.DeviceTag = data.DeviceTag;
             device.Manufacturer = data.Manufacturer;
             device.ModelNum = data.ModelNum;
@@ -91,6 +91,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 data.Location.Latitude,
                 data.Location.Longitude
             );
+            device.Fields = data.Fields;
 
             // Check if there is a new photo, if so remove all others on the device
             // Frontend only supports 1 photo, but a device can contain more

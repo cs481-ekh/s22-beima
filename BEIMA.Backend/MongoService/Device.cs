@@ -77,7 +77,7 @@ namespace BEIMA.Backend.MongoService
         public string Notes { get; set; }
 
         [BsonElement("fields")]
-        public BsonDocument Fields { get; set; }
+        public Dictionary<string,string> Fields { get; set; }
 
         [BsonElement("location")]
         public DeviceLocation Location { get; set; }
@@ -96,7 +96,7 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         public Device()
         {
-            Fields = new BsonDocument();
+            Fields = new Dictionary<string, string>();
             LastModified = new DeviceLastModified();
             Location = new DeviceLocation();
             Files = new List<DeviceFile>();
@@ -124,7 +124,7 @@ namespace BEIMA.Backend.MongoService
             SerialNum = serialNum ?? string.Empty;
             YearManufactured = yearManufactured ?? -1;
             Notes = notes ?? string.Empty;
-            Fields = new BsonDocument();
+            Fields = new Dictionary<string, string>();
             Location = new DeviceLocation();
             LastModified = new DeviceLastModified();
             Files = new List<DeviceFile>();
@@ -176,7 +176,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="value">The actual value of the field.</param>
         public void AddField(string key, dynamic value)
         {
-            Fields.Set(key, value);
+            Fields.Add(key, value);
         }
 
         /// <summary>

@@ -67,7 +67,7 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                // TODO: include device type attributes
+                device.Fields = data.Fields;                
             }
             catch (Exception)
             {
