@@ -9,7 +9,7 @@ const FilledDropDown = ({items, selectFunction, buttonStyle}) => {
       <Dropdown.Menu >
         {items.length > 0 &&
           items.map(item => (
-          <Dropdown.Item value={item.id} key={item.id}>{item.name}</Dropdown.Item>
+          <Dropdown.Item eventKey={item.id} value={item.id} key={item.id}>{item.name}</Dropdown.Item>
         ))}
       </Dropdown.Menu>
     </Dropdown>
