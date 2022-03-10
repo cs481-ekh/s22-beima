@@ -98,7 +98,6 @@ const AddDeviceTypePage = () => {
             </ListGroup.Item>
           </div>
         )}
-        <br/>
       </div>
     )
   }
@@ -122,10 +121,12 @@ const AddDeviceTypePage = () => {
           <ListGroup id="mandatoryFields">
             <TypeFieldList fields={defaultDeviceFields} mandatory={true} />
           </ListGroup>
+          <br/>
           <h6>Custom Fields</h6>
           <ListGroup id="customFields">
             <TypeFieldList fields={customDeviceFields} mandatory={false} />
           </ListGroup>
+          <br/>
           <Form>
             <Form.Group>
               <Form.Label>Add Custom Field</Form.Label>

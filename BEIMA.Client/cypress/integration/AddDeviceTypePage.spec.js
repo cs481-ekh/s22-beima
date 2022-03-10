@@ -17,7 +17,7 @@ describe("Verify Data can be entered into fields", () => {
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#inputName').scrollIntoView().type("new type")
     cy.get('#inputDescription').scrollIntoView().type("newly added type")
-    cy.get("[id='inputDevice Type Notes']").scrollIntoView().type("meter from SEL")
+    cy.get("[id='inputNotes']").scrollIntoView().type("meter from SEL")
   })
 })
 
@@ -26,11 +26,11 @@ describe("Verify Data in fields is cleared when Add Device Type is selected", ()
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#inputName').scrollIntoView().type("new type")
     cy.get('#inputDescription').scrollIntoView().type("newly added type")
-    cy.get("[id='inputDevice Type Notes']").scrollIntoView().type("meter from SEL")
+    cy.get("[id='inputNotes']").scrollIntoView().type("meter from SEL")
     cy.get("#addDeviceType").scrollIntoView().click()
     cy.get('#inputName').should('have.value', '')
     cy.get('#inputDescription').should('have.value', '')
-    cy.get("[id='inputDevice Type Notes']").should('have.value', '')
+    cy.get("[id='inputNotes']").should('have.value', '')
   })
 })
 
@@ -87,6 +87,38 @@ describe("Verify custom fields get cleared when Add Device Type is clicked", () 
       cy.wrap($custfields).children().should('not.contain', 'field1')
       cy.wrap($custfields).children().should('not.contain', 'field2')
       cy.wrap($custfields).children().should('not.contain', 'field3')
+    })
+  })
+})
+
+describe("Verify error message on invalid custom field inputs", () => {
+  it('Add duplicate field, verify it only gets added once', () => {
+    cy.visit('http://localhost:3000/addDeviceType')
+    cy.get('#newField').scrollIntoView().type("field1")
+    cy.get("#addField").scrollIntoView().click()
+    cy.get('#newField').scrollIntoView().type("field1")
+    cy.get("#addField").scrollIntoView().click()
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).contains('field1')
+      cy.wrap($custfields).get('#field1').get("#removefield1").scrollIntoView().click()
+      cy.wrap($custfields).children().should('not.contain', 'field1')
+    })
+  })
+
+  it('Add empty field, verify it is not', () => {
+    cy.visit('http://localhost:3000/addDeviceType')
+    cy.get('#newField').scrollIntoView().type("   ")
+    cy.get("#addField").scrollIntoView().click()
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).children().should('not.contain', '   ')
+    })
+  })
+
+  it('Input no field data, click add field, verify it does not get added', () => {
+    cy.visit('http://localhost:3000/addDeviceType')
+    cy.get("#addField").scrollIntoView().click()
+    cy.get('#customFields').then(($custfields) => {
+      cy.wrap($custfields).children().should('be.empty')
     })
   })
 })
