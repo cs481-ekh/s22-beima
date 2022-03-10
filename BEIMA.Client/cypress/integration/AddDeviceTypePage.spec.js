@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { skipOn } from '@cypress/skip-test'
 
 describe("Verify Buttons on Add Device Type Page", () => {
   it('Check for Add Device Type Button', () => {
@@ -23,6 +24,7 @@ describe("Verify Data can be entered into fields", () => {
 
 describe("Verify Data in fields is cleared when Add Device Type is selected", () => {
   it('Enter data, click Add Device, verify fields are empty', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#inputName').scrollIntoView().type("new type")
     cy.get('#inputDescription').scrollIntoView().type("newly added type")
@@ -70,6 +72,7 @@ describe("Verify custom fields can be deleted", () => {
 
 describe("Verify custom fields get cleared when Add Device Type is clicked", () => {
   it('Add new fields', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#newField').scrollIntoView().type("field1")
     cy.get("#addField").scrollIntoView().click()
