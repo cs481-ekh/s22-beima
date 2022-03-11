@@ -157,14 +157,18 @@ namespace BEIMA.Backend.MongoService
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-            CheckNullArgument(DeviceTag, nameof(DeviceTag));
-            CheckNullArgument(Manufacturer, nameof(Manufacturer));
-            CheckNullArgument(ModelNum, nameof(ModelNum));
-            CheckNullArgument(SerialNum, nameof(SerialNum));
-            CheckNullArgument(YearManufactured, nameof(YearManufactured));
-            CheckNullArgument(Notes, nameof(Notes));
-            CheckNullArgument(Location, nameof(Location));
-            CheckNullArgument(LastModified, nameof(LastModified));
+            if(DeviceTag == null 
+                || Manufacturer == null 
+                || ModelNum == null
+                || SerialNum == null
+                || YearManufactured == null
+                || Notes == null
+                || Location == null
+                || LastModified == null
+            )
+            {
+                throw new ArgumentNullException();
+            }
 
             return this.ToBsonDocument();
         }
@@ -174,7 +178,7 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="key">The ObjectId of the linked field in the linked DeviceType.</param>
         /// <param name="value">The actual value of the field.</param>
-        public void AddField(string key, dynamic value)
+        public void AddField(string key, string value)
         {
             Fields.Add(key, value);
         }
@@ -214,6 +218,11 @@ namespace BEIMA.Backend.MongoService
             LastModified.User = user;
         }
 
+        /// <summary>
+        /// Creates and adds a file to the device's file list
+        /// </summary>
+        /// <param name="fileUid">File's uid</param>
+        /// <param name="fileName">File's filename</param>
         public void AddFile(string fileUid, string fileName)
         {
             var file = new DeviceFile()
@@ -224,6 +233,11 @@ namespace BEIMA.Backend.MongoService
             Files.Add(file);
         }
 
+        /// <summary>
+        /// Creates and adds a photo to the device's photo list
+        /// </summary>
+        /// <param name="fileUid">Photo's uid</param>
+        /// <param name="fileName">Photo's filename</param>
         public void AddPhoto(string fileUid, string fileName)
         {
             var photo = new DeviceFile()
