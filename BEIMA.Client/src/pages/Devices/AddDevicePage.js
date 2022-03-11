@@ -32,7 +32,7 @@ const AddDevicePage = () => {
   
   useEffect(() => {
     setPageName('Add Device');
-  })
+  }, [setPageName])
   
   useEffect(() => {
     const loadData = async () => {
