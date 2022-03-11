@@ -31,7 +31,7 @@ const AddDevicePage = () => {
   const [deviceTypes, setDeviceTypes] = useState([]);
   
   useEffect(() => {
-    setPageName('Add Device');
+    setPageName('Add Device')
   }, [setPageName])
   
   useEffect(() => {
