@@ -1,11 +1,14 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
 using NUnit.Framework;
 using System.Net;
+using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test.DeviceFunctions
@@ -17,17 +20,24 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         [TestCase("xxx")]
         [TestCase("123")]
         [TestCase("jddkkslo9402mdjgkflsnxjf")]
-        public void IdIsInvalid_DeleteDevice_ReturnsInvalidId(string id)
+        public async Task IdIsInvalid_DeleteDevice_ReturnsInvalidId(string id)
         {
             // ARRANGE
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = DeleteDevice.Run(request, id, logger);
+
+            var response = await new DeleteDevice(storageProvider).Run(request, id, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteDevice(It.IsAny<ObjectId>()), Times.Never));
@@ -37,7 +47,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         }
 
         [Test]
-        public void IdNotInDatabase_DeleteDevice_ReturnsNotFound()
+        public async Task IdNotInDatabase_DeleteDevice_ReturnsNotFound()
         {
             // ARRANGE
             var testId = ObjectId.GenerateNewId().ToString();
@@ -47,11 +57,17 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = DeleteDevice.Run(request, testId, logger);
+            var response = await new DeleteDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteDevice(It.IsAny<ObjectId>()), Times.Once));
@@ -61,10 +77,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         }
 
         [Test]
-        public void IdIsValid_DeleteDevice_DeletionSuccessful()
+        public async Task IdIsValid_DeleteDevice_DeletionSuccessful()
         {
             // ARRANGE
-
             var testId = "1234567890abcdef12345678";
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
@@ -73,11 +88,17 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = DeleteDevice.Run(request, testId, logger);
+            var response = await new DeleteDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteDevice(It.IsAny<ObjectId>()), Times.Once));

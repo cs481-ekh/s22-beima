@@ -1,5 +1,7 @@
 ﻿using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
@@ -7,6 +9,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test
@@ -18,7 +21,7 @@ namespace BEIMA.Backend.Test
         #region FailureTests
 
         [Test]
-        public void IdNotInDatabase_GetDevice_ReturnsNotFound()
+        public async Task IdNotInDatabase_GetDevice_ReturnsNotFound()
         {
             // ARRANGE
 
@@ -30,12 +33,18 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             // Set up the http request.
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, testId, logger);
+            var response = await new GetDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
@@ -49,7 +58,7 @@ namespace BEIMA.Backend.Test
         [TestCase("xxx")]
         [TestCase("123")]
         [TestCase("10alskdjfhgytur74839skcm")]
-        public void InvalidId_GetDevice_ReturnsInvalidId(string id)
+        public async Task InvalidId_GetDevice_ReturnsInvalidId(string id)
         {
             // ARRANGE
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
@@ -58,11 +67,16 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, id, logger);
+            var response = await new GetDevice(storageProvider).Run(request, id, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
@@ -77,7 +91,7 @@ namespace BEIMA.Backend.Test
         #region SuccessTests
 
         [Test]
-        public void IdIsValid_GetDevice_ReturnsDevice()
+        public async Task IdIsValid_GetDevice_ReturnsDevice()
         {
             // ARRANGE
 
@@ -87,25 +101,31 @@ namespace BEIMA.Backend.Test
             dbDevice.SetLocation(ObjectId.GenerateNewId(), "notes", "0", "1");
             dbDevice.SetLastModified(DateTime.UtcNow, "Anonymous");
 
+            // Setup storage provider.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(dbDevice.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, testId, logger);
+            var response = await new GetDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
-            var device = (Dictionary<string, object>)((OkObjectResult)response).Value;
-            Assert.That(device["serialNum"], Is.EqualTo("1234"));
+            var device = (Device)((OkObjectResult)response).Value;
+            Assert.That(device.SerialNum, Is.EqualTo("1234"));
         }
 
         #endregion SuccessTests

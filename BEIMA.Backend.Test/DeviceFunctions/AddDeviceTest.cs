@@ -1,6 +1,8 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
@@ -24,13 +26,22 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             // Create request
             var body = TestData._testDevice;
-            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var temp = CreateHttpRequest
+            var request = CreateHttpRequest(RequestMethod.POST){
+                
+            };
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
+            var deviceId = ((ObjectResult) await new AddDevice(storageProvider).Run(request, logger)).Value?.ToString();
 
             // ASSERT
             Assert.IsNotNull(deviceId);

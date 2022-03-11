@@ -1,6 +1,8 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
@@ -29,12 +31,18 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             // Set up the http request.
             var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDevice);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = await UpdateDevice.Run(request, testId, logger);
+            var response = await new UpdateDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
@@ -57,11 +65,17 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDevice);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = await UpdateDevice.Run(request, id, logger);
+            var response = await new UpdateDevice(storageProvider).Run(request, id, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
@@ -86,12 +100,18 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup storage provider.
+            var services = new ServiceCollection();
+            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
+            var serviceProivder = services.BuildServiceProvider();
+            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+
             var body = TestData._testUpdateDevice;
             var request = CreateHttpRequest(RequestMethod.POST, body: body);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = await UpdateDevice.Run(request, testId, logger);
+            var response = await new UpdateDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
             Assert.IsNotNull(response);
