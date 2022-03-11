@@ -34,13 +34,13 @@ const AddDevicePage = () => {
     setPageName('Add Device')
   }, [setPageName])
   
-  useEffect(() => {
-    const loadData = async () => {
-      let types = await getDeviceTypes();
-      setDeviceTypes(types);
-    }
-   loadData()
-  },[])
+//  useEffect(() => {
+//    const loadData = async () => {
+//      let types = await getDeviceTypes();
+//      setDeviceTypes(types);
+//    }
+//   loadData()
+//  },[])
   
   const getDeviceTypes = async () => {
     const deviceTypeData = await GetDeviceTypeList();
