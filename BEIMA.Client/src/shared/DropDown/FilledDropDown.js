@@ -1,8 +1,8 @@
 import { Dropdown } from 'react-bootstrap';
 
-const FilledDropDown = ({items, selectFunction, buttonStyle}) => {
+const FilledDropDown = ({items, selectFunction, buttonStyle, dropDownId}) => {
   return (
-    <Dropdown onSelect={selectFunction}>
+    <Dropdown id={dropDownId} onSelect={selectFunction}>
       <Dropdown.Toggle variant="success" id="dropdown-basic" className={buttonStyle}>
         Select Device Type 
       </Dropdown.Toggle>

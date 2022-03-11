@@ -115,7 +115,7 @@ const AddDevicePage = () => {
           <Form>
             <Row className={styles.buttonGroup}>
               <Col>
-                <FilledDropDown items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} />
+                <FilledDropDown items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
                   <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
