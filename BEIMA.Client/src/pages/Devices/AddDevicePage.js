@@ -44,13 +44,9 @@ const AddDevicePage = () => {
   
   const getDeviceTypes = async () => {
     const deviceTypeData = await GetDeviceTypeList();
-    let data = []
-    for(let i = 0; i < deviceTypeData.response.length; i++){
-      data.push({
-        name: deviceTypeData.response[i].name,
-        id: deviceTypeData.response[i].id
-      });
-    }
+    
+    let data = deviceTypeData.response.map((item) => { return { name: item.name, id : item.id} });
+    
     return data
   }
   
