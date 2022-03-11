@@ -50,7 +50,7 @@ const AddDevicePage = () => {
     return data
   }
   
-  const getFieldsForTypeId = (deviceTypeId) => {
+  const getFieldsForTypeId = async (deviceTypeId) => {
 
   }
   
