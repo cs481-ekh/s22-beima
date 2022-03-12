@@ -50,6 +50,11 @@ namespace BEIMA.Backend.DeviceFunctions
             var mongo = MongoDefinition.MongoInstance;
             var deviceId = new ObjectId(id);
             var deviceDocument = mongo.GetDevice(deviceId);
+            if(deviceDocument == null)
+            {
+                return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
+            }
+
             var device = BsonSerializer.Deserialize<Device>(deviceDocument);
 
             // Remove Files

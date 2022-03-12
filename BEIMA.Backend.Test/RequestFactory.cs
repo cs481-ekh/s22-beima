@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using BEIMA.Backend.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.Extensions.Primitives;
 using Moq;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BEIMA.Backend.Test
 {
@@ -43,6 +49,24 @@ namespace BEIMA.Backend.Test
                 reqMock.Setup(req => req.Body).Returns(stream);
             }
             return reqMock.Object;
+        }
+
+        public static HttpRequest CreateMultiPartHttpRequest(string data)
+        {
+            DefaultHttpContext httpContext = new DefaultHttpContext();
+
+            var formKeys = new Dictionary<string, StringValues>();
+            formKeys.Add("data", data);
+
+            var formFiles = new FormFileCollection();
+            var fileStream = new ByteArrayContent(Encoding.ASCII.GetBytes("TestOne")).ReadAsStream();
+            var photoStream = new ByteArrayContent(Encoding.ASCII.GetBytes("TestTwo")).ReadAsStream();
+            formFiles.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
+            formFiles.Add(new FormFile(photoStream, 0, photoStream.Length, "photos", "photo.txt"));
+
+            var form = new FormCollection(formKeys, formFiles);
+            httpContext.Request.Form = form;
+            return httpContext.Request;
         }
     }
 }

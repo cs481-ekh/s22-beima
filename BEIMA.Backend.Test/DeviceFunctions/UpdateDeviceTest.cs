@@ -1,4 +1,5 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
+using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
@@ -37,8 +39,33 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var serviceProivder = services.BuildServiceProvider();
             var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
 
-            // Set up the http request.
-            var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDevice);
+            // Create request
+            var data = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "622cf00109137c26f913b282",
+                Manufacturer = "man",
+                ModelNum = "mod",
+                SerialNum = "ser",
+                Notes = "notes",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                Fields = new Dictionary<string, string>(),
+                DeletedFiles = new List<string>()
+            };
+            data.Fields.Add("customIdOne", "valueOne");
+            data.Fields.Add("customIdTwo", "valueTwo");
+            data.DeletedFiles.Add("fileOneUid");
+            data.DeletedFiles.Add("fileTwoUid");
+
+            var json = JsonConvert.SerializeObject(data);
+
+            var request = CreateMultiPartHttpRequest(json);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -71,7 +98,33 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var serviceProivder = services.BuildServiceProvider();
             var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
 
-            var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDevice);
+            // Create request
+            var data = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "622cf00109137c26f913b282",
+                Manufacturer = "man",
+                ModelNum = "mod",
+                SerialNum = "ser",
+                Notes = "notes",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                Fields = new Dictionary<string, string>(),
+                DeletedFiles = new List<string>()
+            };
+            data.Fields.Add("customIdOne", "valueOne");
+            data.Fields.Add("customIdTwo", "valueTwo");
+            data.DeletedFiles.Add("fileOneUid");
+            data.DeletedFiles.Add("fileTwoUid");
+
+            var json = JsonConvert.SerializeObject(data);
+
+            var request = CreateMultiPartHttpRequest(json);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -106,8 +159,33 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var serviceProivder = services.BuildServiceProvider();
             var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
 
-            var body = TestData._testUpdateDevice;
-            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            // Create request
+            var data = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "622cf00109137c26f913b282",
+                Manufacturer = "man",
+                ModelNum = "mod",
+                SerialNum = "ser",
+                Notes = "notes",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                Fields = new Dictionary<string, string>(),
+                DeletedFiles = new List<string>()
+            };
+            data.Fields.Add("customIdOne", "valueOne");
+            data.Fields.Add("customIdTwo", "valueTwo");
+            data.DeletedFiles.Add("fileOneUid");
+            data.DeletedFiles.Add("fileTwoUid");
+
+            var json = JsonConvert.SerializeObject(data);
+
+            var request = CreateMultiPartHttpRequest(json);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -117,8 +195,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
-            var deviceBson = (Dictionary<string, object>)((OkObjectResult)response).Value;
-            Assert.That(deviceBson["serialNum"], Is.EqualTo(device.SerialNum));
+            var resDevice = (Device)((OkObjectResult) response).Value;
+            
+            Assert.That(resDevice.SerialNum, Is.EqualTo(device.SerialNum));
         }
     }
 }

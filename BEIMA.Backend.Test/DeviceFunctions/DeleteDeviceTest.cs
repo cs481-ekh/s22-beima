@@ -70,8 +70,6 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = await new DeleteDevice(storageProvider).Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteDevice(It.IsAny<ObjectId>()), Times.Once));
-
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
             Assert.That(((NotFoundObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
         }
@@ -94,7 +92,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var serviceProivder = services.BuildServiceProvider();
             var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
 
-            var request = CreateHttpRequest(RequestMethod.GET);
+            var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
