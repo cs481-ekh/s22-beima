@@ -4,11 +4,13 @@ import { skipOn } from '@cypress/skip-test';
 
 describe("Verify Buttons on Add Device Page", () => {
   it('Check for Add Device Button', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000/addDevice')
     cy.get("#addDevice").contains('Add Device')
   })
 
   it('Check for Device Type DropDown', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000/addDevice')
     cy.get("#typeDropDown").contains('Select Device Type')
   })
