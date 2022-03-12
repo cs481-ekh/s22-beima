@@ -71,3 +71,13 @@ describe("Verify the dropdown has options present", function () {
   })
 })
 
+describe("check that selection was made", function () {
+  it('Click a device and check for name change', function (){
+    skipOn('linux')
+    
+    cy.visit('http://localhost:3000/addDevice')
+    cy.get("#typeDropDown").scrollIntoView().click()
+    cy.get("#typeDropDown").find('.dropdown-item').click()
+    cy.get("#dropdown-basic").should('not.have.text', 'Select Device Type')
+  })
+})
