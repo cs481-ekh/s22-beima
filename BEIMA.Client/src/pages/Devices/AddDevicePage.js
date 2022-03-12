@@ -75,7 +75,6 @@ const AddDevicePage = () => {
     
     setDeviceFields(allDeviceFields);
     setErrors(allDeviceFields);
-  }
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(addButtonEvent){
