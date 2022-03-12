@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import styles from './DeviceTypesPage.module.css'
 import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext } from 'react-router-dom';
+import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 
 
 const DeviceTypesPage = () => {
@@ -13,34 +14,19 @@ const DeviceTypesPage = () => {
     setPageName('Device Types')
   },[setPageName])
  
-  const mockCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(1000)
-    let data = []
-    for(let i = 0; i < 5; i++){
-      data.push({
-        deviceTypeId: i,
-        name: `Test Item Type #${i}`,
-        description: "A short informational description",
-        numDevices: i+4,
-      })
-    }
+  const DevicesCall = async () => {
+    let deviceTypeData = await GetDeviceTypeList();
+    
     // Map data into format supported by list
-    let mapped = data.map(({deviceTypeId, name, description, numDevices}) => {
-      return {
-        id: deviceTypeId,
-        name: name,
-        description: description,
-        numDevices: numDevices
-      }
-    })
-    return mapped
+    let data = deviceTypeData.response.map((item) => { return { id: item.id, name: item.name, description: item.description, notes: item.notes, lastModified: item.lastModified, deviceTag: "item types don't have a tag", buildingName: "building name needed", numDevices: "count at DB or remove? counting length on the DT return gives count of device type"} });
+    
+    return data
   }
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      let types = await mockCall()
+      let types = await DevicesCall()
       setLoading(false)
       setDeviceTypes(types)
     }
