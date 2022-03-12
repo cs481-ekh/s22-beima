@@ -31,6 +31,7 @@ const AddDevicePage = () => {
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
   const [deviceTypes, setDeviceTypes] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState('Select Device Type');
+  const [selectedDeviceTypeId, setSelectedDeviceTypeId] = useState();
   
   useEffect(() => {
     setPageName('Add Device')
@@ -64,9 +65,10 @@ const AddDevicePage = () => {
     
     //change the dropdown text
     setSelectedDeviceType(deviceTypeFields.response.name);
+    setSelectedDeviceTypeId(deviceTypeId);
     
     let allDeviceFields = mandatoryDeviceFields;
-    
+
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
     
     for(let i = 0; i < fieldLabels.length; i++) {
@@ -79,6 +81,14 @@ const AddDevicePage = () => {
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
   function createJSON(addButtonEvent){
+    //temporary until we have large error signaling figured out
+    if (selectedDeviceType === 'Select Device Type'){
+      alert ('No device type selected');
+      return;
+    }
+    
+    deviceFields["DeviceTypeId"] = selectedDeviceTypeId;
+    
     let formFields = addButtonEvent.target.form.elements;
     let fieldValues = {};
     let newErrors = {};
