@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace BEIMA.Backend.MongoService
-{
+{ 
     /// <summary>
     /// Object representation of a last modified document in a Building document
     /// </summary>
@@ -22,10 +22,6 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public class BuildingLocation
     {
-        [BsonElement("buildingId")]
-        public ObjectId BuildingId { get; set; }
-        [BsonElement("notes")]
-        public string Notes { get; set; }
         [BsonElement("latitude")]
         public string Latitude { get; set; }
         [BsonElement("longitude")]
@@ -69,28 +65,18 @@ namespace BEIMA.Backend.MongoService
         /// <summary>
         /// Full constructor to instantiate a Building object.
         /// </summary>
-        /// <param name="id">ObjectId of the object itself.</param>
-        /// <param name="deviceTypeId">ObjectId of the DeviceType this Device is linked to.</param>
-        /// <param name="deviceTag">The device tag.</param>
-        /// <param name="manufacturer">The manufacturer of the device.</param>
-        /// <param name="modelNum">The model number of the device.</param>
-        /// <param name="serialNum">The serial number of the device.</param>
-        /// <param name="yearManufactured">The year the device was manufactured.</param>
-        /// <param name="notes">Notes related to the device.</param>
+        /// <param name="id">ObjectId of the document itself.</param>
+        /// <param name="name">Building name</param>
+        /// <param name="number">Building number</param>
+        /// <param name="notes">Notes </param>
         public Building(ObjectId id, string name, string number, string notes)
         {
             Id = id;
-            DeviceTypeId = deviceTypeId;
-            DeviceTag = deviceTag ?? string.Empty;
-            Manufacturer = manufacturer ?? string.Empty;
-            ModelNum = modelNum ?? string.Empty;
-            SerialNum = serialNum ?? string.Empty;
-            YearManufactured = yearManufactured ?? -1;
+            Name = name ?? string.Empty;
+            Number = number ?? string.Empty;
             Notes = notes ?? string.Empty;
-            Fields = new Dictionary<string, string>();
-            Location = new DeviceLocation();
-            LastModified = new DeviceLastModified();
-            Files = new List<DeviceFile>();
+            Location = new BuildingLocation();
+            LastModified = new BuildingLastModified();
         }
 
         /// <summary>
@@ -103,12 +89,7 @@ namespace BEIMA.Backend.MongoService
         {
             if (arg == null)
             {
-                throw new ArgumentNullException($"Device - {name} is null");
-            }
-
-            if (arg is BsonDocument && arg.ElementCount == 0)
-            {
-                throw new ArgumentNullException($"Device - Set{name} has not been called yet!");
+                throw new ArgumentNullException($"Building - {name} is null");
             }
         }
 
@@ -119,95 +100,45 @@ namespace BEIMA.Backend.MongoService
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-            if (DeviceTag == null
-                || Manufacturer == null
-                || ModelNum == null
-                || SerialNum == null
-                || YearManufactured == null
-                || Notes == null
-                || Location == null
-                || LastModified == null
-            )
-            {
-                throw new ArgumentNullException();
-            }
+            CheckNullArgument(Name, nameof(Name));
+            CheckNullArgument(Number, nameof(Number));
+            CheckNullArgument(Notes, nameof(Notes));
+            CheckNullArgument(Location.Longitude, "Location.Longitude");
+            CheckNullArgument(Location.Latitude, "Location.Latitude");
+            CheckNullArgument(LastModified.User, "LastModified.User");
+            CheckNullArgument(LastModified.Date, "LastModified.Date");
 
             return this.ToBsonDocument();
         }
 
         /// <summary>
-        /// Adds a custom field to the "fields" object.
+        /// Sets all of the fields in the "location" object of the Building.
         /// </summary>
-        /// <param name="key">The ObjectId of the linked field in the linked DeviceType.</param>
-        /// <param name="value">The actual value of the field.</param>
-        public void AddField(string key, string value)
-        {
-            Fields.Add(key, value);
-        }
-
-        /// <summary>
-        /// Sets all of the fields in the "location" object of the Device.
-        /// </summary>
-        /// <param name="buildingId">ObjectId of the Building document this device is related to.</param>
-        /// <param name="notes">Notes related to the location of the device.</param>
-        /// <param name="latitude">The latitude of the physical location of the device.</param>
-        /// <param name="longitude">The longitude of the physical location of the device.</param>
-        public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
+        /// <param name="latitude">The latitude of the physical location of the building.</param>
+        /// <param name="longitude">The longitude of the physical location of the building.</param>
+        public void SetLocation(string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
-            notes ??= string.Empty;
             latitude ??= string.Empty;
             longitude ??= string.Empty;
 
-            Location.BuildingId = buildingId;
-            Location.Notes = notes;
             Location.Latitude = latitude;
             Location.Longitude = longitude;
         }
 
         /// <summary>
-        /// Sets all of the fields in the "lastModified" object of the Device.
+        /// Sets all of the fields in the "lastModified" object of the Building.
         /// </summary>
-        /// <param name="date">Date of when the Device was last modified.</param>
-        /// <param name="user">Username of the user who last modified the Device.</param>
+        /// <param name="date">Date of when the Building was last modified.</param>
+        /// <param name="user">Username of the user who last modified the Building.</param>
         public void SetLastModified(DateTime? date, string user)
         {
             //Check if null, if they are, then use defualt values
-            var modifiedDate = (date ??= DateTime.Now.ToUniversalTime());
+            date ??= DateTime.UtcNow;
             user ??= string.Empty;
 
-            LastModified.Date = modifiedDate;
+            LastModified.Date = (DateTime)date;
             LastModified.User = user;
-        }
-
-        /// <summary>
-        /// Creates and adds a file to the device's file list
-        /// </summary>
-        /// <param name="fileUid">File's uid</param>
-        /// <param name="fileName">File's filename</param>
-        public void AddFile(string fileUid, string fileName)
-        {
-            var file = new DeviceFile()
-            {
-                FileName = fileName,
-                FileUid = fileUid,
-            };
-            Files.Add(file);
-        }
-
-        /// <summary>
-        /// Creates and adds a photo to the device's photo list
-        /// </summary>
-        /// <param name="fileUid">Photo's uid</param>
-        /// <param name="fileName">Photo's filename</param>
-        public void SetPhoto(string fileUid, string fileName)
-        {
-            var photo = new DeviceFile()
-            {
-                FileName = fileName,
-                FileUid = fileUid,
-            };
-            Photo = photo;
         }
     }
 }
