@@ -94,9 +94,9 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Gets a BsonDocument that represents the current state of the Device object.
+        /// Gets a BsonDocument that represents the current state of the Building object.
         /// </summary>
-        /// <returns>BsonDocument that represents the current state of the Device object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
+        /// <returns>BsonDocument that represents the current state of the Building object. Conforms to the schema located in BEIMA.DB.Schemas.</returns>
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
