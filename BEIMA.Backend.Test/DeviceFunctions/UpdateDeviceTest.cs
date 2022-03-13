@@ -37,32 +37,10 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
-            var data = new UpdateDeviceRequest()
-            {
-                DeviceTag = "tag",
-                DeviceTypeId = "622cf00109137c26f913b282",
-                Manufacturer = "man",
-                ModelNum = "mod",
-                SerialNum = "ser",
-                Notes = "notes",
-                Location = new Location()
-                {
-                    BuildingId = "622cf00109137c26f913b281",
-                    Notes = "notes",
-                    Latitude = "1231232",
-                    Longitude = "123213213"
-                },
-                Fields = new Dictionary<string, string>(),
-                DeletedFiles = new List<string>()
-            };
-            data.Fields.Add("customIdOne", "valueOne");
-            data.Fields.Add("customIdTwo", "valueTwo");
-            data.DeletedFiles.Add("fileOneUid");
-            data.DeletedFiles.Add("fileTwoUid");
-
+            var data = TestData._testUpdateDeviceRequest;
             var json = JsonConvert.SerializeObject(data);
-
             var request = CreateMultiPartHttpRequest(json);
+
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -93,32 +71,10 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
-            var data = new UpdateDeviceRequest()
-            {
-                DeviceTag = "tag",
-                DeviceTypeId = "622cf00109137c26f913b282",
-                Manufacturer = "man",
-                ModelNum = "mod",
-                SerialNum = "ser",
-                Notes = "notes",
-                Location = new Location()
-                {
-                    BuildingId = "622cf00109137c26f913b281",
-                    Notes = "notes",
-                    Latitude = "1231232",
-                    Longitude = "123213213"
-                },
-                Fields = new Dictionary<string, string>(),
-                DeletedFiles = new List<string>()
-            };
-            data.Fields.Add("customIdOne", "valueOne");
-            data.Fields.Add("customIdTwo", "valueTwo");
-            data.DeletedFiles.Add("fileOneUid");
-            data.DeletedFiles.Add("fileTwoUid");
-
+            var data = TestData._testUpdateDeviceRequest;
             var json = JsonConvert.SerializeObject(data);
-
             var request = CreateMultiPartHttpRequest(json);
+
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -154,33 +110,10 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
-            var data = new UpdateDeviceRequest()
-            {
-                DeviceTag = "A-3",
-                DeviceTypeId = "12341234abcdabcd43214321",
-                Manufacturer = "Generic Inc.",
-                ModelNum = "1234",
-                SerialNum = "abcd1234",
-                YearManufactured = 2004,
-                Notes = "Some notes.",
-                Location = new Location()
-                {
-                    BuildingId = "111111111111111111111111",
-                    Notes = "Some notes.",
-                    Latitude = "123.456",
-                    Longitude = "101.101"
-                },
-                Fields = new Dictionary<string, string>(),
-                DeletedFiles = new List<string>()
-            };
-            data.Fields.Add("customIdOne", "valueOne");
-            data.Fields.Add("customIdTwo", "valueTwo");
-            data.DeletedFiles.Add("fileOneUid");
-            data.DeletedFiles.Add("fileTwoUid");
-
+            var data = TestData._testUpdateDeviceRequest;
             var json = JsonConvert.SerializeObject(data);
-
             var request = CreateMultiPartHttpRequest(json);
+
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT

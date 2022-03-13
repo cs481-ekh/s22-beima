@@ -1,7 +1,13 @@
-﻿namespace BEIMA.Backend.Test
+﻿using BEIMA.Backend.Models;
+using System.Collections.Generic;
+
+namespace BEIMA.Backend.Test
 {
     public static class TestData
     {
+        public readonly static AddDeviceRequest _testAddDeviceRequest = CreateAddRequest();
+        public readonly static UpdateDeviceRequest _testUpdateDeviceRequest = CreateUpdateRequest();
+
         public const string _testDevice =
             "{" +
                 "\"deviceTag\": \"A-2\"," +
@@ -49,5 +55,56 @@
                 "]" +
             "}";
 
+
+        private static AddDeviceRequest CreateAddRequest()
+        {
+            var request = new AddDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "622cf00109137c26f913b282",
+                Manufacturer = "man",
+                ModelNum = "mod",
+                SerialNum = "ser",
+                Notes = "notes",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                Fields = new Dictionary<string, string>()
+            };
+            request.Fields.Add("customIdOne", "valueOne");
+            request.Fields.Add("customIdTwo", "valueTwo");
+            return request;
+        }
+
+        private static UpdateDeviceRequest CreateUpdateRequest()
+        {
+            var request = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "622cf00109137c26f913b282",
+                Manufacturer = "man",
+                ModelNum = "mod",
+                SerialNum = "ser",
+                Notes = "notes",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                Fields = new Dictionary<string, string>(),
+                DeletedFiles = new List<string>()
+            };
+            request.Fields.Add("customIdOne", "valueOne");
+            request.Fields.Add("customIdTwo", "valueTwo");
+            request.DeletedFiles.Add("fileOneUid");
+            request.DeletedFiles.Add("fileTwoUid");
+            return request;
+        }
     }
 }

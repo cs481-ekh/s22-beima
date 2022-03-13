@@ -35,28 +35,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
-            var data = new AddDeviceRequest()
-            {
-                DeviceTag = "tag",
-                DeviceTypeId = "622cf00109137c26f913b282",
-                Manufacturer = "man",
-                ModelNum = "mod",
-                SerialNum = "ser",
-                Notes = "notes",
-                Location = new Location()
-                {
-                    BuildingId = "622cf00109137c26f913b281",
-                    Notes = "notes",
-                    Latitude = "1231232",
-                    Longitude = "123213213"
-                },
-                Fields = new Dictionary<string, string>()
-            };
-            data.Fields.Add("customIdOne", "valueOne");
-            data.Fields.Add("customIdTwo", "valueTwo");
-
+            var data = TestData._testAddDeviceRequest;
             var json = JsonConvert.SerializeObject(data);
-
             var request =  CreateMultiPartHttpRequest(json);
             
             var logger = (new LoggerFactory()).CreateLogger("Testing");

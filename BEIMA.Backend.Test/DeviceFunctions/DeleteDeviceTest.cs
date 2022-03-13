@@ -35,7 +35,6 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-
             var response = await new DeleteDevice(storageProvider).Run(request, id, logger);
 
             // ASSERT
