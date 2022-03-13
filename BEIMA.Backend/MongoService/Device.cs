@@ -100,6 +100,7 @@ namespace BEIMA.Backend.MongoService
             LastModified = new DeviceLastModified();
             Location = new DeviceLocation();
             Files = new List<DeviceFile>();
+            Photo = new DeviceFile();
         }
 
         /// <summary>
@@ -127,6 +128,7 @@ namespace BEIMA.Backend.MongoService
             Location = new DeviceLocation();
             LastModified = new DeviceLastModified();
             Files = new List<DeviceFile>();
+            Photo = new DeviceFile();
         }
 
         /// <summary>

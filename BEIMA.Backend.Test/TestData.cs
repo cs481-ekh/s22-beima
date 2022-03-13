@@ -87,9 +87,9 @@ namespace BEIMA.Backend.Test
                 DeviceTag = "tag",
                 DeviceTypeId = "622cf00109137c26f913b282",
                 Manufacturer = "man",
-                ModelNum = "mod",
+                ModelNum = "1234",
                 SerialNum = "ser",
-                Notes = "notes",
+                Notes = "Some notes.",
                 Location = new Location()
                 {
                     BuildingId = "622cf00109137c26f913b281",

@@ -1,5 +1,6 @@
 ﻿using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
+using BEIMA.Backend.Test.StorageService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -94,7 +95,6 @@ namespace BEIMA.Backend.Test
         public async Task IdIsValid_GetDevice_ReturnsDevice()
         {
             // ARRANGE
-
             var testId = "1234567890abcdef12345678";
 
             var dbDevice = new Device(new ObjectId(testId), ObjectId.GenerateNewId(), "a", "b", "c", "1234", 2020, "d");
@@ -108,10 +108,7 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");

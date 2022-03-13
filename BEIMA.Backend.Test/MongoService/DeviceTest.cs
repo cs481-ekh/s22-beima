@@ -83,9 +83,9 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(fields[validKey3], Is.EqualTo(validValue3));
 
             var files = device.Files;
-            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.True);
-            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.True);
-            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.Not.Null);
 
             var photo = device.Photo;
             Assert.That(photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1, Is.True);
@@ -140,9 +140,9 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(fields[validKey3], Is.EqualTo(validValue3));
 
             var files = device.Files;
-            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.True);
-            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.True);
-            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.Not.Null);
 
             var photo = device.Photo;
             Assert.That(photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1, Is.True);
