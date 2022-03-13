@@ -34,7 +34,7 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public class Building
     {
-        //Properties of a Device object
+        //Properties of a Building object
         [BsonId]
         public ObjectId Id { get; set; }
 
