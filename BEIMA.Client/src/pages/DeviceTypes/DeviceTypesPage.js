@@ -45,7 +45,7 @@ const DeviceTypesPage = () => {
 
   return (
     <div className={styles.list} id="deviceTypesContent">
-      <ItemList list={deviceTypes} RenderItem={RenderItem} loading={loading}/>
+      <ItemList list={deviceTypes} RenderItem={RenderItem} loading={loading} isDeviceList={false}/>
     </div>
   )
 }
