@@ -60,7 +60,7 @@ const DevicePage = () => {
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
-            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange}/>
+            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength="1024"/>
           </Form.Group>                
         </Card.Body>
       </Card>
@@ -81,7 +81,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId={id}>
         <Form.Label><b>{label}</b></Form.Label>
-        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange}/>
+        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange} maxLength="1024"/>
       </Form.Group>
     )
   }
@@ -97,7 +97,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='imageUpload'>
         <Form.Label><b>Upload Device Image</b></Form.Label>
-        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes}/>
+        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes} maxLength="1024"/>
       </Form.Group>
     )
   }
@@ -119,7 +119,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='fileUpload'>
         <Form.Label><b>Upload Documents</b></Form.Label>
-        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)}/>
+        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)} maxLength="1024"/>
       </Form.Group>
     )
   }
@@ -368,7 +368,7 @@ const DevicePage = () => {
         
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCard editable={editable} id="deviceBuildingId" label="Building" value={buildingId} onChange={onChange}/>
-          <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange}/>
+          <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange} />
           <FormCard editable={editable} id="deviceLongitude" label="Longitude" value={long} onChange={onChange}/>
         </div>
         <FormItem editable={editable} id="locationNotes" label="Location Notes" value={locNotes} onChange={onChange}/>

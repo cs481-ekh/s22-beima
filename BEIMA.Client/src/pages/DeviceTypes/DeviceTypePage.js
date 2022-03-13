@@ -72,7 +72,7 @@ const DeviceTypePage = () => {
         <Card.Body >
             <Form.Group className="mb-3" controlId={field}>
               <Form.Label>Field Name</Form.Label>
-              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}/>
+              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}  maxLength="1024"/>
             </Form.Group>                
           { editable ? 
            <div className={styles.deleteButton}>
@@ -192,12 +192,12 @@ const DeviceTypePage = () => {
 
         <Form.Group className="mb-3" controlId="description">
           <Form.Label><b>Description</b></Form.Label>
-          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} value={description} onChange={onDescriptionChange}/>
+          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} value={description} onChange={onDescriptionChange} maxLength="1024"/>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="notes">
           <Form.Label><b>Notes</b></Form.Label>
-          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} value={notes}  onChange={onNotesChange}/>
+          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} value={notes}  onChange={onNotesChange} maxLength="1024"/>
         </Form.Group>
 
         <Form.Group  className="mb-3">

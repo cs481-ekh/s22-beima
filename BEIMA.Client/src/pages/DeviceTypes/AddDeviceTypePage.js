@@ -130,7 +130,7 @@ const AddDeviceTypePage = () => {
           <Form>
             <Form.Group>
               <Form.Label>Add Custom Field</Form.Label>
-              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" isInvalid={isInvalid} value={field} onChange={(event) => {field = event.target.value; setIsInvalid(false)}}/> 
+              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" isInvalid={isInvalid} value={field} onChange={(event) => {field = event.target.value; setIsInvalid(false)}} maxLength="1024"/> 
               <Form.Control.Feedback type='invalid'>{errorMessage}</Form.Control.Feedback>
             </Form.Group>
             <Button variant="primary" type="button" className={styles.button} id="addField" onClick={(event) => addField(field, event)}>

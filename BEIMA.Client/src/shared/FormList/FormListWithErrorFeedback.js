@@ -6,8 +6,8 @@ const FormList = ({fields, errors}) => {
         {fields.map(element =>
           <Form.Group key={element} id={element}>
             <Form.Label>{element}</Form.Label>
-            <Form.Control id={"input" + element} type="text" name={element} placeholder={"Enter " + element} isInvalid={errors[element]}/>
-              <Form.Control.Feedback type='invalid'> { errors[element] }</Form.Control.Feedback>
+            <Form.Control id={"input" + element} type="text" name={element} placeholder={"Enter " + element} isInvalid={errors[element]} maxLength="1024"/>
+              <Form.Control.Feedback type='invalid'> { errors[element]}</Form.Control.Feedback>
           </Form.Group>
         )} 
       </div>
