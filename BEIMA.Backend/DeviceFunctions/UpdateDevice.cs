@@ -70,6 +70,11 @@ namespace BEIMA.Backend.DeviceFunctions
                 buildingId = ObjectId.Parse(data.Location.BuildingId);
 
                 var deviceDocument = mongo.GetDevice(new ObjectId(id));
+                if(deviceDocument == null)
+                {
+                    return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
+                }
+
                 device = BsonSerializer.Deserialize<Device>(deviceDocument);
             }
             catch (Exception)
@@ -93,17 +98,16 @@ namespace BEIMA.Backend.DeviceFunctions
             );
             device.Fields = data.Fields;
 
-            // Check if there is a new photo, if so remove all others on the device
-            // Frontend only supports 1 photo, but a device can contain more
+            // Check if there is a new photo
             var updatePhoto = reqForm.Files.Any(file => file.Name == "photos");
-            if (updatePhoto && device.Photos.Count > 0)
+            if (updatePhoto && device.Photo != null)
             {
-                foreach(var file in device.Photos)
+                var result = await _storage.DeleteFile(device.Photo.FileUid);
+                if (!result)
                 {
-                    await _storage.DeleteFile(file.FileUid);
-                    // Log if file delete failed.
-                }                
-                device.Photos = new List<DeviceFile>();
+                    log.LogInformation($"Failed to delete a file: {device.Photo.FileUid.ToString()}.");
+                }
+                device.Photo = null;
             }
             
             // Remove files from device's file list
@@ -112,8 +116,11 @@ namespace BEIMA.Backend.DeviceFunctions
             // Removed deleted files from storage
             foreach (var fileUid in data.DeletedFiles)
             {
-                await _storage.DeleteFile(fileUid);
-                // Log to file if fails
+                var result = await _storage.DeleteFile(fileUid);
+                if (!result)
+                {
+                    log.LogInformation($"Failed to delete a file: {fileUid.ToString()}.");
+                }
             }
 
             // Add new files and photos
@@ -126,7 +133,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 }
                 else if (file.Name == "photos")
                 {
-                    device.AddPhoto(fileUid, file.FileName);
+                    device.SetPhoto(fileUid, file.FileName);
                 }
             }
 

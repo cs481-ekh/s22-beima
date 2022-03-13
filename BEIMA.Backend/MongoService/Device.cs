@@ -88,8 +88,8 @@ namespace BEIMA.Backend.MongoService
         [BsonElement("files")]
         public List<DeviceFile> Files { get; set; }
 
-        [BsonElement("photos")]
-        public List<DeviceFile> Photos { get; set; }       
+        [BsonElement("photo")]
+        public DeviceFile Photo { get; set; }       
 
         /// <summary>
         /// Empty constructor, this allows for a device to be instantiated through Object Initializers.
@@ -100,7 +100,6 @@ namespace BEIMA.Backend.MongoService
             LastModified = new DeviceLastModified();
             Location = new DeviceLocation();
             Files = new List<DeviceFile>();
-            Photos = new List<DeviceFile>();
         }
 
         /// <summary>
@@ -128,7 +127,6 @@ namespace BEIMA.Backend.MongoService
             Location = new DeviceLocation();
             LastModified = new DeviceLastModified();
             Files = new List<DeviceFile>();
-            Photos = new List<DeviceFile>();
         }
 
         /// <summary>
@@ -238,14 +236,14 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="fileUid">Photo's uid</param>
         /// <param name="fileName">Photo's filename</param>
-        public void AddPhoto(string fileUid, string fileName)
+        public void SetPhoto(string fileUid, string fileName)
         {
             var photo = new DeviceFile()
             {
                 FileName = fileName,
                 FileUid = fileUid,
             };
-            Photos.Add(photo);
+            Photo = photo;
         }
     }
 }

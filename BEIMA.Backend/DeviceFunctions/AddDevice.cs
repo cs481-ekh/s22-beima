@@ -77,18 +77,16 @@ namespace BEIMA.Backend.DeviceFunctions
             // Store attached files and add file uid to device
             foreach (var file in reqForm.Files)
             {
-                var fileUid = await _storage.PutFile(file);
-                if (fileUid != null)
+                if (file.Name == "photos" && file.Length > 0)
                 {
-                    if (file.Name == "photos")
-                    {
-                        device.AddPhoto(fileUid, file.FileName);
-                    }
-                    else if (file.Name == "files")
-                    {
-                        device.AddFile(fileUid, file.FileName);
-                    }
+                    var fileUid = await _storage.PutFile(file);
+                    device.SetPhoto(fileUid, file.FileName);
                 }
+                else if (file.Name == "files" && file.Length > 0)
+                {
+                    var fileUid = await _storage.PutFile(file);
+                    device.AddFile(fileUid, file.FileName);
+                }                
             }
 
             // TODO: Use actual user.

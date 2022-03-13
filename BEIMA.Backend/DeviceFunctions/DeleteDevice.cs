@@ -60,14 +60,20 @@ namespace BEIMA.Backend.DeviceFunctions
             // Remove Files
             foreach (var file in device.Files)
             {
-                await _storage.DeleteFile(file.FileUid);
-                // Log to file if delete failed
+                var res = await _storage.DeleteFile(file.FileUid);
+                if (!res)
+                {
+                    log.LogInformation($"Failed to delete a file: {file.FileUid.ToString()}.");
+                }
             }
-            foreach (var photo in device.Photos)
+            
+
+            var result = await _storage.DeleteFile(device.Photo.FileUid);
+            if (!result)
             {
-                await _storage.DeleteFile(photo.FileUid);
-                // Log to file if delete failed
+                log.LogInformation($"Failed to delete a file: {device.Photo.FileUid.ToString()}.");
             }
+
 
             if (!mongo.DeleteDevice(deviceId))
             {

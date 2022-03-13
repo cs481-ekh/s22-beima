@@ -62,18 +62,15 @@ namespace BEIMA.Backend
             // Get device object.
             var device = BsonSerializer.Deserialize<Device>(deviceDocument);
 
-            // Add url to every photo
-            foreach(var photo in device.Photos)
-            {
-                var presignedUrl = await _storage.GetPresignedURL(photo.FileUid);
-                photo.Url = presignedUrl;
-            }
+            // Add url to every photo            
+            var presignedUrl = await _storage.GetPresignedURL(device.Photo.FileUid);
+            device.Photo.Url = presignedUrl;            
 
             // Add url to every file
             foreach (var file in device.Files)
             {
-                var presignedUrl = await _storage.GetPresignedURL(file.FileUid);
-                file.Url = presignedUrl;
+                var url = await _storage.GetPresignedURL(file.FileUid);
+                file.Url = url;
             }
 
             return new OkObjectResult(device);
