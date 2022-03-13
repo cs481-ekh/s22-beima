@@ -18,7 +18,7 @@ const DeviceTypesPage = () => {
     let deviceTypeData = await GetDeviceTypeList();
     
     // Map data into format supported by list
-    let data = deviceTypeData.response.map((item) => { return { id: item.id, name: item.name, description: item.description, notes: item.notes, lastModified: item.lastModified, deviceTag: "item types don't have a tag", buildingName: "building name needed", numDevices: "count at DB or remove? counting length on the DT return gives count of device type"} });
+    let data = deviceTypeData.response.map((item) => { return { id: item.id, name: item.name, description: item.description, notes: item.notes, lastModified: item.lastModified, buildingName: "building name needed", numDevices: "count at DB or remove? counting length on the DT return gives count of device type"} });
     
     return data
   }
