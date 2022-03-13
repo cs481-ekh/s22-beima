@@ -41,11 +41,7 @@ namespace BEIMA.Backend.MongoService.Test
         readonly string validFileUid3 = Guid.NewGuid().ToString();
 
         readonly string validPhotoName1 = "manual.pdf";
-        readonly string validPhotoName2 = "information.txt";
-        readonly string validPhotoName3 = "document.docx";
         readonly string validPhotoUid1 = Guid.NewGuid().ToString();
-        readonly string validPhotoUid2 = Guid.NewGuid().ToString();
-        readonly string validPhotoUid3 = Guid.NewGuid().ToString();
 
         [Test]
         public void DeviceNotInstantiated_InstantiateUsingFullConstructor_DeviceInstantiatedWithCorrectValues()
@@ -59,9 +55,7 @@ namespace BEIMA.Backend.MongoService.Test
             device.AddFile(validFileUid1, validFileName1);
             device.AddFile(validFileUid2, validFileName2);
             device.AddFile(validFileUid3, validFileName3);
-            device.AddPhoto(validPhotoUid1, validPhotoName1);
-            device.AddPhoto(validPhotoUid2, validPhotoName2);
-            device.AddPhoto(validPhotoUid3, validPhotoName3);
+            device.SetPhoto(validPhotoUid1, validPhotoName1);
 
 
             Assert.That(device.Id, Is.EqualTo(validObjId));
@@ -89,14 +83,12 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(fields[validKey3], Is.EqualTo(validValue3));
 
             var files = device.Files;
-            Assert.That(files.Any(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.True);
-            Assert.That(files.Any(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.True);
-            Assert.That(files.Any(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.True);
 
-            var photos = device.Photos;
-            Assert.That(photos.Any(photo => photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1), Is.True);
-            Assert.That(photos.Any(photo => photo.FileUid == validPhotoUid2 && photo.FileName == validPhotoName2), Is.True);
-            Assert.That(photos.Any(photo => photo.FileUid == validPhotoUid3 && photo.FileName == validPhotoName3), Is.True);
+            var photo = device.Photo;
+            Assert.That(photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1, Is.True);
         }
 
         [Test]
@@ -121,9 +113,7 @@ namespace BEIMA.Backend.MongoService.Test
             device.AddFile(validFileUid1, validFileName1);
             device.AddFile(validFileUid2, validFileName2);
             device.AddFile(validFileUid3, validFileName3);
-            device.AddPhoto(validPhotoUid1, validPhotoName1);
-            device.AddPhoto(validPhotoUid2, validPhotoName2);
-            device.AddPhoto(validPhotoUid3, validPhotoName3);
+            device.SetPhoto(validPhotoUid1, validPhotoName1);
 
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
@@ -150,14 +140,12 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(fields[validKey3], Is.EqualTo(validValue3));
 
             var files = device.Files;
-            Assert.That(files.Any(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.True);
-            Assert.That(files.Any(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.True);
-            Assert.That(files.Any(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.True);
 
-            var photos = device.Photos;
-            Assert.That(photos.Any(photo => photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1), Is.True);
-            Assert.That(photos.Any(photo => photo.FileUid == validPhotoUid2 && photo.FileName == validPhotoName2), Is.True);
-            Assert.That(photos.Any(photo => photo.FileUid == validPhotoUid3 && photo.FileName == validPhotoName3), Is.True);
+            var photo = device.Photo;
+            Assert.That(photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1, Is.True);
         }
 
         [Test]
