@@ -1,0 +1,11 @@
+{
+    "_id": ObjectId,
+    "username": String,
+    "password": String,
+    "firstName": String,
+    "lastName": String,
+    "lastModified": {
+        "date": Date,
+        "user": String
+    }
+}
