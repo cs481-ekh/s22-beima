@@ -137,16 +137,11 @@ namespace BEIMA.Backend.MongoService
         /// <param name="arg">The Property being null checked.</param>
         /// <param name="name">The name of the Property, to be returned in the exception message.</param>
         /// <exception cref="ArgumentNullException">Throws an exception when the passed in argument is null.</exception>
-        private void CheckNullArgument(dynamic arg, string name = "")
+        private void CheckNullArgument(Object arg, string name = "")
         {
             if (arg == null)
             {
                 throw new ArgumentNullException($"Device - {name} is null");
-            }
-
-            if (arg is BsonDocument && arg.ElementCount == 0)
-            {
-                throw new ArgumentNullException($"Device - Set{name} has not been called yet!");
             }
         }
 
@@ -157,18 +152,17 @@ namespace BEIMA.Backend.MongoService
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-            if(DeviceTag == null 
-                || Manufacturer == null 
-                || ModelNum == null
-                || SerialNum == null
-                || YearManufactured == null
-                || Notes == null
-                || Location == null
-                || LastModified == null
-            )
-            {
-                throw new ArgumentNullException();
-            }
+            CheckNullArgument(DeviceTag, "Device Tag");
+            CheckNullArgument(Manufacturer, "Manufacturer");
+            CheckNullArgument(ModelNum, "Model Number");
+            CheckNullArgument(SerialNum, "Serial Number");
+            CheckNullArgument(YearManufactured, "Year Manufactured");
+            CheckNullArgument(Notes, "Notes");
+            CheckNullArgument(Location, "Location");
+            CheckNullArgument(LastModified, "Last Modified");
+            CheckNullArgument(Fields, "Fields");
+            CheckNullArgument(Files, "Files");
+            CheckNullArgument(Photo, "Photo");
 
             return this.ToBsonDocument();
         }
