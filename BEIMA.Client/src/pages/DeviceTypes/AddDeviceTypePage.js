@@ -5,6 +5,7 @@ import { IoMdCloseCircle } from "react-icons/io";
 import styles from './AddDeviceTypePage.module.css';
 import FormList from '../../shared/FormList/FormList.js';
 import AddDeviceType from '../../services/AddDeviceType';
+import * as Constants from '../../Constants';
 
 const AddDeviceTypePage = () => { 
   // will be replaced with API call to get default fields
@@ -130,7 +131,7 @@ const AddDeviceTypePage = () => {
           <Form>
             <Form.Group>
               <Form.Label>Add Custom Field</Form.Label>
-              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" isInvalid={isInvalid} value={field} onChange={(event) => {field = event.target.value; setIsInvalid(false)}} maxLength="1024"/> 
+              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" isInvalid={isInvalid} value={field} onChange={(event) => {field = event.target.value; setIsInvalid(false)}} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/> 
               <Form.Control.Feedback type='invalid'>{errorMessage}</Form.Control.Feedback>
             </Form.Group>
             <Button variant="primary" type="button" className={styles.button} id="addField" onClick={(event) => addField(field, event)}>
