@@ -7,7 +7,6 @@ import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 import GetDeviceType from '../../services/GetDeviceType.js';
-import * as Constants from '../../Constants';
 
 
 const AddDevicePage = () => {
