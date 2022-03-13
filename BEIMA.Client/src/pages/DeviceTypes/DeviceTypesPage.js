@@ -15,12 +15,7 @@ const DeviceTypesPage = () => {
   },[setPageName])
  
   const DevicesCall = async () => {
-    let deviceTypeData = await GetDeviceTypeList();
-    
-    // Map data into format supported by list
-    let data = deviceTypeData.response.map((item) => { return { id: item.id, name: item.name, description: item.description, notes: item.notes, lastModified: item.lastModified, buildingName: "building name needed", numDevices: "count at DB or remove? counting length on the DT return gives count of device type"} });
-    
-    return data
+    return (await GetDeviceTypeList()).response;
   }
 
   useEffect(() => {
