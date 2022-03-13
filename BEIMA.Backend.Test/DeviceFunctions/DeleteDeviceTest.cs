@@ -1,12 +1,14 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
+using BEIMA.Backend.Test.StorageService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
 using NUnit.Framework;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
@@ -27,10 +29,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -58,10 +57,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -80,7 +76,14 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             // ARRANGE
             var testId = "1234567890abcdef12345678";
 
+            var device = new Device(new ObjectId(testId), new ObjectId("12341234abcdabcd43214321"), "A-3", "Generic Inc.", "1234", "abcd1234", 2004, "Some notes.");
+            device.SetLastModified(DateTime.UtcNow, "Anonymous");
+            device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
+
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDevice(It.IsAny<ObjectId>()))
+                  .Returns(device.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.DeleteDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
                   .Verifiable();

@@ -2,6 +2,7 @@
 using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
+using BEIMA.Backend.Test.StorageService;
 using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,10 +32,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
             var data = new AddDeviceRequest()

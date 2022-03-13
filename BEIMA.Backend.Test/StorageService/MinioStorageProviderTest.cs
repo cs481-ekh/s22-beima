@@ -13,15 +13,7 @@ namespace BEIMA.Backend.Test.StorageService
     [TestFixture]
     public class MinioStorageTest : UnitTestBase
     {
-        private readonly IStorageProvider _storage = SetupStorageProvider();
-
-        private static IStorageProvider SetupStorageProvider()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, MinioStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            return serviceProivder.GetRequiredService<IStorageProvider>();
-        }
+        private readonly IStorageProvider _storage = StorageProviderExtensions.CreateMinioStorageProvider();
 
         [Test]
         public void SmokeTest()
