@@ -90,7 +90,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateStorageProvider();
+            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
             var data = new UpdateDeviceRequest()
@@ -151,7 +151,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateStorageProvider();
+            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
 
             // Create request
             var data = new UpdateDeviceRequest()
