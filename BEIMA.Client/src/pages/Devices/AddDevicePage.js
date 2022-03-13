@@ -6,11 +6,12 @@ import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFe
 import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
+import GetDeviceType from '../../services/GetDeviceType.js';
 
 
 const AddDevicePage = () => {
   // this will be replaced with API call based on selected device type to get the fields
-  const currentDeviceFields = {
+  const mandatoryDeviceFields = {
     "Building": "",
     "Longitude": "",
     "Latitude": "",
@@ -22,13 +23,14 @@ const AddDevicePage = () => {
     "Notes": ""
   }
 
-  const [deviceFields, setDeviceFields] = useState(currentDeviceFields);
-  const [errors, setErrors] = useState(currentDeviceFields);
+  const [deviceFields, setDeviceFields] = useState(mandatoryDeviceFields);
+  const [errors, setErrors] = useState(mandatoryDeviceFields);
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
   const [deviceTypes, setDeviceTypes] = useState([]);
+  const [selectedDeviceType, setSelectedDeviceType] = useState('Select Device Type');
   
   useEffect(() => {
     setPageName('Add Device')
@@ -42,6 +44,9 @@ const AddDevicePage = () => {
    loadData()
   },[])
   
+  /*
+  * gets the list of device types from the database
+  */
   const getDeviceTypes = async () => {
     const deviceTypeData = await GetDeviceTypeList();
     
@@ -50,8 +55,26 @@ const AddDevicePage = () => {
     return data
   }
   
+  /*
+  * gets the extra fields from the DB and adds them to the form
+  * @param the type of device that was selected
+  */
   const getFieldsForTypeId = async (deviceTypeId) => {
-
+    const deviceTypeFields = await GetDeviceType(deviceTypeId);
+    
+    //change the dropdown text
+    setSelectedDeviceType(deviceTypeFields.response.name);
+    
+    let allDeviceFields = mandatoryDeviceFields;
+    
+    let fieldLabels = Object.values(deviceTypeFields.response.fields);
+    
+    for(let i = 0; i < fieldLabels.length; i++) {
+      allDeviceFields[fieldLabels[i]] = "";
+    }
+    
+    setDeviceFields(allDeviceFields);
+    setErrors(allDeviceFields);
   }
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
@@ -63,7 +86,7 @@ const AddDevicePage = () => {
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let fieldNames = Object.keys(deviceFields);
-
+      
       if(fieldNames.includes(formName)){
         let formJSON =  {[formName] : formFields[i].value};
         
@@ -85,7 +108,7 @@ const AddDevicePage = () => {
       }
     }
 
-    setDeviceFields(currentDeviceFields);
+    setDeviceFields(mandatoryDeviceFields);
     setFullDeviceJSON(fieldValues);
     
     //won't deploy to azure without these until they're used elsewhere
@@ -97,6 +120,7 @@ const AddDevicePage = () => {
       setErrors(newErrors);
     } else {
       setErrors({});
+      setSelectedDeviceType('Select Device Type');
       for(let i = 0; i < formFields.length; i++){
         formFields[i].value = "";
       }
@@ -111,7 +135,7 @@ const AddDevicePage = () => {
           <Form>
             <Row className={styles.buttonGroup}>
               <Col>
-                <FilledDropDown items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} dropDownId={"typeDropDown"} />
+                <FilledDropDown dropDownText={selectedDeviceType} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
                   <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
