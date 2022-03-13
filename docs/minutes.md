@@ -1,4 +1,30 @@
-## Minutes: 2022-03-9
+## Minutes: 2022-03-10
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Standup
+* Ashlyn
+	* Continuing work on updating pages with device calls.
+	* Working on Creating building pages
+* Tom
+	* Working on js connector for update deivce ypt
+	* Working on user pages
+* Joseph
+	* Working on verifying device and device type fields match
+* Keelan
+	* Working on Building out poco for building and user
+	* Implementing mongo connector for building and user documents.
+* Kenny
+	* Finish testing for storage provider
+	* Working on converting device class to c# object
+## Other
+* We should try not to create any new pull requests on Tuesday.
+
+## Minutes: 2022-03-8
 ### scribe: Kenny
 ### Attendees:
 	Joseph Moore
