@@ -15,6 +15,7 @@ import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
 import DeviceTypePage from './pages/DeviceTypes/DeviceTypePage';
 import AddDevicePage from './pages/Devices/AddDevicePage';
 import AddDeviceTypePage from './pages/DeviceTypes/AddDeviceTypePage';
+import BuildingListPage from './pages/Building/BuildingListPage';
 import AddBuildingPage from './pages/Building/AddBuildingPage';
 import BuildingPage from './pages/Building/BuildingPage';
 import NavBar from './shared/NavBar';
@@ -34,6 +35,7 @@ const App = () => {
           <Route path="deviceTypes" element={<DeviceTypesPage/>}/>  
           <Route path="deviceTypes/:typeId" element={<DeviceTypePage/>}/>
           <Route path="buildings/:id" element={<BuildingPage/>}/>
+          <Route path="buildings" element={<BuildingListPage/>}/>
           <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/>  
           <Route path="Help" element={<HelpPage />} />
           <Route path="*" element={<Navigate to="/" />} />
