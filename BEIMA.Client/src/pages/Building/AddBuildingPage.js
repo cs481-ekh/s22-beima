@@ -8,7 +8,7 @@ import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFe
 
 const AddBuildingPage = () => {
   // this will be replaced with API call based on selected device type to get the fields
-  const mandatoryBuildingFields = {
+  const allBuildingFields = {
     "Name": "",
     "Number": "",
     "Longitude": "",
@@ -16,8 +16,8 @@ const AddBuildingPage = () => {
     "Notes": ""
   }
 
-  const [buildingFields] = useState(mandatoryBuildingFields);
-  const [errors, setErrors] = useState(mandatoryBuildingFields);
+  const [buildingFields] = useState(allBuildingFields);
+  const [errors, setErrors] = useState(allBuildingFields);
   const [setPageName] = useOutletContext();
   const [fullBuildingJSON, setFullBuildingJSON] = useState({});
   
