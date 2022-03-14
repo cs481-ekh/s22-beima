@@ -70,15 +70,19 @@ namespace BEIMA.Backend.DeviceFunctions
                 );
 
                 // Check that each field is a valid device type field.
-                var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
-                foreach (var field in data.Fields)
+                if (data.Fields != null)
                 {
-                    if (!deviceType.Fields.Contains(field.Key))
+                    var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
+
+                    foreach (var field in data.Fields)
                     {
-                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                        if (!deviceType.Fields.Contains(field.Key))
+                        {
+                            return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                        }
                     }
+                    device.SetFields(data.Fields);
                 }
-                device.Fields = data.Fields;
             }
             catch (Exception)
             {
