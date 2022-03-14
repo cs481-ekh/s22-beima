@@ -72,12 +72,12 @@ const AddBuildingPage = () => {
           <Form>
             <Row>
               <Col>
-                <Link to="/buildings" className={styles.back}>
+                <Link to="/buildings" className={styles.back} id="backBuildings">
                   <IoArrowBack color='#fff' size={20} />
                 </Link>
               </Col>
               <Col>
-                <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
+                <Button variant="primary" type="button" className={styles.addButton} id="addBuilding" onClick={(event) => createJSON(event)}>
                     Add Building
                 </Button>
               </Col>
