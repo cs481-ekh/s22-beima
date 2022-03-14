@@ -1,8 +1,12 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.AspNetCore.Http.Internal;
+using MongoDB.Driver;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
 
@@ -69,9 +73,20 @@ namespace BEIMA.Backend.FT
                 SerialNum = "xb76",
                 YearManufactured = 2020,
             };
+            FormFileCollection files = new FormFileCollection();
+            var fileName = "file.txt";
+            var photoName = "photo.txt";
 
-            // ACT
-            var responseId = await TestClient.AddDevice(device);
+            string responseId;
+            using (var fileStream = new MemoryStream(Encoding.ASCII.GetBytes("TestOne")))
+            using (var photoStream = new MemoryStream(Encoding.ASCII.GetBytes("TestOne")))
+            {
+                files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
+                files.Add(new FormFile(photoStream, 0, photoStream.Length, "photos", photoName));            
+
+                // ACT
+                responseId = await TestClient.AddDevice(device, files);
+            }
 
             // ASSERT
             Assert.That(responseId, Is.Not.Null);
@@ -85,6 +100,13 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.SerialNum, Is.EqualTo(device.SerialNum));
             Assert.That(getDevice.YearManufactured, Is.EqualTo(device.YearManufactured));
 
+            Assert.That(getDevice.Files?.Count, Is.EqualTo(1));
+            Assert.That(getDevice.Files?[0].FileUid, Is.Not.Null);
+            Assert.That(getDevice.Files?[0].FileName, Is.EqualTo(fileName));
+
+            Assert.That(getDevice.Photo?.FileName, Is.EqualTo(photoName));
+            Assert.That(getDevice.Photo?.FileUid, Is.Not.Null);
+
             Assert.That(getDevice.LastModified?.Date, Is.Not.Null);
             Assert.That(getDevice.LastModified?.User, Is.EqualTo("Anonymous"));
 
@@ -92,12 +114,6 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Location?.Notes, Is.EqualTo(device.Location.Notes));
             Assert.That(getDevice.Location?.Longitude, Is.EqualTo(device.Location.Longitude));
             Assert.That(getDevice.Location?.Latitude, Is.EqualTo(device.Location.Latitude));
-
-            // Cleanup
-            if(getDevice.Id != null)
-            {
-                await TestClient.DeleteDevice(getDevice.Id);
-            }
         }
 
         [Test]
@@ -191,15 +207,6 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.LastModified?.Date, Is.Not.Null);
                 Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
             }
-
-            // Cleanup
-            foreach (var device in actualDevices)
-            {
-                if (device.Id != null)
-                {
-                    await TestClient.DeleteDevice(device.Id);
-                }
-            }
         }
         
         [Test]
@@ -256,14 +263,34 @@ namespace BEIMA.Backend.FT
                 SerialNum = "3dvs",
                 YearManufactured = 2012,
             };
+           
+            FormFileCollection files = new FormFileCollection();
+            var fileName = "file.txt";
+            var photoName = "photo.txt";
 
-            var deviceId = await TestClient.AddDevice(origDevice);
-            var updateItem = await TestClient.GetDevice(deviceId);
+            Device updatedDevice;
+            Device updateItem;
+            using (var fileStream = new MemoryStream(Encoding.ASCII.GetBytes("TestOne")))
+            using (var photoStream = new MemoryStream(Encoding.ASCII.GetBytes("TestOne")))
+            {
+                files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
+                files.Add(new FormFile(photoStream, 0, photoStream.Length, "photos", photoName));
 
-            updateItem.Notes = "Updated Notes.";
+                var deviceId = await TestClient.AddDevice(origDevice, files);
+                updateItem = await TestClient.GetDevice(deviceId);
+                updateItem.Notes = "Updated Notes.";
+                updateItem.DeletedFiles = new List<string>();
 
-            // ACT
-            var updatedDevice = await TestClient.UpdateDevice(updateItem);
+                var fileUid = updateItem.Files?[0].FileUid;
+                if(fileUid != null)
+                {
+                    updateItem.DeletedFiles.Add(fileUid);
+                }
+
+
+                // Act
+                updatedDevice = await TestClient.UpdateDevice(updateItem);
+            }
 
             // ASSERT
             Assert.That(updatedDevice, Is.Not.Null);
@@ -271,6 +298,11 @@ namespace BEIMA.Backend.FT
 
             Assert.That(updatedDevice.LastModified?.Date, Is.Not.EqualTo(updateItem.LastModified?.Date));
             Assert.That(updatedDevice.LastModified?.User, Is.EqualTo(updateItem.LastModified?.User));
+
+            Assert.That(updatedDevice.Files?.Count, Is.EqualTo(0));
+
+            Assert.That(updatedDevice.Photo?.FileName, Is.EqualTo(photoName));
+            Assert.That(updatedDevice.Photo?.FileUid, Is.Not.Null);
 
             Assert.That(updatedDevice.DeviceTag, Is.EqualTo(updateItem.DeviceTag));
             Assert.That(updatedDevice.DeviceTypeId, Is.EqualTo(updateItem.DeviceTypeId));
@@ -284,10 +316,6 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedDevice.Location?.Notes, Is.EqualTo(updateItem.Location?.Notes));
             Assert.That(updatedDevice.Location?.Latitude, Is.EqualTo(updateItem.Location?.Latitude));
             Assert.That(updatedDevice.Location?.Longitude, Is.EqualTo(updateItem.Location?.Longitude));
-
-            // Cleanup
-            await TestClient.DeleteDevice(deviceId);
-            
         }
     }
 }
