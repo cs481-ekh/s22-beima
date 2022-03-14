@@ -187,14 +187,10 @@ namespace BEIMA.Backend.MongoService
         public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
-            notes ??= string.Empty;
-            latitude ??= string.Empty;
-            longitude ??= string.Empty;
-
             Location.BuildingId = buildingId;
-            Location.Notes = notes;
-            Location.Latitude = latitude;   
-            Location.Longitude = longitude; 
+            Location.Notes = notes ??= string.Empty;
+            Location.Latitude = latitude ??= string.Empty;
+            Location.Longitude = longitude ??= string.Empty;
         }
 
         /// <summary>
@@ -204,12 +200,9 @@ namespace BEIMA.Backend.MongoService
         /// <param name="user">Username of the user who last modified the Device.</param>
         public void SetLastModified(DateTime? date, string user)
         {
-            //Check if null, if they are, then use defualt values
-            var modifiedDate = (date ??= DateTime.Now.ToUniversalTime());
-            user ??= string.Empty;
-
-            LastModified.Date = modifiedDate;
-            LastModified.User = user;
+            //Check if null, if they are, then use defualt values          
+            LastModified.Date = date ??= DateTime.UtcNow;
+            LastModified.User = user ??= string.Empty;
         }
 
         /// <summary>
