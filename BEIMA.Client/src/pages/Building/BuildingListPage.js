@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Card, Button, Form } from 'react-bootstrap';
+import { Button, Row, Col} from 'react-bootstrap';
 import styles from  "./BuildingList.module.css"
 import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext, useNavigate } from 'react-router-dom';
@@ -22,7 +22,8 @@ const BuildingListPage = () => {
       data.push({
         _id: i,
         name: `Test Building #${i}`,
-        notes: 'Somewhere on campus'
+        number: "2987",
+        notes: 'Somewhere on campus',
       })
     }
     // Map data into format supported by list
@@ -30,7 +31,8 @@ const BuildingListPage = () => {
       return {
         id: item._id,
         name: item.name,
-        notes: item.notes
+        number: item.number,
+        notes: item.notes,
       }
     })
     return mapped
@@ -52,24 +54,25 @@ const BuildingListPage = () => {
    * @returns html
    */
   const RenderItem = (item) => {
-    // add these back to the returned object when we can call to the buildings and device type DBs
-    // <div>Location: {item.buildingName}</div>
-    //<div>Device Type: {item.deviceType}</div> 
     return (
       <div className={styles.details}>
+        <div>Number: {item.number}</div>
         <div>Notes: {item.notes}</div> 
       </div>
     )
   }
 
   return (
-    <div className={styles.fieldform}>
-      <Card>
-        <Button variant="primary" type="button" className={styles.addButton} id="addNewBuilding" onClick={() => navigate(`addBuilding`)}>
-          Add Building
-        </Button>
-        <ItemList list={buildings} RenderItem={RenderItem} loading={loading}/>
-      </Card>
+    <div className={styles.fieldform} id="buildingListContent">
+      <Row>
+        <Col>
+          <Button variant="primary" type="button" className={styles.addButton} id="addNewBuilding" onClick={() => navigate(`addBuilding`)}>
+            Add New Building
+          </Button>
+        </Col>
+      </Row>
+      <br/>
+      <ItemList list={buildings} RenderItem={RenderItem} loading={loading}/>
     </div>
   )
 }

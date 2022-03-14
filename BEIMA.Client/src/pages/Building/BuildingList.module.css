@@ -9,3 +9,9 @@
 .fieldform {
   margin: 10px 5% 0px 5%;
 }
+
+.addButton {
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+  float: right;
+}
