@@ -19,7 +19,8 @@ const ManageUserPage = () => {
   const [userList, setUserList] = useState([]);
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState('Select User');
+  const [selectedUser, setSelectedUser] = useState({});
+  const [selectedUserName, setSelectedUserName] = useState('Select User');
   const [ddStyle, setDdStyle] = useState(styles.button);
   const [formIsHidden, setFormIsHidden] = useState(true);
   const [currentUserOperation, setCurrentUserOperation] = useState();
@@ -45,7 +46,7 @@ const ManageUserPage = () => {
     let data = []
     for(let i = 0; i < 5; i++){
       data.push({
-        id: i,
+        id: 74+i,
         name: `User #${i}`,
         username: `UserName # #${i}`,
         firstName: `User #${i} First`,
@@ -70,9 +71,14 @@ const ManageUserPage = () => {
     return mapped
   }
 
-  function setSelectedUserAndText(userId) {
-    setSelectedUser(userList[userId].name);
-    setDdStyle(styles.ddSelected);    
+  function setUserDetails(userId) {
+    for(let i = 0; i < userList.length; i++) {
+      if(userList[i].id == userId){
+        setSelectedUser(userList[i]);
+        setSelectedUserName(userList[i].name);
+      }
+    }
+    setDdStyle(styles.ddSelected);
   }
 
   function addUser() {
@@ -81,9 +87,9 @@ const ManageUserPage = () => {
     setFormIsHidden(false);
   }
 
-  async function updateUser() {
+  function updateUser() {
     //make sure a user is selected
-    //get user details from DB
+    //get user details
     //populate fields setUserFields(result)
     setUserFields(mandatoryUserFields);
     setCurrentUserOperation("Update");
@@ -100,8 +106,11 @@ const ManageUserPage = () => {
   
   function saveUser() {
     //save user details back to db
-    //hide form
+    
+    setSelectedUserName('Select User');
+    setDdStyle(styles.button);
     setFormIsHidden(true);
+    
   }
   
   return (
@@ -114,7 +123,7 @@ const ManageUserPage = () => {
                 </Row>
                 <Row>
                   <Col>
-                    <FilledDropDown dropDownText={selectedUser} items={userList} selectFunction={setSelectedUserAndText} buttonStyle={ddStyle} dropDownId={"userDropDown"} />
+                    <FilledDropDown dropDownText={selectedUserName} items={userList} selectFunction={setUserDetails} buttonStyle={ddStyle} dropDownId={"userDropDown"} />
                   </Col>
                 </Row>
                 <br />
