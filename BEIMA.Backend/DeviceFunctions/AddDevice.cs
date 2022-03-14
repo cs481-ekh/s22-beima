@@ -1,3 +1,4 @@
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,21 +36,26 @@ namespace BEIMA.Backend.DeviceFunctions
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
-                device = new Device(ObjectId.GenerateNewId(),
-                                    ObjectId.Parse((string)data.deviceTypeId),
-                                    (string)data.deviceTag,
-                                    (string)data.manufacturer,
-                                    (string)data.modelNum,
-                                    (string)data.serialNum,
-                                    (int)data.yearManufactured,
-                                    (string)data.notes);
+                var data = JsonConvert.DeserializeObject<AddDeviceRequest>(requestBody);
+                device = new Device(
+                    ObjectId.GenerateNewId(),
+                    ObjectId.Parse(data.DeviceTypeId),
+                    data.DeviceTag,
+                    data.Manufacturer,
+                    data.ModelNum,
+                    data.SerialNum,
+                    data.YearManufactured,
+                    data.Notes
+                );
 
-                device.SetLocation(ObjectId.Parse((string)data.location.buildingId),
-                                   (string)data.location.notes,
-                                   (string)data.location.latitude,
-                                   (string)data.location.longitude);
-                // TODO: include device type attributes
+                device.SetLocation(
+                    ObjectId.Parse(data.Location.BuildingId),
+                    data.Location.Notes,
+                    data.Location.Latitude,
+                    data.Location.Longitude
+                );
+
+                device.SetFields(data.Fields);
             }
             catch (Exception)
             {
