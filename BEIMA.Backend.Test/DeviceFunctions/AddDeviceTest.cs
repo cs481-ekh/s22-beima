@@ -43,15 +43,19 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var data = TestData._testAddDeviceRequest;
             var json = JsonConvert.SerializeObject(data);
             var fileCollection = new FormFileCollection();
-            var fileStream = new ByteArrayContent(Encoding.ASCII.GetBytes("TestOne")).ReadAsStream();
-            fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
 
-            var request =  CreateMultiPartHttpRequest(json, fileCollection);            
-            var logger = (new LoggerFactory()).CreateLogger("Testing");
+            string? deviceId;
+            using (var fileStream = new ByteArrayContent(Encoding.ASCII.GetBytes("TestOne")).ReadAsStream())
+            {
+                fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
 
-            // ACT
-            var deviceId = ((ObjectResult) await new AddDevice(storageProvider).Run(request, logger)).Value?.ToString();
+                var request = CreateMultiPartHttpRequest(json, fileCollection);
+                var logger = (new LoggerFactory()).CreateLogger("Testing");
 
+                // ACT
+                deviceId = ((ObjectResult)await new AddDevice(storageProvider).Run(request, logger)).Value?.ToString();
+            }                  
+           
             // ASSERT
             Assert.IsNotNull(deviceId);
             Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
