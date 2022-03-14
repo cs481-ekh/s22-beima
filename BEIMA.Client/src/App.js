@@ -15,6 +15,7 @@ import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
 import DeviceTypePage from './pages/DeviceTypes/DeviceTypePage';
 import AddDevicePage from './pages/Devices/AddDevicePage';
 import AddDeviceTypePage from './pages/DeviceTypes/AddDeviceTypePage';
+import LoginPage from './pages/Authentication/LoginPage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,6 +26,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="login" element={<LoginPage/>}/>
           <Route path="addDevice" element={<AddDevicePage/>}/>
           <Route path="addDeviceType" element={<AddDeviceTypePage/>}/>
           <Route path="devices" element={<DevicesPage/>}/>  
