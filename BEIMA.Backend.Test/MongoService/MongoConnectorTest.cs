@@ -30,7 +30,7 @@ namespace BEIMA.Backend.Test.MongoService
         {
             var mongo = MongoConnector.Instance;
             var result = mongo.IsConnected();
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
         }
         #endregion
 
@@ -106,7 +106,7 @@ namespace BEIMA.Backend.Test.MongoService
             {
                 deleteResult = mongo.DeleteDevice((ObjectId)insertResult);
             }
-            Assert.IsTrue(deleteResult);
+            Assert.That(deleteResult, Is.True);
         }
 
         [Test]
@@ -225,7 +225,7 @@ namespace BEIMA.Backend.Test.MongoService
                 deleteResult = mongo.DeleteDeviceType((ObjectId)insertResult);
                 Assert.IsNull(mongo.GetDeviceType((ObjectId)insertResult));
             }
-            Assert.IsTrue(deleteResult);
+            Assert.That(deleteResult, Is.True);
         }
 
         [Test]
@@ -342,7 +342,7 @@ namespace BEIMA.Backend.Test.MongoService
                 deleteResult = mongo.DeleteBuilding((ObjectId)insertResult);
                 Assert.IsNull(mongo.GetBuilding((ObjectId)insertResult));
             }
-            Assert.IsTrue(deleteResult);
+            Assert.That(deleteResult, Is.True);
         }
 
         [Test]
