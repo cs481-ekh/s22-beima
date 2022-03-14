@@ -181,7 +181,7 @@ const BuildingPage = () => {
   }
 
   return (
-    <div className={styles.item} id="devicePageContent">
+    <div className={styles.item} id="buildingPageContent">
       <ItemCard 
         title={loading ? 'Loading' : `${building.name}`}
         RenderItem={<RenderItem building={building}/>} 
