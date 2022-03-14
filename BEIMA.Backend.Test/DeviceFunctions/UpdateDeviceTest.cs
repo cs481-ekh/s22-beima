@@ -97,8 +97,10 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
-            var deviceBson = (Dictionary<string, object>)((OkObjectResult)response).Value;
-            Assert.That(deviceBson["serialNum"], Is.EqualTo(device.SerialNum));
+            var resDevice = (Device)((OkObjectResult)response).Value;
+
+            Assert.That(resDevice.ModelNum, Is.EqualTo(device.ModelNum));
+            Assert.That(resDevice.Notes, Is.EqualTo(device.Notes));
         }
     }
 }
