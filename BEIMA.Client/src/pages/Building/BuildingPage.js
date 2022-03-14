@@ -98,7 +98,7 @@ const BuildingPage = () => {
   const RenderItem = ({building}) => {
     const [editable, setEditable] = useState(false)
 
-    const [buildingId, setBuildingId] = useState(building.id)
+    const [buildingId] = useState(building.id)
     const [number, setNumber] = useState(building.number)
     const [lat, setLat] = useState(building.latitude)
     const [long, setLong] = useState(building.longitude)
@@ -121,7 +121,6 @@ const BuildingPage = () => {
     }
 
     const cancel = () => {      
-      setBuildingId(building.id)
       setNumber(building.number)
       setLat(building.latitude)
       setLong(building.longitude)
@@ -138,8 +137,6 @@ const BuildingPage = () => {
         setLat(value)
       } else if (target === 'buildingLongitude'){
         setLong(value)
-      } else if (target === 'buildingId'){
-        setBuildingId(value)
       } else if (target === 'buildingNumber'){
         setNumber(value)
       }
