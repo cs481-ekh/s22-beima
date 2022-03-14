@@ -31,7 +31,7 @@ const AddDevicePage = () => {
   const [fullDeviceJSON, setFullDeviceJSON] = useState({});
   const [deviceTypes, setDeviceTypes] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState('Select Device Type');
-  const [selectedDeviceTypeId, setSelectedDeviceTypeId] = useState();
+  const [selectedDeviceFields, setSelectedDeviceFields] = useState();
   
   useEffect(() => {
     setPageName('Add Device')
@@ -65,7 +65,7 @@ const AddDevicePage = () => {
     
     //change the dropdown text
     setSelectedDeviceType(deviceTypeFields.response.name);
-    setSelectedDeviceTypeId(deviceTypeId);
+    setSelectedDeviceFields(deviceTypeFields.response.fields);
     
     let allDeviceFields = mandatoryDeviceFields;
 
@@ -74,9 +74,53 @@ const AddDevicePage = () => {
     for(let i = 0; i < fieldLabels.length; i++) {
       allDeviceFields[fieldLabels[i]] = "";
     }
-    
+
     setDeviceFields(allDeviceFields);
     setErrors(allDeviceFields);
+  }
+  
+  function convertToDbFriendly(formName) {
+    let result = {};
+    
+    switch(formName){
+      case 'Building':
+        result = 'buildingId';
+        break;
+        
+      case 'Device Tag':
+        result = 'deviceTag';
+        break;
+        
+      case 'Model Number':
+        result = 'modelNum';
+        break;
+        
+      case 'Serial Number':
+        result = 'serialNum';
+        break;
+        
+      case 'Year Manufactured':
+        result = 'yearManufactured';
+        break;
+      
+      //intentional fallthrough
+      case 'Latitude':
+      case 'Longitude':
+        result = {'location': {'type' : formName.toLowerCase(formName)}};
+        break;
+        
+      default:
+        if(Object.values(selectedDeviceFields).includes(formName)){
+          let dbId = Object.keys(selectedDeviceFields).find(key => selectedDeviceFields[key] === formName);
+        result = {'fieldDbId': dbId};
+        
+        } else {
+          result = formName.toLowerCase(formName);
+        }
+        
+        break;
+    }
+    return result;
   }
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
@@ -87,28 +131,34 @@ const AddDevicePage = () => {
       return;
     }
     
-    deviceFields["DeviceTypeId"] = selectedDeviceTypeId;
-    
     let formFields = addButtonEvent.target.form.elements;
-    let fieldValues = {};
+    let fieldValues = {fields: {}, location: {}};
     let newErrors = {};
 
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let fieldNames = Object.keys(deviceFields);
       
-      if(fieldNames.includes(formName)){
-        let formJSON =  {[formName] : formFields[i].value};
-        
-        //lat lon validation
-        if (formName === 'Latitude' || formName === 'Longitude') {
-          const coordMax = formName === 'Latitude' ? 90 : 180;
-          if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
-            newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
-          }
+      //lat lon validation
+      if (formName === 'Latitude' || formName === 'Longitude') {
+        const coordMax = formName === 'Latitude' ? 90 : 180;
+        if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
+          newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
         }
+      }
+      
+      if(fieldNames.includes(formName)){
+        let formJSON = '';
+        let jsonKey = convertToDbFriendly(formName);
         
-        Object.assign(fieldValues, formJSON);
+        if(!(typeof jsonKey == 'object')){
+          formJSON =  {[jsonKey] : formFields[i].value};
+          Object.assign(fieldValues, formJSON);
+        } else if ('fieldDbId' in jsonKey){
+          fieldValues.fields[jsonKey.fieldDbId] = formFields[i].value;
+        } else if ('location' in jsonKey){
+          fieldValues.location[jsonKey.location.type] = formFields[i].value;
+        }
       } else if (formName === "Device Image"){
         setDeviceImage(formFields[i].files[0]);
         formFields[i].value = "";
@@ -122,7 +172,7 @@ const AddDevicePage = () => {
     setFullDeviceJSON(fieldValues);
     
     //won't deploy to azure without these until they're used elsewhere
-    console.log(fullDeviceJSON);
+    
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
 
@@ -134,7 +184,7 @@ const AddDevicePage = () => {
       for(let i = 0; i < formFields.length; i++){
         formFields[i].value = "";
       }
-      
+      console.log(fullDeviceJSON);
     }
   }
   
