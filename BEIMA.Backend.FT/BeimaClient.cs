@@ -2,8 +2,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
@@ -93,10 +95,7 @@ namespace BEIMA.Backend.FT
             {
                 foreach(var file in files)
                 {
-                    using (var stream = file.OpenReadStream())
-                    {
-                        form.Add(new StreamContent(stream), file.Name);
-                    }
+                   form.Add(new StreamContent(file.OpenReadStream()), file.Name, file.FileName);
                 }
             }
 
