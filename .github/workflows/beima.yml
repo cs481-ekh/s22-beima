@@ -20,17 +20,17 @@ env:
   AzureStorageConnection: ${{ secrets.AZURE_STORAGE_CONNECTION }}
   AzureContainer: "test-files"
   DeviceTypeCollectionName: deviceTypes
+  REACT_APP_API_URL: http://localhost:7071/api/
+  Host: '{ "CORS" : "*"}'
   MinioAccessKey: "minioadmin"
   MinioSecretKey: "minioadmin"
   MinioBucket: "test-files"
-
-
 
 jobs:
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
@@ -42,3 +42,9 @@ jobs:
         run: ./build.sh
       - name: Test
         run: ./test.sh
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+            name: cypress-snapshots
+            path: BEIMA.Client/cypress/screenshots

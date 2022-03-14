@@ -88,6 +88,15 @@ namespace BEIMA.Backend.FT
             public List<string>? Fields { get; set; }
         }
 
+        public class DeviceTypeUpdate : DeviceTypeBase
+        {
+            [JsonProperty(PropertyName = "fields")]
+            public Dictionary<string, string>? Fields { get; set; }
+
+            [JsonProperty(PropertyName = "newFields")]
+            public List<string>? NewFields { get; set; }
+        }
+
         public class DeviceType : DeviceTypeBase
         {
             [JsonProperty(PropertyName = "lastModified")]

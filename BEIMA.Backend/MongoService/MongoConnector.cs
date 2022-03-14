@@ -211,8 +211,8 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                return devices.Find(filter).FirstOrDefault();
+                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                return deviceTypes.Find(filter).FirstOrDefault();
             }
             catch (Exception ex)
             {
@@ -222,7 +222,7 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Gets a device from the "deviceTypes" collection, given an objectID.
+        /// Gets a device type from the "deviceTypes" collection, given an objectID.
         /// </summary>
         /// <returns>BsonDocument that was requested</returns>
         public List<BsonDocument> GetAllDeviceTypes()
@@ -234,8 +234,8 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                var docs = devices.Find(filter).ToList();
+                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                var docs = deviceTypes.Find(filter).ToList();
                 return docs;
             }
             catch (Exception ex)
@@ -246,7 +246,7 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Inserts a device into the "deviceTypes" collection
+        /// Inserts a device type into the "deviceTypes" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
@@ -257,8 +257,8 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                devices.InsertOne(doc);
+                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                deviceTypes.InsertOne(doc);
                 return (ObjectId)doc["_id"];
             }
             catch (Exception ex)
@@ -282,8 +282,8 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                var result = devices.DeleteOne(filter);
+                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                var result = deviceTypes.DeleteOne(filter);
                 return result.DeletedCount > 0;
             }
             catch (Exception ex)
@@ -294,7 +294,7 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Updates a device in the "deviceTypes" collection, given a fully formed updated device.
+        /// Updates a device type in the "deviceTypes" collection, given a fully formed updated device.
         /// </summary>
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>true if successful, false if unsuccessful</returns>
@@ -307,8 +307,8 @@ namespace BEIMA.Backend.MongoService
                 ObjectId objectId = (ObjectId)doc["_id"];
                 var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                var result = devices.ReplaceOne(filter, doc);
+                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
+                var result = deviceTypes.ReplaceOne(filter, doc);
                 if (result.ModifiedCount > 0)
                 {
                     return doc;
