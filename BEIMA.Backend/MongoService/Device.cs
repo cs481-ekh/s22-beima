@@ -1,9 +1,51 @@
 ﻿using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace BEIMA.Backend.MongoService
 {
+    /// <summary>
+    /// Object representation of a last modified document in a device document
+    /// </summary>
+    public class DeviceLastModified
+    {
+        [BsonElement("date")]
+        public DateTime Date { get; set; }
+        [BsonElement("user")]
+        public string User { get; set; }
+    }
+
+    /// <summary>
+    /// Object representation of a photo/file document in a device document's photo and file list.
+    /// Nothing is stored in Url only used when device is returned as a view model.
+    /// </summary>
+    public class DeviceFile
+    {
+        [BsonElement("fileName")]
+        public string FileName { get; set; }
+        [BsonElement("fileUid")]
+        public string FileUid { get; set; }
+        [BsonElement("fileUrl")]
+        public string Url { get; set; }
+    }
+
+    /// <summary>
+    /// Object representation of the location field in a device document
+    /// </summary>
+    public class DeviceLocation
+    {
+        [BsonElement("buildingId")]
+        public ObjectId BuildingId { get; set; }
+        [BsonElement("notes")]
+        public string Notes { get; set; }
+        [BsonElement("latitude")]
+        public string Latitude { get; set; }
+        [BsonElement("longitude")]
+        public string Longitude { get; set; }
+    }
+
     /// <summary>
     /// This class represents a Device. This object contains all the required fields necessary
     /// for a device. This is meant to be used to convert data received from an endpoint, back into a BSON object.
@@ -12,6 +54,7 @@ namespace BEIMA.Backend.MongoService
     {
         //Properties of a Device object
         [BsonId]
+        [JsonProperty(PropertyName = "_id")]
         public ObjectId Id { get; set; }
 
         [BsonElement("deviceTypeId")]
@@ -36,30 +79,30 @@ namespace BEIMA.Backend.MongoService
         public string Notes { get; set; }
 
         [BsonElement("fields")]
-        public BsonDocument Fields { get; set; }
+        public Dictionary<string, string> Fields { get; set; }
 
         [BsonElement("location")]
-        public BsonDocument Location { get; set; }
+        public DeviceLocation Location { get; set; }
 
         [BsonElement("lastModified")]
-        public BsonDocument LastModified { get; set; }
+        public DeviceLastModified LastModified { get; set; }
 
         [BsonElement("files")]
-        public BsonArray Files { get; set; }
+        public List<DeviceFile> Files { get; set; }
 
-        [BsonElement("photos")]
-        public BsonArray Photos { get; set; }
+        [BsonElement("photo")]
+        public DeviceFile Photo { get; set; }
 
         /// <summary>
         /// Empty constructor, this allows for a device to be instantiated through Object Initializers.
         /// </summary>
         public Device()
         {
-            Fields = new BsonDocument();
-            Location = new BsonDocument();
-            LastModified = new BsonDocument();
-            Files = new BsonArray();
-            Photos = new BsonArray();
+            Fields = new Dictionary<string, string>();
+            LastModified = new DeviceLastModified();
+            Location = new DeviceLocation();
+            Files = new List<DeviceFile>();
+            Photo = new DeviceFile();
         }
 
         /// <summary>
@@ -83,11 +126,11 @@ namespace BEIMA.Backend.MongoService
             SerialNum = serialNum ?? string.Empty;
             YearManufactured = yearManufactured ?? -1;
             Notes = notes ?? string.Empty;
-            Fields = new BsonDocument();
-            Location = new BsonDocument();
-            LastModified = new BsonDocument();
-            Files = new BsonArray();
-            Photos = new BsonArray();
+            Fields = new Dictionary<string, string>();
+            Location = new DeviceLocation();
+            LastModified = new DeviceLastModified();
+            Files = new List<DeviceFile>();
+            Photo = new DeviceFile();
         }
 
         /// <summary>
@@ -96,16 +139,11 @@ namespace BEIMA.Backend.MongoService
         /// <param name="arg">The Property being null checked.</param>
         /// <param name="name">The name of the Property, to be returned in the exception message.</param>
         /// <exception cref="ArgumentNullException">Throws an exception when the passed in argument is null.</exception>
-        private void CheckNullArgument(dynamic arg, string name = "")
+        private void CheckNullArgument(Object arg, string name = "")
         {
             if (arg == null)
             {
                 throw new ArgumentNullException($"Device - {name} is null");
-            }
-
-            if (arg is BsonDocument && arg.ElementCount == 0)
-            {
-                throw new ArgumentNullException($"Device - Set{name} has not been called yet!");
             }
         }
 
@@ -116,14 +154,17 @@ namespace BEIMA.Backend.MongoService
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-            CheckNullArgument(DeviceTag, nameof(DeviceTag));
-            CheckNullArgument(Manufacturer, nameof(Manufacturer));
-            CheckNullArgument(ModelNum, nameof(ModelNum));
-            CheckNullArgument(SerialNum, nameof(SerialNum));
-            CheckNullArgument(YearManufactured, nameof(YearManufactured));
-            CheckNullArgument(Notes, nameof(Notes));
-            CheckNullArgument(Location, nameof(Location));
-            CheckNullArgument(LastModified, nameof(LastModified));
+            CheckNullArgument(DeviceTag, "Device Tag");
+            CheckNullArgument(Manufacturer, "Manufacturer");
+            CheckNullArgument(ModelNum, "Model Number");
+            CheckNullArgument(SerialNum, "Serial Number");
+            CheckNullArgument(YearManufactured, "Year Manufactured");
+            CheckNullArgument(Notes, "Notes");
+            CheckNullArgument(Location, "Location");
+            CheckNullArgument(LastModified, "Last Modified");
+            CheckNullArgument(Fields, "Fields");
+            CheckNullArgument(Files, "Files");
+            CheckNullArgument(Photo, "Photo");
 
             return this.ToBsonDocument();
         }
@@ -133,9 +174,18 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="key">The ObjectId of the linked field in the linked DeviceType.</param>
         /// <param name="value">The actual value of the field.</param>
-        public void AddField(string key, dynamic value)
+        public void AddField(string key, string value)
         {
-            Fields.Set(key, value);
+            Fields.Add(key, value);
+        }
+
+        /// <summary>
+        /// Sets the device's fields to the newFields object
+        /// </summary>
+        /// <param name="newFields">New device fields</param>
+        public void SetFields(Dictionary<string, string> newFields)
+        {
+            Fields = newFields ??= new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -148,14 +198,10 @@ namespace BEIMA.Backend.MongoService
         public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
-            notes ??= string.Empty;
-            latitude ??= string.Empty;
-            longitude ??= string.Empty;
-
-            Location.Set("buildingId", buildingId);
-            Location.Set("notes", notes);
-            Location.Set("latitude", latitude);
-            Location.Set("longitude", longitude);
+            Location.BuildingId = buildingId;
+            Location.Notes = notes ??= string.Empty;
+            Location.Latitude = latitude ??= string.Empty;
+            Location.Longitude = longitude ??= string.Empty;
         }
 
         /// <summary>
@@ -165,32 +211,39 @@ namespace BEIMA.Backend.MongoService
         /// <param name="user">Username of the user who last modified the Device.</param>
         public void SetLastModified(DateTime? date, string user)
         {
-            //Check if null, if they are, then use defualt values
-            date ??= DateTime.Now.ToUniversalTime();
-            user ??= string.Empty;
-
-            LastModified.Set("date", date);
-            LastModified.Set("user", user);
+            //Check if null, if they are, then use defualt values          
+            LastModified.Date = date ??= DateTime.UtcNow;
+            LastModified.User = user ??= string.Empty;
         }
 
+        /// <summary>
+        /// Creates and adds a file to the device's file list
+        /// </summary>
+        /// <param name="fileUid">File's uid</param>
+        /// <param name="fileName">File's filename</param>
         public void AddFile(string fileUid, string fileName)
         {
-            var file = new BsonDocument
+            var file = new DeviceFile()
             {
-                new BsonElement("fileUid", fileUid),
-                new BsonElement("fileName", fileName)
+                FileName = fileName,
+                FileUid = fileUid,
             };
             Files.Add(file);
         }
 
-        public void AddPhoto(string fileUid, string fileName)
+        /// <summary>
+        /// Creates and adds a photo to the device's photo list
+        /// </summary>
+        /// <param name="fileUid">Photo's uid</param>
+        /// <param name="fileName">Photo's filename</param>
+        public void SetPhoto(string fileUid, string fileName)
         {
-            var photo = new BsonDocument
+            var photo = new DeviceFile()
             {
-                new BsonElement("fileUid", fileUid),
-                new BsonElement("fileName", fileName)
+                FileName = fileName,
+                FileUid = fileUid,
             };
-            Photos.Add(photo);
+            Photo = photo;
         }
     }
 }
