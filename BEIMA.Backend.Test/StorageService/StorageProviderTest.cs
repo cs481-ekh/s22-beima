@@ -1,31 +1,40 @@
-﻿using System;
-using System.IO;
-using System.Text;
-using System.Threading.Tasks;
-using BEIMA.Backend.StorageService;
+﻿using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Internal;
-using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace BEIMA.Backend.Test.StorageService
 {
     [TestFixture]
-    public class AzureStorageTest : UnitTestBase
+    public class StorageProviderTest : UnitTestBase
     {
-        private readonly IStorageProvider _storage = new AzureStorageProvider();
-
         [Test]
-        public void SmokeTest()
+        public void ProviderNotCreated_CallConstructorFiveTimes_FiveInstancesAreEqual()
         {
-            Assert.That(_storage, Is.Not.Null);
-            Assert.That(_storage, Is.InstanceOf(typeof(AzureStorageProvider)));
+            //Tests to make sure singleton is working
+            var _storage1 = StorageProvider.Instance;
+            var _storage2 = StorageProvider.Instance;
+            var _storage3 = StorageProvider.Instance;
+            var _storage4 = StorageProvider.Instance;
+            var _storage5 = StorageProvider.Instance;
+            Assert.That(_storage1, Is.EqualTo(_storage2));
+            Assert.That(_storage1, Is.EqualTo(_storage3));
+            Assert.That(_storage1, Is.EqualTo(_storage4));
+            Assert.That(_storage1, Is.EqualTo(_storage5));
         }
 
         [Test]
         public async Task FileExists_GetFileStream_StreamExists()
         {
             //Arrange
+            var _storage = StorageProvider.Instance;
+
             string fileUid;
             var testString = "Hello World";
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
@@ -53,6 +62,7 @@ namespace BEIMA.Backend.Test.StorageService
         public async Task FileNotExists_GetFileStream_StreamNotExists()
         {
             //Arrange
+            var _storage = StorageProvider.Instance;
             var fileUid = Guid.NewGuid().ToString();
 
             //Act
@@ -66,6 +76,8 @@ namespace BEIMA.Backend.Test.StorageService
         public async Task FileExists_GetPresignedUrl_PresignedUrlExists()
         {
             //Arrange
+            var _storage = StorageProvider.Instance;
+
             string fileUid;
             var testString = "Hello World";
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
@@ -90,7 +102,9 @@ namespace BEIMA.Backend.Test.StorageService
         [Test]
         public async Task FileNotExists_GetPresignedUrl_PresignedUrlNotExists()
         {
-            //Arranges
+            //Arrange
+            var _storage = StorageProvider.Instance;
+
             var fileUid = Guid.NewGuid().ToString();
 
             //Act
@@ -104,6 +118,8 @@ namespace BEIMA.Backend.Test.StorageService
         public async Task FileNotExists_PutFile_FileUidExists()
         {
             //Arrange
+            var _storage = StorageProvider.Instance;
+
             string fileUid;
             var testString = "Hello World";
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
@@ -127,6 +143,8 @@ namespace BEIMA.Backend.Test.StorageService
         public async Task FileExists_DeleteObject_DeletedTrue()
         {
             //Arrange
+            var _storage = StorageProvider.Instance;
+
             string fileUid;
             var testString = "Hello World";
             using (MemoryStream stream = new MemoryStream(Encoding.UTF8.GetBytes(testString)))
@@ -157,6 +175,8 @@ namespace BEIMA.Backend.Test.StorageService
         public async Task FileNotExists_DeleteObject_DeletedTrue()
         {
             //Arrange
+            var _storage = StorageProvider.Instance;
+
             var fileUid = Guid.NewGuid().ToString();
 
             //Act
