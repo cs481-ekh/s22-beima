@@ -64,9 +64,9 @@ namespace BEIMA.Backend.Test
             }
             Environment.SetEnvironmentVariable("DatabaseName", dbName);
             Environment.SetEnvironmentVariable("DeviceCollectionName", devicesName);
-            Environment.SetEnvironmentVariable("DeviceTypeCollectionName", devicesName);
-            Environment.SetEnvironmentVariable("BuildingCollectionName", devicesName);
-            Environment.SetEnvironmentVariable("UserCollectionName", devicesName);
+            Environment.SetEnvironmentVariable("DeviceTypeCollectionName", deviceTypesName);
+            Environment.SetEnvironmentVariable("BuildingCollectionName", buildingsName);
+            Environment.SetEnvironmentVariable("UserCollectionName", usersName);
         }
 
         [OneTimeTearDown]
