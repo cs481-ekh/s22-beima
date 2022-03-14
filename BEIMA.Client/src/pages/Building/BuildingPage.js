@@ -1,7 +1,7 @@
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
-import styles from './BuildingPage.module.js'
+import styles from './BuildingPage.module.css'
 import { Form, Card, Button, FormControl, Image} from "react-bootstrap";
 import { TiDelete } from "react-icons/ti";
 import * as Constants from '../../Constants';
@@ -20,8 +20,15 @@ const BuildingPage = () => {
   const mockBuildingCall = async(id) => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
-    const type = {}
-    return type
+    const building = {
+      id: "5",
+      name: `Test Building #5`,
+      number: "2987",
+      latitude: "23.352",
+      longitude: "95.2973",
+      notes: 'Somewhere on campus'
+    }
+    return building
   }
   
   useEffect(() => {
@@ -99,7 +106,7 @@ const BuildingPage = () => {
 
     const navigate = useNavigate();
 
-    const updateDeviceCall = () => {
+    const updateBuildingCall = () => {
       const newBuilding = {
         _id:buildingId,
         number:number,
@@ -146,7 +153,7 @@ const BuildingPage = () => {
           </Button>
           {editable ? 
           <div className={styles.buttonRow}>
-              <Button id="savebtn">
+              <Button id="savebtn" onClick={() => updateBuildingCall()}>
                 Save
               </Button>
               <Button variant="secondary" id="cancelbtn" onClick={cancel}>
@@ -177,7 +184,7 @@ const BuildingPage = () => {
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
         title={loading ? 'Loading' : `${building.name}`}
-        RenderItem={<RenderItem device={building}/>} 
+        RenderItem={<RenderItem building={building}/>} 
         loading={loading}
         route="/buildings"
       />
