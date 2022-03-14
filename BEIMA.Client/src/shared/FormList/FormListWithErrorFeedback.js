@@ -1,6 +1,6 @@
 import { Form } from 'react-bootstrap';
 
-const FormList = ({fields, errors}) => {
+const FormListWithErrorFeedback = ({fields, errors}) => {
     return (
       <div>
         {fields.map(element =>
@@ -14,4 +14,4 @@ const FormList = ({fields, errors}) => {
     )
 }
 
-export default FormList
+export default FormListWithErrorFeedback

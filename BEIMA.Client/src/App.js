@@ -15,6 +15,7 @@ import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
 import DeviceTypePage from './pages/DeviceTypes/DeviceTypePage';
 import AddDevicePage from './pages/Devices/AddDevicePage';
 import AddDeviceTypePage from './pages/DeviceTypes/AddDeviceTypePage';
+import ManageUsersPage from './pages/Users/ManageUsersPage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -31,6 +32,7 @@ const App = () => {
           <Route path="devices/:id" element={<DevicePage/>}/>
           <Route path="deviceTypes" element={<DeviceTypesPage/>}/>  
           <Route path="deviceTypes/:typeId" element={<DeviceTypePage/>}/>
+          <Route path="manageUsers" element={<ManageUsersPage/>}/> 
           <Route path="Help" element={<HelpPage />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Route>

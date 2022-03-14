@@ -1,0 +1,26 @@
+.fieldform {
+    margin: 10px 5% 0px 5%;
+}
+
+.button{
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+}
+
+.ddSelected{
+  background-color: #FFFFFF !important;
+  border-color: #D64309 !important;
+  color: #D64309 !important;
+}
+
+.buttonGroup {
+  width: 30%
+}
+
+.fileupload {
+  border: thin dashed rgb(27, 85, 211);
+  justify-content: center;
+  text-align: center;
+  padding: 2%;
+  margin: 2%;
+}
