@@ -17,12 +17,14 @@ describe('Building Page', () => {
     // exist
     cy.get('[id=editbtn]').should('exist')
     cy.get('[id=deletebtn]').should('exist')
+    cy.get('[id=buildingName]').should('exist')
     cy.get('[id=buildingNotes]').should('exist')
     cy.get('[id=buildingNumber]').should('exist')
     cy.get('[id=buildingLatitude]').should('exist')
     cy.get('[id=buildingLongitude]').should('exist')
 
     // disabled
+    cy.get('[id=buildingName]').should('be.disabled')
     cy.get('[id=buildingNotes]').should('be.disabled')
     cy.get('[id=buildingNumber]').should('be.disabled')
     cy.get('[id=buildingLatitude]').should('be.disabled')
@@ -49,6 +51,7 @@ describe('Building Page', () => {
     cy.get('[id=deletebtn]').should('exist')
 
     // enabled
+    cy.get('[id=buildingName]').should('be.enabled')
     cy.get('[id=buildingNotes]').should('be.enabled')
     cy.get('[id=buildingNumber]').should('be.enabled')
     cy.get('[id=buildingLatitude]').should('be.enabled')

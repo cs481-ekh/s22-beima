@@ -98,6 +98,7 @@ const BuildingPage = () => {
     const [editable, setEditable] = useState(false)
 
     const [buildingId] = useState(building.id)
+    const [name, setName] = useState(building.name)
     const [number, setNumber] = useState(building.number)
     const [lat, setLat] = useState(building.latitude)
     const [long, setLong] = useState(building.longitude)
@@ -106,6 +107,7 @@ const BuildingPage = () => {
     const updateBuildingCall = () => {
       const newBuilding = {
         _id:buildingId,
+        name:name,
         number:number,
         notes:notes,
         latitude:lat,
@@ -130,7 +132,9 @@ const BuildingPage = () => {
       const value = event.target.value
       if(target === 'buildingNotes'){
         setNotes(value)
-      } else if (target === 'buildingLatitude'){
+      } else if (target === 'buildingName'){
+        setName(value)
+      }else if (target === 'buildingLatitude'){
         setLat(value)
       } else if (target === 'buildingLongitude'){
         setLong(value)
@@ -161,8 +165,8 @@ const BuildingPage = () => {
           }
         </Form.Group>
 
+        <FormItem editable={editable} id="buildingName" label="Building Name" value={name} onChange={onChange}/>
         <FormItem editable={editable} id="buildingNotes" label="Building Notes" value={notes} onChange={onChange}/>
-        
         
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCard editable={editable} id="buildingNumber" label="Number" value={number} onChange={onChange} />
