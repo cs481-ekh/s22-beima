@@ -471,48 +471,48 @@ namespace BEIMA.Backend.Test.MongoService
                 { "name", "TestUser"},
                 { "description", "This is a test" }
             };
-            //Insert building
+            //Insert user
             var insertResult = mongo.InsertUser(doc);
             Assume.That(insertResult, Is.Not.Null);
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
-            //Update building
+            //Update user
             doc.AddRange(new BsonDocument { { "updatedUserField", "123" } });
             var updateResult = mongo.UpdateUser(doc);
             Assert.IsNotNull(updateResult);
         }
 
         [Test]
-        public void ConnectorCreated_GetBuildingGivenInvalidBuildingId_NullReturned()
+        public void ConnectorCreated_GetUserGivenInvalidUserId_NullReturned()
         {
             var mongo = MongoConnector.Instance;
             //This is a valid ObjectId, but this is not in the database
-            var doc = mongo.GetBuilding(ObjectId.GenerateNewId());
+            var doc = mongo.GetUser(ObjectId.GenerateNewId());
             Assert.IsNull(doc);
         }
 
         [Test]
-        public void ConnectorCreated_DeleteInvalidBuilding_FalseReturned()
+        public void ConnectorCreated_DeleteInvalidUser_FalseReturned()
         {
             var mongo = MongoConnector.Instance;
             //This is a valid ObjectId, but this is not in the database
-            var result = mongo.DeleteBuilding(ObjectId.GenerateNewId());
+            var result = mongo.DeleteUser(ObjectId.GenerateNewId());
             Assert.IsFalse(result);
         }
 
         [Test]
-        public void ConnectorCreated_InsertNullBuilding_NullReturned()
+        public void ConnectorCreated_InsertNullUser_NullReturned()
         {
             var mongo = MongoConnector.Instance;
-            var result = mongo.InsertBuilding(null);
+            var result = mongo.InsertUser(null);
             Assert.IsNull(result);
         }
 
         [Test]
-        public void ConnectorCreated_UpdateNullBuilding_NullReturned()
+        public void ConnectorCreated_UpdateNullUser_NullReturned()
         {
             var mongo = MongoConnector.Instance;
-            var result = mongo.UpdateBuilding(null);
+            var result = mongo.UpdateUser(null);
             Assert.IsNull(result);
         }
 
