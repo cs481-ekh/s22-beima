@@ -1,17 +1,13 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
-using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
-using BEIMA.Backend.Test.StorageService;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
