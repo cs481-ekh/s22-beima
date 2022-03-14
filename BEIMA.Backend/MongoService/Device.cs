@@ -88,7 +88,7 @@ namespace BEIMA.Backend.MongoService
         [BsonElement("files")]
         public List<DeviceFile> Files { get; set; }
 
-        [BsonElement("photo")]
+        [BsonElement("photos")]
         public DeviceFile Photo { get; set; }       
 
         /// <summary>
@@ -175,6 +175,15 @@ namespace BEIMA.Backend.MongoService
         public void AddField(string key, string value)
         {
             Fields.Add(key, value);
+        }
+
+        /// <summary>
+        /// Sets the device's fields to the newFields object
+        /// </summary>
+        /// <param name="newFields">New device fields</param>
+        public void SetFields(Dictionary<string,string> newFields)
+        {
+            Fields = newFields ??= new Dictionary<string,string>();
         }
 
         /// <summary>

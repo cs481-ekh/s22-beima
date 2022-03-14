@@ -96,7 +96,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 data.Location.Latitude,
                 data.Location.Longitude
             );
-            device.Fields = data.Fields;
+            device.SetFields(data.Fields);
 
             // Check if there is a new photo
             var updatePhoto = reqForm.Files.Any(file => file.Name == "photos");
