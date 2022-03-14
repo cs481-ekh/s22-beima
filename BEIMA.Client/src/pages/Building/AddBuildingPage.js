@@ -10,6 +10,7 @@ const AddBuildingPage = () => {
   // this will be replaced with API call based on selected device type to get the fields
   const mandatoryBuildingFields = {
     "Name": "",
+    "Number": "",
     "Longitude": "",
     "Latitude": "",
     "Notes": ""
