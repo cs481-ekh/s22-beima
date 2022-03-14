@@ -4,6 +4,7 @@
     "password": String,
     "firstName": String,
     "lastName": String,
+    "role": String,
     "lastModified": {
         "date": Date,
         "user": String

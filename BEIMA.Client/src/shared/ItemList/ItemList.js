@@ -41,17 +41,14 @@ const LoadingItemList = () => {
  * @param RenderItem
  * @returns html
  */
-const Item = ({item, RenderItem}) => {
+const Item = ({item, RenderItem, isDeviceList}) => {
   const [visable, setVisibility] = useState(false);
   let navigate = useNavigate();
 
   return (
     <div className={styles.item}>
       <div className={styles.row}> 
-        {item.deviceTag ?
-          <div className={styles.itemName}>{item.deviceTag} - {"<Device Type Name>"} - {"<Building Name>"}</div>
-          : <div className={styles.itemName}>{item.name}</div>
-        }
+        {isDeviceList ? <div className={styles.itemName}>{item.deviceTag} - {"<Device Type Name>"} - {"<Building Name>"}</div> : <div className={styles.itemName}>{item.name}</div>}
         <MdMoreHoriz color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/>
       </div>
 
