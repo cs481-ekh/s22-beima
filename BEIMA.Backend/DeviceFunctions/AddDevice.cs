@@ -7,6 +7,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.Net;
@@ -46,6 +47,7 @@ namespace BEIMA.Backend.DeviceFunctions
             var reqForm = await req.ReadFormAsync();
 
             Device device;
+            var mongo = MongoDefinition.MongoInstance;
             try
             {
                 var data = JsonConvert.DeserializeObject<AddDeviceRequest>(reqForm["data"]);
@@ -67,7 +69,16 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                device.SetFields(data.Fields);           
+                // Check that each field is a valid device type field.
+                var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
+                foreach (var field in data.Fields)
+                {
+                    if (!deviceType.Fields.Contains(field.Key))
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
+                }
+                device.Fields = data.Fields;
             }
             catch (Exception)
             {
@@ -86,7 +97,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 {
                     var fileUid = await _storage.PutFile(file);
                     device.AddFile(fileUid, file.FileName);
-                }                
+                }
             }
 
             // TODO: Use actual user.
@@ -101,7 +112,6 @@ namespace BEIMA.Backend.DeviceFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
             var deviceDocument = device.GetBsonDocument();
             var id = mongo.InsertDevice(deviceDocument);
 

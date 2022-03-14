@@ -11,6 +11,34 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class DeviceFT : FunctionalTestBase
     {
+        private string? _deviceTypeId;
+        private string? _deviceTypeFieldUuid;
+
+        [OneTimeSetUp]
+        public async Task OneTimeSetUp()
+        {
+            var deviceTypeList = await TestClient.GetDeviceTypeList();
+            foreach (var deviceType in deviceTypeList)
+            {
+                if (deviceType?.Id is not null)
+                {
+                    await TestClient.DeleteDeviceType(deviceType.Id);
+                }
+            }
+            _deviceTypeId = await TestClient.AddDeviceType(
+                new DeviceTypeAdd
+                {
+                    Description = "Generic device type.",
+                    Name = "Generic",
+                    Notes = "Device type for generic devices.",
+                    Fields = new List<string>
+                    {
+                        "GenericField",
+                    },
+                });
+            _deviceTypeFieldUuid = (await TestClient.GetDeviceType(_deviceTypeId)).Fields?.Keys.Single();
+        }
+
         [SetUp]
         public async Task SetUp()
         {
@@ -55,7 +83,11 @@ namespace BEIMA.Backend.FT
             var device = new Device
             {
                 DeviceTag = "A-2",
-                DeviceTypeId = "abcd1234abcd1234abcd1234",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
                 Location = new Location
                 {
                     BuildingId = "111111111111111111111111",
@@ -93,8 +125,11 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Location?.Longitude, Is.EqualTo(device.Location.Longitude));
             Assert.That(getDevice.Location?.Latitude, Is.EqualTo(device.Location.Latitude));
 
+            Assert.That(getDevice.Fields?.Single().Key, Is.EqualTo(device.Fields.Single().Key));
+            Assert.That(getDevice.Fields?.Single().Value, Is.EqualTo(device.Fields.Single().Value));
+
             // Cleanup
-            if(getDevice.Id != null)
+            if (getDevice.Id != null)
             {
                 await TestClient.DeleteDevice(getDevice.Id);
             }
@@ -109,7 +144,11 @@ namespace BEIMA.Backend.FT
                 new Device
                 {
                     DeviceTag = "A-2",
-                    DeviceTypeId = "192830495728394823103456",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
                     Location = new Location
                     {
                         BuildingId = "192830495728394829103986",
@@ -126,7 +165,11 @@ namespace BEIMA.Backend.FT
                 new Device
                 {
                     DeviceTag = "B-1",
-                    DeviceTypeId = "902830495728394829103456",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
                     Location = new Location
                     {
                         BuildingId = "192831695728394829103456",
@@ -143,7 +186,11 @@ namespace BEIMA.Backend.FT
                 new Device
                 {
                     DeviceTag = "C-3",
-                    DeviceTypeId = "192831195728394829103456",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
                     Location = new Location
                     {
                         BuildingId = "192830495728214829103456",
@@ -190,6 +237,9 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.LastModified, Is.Not.Null);
                 Assert.That(device.LastModified?.Date, Is.Not.Null);
                 Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
+
+                Assert.That(device.Fields?.Single().Key, Is.EqualTo(expectedDevice.Fields?.Single().Key));
+                Assert.That(device.Fields?.Single().Value, Is.EqualTo(expectedDevice.Fields?.Single().Value));
             }
 
             // Cleanup
@@ -201,7 +251,7 @@ namespace BEIMA.Backend.FT
                 }
             }
         }
-        
+
         [Test]
         public async Task DeviceInDatabase_DeleteDevice_DeviceDeletedSuccessfully()
         {
@@ -209,7 +259,11 @@ namespace BEIMA.Backend.FT
             var device = new Device
             {
                 DeviceTag = "D-4",
-                DeviceTypeId = "473830495728394823103456",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
                 Location = new Location
                 {
                     BuildingId = "a19830495728394829103986",
@@ -234,7 +288,7 @@ namespace BEIMA.Backend.FT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
-        
+
         [Test]
         public async Task DeviceInDatabase_UpdateDevice_ReturnsUpdatedDevice()
         {
@@ -242,7 +296,11 @@ namespace BEIMA.Backend.FT
             var origDevice = new Device
             {
                 DeviceTag = "E-6",
-                DeviceTypeId = "abc830495728312323103456",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
                 Location = new Location
                 {
                     BuildingId = "cab830495728394829103986",
@@ -285,9 +343,12 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedDevice.Location?.Latitude, Is.EqualTo(updateItem.Location?.Latitude));
             Assert.That(updatedDevice.Location?.Longitude, Is.EqualTo(updateItem.Location?.Longitude));
 
+            Assert.That(updatedDevice.Fields?.Single().Key, Is.EqualTo(updateItem.Fields?.Single().Key));
+            Assert.That(updatedDevice.Fields?.Single().Value, Is.EqualTo(updateItem.Fields?.Single().Value));
+
             // Cleanup
             await TestClient.DeleteDevice(deviceId);
-            
+
         }
     }
 }
