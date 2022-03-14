@@ -30,7 +30,7 @@ namespace BEIMA.Backend.Test.MongoService
         {
             var mongo = MongoConnector.Instance;
             var result = mongo.IsConnected();
-            Assert.IsTrue(result);
+            Assert.That(result, Is.True);
         }
         #endregion
 
@@ -106,7 +106,7 @@ namespace BEIMA.Backend.Test.MongoService
             {
                 deleteResult = mongo.DeleteDevice((ObjectId)insertResult);
             }
-            Assert.IsTrue(deleteResult);
+            Assert.That(deleteResult, Is.True);
         }
 
         [Test]
@@ -225,7 +225,7 @@ namespace BEIMA.Backend.Test.MongoService
                 deleteResult = mongo.DeleteDeviceType((ObjectId)insertResult);
                 Assert.IsNull(mongo.GetDeviceType((ObjectId)insertResult));
             }
-            Assert.IsTrue(deleteResult);
+            Assert.That(deleteResult, Is.True);
         }
 
         [Test]
@@ -280,6 +280,124 @@ namespace BEIMA.Backend.Test.MongoService
             var result = mongo.UpdateDeviceType(null);
             Assert.IsNull(result);
         }
+        #endregion
+
+        #region Building Tests
+
+        [Test]
+        public void ConnectorCreated_GetBuildingGivenValidBuildingId_BuildingDocumentReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            var doc = new BsonDocument {
+                { "name", "TestBuilding"},
+                { "description", "This is a test" }
+            };
+            var insertResult = mongo.InsertBuilding(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Test (retrieve the document)
+            var retrievedDoc = mongo.GetBuilding((ObjectId)doc["_id"]);
+            Assert.IsNotNull(retrievedDoc);
+            Assert.That(retrievedDoc, Is.TypeOf(typeof(BsonDocument)));
+        }
+
+        [Test]
+        public void ConnectorCreated_GetAllBuildings_BuildingDocumentListReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            var doc = new BsonDocument {
+                { "name", "TestBuilding"},
+                { "description", "This is a test" }
+            };
+            var insertResult = mongo.InsertBuilding(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Test (retrieve all documents)
+            var retrievedDocs = mongo.GetAllBuildings();
+            Assert.IsNotNull(retrievedDocs);
+            Assert.That(retrievedDocs, Is.TypeOf(typeof(List<BsonDocument>)));
+        }
+
+        [Test]
+        public void InsertBuilding_DeleteBuilding_BuildingHasBeenDeleted()
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument {
+                { "name", "TestBuilding"},
+                { "description", "This is a test" }
+            };
+            //Insert building
+            var insertResult = mongo.InsertBuilding(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Delete building
+            bool deleteResult = false;
+            if (insertResult != null)
+            {
+                deleteResult = mongo.DeleteBuilding((ObjectId)insertResult);
+                Assert.IsNull(mongo.GetBuilding((ObjectId)insertResult));
+            }
+            Assert.That(deleteResult, Is.True);
+        }
+
+        [Test]
+        public void InsertBuilding_UpdateBuilding_BuildingHasBeenUpdated()
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument {
+                { "name", "TestBuilding"},
+                { "description", "This is a test" }
+            };
+            //Insert building
+            var insertResult = mongo.InsertBuilding(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Update building
+            doc.AddRange(new BsonDocument { { "updatedBuildingField", "123" } });
+            var updateResult = mongo.UpdateBuilding(doc);
+            Assert.IsNotNull(updateResult);
+        }
+
+        [Test]
+        public void ConnectorCreated_GetBuildingGivenInvalidBuildingId_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var doc = mongo.GetBuilding(ObjectId.GenerateNewId());
+            Assert.IsNull(doc);
+        }
+
+        [Test]
+        public void ConnectorCreated_DeleteInvalidBuilding_FalseReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var result = mongo.DeleteBuilding(ObjectId.GenerateNewId());
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_InsertNullBuilding_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.InsertBuilding(null);
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_UpdateNullBuilding_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.UpdateBuilding(null);
+            Assert.IsNull(result);
+        }
+
         #endregion
     }
 }

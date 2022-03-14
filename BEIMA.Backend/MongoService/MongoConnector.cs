@@ -23,6 +23,7 @@ namespace BEIMA.Backend.MongoService
         private readonly string dbName = Environment.GetEnvironmentVariable("DatabaseName");
         private readonly string deviceCollection = Environment.GetEnvironmentVariable("DeviceCollectionName");
         private readonly string deviceTypeCollection = Environment.GetEnvironmentVariable("DeviceTypeCollectionName");
+        private readonly string buildingCollection = Environment.GetEnvironmentVariable("BuildingCollectionName");
 
         //Singleton design pattern, used to get an instance of the MongoConnector
         public static MongoConnector Instance { get { return instance.Value; } }
@@ -324,6 +325,138 @@ namespace BEIMA.Backend.MongoService
                 return null;
             }
         }
+        #endregion
+
+        #region Building Methods
+
+        /// <summary>
+        /// Gets a Building from the "buildings" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetBuilding(ObjectId objectId)
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
+                return buildings.Find(filter).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Gets all buildings from the "buildings" collection.
+        /// </summary>
+        /// <returns>List of all building BsonDocuments</returns>
+        public List<BsonDocument> GetAllBuildings()
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Empty;
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
+                var docs = buildings.Find(filter).ToList();
+                return docs;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Inserts a building into the "buildings" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed building document</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertBuilding(BsonDocument doc)
+        {
+            CheckIsConnected();
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
+                buildings.InsertOne(doc);
+                return (ObjectId)doc["_id"];
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Deletes from the "buildings" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteBuilding(ObjectId objectId)
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
+                var result = buildings.DeleteOne(filter);
+                return result.DeletedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Updates a building in the "buildings" collection, given a fully formed updated building.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>true if successful, false if unsuccessful</returns>
+        public BsonDocument UpdateBuilding(BsonDocument doc)
+        {
+            CheckIsConnected();
+
+            try
+            {
+                ObjectId objectId = (ObjectId)doc["_id"];
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+                var db = client.GetDatabase(dbName);
+                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
+                var result = buildings.ReplaceOne(filter, doc);
+                if (result.ModifiedCount > 0)
+                {
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         #endregion
     }
 }
