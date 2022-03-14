@@ -330,12 +330,12 @@ namespace BEIMA.Backend.Test.MongoService
                 { "name", "TestBuilding"},
                 { "description", "This is a test" }
             };
-            //Insert device type
+            //Insert building
             var insertResult = mongo.InsertBuilding(doc);
             Assume.That(insertResult, Is.Not.Null);
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
-            //Delete device type
+            //Delete building
             bool deleteResult = false;
             if (insertResult != null)
             {
@@ -353,12 +353,12 @@ namespace BEIMA.Backend.Test.MongoService
                 { "name", "TestBuilding"},
                 { "description", "This is a test" }
             };
-            //Insert device type
+            //Insert building
             var insertResult = mongo.InsertBuilding(doc);
             Assume.That(insertResult, Is.Not.Null);
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
-            //Update device type
+            //Update building
             doc.AddRange(new BsonDocument { { "updatedBuildingField", "123" } });
             var updateResult = mongo.UpdateBuilding(doc);
             Assert.IsNotNull(updateResult);
