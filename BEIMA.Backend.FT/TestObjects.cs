@@ -8,7 +8,7 @@ namespace BEIMA.Backend.FT
     {
         public class Device
         {
-            [JsonProperty(PropertyName = "_id")]
+            [JsonProperty(PropertyName = "id")]
             public string? Id { get; set; }
 
             [JsonProperty(PropertyName = "deviceTag")]
@@ -18,7 +18,7 @@ namespace BEIMA.Backend.FT
             public string? DeviceTypeId { get; set; }
 
             [JsonProperty(PropertyName = "fields")]
-            public Dictionary<string, object>? Fields;
+            public Dictionary<string, string>? Fields;
 
             [JsonProperty(PropertyName = "lastModified")]
             public LastModified? LastModified { get; set; }
