@@ -88,7 +88,7 @@ namespace BEIMA.Backend.MongoService
         [BsonElement("files")]
         public List<DeviceFile> Files { get; set; }
 
-        [BsonElement("photos")]
+        [BsonElement("photo")]
         public DeviceFile Photo { get; set; }       
 
         /// <summary>

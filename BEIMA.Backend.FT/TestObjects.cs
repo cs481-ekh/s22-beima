@@ -40,6 +40,25 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "yearManufactured")]
             public int? YearManufactured { get; set; }
+
+            [JsonProperty(PropertyName = "deletedFiles")]
+            public List<string>? DeletedFiles { get; set; }
+
+            [JsonProperty(PropertyName = "files")]
+            public List<DeviceFile>? Files { get; set; }
+
+            [JsonProperty(PropertyName = "photo")]
+            public DeviceFile? Photo { get; set; }
+        }
+
+        public class DeviceFile
+        {
+            [JsonProperty(PropertyName = "fileName")]
+            public string? FileName { get; set; }
+            [JsonProperty(PropertyName = "fileUid")]
+            public string? FileUid { get; set; }
+            [JsonProperty(PropertyName = "fileUrl")]
+            public string? Url { get; set; }
         }
 
         public class LastModified
