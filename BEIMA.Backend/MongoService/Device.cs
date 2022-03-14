@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace BEIMA.Backend.MongoService
 {
@@ -53,6 +54,7 @@ namespace BEIMA.Backend.MongoService
     {
         //Properties of a Device object
         [BsonId]
+        [JsonProperty(PropertyName = "_id")]
         public ObjectId Id { get; set; }
 
         [BsonElement("deviceTypeId")]
