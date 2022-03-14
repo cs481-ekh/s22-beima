@@ -34,7 +34,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            var storageProvider = mockStorage.Object;
 
             // Create request
             var data = TestData._testUpdateDeviceRequest;
@@ -68,7 +69,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            var storageProvider = mockStorage.Object;
 
             // Create request
             var data = TestData._testUpdateDeviceRequest;
@@ -107,7 +109,12 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.GetPresignedURL(It.IsAny<string>()))
+                .Returns(Task.FromResult("url"))
+                .Verifiable();
+
+            var storageProvider = mockStorage.Object;
 
             // Create request
             var data = TestData._testUpdateDeviceRequest;

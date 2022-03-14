@@ -2,6 +2,7 @@
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
 using BEIMA.Backend.Test.StorageService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -29,7 +30,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            var storageProvider = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -56,7 +58,12 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.DeleteFile(It.IsAny<string>()))
+                .Returns(Task.FromResult(true))
+                .Verifiable();
+
+            var storageProvider = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -78,6 +85,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var device = new Device(new ObjectId(testId), new ObjectId("12341234abcdabcd43214321"), "A-3", "Generic Inc.", "1234", "abcd1234", 2004, "Some notes.");
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
             device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
+            device.AddFile("uid", "name");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.IsAny<ObjectId>()))
@@ -89,10 +97,12 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.DeleteFile(It.IsAny<string>()))
+                .Returns(Task.FromResult(true))
+                .Verifiable();
+
+            var storageProvider = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.POST);
             var logger = (new LoggerFactory()).CreateLogger("Testing");

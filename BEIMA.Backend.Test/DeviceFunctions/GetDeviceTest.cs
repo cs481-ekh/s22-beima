@@ -35,10 +35,8 @@ namespace BEIMA.Backend.Test
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Setup storage provider.
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            var storageProvider = mockStorage.Object;
 
             // Set up the http request.
             var request = CreateHttpRequest(RequestMethod.GET);
@@ -68,10 +66,8 @@ namespace BEIMA.Backend.Test
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            var storageProvider = serviceProivder.GetRequiredService<IStorageProvider>();
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            var storageProvider = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -101,14 +97,20 @@ namespace BEIMA.Backend.Test
             dbDevice.SetLocation(ObjectId.GenerateNewId(), "notes", "0", "1");
             dbDevice.SetLastModified(DateTime.UtcNow, "Anonymous");
 
-            // Setup storage provider.
+            // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(dbDevice.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var storageProvider = StorageProviderExtensions.CreateAzureStorageProvider();
+            // Setup storage provider.
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.GetPresignedURL(It.IsAny<string>()))
+                .Returns(Task.FromResult("url"))
+                .Verifiable();
+
+            var storageProvider = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
