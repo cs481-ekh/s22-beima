@@ -7,6 +7,7 @@ import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 import GetDeviceType from '../../services/GetDeviceType.js';
+import AddDevice from '../../services/AddDevice.js';
 
 
 const AddDevicePage = () => {
@@ -28,9 +29,9 @@ const AddDevicePage = () => {
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
-  const [fullDeviceJSON, setFullDeviceJSON] = useState({});
   const [deviceTypes, setDeviceTypes] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState('Select Device Type');
+  const [selectedDeviceTypeId, setSelectedDeviceTypeId] = useState();
   const [selectedDeviceFields, setSelectedDeviceFields] = useState();
   
   useEffect(() => {
@@ -53,7 +54,7 @@ const AddDevicePage = () => {
     
     let data = deviceTypeData.response.map((item) => { return { name: item.name, id : item.id} });
     
-    return data
+    return data;
   }
   
   /*
@@ -61,66 +62,61 @@ const AddDevicePage = () => {
   * @param the type of device that was selected
   */
   const getFieldsForTypeId = async (deviceTypeId) => {
+    //console.log(deviceFields);
     const deviceTypeFields = await GetDeviceType(deviceTypeId);
     
-    //change the dropdown text
+    //change the dropdown text and store the fields for their keys
     setSelectedDeviceType(deviceTypeFields.response.name);
     setSelectedDeviceFields(deviceTypeFields.response.fields);
+    setSelectedDeviceTypeId(deviceTypeId);
     
-    let allDeviceFields = mandatoryDeviceFields;
-
+    //retireve the values from teh response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
     
+    //append the fields to the current list
     for(let i = 0; i < fieldLabels.length; i++) {
-      allDeviceFields[fieldLabels[i]] = "";
+      deviceFields[fieldLabels[i]] = "";
     }
 
-    setDeviceFields(allDeviceFields);
-    setErrors(allDeviceFields);
+    //onsole.log(deviceFields);
+    //add them to the forms and errors list
+    setDeviceFields(deviceFields);
+    setErrors({});
   }
   
+  /*
+  * converts the user friendly field name to the form needed by the database
+  * in cases where the name needed is another key it will retrieve it from stored values
+  * @param the form element's name
+  * @return either the converted string or an object to get the converted string/stored value
+  */
   function convertToDbFriendly(formName) {
     let result = {};
-    
-    switch(formName){
-      case 'Building':
-        result = 'buildingId';
-        break;
-        
-      case 'Device Tag':
-        result = 'deviceTag';
-        break;
-        
-      case 'Model Number':
-        result = 'modelNum';
-        break;
-        
-      case 'Serial Number':
-        result = 'serialNum';
-        break;
-        
-      case 'Year Manufactured':
-        result = 'yearManufactured';
-        break;
-      
-      //intentional fallthrough
-      case 'Latitude':
-      case 'Longitude':
-        result = {'location': {'type' : formName.toLowerCase(formName)}};
-        break;
-        
-      default:
-        if(Object.values(selectedDeviceFields).includes(formName)){
-          let dbId = Object.keys(selectedDeviceFields).find(key => selectedDeviceFields[key] === formName);
-        result = {'fieldDbId': dbId};
-        
-        } else {
-          result = formName.toLowerCase(formName);
-        }
-        
-        break;
+    /*TODO work in building to get the building ID for insertion*/
+    if(Object.values(selectedDeviceFields).includes(formName)){
+      let dbId = Object.keys(selectedDeviceFields).find(key => selectedDeviceFields[key] === formName);
+      result = {'fieldDbId': dbId};
+    } else if (formName == 'Latitude' || formName == 'Longitude') {
+      result = {'location': {'type' : formName.toLowerCase(formName)}};
+    } else {
+      //make first letter lower case
+      let dbKey = formName[0].toLowerCase() + formName.slice(1);
+      dbKey = dbKey.replace('Number', 'Num');
+      //remove spaces
+      dbKey = dbKey.replace(/\s+/g, '');
+      result = dbKey;
     }
+    
     return result;
+  }
+  
+  /*
+  * updates the values in state when the user types
+  * @param inputEvent the even fired when the user types
+  */
+  function updateFieldState(inputEvent){
+    deviceFields[inputEvent.target.name] = inputEvent.target.value;
+    setDeviceFields(deviceFields);
   }
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
@@ -132,9 +128,10 @@ const AddDevicePage = () => {
     }
     
     let formFields = addButtonEvent.target.form.elements;
-    let fieldValues = {fields: {}, location: {}};
+    
+    let dbJson = {fields: {}, location: { 'notes' : ""}};
     let newErrors = {};
-
+    
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let fieldNames = Object.keys(deviceFields);
@@ -150,14 +147,13 @@ const AddDevicePage = () => {
       if(fieldNames.includes(formName)){
         let formJSON = '';
         let jsonKey = convertToDbFriendly(formName);
-        
         if(!(typeof jsonKey == 'object')){
-          formJSON =  {[jsonKey] : formFields[i].value};
-          Object.assign(fieldValues, formJSON);
+          formJSON =  {[jsonKey] : deviceFields[formName]};
+          Object.assign(dbJson, formJSON);
         } else if ('fieldDbId' in jsonKey){
-          fieldValues.fields[jsonKey.fieldDbId] = formFields[i].value;
+          dbJson.fields[jsonKey.fieldDbId] = formFields[i].value;
         } else if ('location' in jsonKey){
-          fieldValues.location[jsonKey.location.type] = formFields[i].value;
+          dbJson.location[jsonKey.location.type] = formFields[i].value;
         }
       } else if (formName === "Device Image"){
         setDeviceImage(formFields[i].files[0]);
@@ -167,15 +163,11 @@ const AddDevicePage = () => {
         formFields[i].value = "";
       }
     }
-
-    setDeviceFields(mandatoryDeviceFields);
-    setFullDeviceJSON(fieldValues);
     
     //won't deploy to azure without these until they're used elsewhere
-    
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
-
+    
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
     } else {
@@ -184,7 +176,20 @@ const AddDevicePage = () => {
       for(let i = 0; i < formFields.length; i++){
         formFields[i].value = "";
       }
-      console.log(fullDeviceJSON);
+      
+      /*Need ability to get a building ID, probably a DD on the page*/
+      dbJson.location.buildingId = 'a19830495728394829103986';
+      dbJson.deviceTypeId = selectedDeviceTypeId;
+
+      AddDeviceToDb(dbJson);
+    }
+  }
+
+  const AddDeviceToDb = async (dbJson) => {
+    const addResponse = await AddDevice(dbJson);
+    /*TODO push error to display*/
+    if(!(addResponse.status == 200)){
+      alert('API responded with: ' + addResponse.status + ' ' + addResponse.response);
     }
   }
   
@@ -192,13 +197,13 @@ const AddDevicePage = () => {
     <div className={styles.fieldform}>
       <Card>
         <Card.Body>
-          <Form>
+          <Form >
             <Row className={styles.buttonGroup}>
               <Col>
                 <FilledDropDown dropDownText={selectedDeviceType} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
-                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={(event) => createJSON(event)}>
+                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={createJSON}>
                   Add Device
                 </Button>
               </Col>
@@ -212,7 +217,7 @@ const AddDevicePage = () => {
             <br/>
             <h4>Fields</h4>
             <div>
-              <FormListWithErrorFeedback fields={Object.keys(deviceFields)} errors={errors} />
+              <FormListWithErrorFeedback fields={Object.keys(deviceFields)} errors={errors} changeHandler={updateFieldState}/>
             </div>
           </Form>
         </Card.Body>
