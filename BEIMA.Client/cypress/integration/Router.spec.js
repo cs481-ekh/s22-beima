@@ -39,6 +39,11 @@ describe("Router Doesn't Redirect On Valid Pages", () =>{
     cy.url().should('include', 'deviceTypes/5')
     cy.get('.pageTitle').contains('View Device Type')
   })
+  it('Visit Login Page', () => {
+    cy.visit('http://localhost:3000/login')
+    cy.url().should('include', 'login')
+    cy.get('.pageTitle').contains('Login')
+  })
 })
 
 describe("Router Redirects On Invalid Pages", () => {
