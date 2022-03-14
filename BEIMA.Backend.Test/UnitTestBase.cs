@@ -11,6 +11,9 @@ namespace BEIMA.Backend.Test
     {
         private static string? dbName;
         private static string? devicesName;
+        private static string? deviceTypesName;
+        private static string? buildingsName;
+        private static string? usersName;
 
         class LocalSettings
         {
@@ -47,13 +50,23 @@ namespace BEIMA.Backend.Test
             }
 
             // Prevents the environment variable getting changed when running multiple test classes at the same time
-            if(dbName == null && devicesName == null)
+            if(dbName == null 
+                && devicesName == null
+                && deviceTypesName == null
+                && buildingsName == null
+                && usersName == null)
             {
                 dbName = "beima-test" + Guid.NewGuid().ToString();
                 devicesName = "devices-test" + Guid.NewGuid().ToString();
+                deviceTypesName = "deviceTypes-test" + Guid.NewGuid().ToString();
+                buildingsName = "buildings-test" + Guid.NewGuid().ToString();
+                usersName = "users-test" + Guid.NewGuid().ToString();
             }
             Environment.SetEnvironmentVariable("DatabaseName", dbName);
             Environment.SetEnvironmentVariable("DeviceCollectionName", devicesName);
+            Environment.SetEnvironmentVariable("DeviceTypeCollectionName", deviceTypesName);
+            Environment.SetEnvironmentVariable("BuildingCollectionName", buildingsName);
+            Environment.SetEnvironmentVariable("UserCollectionName", usersName);
         }
 
         [OneTimeTearDown]

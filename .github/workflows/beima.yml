@@ -21,6 +21,7 @@ env:
   AzureContainer: "test-files"
   DeviceTypeCollectionName: deviceTypes
   BuildingCollectionName: buildings
+  UserCollectionName: users
   REACT_APP_API_URL: http://localhost:7071/api/
   Host: '{ "CORS" : "*"}'
   MinioAccessKey: "minioadmin"

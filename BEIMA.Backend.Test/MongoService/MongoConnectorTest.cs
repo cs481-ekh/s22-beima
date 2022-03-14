@@ -399,5 +399,123 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         #endregion
+
+        #region User Tests
+
+        [Test]
+        public void ConnectorCreated_GetUserGivenValidUserId_UserDocumentReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            var doc = new BsonDocument {
+                { "name", "TestUser"},
+                { "description", "This is a test" }
+            };
+            var insertResult = mongo.InsertUser(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Test (retrieve the document)
+            var retrievedDoc = mongo.GetUser((ObjectId)doc["_id"]);
+            Assert.IsNotNull(retrievedDoc);
+            Assert.That(retrievedDoc, Is.TypeOf(typeof(BsonDocument)));
+        }
+
+        [Test]
+        public void ConnectorCreated_GetAllUsers_UserDocumentListReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //Setup (inserting a document)
+            var doc = new BsonDocument {
+                { "name", "TestUser"},
+                { "description", "This is a test" }
+            };
+            var insertResult = mongo.InsertUser(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Test (retrieve all documents)
+            var retrievedDocs = mongo.GetAllUsers();
+            Assert.IsNotNull(retrievedDocs);
+            Assert.That(retrievedDocs, Is.TypeOf(typeof(List<BsonDocument>)));
+        }
+
+        [Test]
+        public void InsertUser_DeleteUser_UserHasBeenDeleted()
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument {
+                { "name", "TestUser"},
+                { "description", "This is a test" }
+            };
+            //Insert user
+            var insertResult = mongo.InsertUser(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Delete user
+            bool deleteResult = false;
+            if (insertResult != null)
+            {
+                deleteResult = mongo.DeleteUser((ObjectId)insertResult);
+                Assert.IsNull(mongo.GetUser((ObjectId)insertResult));
+            }
+            Assert.That(deleteResult, Is.True);
+        }
+
+        [Test]
+        public void InsertUser_UpdateUser_UserHasBeenUpdated()
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument {
+                { "name", "TestUser"},
+                { "description", "This is a test" }
+            };
+            //Insert user
+            var insertResult = mongo.InsertUser(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Update user
+            doc.AddRange(new BsonDocument { { "updatedUserField", "123" } });
+            var updateResult = mongo.UpdateUser(doc);
+            Assert.IsNotNull(updateResult);
+        }
+
+        [Test]
+        public void ConnectorCreated_GetUserGivenInvalidUserId_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var doc = mongo.GetUser(ObjectId.GenerateNewId());
+            Assert.IsNull(doc);
+        }
+
+        [Test]
+        public void ConnectorCreated_DeleteInvalidUser_FalseReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            //This is a valid ObjectId, but this is not in the database
+            var result = mongo.DeleteUser(ObjectId.GenerateNewId());
+            Assert.IsFalse(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_InsertNullUser_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.InsertUser(null);
+            Assert.IsNull(result);
+        }
+
+        [Test]
+        public void ConnectorCreated_UpdateNullUser_NullReturned()
+        {
+            var mongo = MongoConnector.Instance;
+            var result = mongo.UpdateUser(null);
+            Assert.IsNull(result);
+        }
+
+        #endregion
     }
 }
