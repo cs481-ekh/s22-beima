@@ -154,17 +154,17 @@ namespace BEIMA.Backend.MongoService
         /// <exception cref="ArgumentNullException">Throws exception when any of the required fields are null.</exception>
         public BsonDocument GetBsonDocument()
         {
-            CheckNullArgument(DeviceTag, "Device Tag");
-            CheckNullArgument(Manufacturer, "Manufacturer");
-            CheckNullArgument(ModelNum, "Model Number");
-            CheckNullArgument(SerialNum, "Serial Number");
-            CheckNullArgument(YearManufactured, "Year Manufactured");
-            CheckNullArgument(Notes, "Notes");
-            CheckNullArgument(Location, "Location");
-            CheckNullArgument(LastModified, "Last Modified");
-            CheckNullArgument(Fields, "Fields");
-            CheckNullArgument(Files, "Files");
-            CheckNullArgument(Photo, "Photo");
+            CheckNullArgument(DeviceTag, nameof(DeviceTag));
+            CheckNullArgument(Manufacturer, nameof(Manufacturer));
+            CheckNullArgument(ModelNum, nameof(ModelNum));
+            CheckNullArgument(SerialNum, nameof(SerialNum));
+            CheckNullArgument(YearManufactured, nameof(YearManufactured));
+            CheckNullArgument(Notes, nameof(Notes));
+            CheckNullArgument(Location, nameof(Location));
+            CheckNullArgument(LastModified, nameof(LastModified));
+            CheckNullArgument(Fields, nameof(Fields));
+            CheckNullArgument(Files, nameof(Files));
+            CheckNullArgument(Photo, nameof(Photo));
 
             return this.ToBsonDocument();
         }
