@@ -7,6 +7,7 @@ import { TiDelete } from "react-icons/ti";
 import updateDevice from "../../services/UpdateDevice.js";
 import deleteDevice from "../../services/DeleteDevice.js";
 import getDevice from "../../services/GetDevice.js";
+import * as Constants from '../../Constants';
 
 const DevicePage = () => {
   const [setPageName] = useOutletContext();
@@ -60,7 +61,7 @@ const DevicePage = () => {
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
-            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange}/>
+            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
           </Form.Group>                
         </Card.Body>
       </Card>
@@ -81,7 +82,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId={id}>
         <Form.Label><b>{label}</b></Form.Label>
-        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange}/>
+        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
       </Form.Group>
     )
   }
@@ -97,7 +98,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='imageUpload'>
         <Form.Label><b>Upload Device Image</b></Form.Label>
-        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes}/>
+        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
       </Form.Group>
     )
   }
@@ -119,7 +120,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='fileUpload'>
         <Form.Label><b>Upload Documents</b></Form.Label>
-        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)}/>
+        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
       </Form.Group>
     )
   }
@@ -368,7 +369,7 @@ const DevicePage = () => {
         
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCard editable={editable} id="deviceBuildingId" label="Building" value={buildingId} onChange={onChange}/>
-          <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange}/>
+          <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange} />
           <FormCard editable={editable} id="deviceLongitude" label="Longitude" value={long} onChange={onChange}/>
         </div>
         <FormItem editable={editable} id="locationNotes" label="Location Notes" value={locNotes} onChange={onChange}/>

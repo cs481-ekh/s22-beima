@@ -49,7 +49,7 @@ const DevicesPage = () => {
 
   return (
     <div className={styles.list} id="devicesPageContent">
-      <ItemList list={devices} RenderItem={RenderItem} loading={loading}/>
+      <ItemList list={devices} RenderItem={RenderItem} loading={loading} isDeviceList={true}/>
     </div>
   )
 }
