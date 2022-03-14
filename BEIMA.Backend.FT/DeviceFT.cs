@@ -92,6 +92,12 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Location?.Notes, Is.EqualTo(device.Location.Notes));
             Assert.That(getDevice.Location?.Longitude, Is.EqualTo(device.Location.Longitude));
             Assert.That(getDevice.Location?.Latitude, Is.EqualTo(device.Location.Latitude));
+
+            // Cleanup
+            if(getDevice.Id != null)
+            {
+                await TestClient.DeleteDevice(getDevice.Id);
+            }
         }
 
         [Test]
@@ -185,6 +191,15 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.LastModified?.Date, Is.Not.Null);
                 Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
             }
+
+            // Cleanup
+            foreach (var device in actualDevices)
+            {
+                if (device.Id != null)
+                {
+                    await TestClient.DeleteDevice(device.Id);
+                }
+            }
         }
         
         [Test]
@@ -269,6 +284,10 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedDevice.Location?.Notes, Is.EqualTo(updateItem.Location?.Notes));
             Assert.That(updatedDevice.Location?.Latitude, Is.EqualTo(updateItem.Location?.Latitude));
             Assert.That(updatedDevice.Location?.Longitude, Is.EqualTo(updateItem.Location?.Longitude));
+
+            // Cleanup
+            await TestClient.DeleteDevice(deviceId);
+            
         }
     }
 }
