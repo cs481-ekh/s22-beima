@@ -1,9 +1,8 @@
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './BuildingPage.module.css'
-import { Form, Card, Button, FormControl, Image} from "react-bootstrap";
-import { TiDelete } from "react-icons/ti";
+import { Form, Card, Button, FormControl } from "react-bootstrap";
 import * as Constants from '../../Constants';
 
 const BuildingPage = () => {
@@ -103,8 +102,6 @@ const BuildingPage = () => {
     const [lat, setLat] = useState(building.latitude)
     const [long, setLong] = useState(building.longitude)
     const [notes, setNotes] = useState(building.notes)
-
-    const navigate = useNavigate();
 
     const updateBuildingCall = () => {
       const newBuilding = {
