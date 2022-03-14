@@ -5,6 +5,7 @@ import { useOutletContext } from 'react-router-dom';
 import { Form, Card, Button, FormControl} from "react-bootstrap";
 import { IoAdd } from "react-icons/io5";
 import { v4 as uuidv4 } from 'uuid';
+import * as Constants from '../../Constants';
 
 const DeviceTypePage = () => {
   const [deviceType, setDeviceType] = useState(null)
@@ -72,7 +73,7 @@ const DeviceTypePage = () => {
         <Card.Body >
             <Form.Group className="mb-3" controlId={field}>
               <Form.Label>Field Name</Form.Label>
-              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}/>
+              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}  maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
             </Form.Group>                
           { editable ? 
            <div className={styles.deleteButton}>
@@ -192,12 +193,12 @@ const DeviceTypePage = () => {
 
         <Form.Group className="mb-3" controlId="description">
           <Form.Label><b>Description</b></Form.Label>
-          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} value={description} onChange={onDescriptionChange}/>
+          <Form.Control required as="textarea" rows={3} placeholder="Device Type Description"  disabled={!editable} value={description} onChange={onDescriptionChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
         </Form.Group>
 
         <Form.Group className="mb-3" controlId="notes">
           <Form.Label><b>Notes</b></Form.Label>
-          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} value={notes}  onChange={onNotesChange}/>
+          <Form.Control required as="textarea" rows={1} placeholder="Device Type Notes"  disabled={!editable} value={notes}  onChange={onNotesChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
         </Form.Group>
 
         <Form.Group  className="mb-3">
