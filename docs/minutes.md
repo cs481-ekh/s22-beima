@@ -1,3 +1,44 @@
+## Minutes: 2022-03-15
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 2 Retro:
+### Overall Thoughts
+Very happy with the increased amount of tasks completed.
+We did not meet sprint goal. Remaining tasks are very close
+to being completed that will allow sprint goal to be met however.
+### What went wrong
+Task prioritization could have been better.
+Big pr's could have been split out better.
+Planned to many tasks in the sprint.
+Tasks descriptions could be better.
+Tests were broken on build machine, but worked on vm's
+and personal pc's.
+### What went well
+We doubled the amount of completed tasks.
+The work we are commiting is very good quality.
+Code reviews have been really good.
+### What can be improved
+We should add more columns in the task board to show if a task is blocked.
+Communication can still be improved.
+Frontend tests will be disabled as they will sometimes not work only
+on the build machine.
+### Other notes:
+PR Auther should be the one to close branch.
+We should go back to merging into main instead of a sprint branch.
+We should use tasknumber_description for branch names.
+Reminder to use the chosen pr format message.
+## New Roles:
+Scribe - Ashlyn
+Product Owner - Kenny
+Scrum Master - Joseph
+Dev - Tom
+Dev - Keelan
+
 ## Minutes: 2022-03-10
 ### scribe: Kenny
 ### Attendees:
