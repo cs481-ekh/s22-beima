@@ -28,6 +28,28 @@ sudo apt install nodejs || { echo "Installing NodeJS failed"; exit 1; }
 sudo apt install npm || { echo "Installing npm failed"; exit 1; }
 # Install Azure functions core tools
 npm i -g azure-functions-core-tools@4 || { echo "Installing Azure functions core tools failed"; exit 1; }
+# install axios for http requests
+npm install axios || { echo "Installing axios for http requests failed"; exit 1; }
+# Allow executable for test.sh
+chmod +x test.sh
+# Make Minio directory
+mkdir Minio || { echo "Creating Minio directory failed"; exit 1; }
+# Change directory to Minio
+cd ./Minio || { echo  "Changing directories failed", exit 1; }
+# Download minio server client using wget
+wget -q https://dl.min.io/server/minio/release/linux-amd64/minio || { echo "Download Minio using wget failed"; exit 1; }
+# Set minio server file to allow executing
+chmod +x minio || { echo "Setting minio execute permissions failed"; exit 1; }
+# Make storage directory
+mkdir storage || { echo "Creating storage directory failed"; exit 1; }
+# Change directory to storage
+cd ./storage || { echo  "Changing directories failed", exit 1; }
+# Make files 'bucket' directory
+mkdir files || { echo "Creating files directory failed"; exit 1; }
+# Make test 'bucket' directory
+mkdir test-files || { echo "Creating test-files directory failed"; exit 1; }
+# Change back to root directory
+cd ../../
 # Change directory to BEIMA.Backend
 cd ./BEIMA.Backend || { echo "Changing directories failed"; exit 1; }
 # Build all backend projects 

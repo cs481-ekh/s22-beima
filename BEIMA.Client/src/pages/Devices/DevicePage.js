@@ -1,9 +1,13 @@
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DevicePage.module.css'
 import { Form, Card, Button, FormControl, Image} from "react-bootstrap";
 import { TiDelete } from "react-icons/ti";
+import updateDevice from "../../services/UpdateDevice.js";
+import deleteDevice from "../../services/DeleteDevice.js";
+import getDevice from "../../services/GetDevice.js";
+import * as Constants from '../../Constants';
 
 const DevicePage = () => {
   const [setPageName] = useOutletContext();
@@ -16,78 +20,30 @@ const DevicePage = () => {
   useEffect(() => {
     setPageName('View Device')
   },[setPageName])
-  
-  const mockDeviceCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const result = {
-      deviceId: '43adx',
-      deviceTypeId: '54',
-      deviceTag: 'Battery',
-      manufacturer: 'Tesla',
-      modelNum: '1231dx',
-      serialNum: '423dss',
-      yearManufactured: 2022,
-      notes: 'It is very heavy',
-      location: {
-        buildingId: 'Student Union Building',
-        notes: "",
-        latitude: '43.60149984813998',
-        longitude: '-116.2013672986418'
-      },
-      fields: {
-        customFieldUid1: 'value1',
-        customFieldUid2: 'value2',
-        customFieldUid3: 'value3'
-      }
-    }
-    return result
-  }
 
-  const mockDeviceImageCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const url = 'https://cs482storage.blob.core.windows.net/documents/EAStest_600x300.jpg?sp=r&st=2022-02-27T01:10:39Z&se=2022-09-10T08:10:39Z&sv=2020-08-04&sr=b&sig=PuJcp%2BDi0wnAZkLZuyt23Bse92vAUaY56Z3v%2F1AneIA%3D'
-    return url
-  }
-
-  const mockDeviceDocumentsCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const docs = ['fileA', 'fileB', 'fileC']
-    return docs
-  }
+  const { id } = useParams();
 
   const mockDeviceTypeCall = async(docId) => {
     const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
     await sleep(500)
-    const type = {
-      deviceTypeId: 54,
-      name: `Test Item Type #32`,
-      description: "The FitnessGram PACER Test is a multistage aerobic capacity test that progressively gets more difficult as it continues.",
-      notes: "There are no notes",
-      fields: {
-        customFieldUid1: "Dimensions",
-        customFieldUid2: "Weight",
-        customFieldUid3: "Color",
-      }
-    }
+    const type = {}
     return type
   }
-
+  
   useEffect(() => {
     const loadData = async() => {
-      const [device, image, documents] = await Promise.all([mockDeviceCall(), mockDeviceImageCall(), mockDeviceDocumentsCall()])
-      const deviceType = await mockDeviceTypeCall(device.deviceId)
+      let deviceCall = await getDevice(id);
+      const device = deviceCall.response;
+      const deviceType = await mockDeviceTypeCall(device.deviceTypeId)
   
       setDevice(device)
-      setImage(image)
-      setDocuments(documents)
+      setImage('')
+      setDocuments([])
       setDeviceType(deviceType)
       setLoading(false)
     }
-   loadData()
-  },[])
+   loadData();
+  },[id]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -105,7 +61,7 @@ const DevicePage = () => {
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
-            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange}/>
+            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
           </Form.Group>                
         </Card.Body>
       </Card>
@@ -126,7 +82,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId={id}>
         <Form.Label><b>{label}</b></Form.Label>
-        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange}/>
+        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
       </Form.Group>
     )
   }
@@ -142,7 +98,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='imageUpload'>
         <Form.Label><b>Upload Device Image</b></Form.Label>
-        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes}/>
+        <Form.Control type="file" multiple={false} onChange={onImageChange} accept={filetypes} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
       </Form.Group>
     )
   }
@@ -164,7 +120,7 @@ const DevicePage = () => {
     return (
       <Form.Group className="mb-3" controlId='fileUpload'>
         <Form.Label><b>Upload Documents</b></Form.Label>
-        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)}/>
+        <Form.Control type="file" multiple={true} ref={ref} onChange={(event) => docChange(event)} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
       </Form.Group>
     )
   }
@@ -205,6 +161,8 @@ const DevicePage = () => {
   const RenderItem = ({device, setDevice, deviceType, image, setImage, documents, setDocuments}) => {
     const [editable, setEditable] = useState(false)
     
+    const [deviceID] = useState(device._id)
+    const [deviceTypeID] = useState(device.deviceTypeId)
     const [tag, setTag] = useState(device.deviceTag)
     const [manufacturer, setManufacturer] = useState(device.manufacturer)
     const [modelNum, setModelNum] = useState(device.modelNum)
@@ -224,22 +182,25 @@ const DevicePage = () => {
     const [docCopy, setDocCopy] = useState(documents)
     const [addedDocs, setAddedDocs] = useState([])
     const [removedDocs, setRemovedDocs] = useState([])
+    const navigate = useNavigate();
 
-    const submit = () => {
+    const updateDeviceCall = () => {
       const newDevice = {
-        tag:tag,
+        _id:deviceID,
+        deviceTypeId:deviceTypeID,
+        deviceTag:tag,
         manufacturer:manufacturer,
         modelNum:modelNum,
         serialNum:serialNum,
         yearManufactured:yearManufactured,
         notes:notes,
-        location: {
+        fields:fields,
+        location:{
           buildingId: buildingId,
           notes: locNotes,
           latitude: lat,
           longitude: long
-        },
-        fields : fields
+        }
       }
 
       const newImage = imageCopy
@@ -248,11 +209,17 @@ const DevicePage = () => {
       const delDocs = removedDocs
 
       // Hit endpoints here
-      console.log(newDevice)
+      updateDevice(newDevice);
       console.log(newImage)
       console.log(docs)
       console.log(newDocs)
       console.log(delDocs)
+      setEditable(false)
+    }
+
+    const deleteDeviceCall = (id) => {
+      deleteDevice(id);
+      navigate('/devices')
     }
 
     const cancel = () => {      
@@ -345,15 +312,18 @@ const DevicePage = () => {
     return (
       <Form className={styles.form}>
         <Form.Group className="mb-3">
+          <Button variant="danger" id="deletebtn" onClick={() => deleteDeviceCall(id)} className={styles.deleteButton}>
+              Delete Device
+          </Button>
           {editable ? 
-           <div className={styles.buttonRow}>
-              <Button id="savebtn" onClick={submit}>
+          <div className={styles.buttonRow}>
+              <Button id="savebtn" onClick={updateDeviceCall}>
                 Save
               </Button>
               <Button variant="secondary" id="cancelbtn" onClick={cancel}>
                 Cancel
               </Button>
-           </div>
+          </div>
           : 
             <Button variant="primary" id="editbtn" onClick={() => setEditable(true)}>
               Edit
@@ -368,7 +338,9 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
+              { imageCopy !== '' ?
               <Image src={imageCopy} fluid/>
+              : "No image for device"}
             </Card.Body>
           </Card>
         </Form.Group>
@@ -381,7 +353,9 @@ const DevicePage = () => {
         </Form.Group>
 
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
-          {docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )}
+          { docCopy.length > 0 ?
+          docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )
+          : "No documents for device"}
           {addedDocs.map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )}
         </div>
 
@@ -395,7 +369,7 @@ const DevicePage = () => {
         
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCard editable={editable} id="deviceBuildingId" label="Building" value={buildingId} onChange={onChange}/>
-          <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange}/>
+          <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange} />
           <FormCard editable={editable} id="deviceLongitude" label="Longitude" value={long} onChange={onChange}/>
         </div>
         <FormItem editable={editable} id="locationNotes" label="Location Notes" value={locNotes} onChange={onChange}/>
@@ -404,13 +378,15 @@ const DevicePage = () => {
           <Form.Label><b>Fields</b></Form.Label>
         </Form.Group>
 
-        <div className={styles.fields}>
+        <div className={styles.fields} id="fields">
           <FormCard editable={editable} id="deviceTag" label="Tag" value={tag} onChange={onChange}/>
           <FormCard editable={editable} id="deviceModelNumber" label="Model Number" value={modelNum} onChange={onChange}/>
           <FormCard editable={editable} id="deviceSerialNumber" label="Serial Number" value={serialNum} onChange={onChange}/>
           <FormCard editable={editable} id="deviceManufacturer" label="Manufacturer" value={manufacturer} onChange={onChange}/>
           <FormCard editable={editable} id="deviceYearManufactured" label="Year Manufactured" value={yearManufactured} onChange={onChange}/>
-          {Object.keys(deviceType.fields).map((key, i) => <FormCard key={i} editable={editable} id={key} label={deviceType.fields[key]} value={fields[key]} onChange={onCustomFieldChange}/>)}
+          { Object.keys(deviceType).length > 0 ?
+          Object.keys(deviceType.fields).map((key, i) => <FormCard key={i} editable={editable} id={key} label={deviceType.fields[key]} value={fields[key]} onChange={onCustomFieldChange}/>)
+          : null}
         </div>
       </Form>
     )
@@ -419,7 +395,7 @@ const DevicePage = () => {
   return (
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${device.deviceTag}:${device.deviceId}`}
+        title={loading ? 'Loading' : `${device.deviceTag} - <Device Type Name> - <Building Name>`}
         RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
         loading={loading}
         route="/devices"

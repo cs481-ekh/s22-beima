@@ -10,8 +10,8 @@ const API_URL = process.env.REACT_APP_API_URL;
 export default async function getDevice(deviceId) {
   //performs the get and returns the data or error
   const dbCall = await axios.get(API_URL + "device/" + deviceId).catch(function (error) {
-      if (error.response) {
-        return error.response;
+    if (error.response) {
+      return error.response;
     }
   });
 

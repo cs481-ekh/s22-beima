@@ -1,4 +1,7 @@
-﻿namespace BEIMA.Backend.Test
+﻿using BEIMA.Backend.Models;
+using Newtonsoft.Json;
+
+namespace BEIMA.Backend.Test
 {
     public static class TestData
     {
@@ -37,5 +40,64 @@
                 "\"yearManufactured\": 2004" +
             "}";
 
+        public const string _testDeviceType =
+            "{" +
+                "\"name\": \"Boiler\"," +
+                "\"description\": \"Device type for boilers\"," +
+                "\"notes\": \"Some notes.\"," +
+                "\"fields\": [" +
+                    "\"MaxTemperature\"," +
+                    "\"MinTemperature\"," +
+                    "\"Capacity\"" +
+                "]" +
+            "}";
+
+        public const string _testUpdateDeviceType =
+            "{" +
+                "\"name\": \"Boiler\"," +
+                "\"description\": \"Device type for boilers\"," +
+                "\"notes\": \"Some more notes.\"," +
+                "\"fields\": {" +
+                    "\"533ba994-352d-497e-a827-ab78314405a8\":\"MaxTemperature\"," +
+                    "\"7331073d-95bb-4940-9643-cdbbcdc3fdc1\":\"MinTemperature\"," +
+                    "\"8f3f9a48-53d0-492a-98f7-c770a7736aec\":\"BoilerCapacity\"" +
+                "}," +
+                "\"newFields\": [" +
+                    "\"AddedField\"" +
+                "]" +
+            "}";
+
+        public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
+        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
+
+
+        private static string GenerateAddDeviceNoLocation()
+        {
+            var request = new AddDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = 1880,
+                Notes = "notes",
+
+            };
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateUpdateDeviceNoLocation()
+        {
+            var request = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = 1880,
+                Notes = "notes",
+            };
+            return JsonConvert.SerializeObject(request);
+        }
     }
 }

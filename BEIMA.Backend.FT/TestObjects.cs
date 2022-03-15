@@ -18,7 +18,7 @@ namespace BEIMA.Backend.FT
             public string? DeviceTypeId { get; set; }
 
             [JsonProperty(PropertyName = "fields")]
-            public Dictionary<string, object>? Fields;
+            public Dictionary<string, string>? Fields;
 
             [JsonProperty(PropertyName = "lastModified")]
             public LastModified? LastModified { get; set; }
@@ -40,6 +40,22 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "yearManufactured")]
             public int? YearManufactured { get; set; }
+
+            [JsonProperty(PropertyName = "files")]
+            public List<DeviceFile>? Files { get; set; }
+
+            [JsonProperty(PropertyName = "photo")]
+            public DeviceFile? Photo { get; set; }
+        }
+
+        public class DeviceFile
+        {
+            [JsonProperty(PropertyName = "fileName")]
+            public string? FileName { get; set; }
+            [JsonProperty(PropertyName = "fileUid")]
+            public string? FileUid { get; set; }
+            [JsonProperty(PropertyName = "fileUrl")]
+            public string? Url { get; set; }
         }
 
         public class LastModified
@@ -67,9 +83,43 @@ namespace BEIMA.Backend.FT
 
         }
 
-        public class DeviceType
+        public abstract class DeviceTypeBase
         {
-            // TODO: Add device type testing object
+            [JsonProperty(PropertyName = "_id")]
+            public string? Id { get; set; }
+
+            [JsonProperty(PropertyName = "name")]
+            public string? Name { get; set; }
+
+            [JsonProperty(PropertyName = "description")]
+            public string? Description { get; set; }
+
+            [JsonProperty(PropertyName = "notes")]
+            public string? Notes { get; set; }
+        }
+
+        public class DeviceTypeAdd : DeviceTypeBase
+        {
+            [JsonProperty(PropertyName = "fields")]
+            public List<string>? Fields { get; set; }
+        }
+
+        public class DeviceTypeUpdate : DeviceTypeBase
+        {
+            [JsonProperty(PropertyName = "fields")]
+            public Dictionary<string, string>? Fields { get; set; }
+
+            [JsonProperty(PropertyName = "newFields")]
+            public List<string>? NewFields { get; set; }
+        }
+
+        public class DeviceType : DeviceTypeBase
+        {
+            [JsonProperty(PropertyName = "lastModified")]
+            public LastModified? LastModified { get; set; }
+
+            [JsonProperty(PropertyName = "fields")]
+            public Dictionary<string, string>? Fields { get; set; }
         }
     }
 }

@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using System.Collections.Generic;
 
 namespace BEIMA.Backend.DeviceFunctions
@@ -22,17 +23,17 @@ namespace BEIMA.Backend.DeviceFunctions
         /// <returns>An http response containing the device information.</returns>
         [FunctionName("GetDeviceList")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device_list")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device-list")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device list request.");
 
             var mongo = MongoDefinition.MongoInstance;
             var devices = mongo.GetAllDevices();
-            var dotNetObjList = new List<object>();
+            var dotNetObjList = new List<Device>();
             foreach (var device in devices)
             {
-                var dotNetObj = BsonTypeMapper.MapToDotNetValue(device);
+                var dotNetObj = BsonSerializer.Deserialize<Device>(device);
                 dotNetObjList.Add(dotNetObj);
             }
 

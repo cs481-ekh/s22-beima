@@ -97,8 +97,42 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
-            var deviceBson = (Dictionary<string, object>)((OkObjectResult)response).Value;
-            Assert.That(deviceBson["serialNum"], Is.EqualTo(device.SerialNum));
+            var resDevice = (Device)((OkObjectResult)response).Value;
+
+            Assert.That(resDevice.ModelNum, Is.EqualTo(device.ModelNum));
+            Assert.That(resDevice.Notes, Is.EqualTo(device.Notes));
+        }
+
+        [Test]
+        public async Task ExistingDevice_UpdatesDeviceWithNoLocation_ReturnsOKResponse()
+        {
+            // ARRANGE
+            var testId = "abcdef123456789012345678";
+            var device = new Device(new ObjectId(testId), new ObjectId("12341234abcdabcd43214321"), "A-3", "Generic Inc.", "1234", "abcd1234", 2004, "Some notes.");
+            device.SetLastModified(DateTime.UtcNow, "Anonymous");
+            device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()))
+                  .Returns(device.GetBsonDocument())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var body = TestData._testUpdateDeviceNoLocation;
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = await UpdateDevice.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.IsNotNull(response);
+            Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
+            Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            var resDevice = (Device)((OkObjectResult)response).Value;
+
+            Assert.That(resDevice.ModelNum, Is.EqualTo(device.ModelNum));
+            Assert.That(resDevice.Notes, Is.EqualTo(device.Notes));
         }
     }
 }

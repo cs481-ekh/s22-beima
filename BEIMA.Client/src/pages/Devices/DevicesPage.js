@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import styles from  "./DevicesPage.module.css"
 import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext } from 'react-router-dom';
+import GetDeviceList from "../../services/GetDeviceList";
 
 const DevicesPage = () => {
   const [devices, setDevices] = useState([]);
@@ -12,38 +13,15 @@ const DevicesPage = () => {
     setPageName('Devices')
   },[setPageName])
   
-  const mockCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(1000)
-    let data = []
-    for(let i = 0; i < 5; i++){
-      data.push({
-        _id: i,
-        name: `Test Item #${i}`,
-        deviceType: "Batteries",
-        buildingName: "Student Union Building",
-        serialNumber: "234asfdsa",
-        manufacturer: "Tesla"
-      })
-    }
-    // Map data into format supported by list
-    let mapped = data.map(item => {
-      return {
-        id: item._id,
-        name: item.name,
-        deviceType: item.deviceType,
-        buildingName: item.buildingName,
-        serialNumber: item.serialNumber,
-        manufacturer: item.manufacturer
-      }
-    })
-    return mapped
+  const DeviceListCall = async () => {
+    let data = await GetDeviceList();
+    return data.response;
   }
 
   useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      let devices = await mockCall()
+      let devices = await DeviceListCall();
       setLoading(false)
       setDevices(devices)
     }
@@ -56,19 +34,22 @@ const DevicesPage = () => {
    * @returns html
    */
   const RenderItem = (item) => {
+    // add these back to the returned object when we can call to the buildings and device type DBs
+    // <div>Location: {item.buildingName}</div>
+    //<div>Device Type: {item.deviceType}</div> 
     return (
       <div className={styles.details}>
-        <div>Location: {item.buildingName}</div>
-        <div>Device Type: {item.deviceType}</div> 
         <div>Manufacturer: {item.manufacturer}</div> 
         <div>SerialNumber: {item.serialNumber}</div> 
+        <div>Notes: {item.notes}</div>
+        <div>Last Modified: {item.lastModified}</div> 
       </div>
     )
   }
 
   return (
     <div className={styles.list} id="devicesPageContent">
-      <ItemList list={devices} RenderItem={RenderItem} loading={loading}/>
+      <ItemList list={devices} RenderItem={RenderItem} loading={loading} isDeviceList={true}/>
     </div>
   )
 }
