@@ -15,6 +15,7 @@ import DeviceTypesPage from './pages/DeviceTypes/DeviceTypesPage';
 import DeviceTypePage from './pages/DeviceTypes/DeviceTypePage';
 import AddDevicePage from './pages/Devices/AddDevicePage';
 import AddDeviceTypePage from './pages/DeviceTypes/AddDeviceTypePage';
+import LoginPage from './pages/Authentication/LoginPage';
 import BuildingListPage from './pages/Building/BuildingListPage';
 import AddBuildingPage from './pages/Building/AddBuildingPage';
 import BuildingPage from './pages/Building/BuildingPage';
@@ -28,6 +29,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="login" element={<LoginPage/>}/>
           <Route path="addDevice" element={<AddDevicePage/>}/>
           <Route path="addDeviceType" element={<AddDeviceTypePage/>}/>
           <Route path="devices" element={<DevicesPage/>}/>  
