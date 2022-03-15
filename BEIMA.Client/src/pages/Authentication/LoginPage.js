@@ -21,7 +21,7 @@ const LoginPage = () => {
 
   const ValidateUsername = (username) => {
     let valid = true
-    if(username.length < 8 || username.length > 24){
+    if(username.length < 1){
       valid = false
     }
     return valid
@@ -29,7 +29,7 @@ const LoginPage = () => {
 
   const ValidatePassword = (password) => {
     let valid = true
-    if(password.length < 8 || password.length > 24){
+    if(password.length < 1){
       valid = false
     }
     return valid
@@ -90,7 +90,6 @@ const LoginPage = () => {
               required 
               isInvalid={touched && !validUsername}
               placeholder="Enter Username" 
-              maxLength={24}
               onChange={HandleUsername}
             />
             <Form.Control.Feedback type="invalid">Username must be between 8 and 24 characters.</Form.Control.Feedback>            
@@ -103,7 +102,6 @@ const LoginPage = () => {
               required
               isInvalid={touched && !validPassword} 
               placeholder="Password" 
-              maxLength={24}
               onChange={HandlePassword}
             />
             <Form.Control.Feedback type="invalid">Password must be between 8 and 24 characters</Form.Control.Feedback>
