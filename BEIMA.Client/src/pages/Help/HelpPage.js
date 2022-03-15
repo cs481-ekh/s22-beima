@@ -1,7 +1,7 @@
 import { Card } from "react-bootstrap";
 import { useOutletContext } from 'react-router-dom';
 import { useEffect } from 'react';
-import styles from'./HelpPage.module.css'
+import styles from './HelpPage.module.css'
 
 const HelpPage = () => {
   const [setPageName] = useOutletContext();
