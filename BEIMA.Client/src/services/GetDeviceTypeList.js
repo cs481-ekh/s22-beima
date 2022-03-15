@@ -14,7 +14,7 @@ const GetDeviceTypeList = async() => {
   });
 
   let response;
-  if(dbCall.data === undefined || dbCall.status === undefined){
+  if(deviceTypeListCall.data === undefined || deviceTypeListCall.status === undefined){
     response = {
       status: 400,
       response: {}
@@ -30,7 +30,7 @@ const GetDeviceTypeList = async() => {
       }
     })
     response = {
-      status: dbCall.status,
+      status: deviceTypeListCall.status,
       response: filteredFields
     }
   }
