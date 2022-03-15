@@ -1,5 +1,104 @@
+## Minutes: 2022-03-10
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Standup
+* Ashlyn
+	* Continuing work on updating pages with device calls.
+	* Working on Creating building pages
+* Tom
+	* Working on js connector for update deivce ypt
+	* Working on user pages
+* Joseph
+	* Working on verifying device and device type fields match
+* Keelan
+	* Working on Building out poco for building and user
+	* Implementing mongo connector for building and user documents.
+* Kenny
+	* Finish testing for storage provider
+	* Working on converting device class to c# object
+## Other
+* We should try not to create any new pull requests on Tuesday.
+
+## Minutes: 2022-03-8
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Standup
+* Kenny
+	* Working on hooking storage into endpoints
+* Keelan
+	* Working on pocos for user and mongo connection calls
+* Tom
+	* Working on device types warning/errors
+* Joseph
+	* Working on building endpoints
+* Ashlyn
+	* Working on hooking pages up with api calls
+
+## Minutes: 2022-03-4
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	Brian Emtman
+### Sponsorship Meeting
+#### Overview
+Gave demo to sponsorship, recieved feedback, and asked questions
+#### Feedback
+* Sponsor likes our current design of the UI.
+* Sponsor would like to have filtering/pagination added to list views
+	* Emphasised flexibility for this
+	* Would like ability to export a csv of this data
+* Asked about integrating with Microsoft Power BI
+* Said to present a warning if longitude and latitude is off campus, but this can be the case
+	
+## Minutes: 2022-03-3
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Standup
+* Kenny
+	* Fix Cors issue
+	* Fix typo and remove Homepage
+	* Work on storage provider
+
+* Ashlyn
+	* Get PR from pulled over work up
+	* Update pages to call the backend API
+
+* Keelan
+	* Add file and photo properties to the device schema
+
+* Joseph
+	* Get PR for device endpoints up
+	* Work on device type endpoints
+
+* Tom
+	* Add longitude and latitude validation\
+	* Update list pages to call backend API
+
+### Other Notes
+#### Tomorrow's Sponsorship Meeting
+* Should ask about longitude and latitude radius for validation
+
 ## Mintues: 2022-03-2
-### scribe: kenny
+### scribe: Kenny
 ### Attendees:
 	Joseph Moore
 	Kenny Miller

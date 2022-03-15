@@ -202,7 +202,7 @@ const DeviceTypePage = () => {
         </Form.Group>
 
         <Form.Group  className="mb-3">
-          <Form.Label><b>Manditory Fields</b></Form.Label>
+          <Form.Label><b>Mandatory Fields</b></Form.Label>
           <div className={styles.fields}>
             <Field field="manId" value="Manufacturer" editable={false}/>
             <Field field="modId" value="Model Number" editable={false}/>

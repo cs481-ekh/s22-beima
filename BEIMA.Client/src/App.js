@@ -7,7 +7,6 @@ import {
   Route,
   Outlet,
 } from "react-router-dom";
-import HomePage from './pages/Home/HomePage';
 import HelpPage from './pages/Help/HelpPage';
 import DevicesPage from './pages/Devices/DevicesPage'
 import DevicePage from './pages/Devices/DevicePage'
@@ -28,7 +27,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AppLayout />}>
-          <Route index element={<HomePage />} />
+          <Route index element={<Navigate to="/devices" />}/>
           <Route path="login" element={<LoginPage/>}/>
           <Route path="addDevice" element={<AddDevicePage/>}/>
           <Route path="addDeviceType" element={<AddDeviceTypePage/>}/>
@@ -40,7 +39,7 @@ const App = () => {
           <Route path="buildings" element={<BuildingListPage/>}/>
           <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/>  
           <Route path="Help" element={<HelpPage />} />
-          <Route path="*" element={<Navigate to="/" />} />
+          <Route path="*" element={<Navigate to="/devices" />} />
         </Route>
       </Routes>
     </BrowserRouter>
