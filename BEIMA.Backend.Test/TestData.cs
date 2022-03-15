@@ -1,5 +1,6 @@
 ﻿using BEIMA.Backend.Models;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.Test
 {
@@ -80,6 +81,11 @@ namespace BEIMA.Backend.Test
             {
                 DeviceTag = "tag",
                 DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
                 Manufacturer = "man",
                 SerialNum = "serial",
                 YearManufactured = 1880,
