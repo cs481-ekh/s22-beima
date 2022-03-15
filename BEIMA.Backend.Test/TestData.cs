@@ -1,4 +1,7 @@
-﻿namespace BEIMA.Backend.Test
+﻿using BEIMA.Backend.Models;
+using Newtonsoft.Json;
+
+namespace BEIMA.Backend.Test
 {
     public static class TestData
     {
@@ -64,5 +67,37 @@
                 "]" +
             "}";
 
+        public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
+        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
+
+
+        private static string GenerateAddDeviceNoLocation()
+        {
+            var request = new AddDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = 1880,
+                Notes = "notes",
+
+            };
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateUpdateDeviceNoLocation()
+        {
+            var request = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = 1880,
+                Notes = "notes",
+            };
+            return JsonConvert.SerializeObject(request);
+        }
     }
 }

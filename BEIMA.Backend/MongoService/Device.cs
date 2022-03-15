@@ -37,7 +37,7 @@ namespace BEIMA.Backend.MongoService
     public class DeviceLocation
     {
         [BsonElement("buildingId")]
-        public ObjectId BuildingId { get; set; }
+        public ObjectId? BuildingId { get; set; }
         [BsonElement("notes")]
         public string Notes { get; set; }
         [BsonElement("latitude")]
@@ -126,6 +126,8 @@ namespace BEIMA.Backend.MongoService
             SerialNum = serialNum ?? string.Empty;
             YearManufactured = yearManufactured ?? -1;
             Notes = notes ?? string.Empty;
+            Location = new DeviceLocation();
+            LastModified = new DeviceLastModified();
             Fields = new Dictionary<string, string>();
             Files = new List<DeviceFile>();
             Photo = new DeviceFile();
@@ -158,8 +160,11 @@ namespace BEIMA.Backend.MongoService
             CheckNullArgument(SerialNum, nameof(SerialNum));
             CheckNullArgument(YearManufactured, nameof(YearManufactured));
             CheckNullArgument(Notes, nameof(Notes));
-            CheckNullArgument(Location, nameof(Location));
-            CheckNullArgument(LastModified, nameof(LastModified));
+            CheckNullArgument(Location.Notes, nameof(Location.Notes));
+            CheckNullArgument(Location.Latitude, nameof(Location.Latitude));
+            CheckNullArgument(Location.Longitude, nameof(Location.Longitude));
+            CheckNullArgument(LastModified.User, nameof(LastModified.User));
+            CheckNullArgument(LastModified.Date, nameof(LastModified.Date));
             CheckNullArgument(Fields, nameof(Fields));
             CheckNullArgument(Files, nameof(Files));
             CheckNullArgument(Photo, nameof(Photo));
@@ -193,7 +198,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="notes">Notes related to the location of the device.</param>
         /// <param name="latitude">The latitude of the physical location of the device.</param>
         /// <param name="longitude">The longitude of the physical location of the device.</param>
-        public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
+        public void SetLocation(ObjectId? buildingId, string notes, string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
             Location = new DeviceLocation()

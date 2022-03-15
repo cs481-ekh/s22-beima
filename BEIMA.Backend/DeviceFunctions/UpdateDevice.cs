@@ -56,8 +56,11 @@ namespace BEIMA.Backend.DeviceFunctions
                      data.Notes
                  );
 
+                var reqBuildingId = data.Location.BuildingId;
+                ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+
                 device.SetLocation(
-                    ObjectId.Parse(data.Location.BuildingId),
+                    buildingId,
                     data.Location.Notes,
                     data.Location.Latitude,
                     data.Location.Longitude

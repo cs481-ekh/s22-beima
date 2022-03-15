@@ -14,7 +14,7 @@ namespace BEIMA.Backend.Models
         public string SerialNum { get; set; }
         public int YearManufactured { get; set; }
         public string Notes { get; set; }
-        public Location Location { get; set; }
+        public Location Location { get; set; } = new Location();
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
     }
 
@@ -30,7 +30,7 @@ namespace BEIMA.Backend.Models
         public string SerialNum { get; set; }
         public int YearManufactured { get; set; }
         public string Notes { get; set; }
-        public Location Location { get; set; }
+        public Location Location { get; set; } = new Location();
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
         public List<string> DeletedFiles { get; set; } = new List<string>();
     }
