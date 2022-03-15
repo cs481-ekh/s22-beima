@@ -15,10 +15,17 @@ export default async function getDevice(deviceId) {
     }
   });
 
-  const response = {
-    status: dbCall.status,
-    response: dbCall.data
+  let response;
+  if(dbCall.data === undefined || dbCall.status === undefined){
+    response = {
+      status: 400,
+      response: {}
+    }
+  } else {
+    response = {
+      status: dbCall.status,
+      response: dbCall.data
+    }
   }
-
   return response;
 }

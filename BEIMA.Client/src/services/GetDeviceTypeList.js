@@ -13,19 +13,26 @@ const GetDeviceTypeList = async() => {
     }
   });
 
-  let filteredFields = deviceTypeListCall.data.map((item) => {
-    return {
-      id: item._id,
-      name: item.name,
-      description: item.description,
-      notes: item.notes,
-      lastModified: item.lastModified.date
+  let response;
+  if(dbCall.data === undefined || dbCall.status === undefined){
+    response = {
+      status: 400,
+      response: {}
     }
-  })
-
-  const response = {
-    status: deviceTypeListCall.status,
-    response: filteredFields
+  } else {
+    let filteredFields = deviceTypeListCall.data.map((item) => {
+      return {
+        id: item._id,
+        name: item.name,
+        description: item.description,
+        notes: item.notes,
+        lastModified: item.lastModified.date
+      }
+    })
+    response = {
+      status: dbCall.status,
+      response: filteredFields
+    }
   }
 
   return response;
