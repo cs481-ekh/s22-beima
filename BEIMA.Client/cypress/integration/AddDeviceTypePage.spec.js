@@ -24,7 +24,6 @@ describe("Verify Data can be entered into fields", () => {
 
 describe("Verify Data in fields is cleared when Add Device Type is selected", () => {
   it('Enter data, click Add Device, verify fields are empty', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#inputName').scrollIntoView().type("new type")
     cy.get('#inputDescription').scrollIntoView().type("newly added type")
@@ -72,7 +71,6 @@ describe("Verify custom fields can be deleted", () => {
 
 describe("Verify custom fields get cleared when Add Device Type is clicked", () => {
   it('Add new fields', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#newField').scrollIntoView().type("field1")
     cy.get("#addField").scrollIntoView().click()
@@ -128,7 +126,6 @@ describe("Verify error message on invalid custom field inputs", () => {
 
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
-    skipOn('linux')
     
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#inputName').scrollIntoView().type(randomString1024())
