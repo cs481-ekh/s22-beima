@@ -33,10 +33,10 @@ We should go back to merging into main instead of a sprint branch.
 We should use tasknumber_description for branch names.
 Reminder to use the chosen pr format message.
 ## New Roles:
-Scribe - Ashlyn
-Product Owner - Kenny
-Scrum Master - Joseph
-Dev - Tom
+Scribe - Ashlyn \
+Product Owner - Kenny \
+Scrum Master - Joseph \
+Dev - Tom \
 Dev - Keelan
 
 ## Minutes: 2022-03-10
