@@ -92,7 +92,7 @@ const LoginPage = () => {
               placeholder="Enter Username" 
               onChange={HandleUsername}
             />
-            <Form.Control.Feedback type="invalid">Username must be between 8 and 24 characters.</Form.Control.Feedback>            
+            <Form.Control.Feedback type="invalid">Invalid Username</Form.Control.Feedback>            
           </Form.Group>
 
           <Form.Group className="mb-3" controlId="password">
@@ -104,7 +104,7 @@ const LoginPage = () => {
               placeholder="Password" 
               onChange={HandlePassword}
             />
-            <Form.Control.Feedback type="invalid">Password must be between 8 and 24 characters</Form.Control.Feedback>
+            <Form.Control.Feedback type="invalid">Invalid Password</Form.Control.Feedback>
           </Form.Group>
           <Form.Group className="mb-3" controlId="rememberMe">
             <Form.Check type="checkbox" label="Remember Me" onChange={HandleRemember} />
