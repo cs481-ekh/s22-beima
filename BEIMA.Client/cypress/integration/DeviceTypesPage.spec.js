@@ -11,7 +11,7 @@ describe('Device Types Page', () => {
 
 describe("Verify the list has items present", function () {
   it('Count children of item list (see comments)', function (){
-
+    skipOn('linux')
     cy.visit('http://localhost:3000/deviceTypes')
 
     //get all children of the itemlist with class ItemList_item__2BOfJ

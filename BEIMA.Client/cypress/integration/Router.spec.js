@@ -1,4 +1,5 @@
 /// <reference types="cypress" />
+import { skipOn } from '@cypress/skip-test';
 
 describe("Router Doesn't Redirect On Valid Pages", () =>{
   it('Visits Root', () =>{
@@ -84,6 +85,7 @@ describe("NavBar links route correctly", () => {
   })
 
   it('Visit Add Device Page', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Add Device").click();
     cy.url().should('include', '/addDevice')
