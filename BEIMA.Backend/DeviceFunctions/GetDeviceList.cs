@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using System.Collections.Generic;
 
 namespace BEIMA.Backend.DeviceFunctions
@@ -29,10 +30,10 @@ namespace BEIMA.Backend.DeviceFunctions
 
             var mongo = MongoDefinition.MongoInstance;
             var devices = mongo.GetAllDevices();
-            var dotNetObjList = new List<object>();
+            var dotNetObjList = new List<Device>();
             foreach (var device in devices)
             {
-                var dotNetObj = BsonTypeMapper.MapToDotNetValue(device);
+                var dotNetObj = BsonSerializer.Deserialize<Device>(device);
                 dotNetObjList.Add(dotNetObj);
             }
 

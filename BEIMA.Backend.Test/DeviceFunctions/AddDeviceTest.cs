@@ -36,5 +36,29 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.IsNotNull(deviceId);
             Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
         }
+
+        [Test]
+        public async Task NoDevice_AddDeviceWithNoLocation_ReturnsValidId()
+        {
+            // ARRANGE
+            // Setup mock database client.
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Create request
+            var body = TestData._testAddDeviceNoLocation;
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
+
+            // ASSERT
+            Assert.IsNotNull(deviceId);
+            Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
+        }
     }
 }
