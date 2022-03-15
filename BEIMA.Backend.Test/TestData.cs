@@ -9,6 +9,10 @@ namespace BEIMA.Backend.Test
             "{" +
                 "\"deviceTag\": \"A-2\"," +
                 "\"deviceTypeId\": \"12341234abcdabcd43214321\"," +
+                "\"fields\":{" +
+                    "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": \"TestValue1\"," +
+                    "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": \"TestValue2\"," +
+                "}," +
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes\"," +
@@ -69,7 +73,6 @@ namespace BEIMA.Backend.Test
 
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
-
 
         private static string GenerateAddDeviceNoLocation()
         {
