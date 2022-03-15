@@ -28,7 +28,7 @@
             "fileName": String
         }
     ],
-    photos: {
+    photo: {
         "fileUid": String,
         "fileName": String
     }    
