@@ -67,6 +67,7 @@ describe("Router Redirects On Invalid Pages", () => {
 
 describe("NavBar links route correctly", () => {
   it('Visits Help Page', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Help").click();
     cy.url().should('include', '/help')
@@ -96,6 +97,7 @@ describe("NavBar links route correctly", () => {
   })
 
   it('Visit Add Device Page', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Add Device Type").click();
     cy.url().should('include', '/addDeviceType')
@@ -110,6 +112,7 @@ describe("NavBar links route correctly", () => {
   })
 
   it('Visit Buildings Page', () => {
+    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Buildings").click();
     cy.url().should('include', '/buildings')
