@@ -127,8 +127,6 @@ namespace BEIMA.Backend.MongoService
             YearManufactured = yearManufactured ?? -1;
             Notes = notes ?? string.Empty;
             Fields = new Dictionary<string, string>();
-            Location = new DeviceLocation();
-            LastModified = new DeviceLastModified();
             Files = new List<DeviceFile>();
             Photo = new DeviceFile();
         }
@@ -198,10 +196,13 @@ namespace BEIMA.Backend.MongoService
         public void SetLocation(ObjectId buildingId, string notes, string latitude, string longitude)
         {
             //Check if null, if they are, then use empty string
-            Location.BuildingId = buildingId;
-            Location.Notes = notes ??= string.Empty;
-            Location.Latitude = latitude ??= string.Empty;
-            Location.Longitude = longitude ??= string.Empty;
+            Location = new DeviceLocation()
+            {
+                BuildingId = buildingId,
+                Notes = notes ??= string.Empty,
+                Latitude = latitude ??= string.Empty,
+                Longitude = longitude ??= string.Empty
+            };
         }
 
         /// <summary>
@@ -211,9 +212,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="user">Username of the user who last modified the Device.</param>
         public void SetLastModified(DateTime? date, string user)
         {
-            //Check if null, if they are, then use defualt values          
-            LastModified.Date = date ??= DateTime.UtcNow;
-            LastModified.User = user ??= string.Empty;
+            //Check if null, if they are, then use defualt values
+            LastModified = new DeviceLastModified()
+            {
+                Date = date ??= DateTime.UtcNow,
+                User = user ??= string.Empty
+            };
         }
 
         /// <summary>
@@ -238,12 +242,11 @@ namespace BEIMA.Backend.MongoService
         /// <param name="fileName">Photo's filename</param>
         public void SetPhoto(string fileUid, string fileName)
         {
-            var photo = new DeviceFile()
+            Photo = new DeviceFile()
             {
                 FileName = fileName,
                 FileUid = fileUid,
             };
-            Photo = photo;
         }
     }
 }

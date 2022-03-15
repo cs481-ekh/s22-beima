@@ -193,11 +193,11 @@ namespace BEIMA.Backend.MongoService.Test
         }
 
         [Test]
-        public void DeviceInstantiatedWithSomeNullValuesWithFullConstructor_CallGetBsonDocument_NoExceptionIsThrown()
+        public void DeviceInstantiatedWithSomeNullValuesWithFullConstructor_CallGetBsonDocument_ExceptionIsThrown()
         {
             var device = new Device(validObjId, validDeviceTypeId, validDeviceTag, validManufacturer, null, null, validYearManufactured, null);
             device.SetLastModified(validDate, validUser);
-            Assert.DoesNotThrow(() => { device.GetBsonDocument(); });
+            Assert.Throws<ArgumentNullException>(() => { device.GetBsonDocument(); });
         }
 
         [Test]
