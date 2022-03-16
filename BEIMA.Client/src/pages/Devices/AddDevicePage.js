@@ -34,7 +34,7 @@ const AddDevicePage = () => {
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [deviceTypes, setDeviceTypes] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState(defaultDeviceTypeObj);
-  const [ddStyle, setDdStyle] = useState(styles.button);
+  const [dropDownStyle, setDropDownStyle] = useState(styles.button);
   
   useEffect(() => {
     setPageName('Add Device')
@@ -74,7 +74,7 @@ const AddDevicePage = () => {
     
     //change the dropdown text and store the fields for their keys
     setSelectedDeviceType(deviceTypeFields.response);
-    setDdStyle(styles.ddSelected);
+    setDropDownStyle(styles.dropDownSelected);
     
     //retireve the values from teh response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
@@ -86,7 +86,7 @@ const AddDevicePage = () => {
 
     //add them to the forms errors lists
     setDeviceFields(deviceFields);
-    setErrors(deviceFields);
+    setErrors({});
   }
   
   /*
@@ -194,7 +194,7 @@ const AddDevicePage = () => {
         if(response.status === HTTP_SUCCESS){
           setErrors({});
           setSelectedDeviceType(defaultDeviceTypeObj);
-          setDdStyle(styles.ddSelected);
+          setDropDownStyle(styles.button);
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
@@ -213,7 +213,7 @@ const AddDevicePage = () => {
           <Form >
             <Row className={styles.buttonGroup}>
               <Col>
-                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={ddStyle} dropDownId={"typeDropDown"} />
+                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={dropDownStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
                   <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={createJSON}>
