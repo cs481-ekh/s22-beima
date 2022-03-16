@@ -3,7 +3,7 @@
 describe('Device Page', () => {
   it('Visits a Device Page', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '622eb8955657a9ee19a0f694'
+    let deviceID = ''
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -58,7 +58,7 @@ describe('Device Page', () => {
   })
   it('Enables inputs on Edit Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '622eb8955657a9ee19a0f694'
+    let deviceID = ''
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -101,7 +101,7 @@ describe('Device Page', () => {
   })
   it('Resets fields on Cancel Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '622eb8955657a9ee19a0f694'
+    let deviceID = ''
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -162,7 +162,7 @@ describe('Device Page', () => {
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '622eb8955657a9ee19a0f694'
+    let deviceID = ''
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
