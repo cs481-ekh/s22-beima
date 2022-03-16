@@ -57,7 +57,7 @@ namespace BEIMA.Backend.StorageService
                 
                 await client.PutObjectAsync(putArgs);
                 return fileUid;
-            } catch (Exception e)
+            } catch (Exception)
             {
                 return null;
             } 
