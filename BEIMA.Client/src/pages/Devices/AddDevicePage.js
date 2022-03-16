@@ -186,7 +186,7 @@ const AddDevicePage = () => {
       setErrors(newErrors);
     } else {
       /*TODO Need ability to get a building ID, probably a DD on the page*/
-      dbJson.location.buildingId = 'a19830495728394829103986';
+
       dbJson.deviceTypeId = selectedDeviceType._id;
       
       AddDevice(dbJson).then(response => {
