@@ -8,6 +8,7 @@ import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 import GetDeviceType from '../../services/GetDeviceType.js';
 import AddDevice from '../../services/AddDevice.js';
+import { HTTP_SUCCESS, MAX_LATITUDE, MAX_LONGITUDE } from '../../Constants.js';
 
 
 const AddDevicePage = () => {
@@ -23,16 +24,17 @@ const AddDevicePage = () => {
     "Year Manufactured": "",
     "Notes": ""
   }
+  
+  const defaultDeviceTypeObj = { name: 'Select Device Type'};
 
   const [deviceFields, setDeviceFields] = useState(mandatoryDeviceFields);
-  const [errors, setErrors] = useState(mandatoryDeviceFields);
+  const [errors, setErrors] = useState({});
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState();
   const [deviceAdditionalDocs, setAdditionalDocs] = useState();
   const [deviceTypes, setDeviceTypes] = useState([]);
-  const [selectedDeviceType, setSelectedDeviceType] = useState('Select Device Type');
-  const [selectedDeviceTypeId, setSelectedDeviceTypeId] = useState();
-  const [selectedDeviceFields, setSelectedDeviceFields] = useState();
+  const [selectedDeviceType, setSelectedDeviceType] = useState(defaultDeviceTypeObj);
+  const [ddStyle, setDdStyle] = useState(styles.button);
   
   useEffect(() => {
     setPageName('Add Device')
@@ -52,6 +54,12 @@ const AddDevicePage = () => {
   const getDeviceTypes = async () => {
     const deviceTypeData = await GetDeviceTypeList();
     
+    /*TODO push error to display*/
+    if(!(deviceTypeData.status === HTTP_SUCCESS)){
+      alert('API responded with: ' + deviceTypeData.status + ' ' + deviceTypeData.response);
+      return;
+    }
+    
     let data = deviceTypeData.response.map((item) => { return { name: item.name, id : item.id} });
     
     return data;
@@ -62,26 +70,23 @@ const AddDevicePage = () => {
   * @param the type of device that was selected
   */
   const getFieldsForTypeId = async (deviceTypeId) => {
-    //console.log(deviceFields);
     const deviceTypeFields = await GetDeviceType(deviceTypeId);
     
     //change the dropdown text and store the fields for their keys
-    setSelectedDeviceType(deviceTypeFields.response.name);
-    setSelectedDeviceFields(deviceTypeFields.response.fields);
-    setSelectedDeviceTypeId(deviceTypeId);
+    setSelectedDeviceType(deviceTypeFields.response);
+    setDdStyle(styles.ddSelected);
     
     //retireve the values from teh response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
     
-    //append the fields to the current list
+    //append the custom labels to the form generation object
     for(let i = 0; i < fieldLabels.length; i++) {
       deviceFields[fieldLabels[i]] = "";
     }
 
-    //onsole.log(deviceFields);
-    //add them to the forms and errors list
+    //add them to the forms errors lists
     setDeviceFields(deviceFields);
-    setErrors({});
+    setErrors(deviceFields);
   }
   
   /*
@@ -92,15 +97,17 @@ const AddDevicePage = () => {
   */
   function convertToDbFriendly(formName) {
     let result = {};
-    /*TODO work in building to get the building ID for insertion*/
-    if(Object.values(selectedDeviceFields).includes(formName)){
-      let dbId = Object.keys(selectedDeviceFields).find(key => selectedDeviceFields[key] === formName);
+    //if it's a custom field name get custom field ID
+    if(Object.values(selectedDeviceType.fields).includes(formName)){
+      let dbId = Object.keys(selectedDeviceType.fields).find(key => selectedDeviceType.fields[key] === formName);
       result = {'fieldDbId': dbId};
     } else if (formName == 'Latitude' || formName == 'Longitude') {
+      //put location values in their nested place
       result = {'location': {'type' : formName.toLowerCase(formName)}};
     } else {
       //make first letter lower case
       let dbKey = formName[0].toLowerCase() + formName.slice(1);
+      //Number needs to be Num where applicable
       dbKey = dbKey.replace('Number', 'Num');
       //remove spaces
       dbKey = dbKey.replace(/\s+/g, '');
@@ -119,9 +126,11 @@ const AddDevicePage = () => {
     setDeviceFields(deviceFields);
   }
   
-  // gathers all the input and puts it into JSON, files are just assigned to state variables for now
+  /*
+  *  gathers all the input and puts it into JSON, files are just assigned to state variables for now
+  */
   function createJSON(addButtonEvent){
-    //temporary until we have large error signaling figured out
+    //TODO temporary until we have error signaling figured out
     if (selectedDeviceType === 'Select Device Type'){
       alert ('No device type selected');
       return;
@@ -129,38 +138,42 @@ const AddDevicePage = () => {
     
     let formFields = addButtonEvent.target.form.elements;
     
+    //sets up base db object/clears errors
     let dbJson = {fields: {}, location: { 'notes' : ""}};
     let newErrors = {};
     
+    //loops through visible fields on the form
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let fieldNames = Object.keys(deviceFields);
       
       //lat lon validation
       if (formName === 'Latitude' || formName === 'Longitude') {
-        const coordMax = formName === 'Latitude' ? 90 : 180;
-        if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
+        const coordMax = formName === 'Latitude' ? MAX_LATITUDE : MAX_LONGITUDE;
+        if(!(isFinite(deviceFields[formName]) && Math.abs(deviceFields[formName]) <= coordMax)) {
           newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
         }
       }
       
+      //construct the current JSON element to be added to the insert
       if(fieldNames.includes(formName)){
         let formJSON = '';
         let jsonKey = convertToDbFriendly(formName);
+        
+        //straight append when it's not part of a nested element
+        //otherwise it attaches it to the nested element
         if(!(typeof jsonKey == 'object')){
           formJSON =  {[jsonKey] : deviceFields[formName]};
           Object.assign(dbJson, formJSON);
         } else if ('fieldDbId' in jsonKey){
-          dbJson.fields[jsonKey.fieldDbId] = formFields[i].value;
+          dbJson.fields[jsonKey.fieldDbId] = deviceFields[formName];
         } else if ('location' in jsonKey){
-          dbJson.location[jsonKey.location.type] = formFields[i].value;
+          dbJson.location[jsonKey.location.type] = deviceFields[formName];
         }
       } else if (formName === "Device Image"){
         setDeviceImage(formFields[i].files[0]);
-        formFields[i].value = "";
       } else if (formName === "Additional Documents"){
         setAdditionalDocs(formFields[i].files);
-        formFields[i].value = "";
       }
     }
     
@@ -168,28 +181,28 @@ const AddDevicePage = () => {
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
     
+    //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
     } else {
-      setErrors({});
-      setSelectedDeviceType('Select Device Type');
-      for(let i = 0; i < formFields.length; i++){
-        formFields[i].value = "";
-      }
-      
-      /*Need ability to get a building ID, probably a DD on the page*/
+      /*TODO Need ability to get a building ID, probably a DD on the page*/
       dbJson.location.buildingId = 'a19830495728394829103986';
-      dbJson.deviceTypeId = selectedDeviceTypeId;
-
-      AddDeviceToDb(dbJson);
-    }
-  }
-
-  const AddDeviceToDb = async (dbJson) => {
-    const addResponse = await AddDevice(dbJson);
-    /*TODO push error to display*/
-    if(!(addResponse.status == 200)){
-      alert('API responded with: ' + addResponse.status + ' ' + addResponse.response);
+      dbJson.deviceTypeId = selectedDeviceType._id;
+      
+      AddDevice(dbJson).then(response => {
+        //reset or show problem
+        if(response.status == HTTP_SUCCESS){
+          setErrors({});
+          setSelectedDeviceType(defaultDeviceTypeObj);
+          setDdStyle(styles.ddSelected);
+          for(let i = 0; i < formFields.length; i++){
+            formFields[i].value = "";
+          }
+        } else {
+          /*TODO push error to display*/
+          alert('API responded with: ' + response.status + ' ' + response.response);
+        }
+      })
     }
   }
   
@@ -200,7 +213,7 @@ const AddDevicePage = () => {
           <Form >
             <Row className={styles.buttonGroup}>
               <Col>
-                <FilledDropDown dropDownText={selectedDeviceType} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={styles.button} dropDownId={"typeDropDown"} />
+                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={ddStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
                   <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={createJSON}>

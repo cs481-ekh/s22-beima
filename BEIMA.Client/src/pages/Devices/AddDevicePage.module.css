@@ -23,3 +23,9 @@
   padding: 2%;
   margin: 2%;
 }
+
+.ddSelected{
+  background-color: #FFFFFF !important;
+  border-color: #D64309 !important;
+  color: #D64309 !important;
+}
