@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http.Internal;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -119,6 +120,55 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sends an multipart form data http request to the backend server and returns the http response.
+        /// </summary>
+        /// <param name="route">The url route excluding the base address.</param>
+        /// <param name="data">The object to send with the request.</param>
+        /// <param name="files">List of files to send with the request</param>
+        /// <returns>The http response message of the request.</returns>
+        /// <exception cref="HttpRequestException"></exception>
+        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null)
+        {
+            StringContent json;
+            HttpResponseMessage response;
+
+            if (data is string)
+            {
+                json = new StringContent((string)data);
+            }
+            else
+            {
+                var jsonObject = JsonConvert.SerializeObject(data);
+                json = new StringContent(jsonObject, Encoding.UTF8, "application/json");
+            }
+
+            MultipartFormDataContent form = new MultipartFormDataContent();
+
+            form.Add(json, "data");
+            if (files != null)
+            {
+                foreach (var file in files)
+                {
+                    form.Add(new StreamContent(file.OpenReadStream()), file.Name, file.FileName);
+                }
+            }
+
+            response = await _httpClient.PostAsync(route, form);
+
+            try
+            {
+                response.EnsureSuccessStatusCode();
+            }
+            catch (HttpRequestException)
+            {
+                var content = await response.Content.ReadAsStringAsync();
+                throw new BeimaException(content, response.StatusCode);
+            }
+
+            return response;
+        }
+
+        /// <summary>
         /// Sends a device get request to the BEIMA api.
         /// </summary>
         /// <param name="id">The id of the device.</param>
@@ -146,9 +196,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to add.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<string> AddDevice(Device device)
+        public async Task<string> AddDevice(Device device, FormFileCollection? files = null)
         {
-            var response = await SendRequest("api/device", HttpVerb.POST, device);
+            var response = await SendMultiPartRequest("api/device", device, files);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
