@@ -101,7 +101,7 @@ const AddDevicePage = () => {
     if(Object.values(selectedDeviceType.fields).includes(formName)){
       let dbId = Object.keys(selectedDeviceType.fields).find(key => selectedDeviceType.fields[key] === formName);
       result = {'fieldDbId': dbId};
-    } else if (formName == 'Latitude' || formName == 'Longitude') {
+    } else if (formName === 'Latitude' || formName === 'Longitude') {
       //put location values in their nested place
       result = {'location': {'type' : formName.toLowerCase(formName)}};
     } else {
@@ -191,7 +191,7 @@ const AddDevicePage = () => {
       
       AddDevice(dbJson).then(response => {
         //reset or show problem
-        if(response.status == HTTP_SUCCESS){
+        if(response.status === HTTP_SUCCESS){
           setErrors({});
           setSelectedDeviceType(defaultDeviceTypeObj);
           setDdStyle(styles.ddSelected);
