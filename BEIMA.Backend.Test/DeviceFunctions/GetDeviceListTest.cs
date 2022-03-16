@@ -44,32 +44,32 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
             var response = (OkObjectResult)GetDeviceList.Run(request, logger);
-            var getList = (List<object>)response.Value;
+            var getList = (List<Device>)response.Value;
             Assert.IsNotNull(getList);
             for (int i = 0; i < deviceList.Count; i++)
             {
-                var device = (Dictionary<string, object>)getList[i];
+                var device = getList[i];
                 var expectedDevice = deviceList[i];
-                Assert.That(device["_id"].ToString(), Is.EqualTo(expectedDevice["_id"].AsObjectId.ToString()));
-                Assert.That(device["deviceTypeId"].ToString(), Is.EqualTo(expectedDevice["deviceTypeId"].AsObjectId.ToString()));
-                Assert.That(device["deviceTag"], Is.EqualTo(expectedDevice["deviceTag"].AsString));
-                Assert.That(device["notes"], Is.EqualTo(expectedDevice["notes"].AsString));
-                Assert.That(device["manufacturer"], Is.EqualTo(expectedDevice["manufacturer"].AsString));
-                Assert.That(device["modelNum"], Is.EqualTo(expectedDevice["modelNum"].AsString));
-                Assert.That(device["serialNum"], Is.EqualTo(expectedDevice["serialNum"].AsString));
-                Assert.That(device["yearManufactured"], Is.EqualTo(expectedDevice["yearManufactured"].AsInt32));
+                Assert.That(device.Id.ToString(), Is.EqualTo(expectedDevice["_id"].AsObjectId.ToString()));
+                Assert.That(device.DeviceTypeId.ToString(), Is.EqualTo(expectedDevice["deviceTypeId"].AsObjectId.ToString()));
+                Assert.That(device.DeviceTag, Is.EqualTo(expectedDevice["deviceTag"].AsString));
+                Assert.That(device.Notes, Is.EqualTo(expectedDevice["notes"].AsString));
+                Assert.That(device.Manufacturer, Is.EqualTo(expectedDevice["manufacturer"].AsString));
+                Assert.That(device.ModelNum, Is.EqualTo(expectedDevice["modelNum"].AsString));
+                Assert.That(device.SerialNum, Is.EqualTo(expectedDevice["serialNum"].AsString));
+                Assert.That(device.YearManufactured, Is.EqualTo(expectedDevice["yearManufactured"].AsInt32));
 
-                var location = (Dictionary<string, object>)device["location"];
+                var location = device.Location;
                 var expectedLocation = expectedDevice["location"];
-                Assert.That(location["buildingId"].ToString(), Is.EqualTo(expectedLocation["buildingId"].AsObjectId.ToString()));
-                Assert.That(location["notes"], Is.EqualTo(expectedLocation["notes"].AsString));
-                Assert.That(location["longitude"], Is.EqualTo(expectedLocation["longitude"].AsString));
-                Assert.That(location["latitude"], Is.EqualTo(expectedLocation["latitude"].AsString));
+                Assert.That(location.BuildingId.ToString(), Is.EqualTo(expectedLocation["buildingId"].AsObjectId.ToString()));
+                Assert.That(location.Notes, Is.EqualTo(expectedLocation["notes"].AsString));
+                Assert.That(location.Longitude, Is.EqualTo(expectedLocation["longitude"].AsString));
+                Assert.That(location.Latitude, Is.EqualTo(expectedLocation["latitude"].AsString));
 
-                var lastMod = (Dictionary<string, object>)device["lastModified"];
+                var lastMod = device.LastModified;
                 var expectedLastMod = expectedDevice["lastModified"];
-                Assert.That(lastMod["date"].ToString(), Is.EqualTo(expectedLastMod["date"].ToUniversalTime().ToString()));
-                Assert.That(lastMod["user"].ToString(), Is.EqualTo(expectedLastMod["user"].AsString));
+                Assert.That(lastMod.Date.ToString(), Is.EqualTo(expectedLastMod["date"].ToUniversalTime().ToString()));
+                Assert.That(lastMod.User.ToString(), Is.EqualTo(expectedLastMod["user"].AsString));
             }
         }
     }

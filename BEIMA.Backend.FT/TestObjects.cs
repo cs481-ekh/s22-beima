@@ -18,7 +18,7 @@ namespace BEIMA.Backend.FT
             public string? DeviceTypeId { get; set; }
 
             [JsonProperty(PropertyName = "fields")]
-            public Dictionary<string, object>? Fields;
+            public Dictionary<string, string>? Fields;
 
             [JsonProperty(PropertyName = "lastModified")]
             public LastModified? LastModified { get; set; }
@@ -40,6 +40,22 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "yearManufactured")]
             public int? YearManufactured { get; set; }
+
+            [JsonProperty(PropertyName = "files")]
+            public List<DeviceFile>? Files { get; set; }
+
+            [JsonProperty(PropertyName = "photo")]
+            public DeviceFile? Photo { get; set; }
+        }
+
+        public class DeviceFile
+        {
+            [JsonProperty(PropertyName = "fileName")]
+            public string? FileName { get; set; }
+            [JsonProperty(PropertyName = "fileUid")]
+            public string? FileUid { get; set; }
+            [JsonProperty(PropertyName = "fileUrl")]
+            public string? Url { get; set; }
         }
 
         public class LastModified

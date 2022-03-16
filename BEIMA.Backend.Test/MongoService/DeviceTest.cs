@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using MongoDB.Bson;
 using NUnit.Framework;
 
@@ -29,8 +30,8 @@ namespace BEIMA.Backend.MongoService.Test
         readonly string validKey2 = "key2";
         readonly string validKey3 = "key3";
         readonly string validValue1 = "value1";
-        readonly bool validValue2 = true;
-        readonly int validValue3 = 123;
+        readonly string validValue2 = "true";
+        readonly string validValue3 = "123";
 
         readonly string validFileName1 = "manual.pdf";
         readonly string validFileName2 = "information.txt";
@@ -58,42 +59,8 @@ namespace BEIMA.Backend.MongoService.Test
             device.AddFile(validFileUid1, validFileName1);
             device.AddFile(validFileUid2, validFileName2);
             device.AddFile(validFileUid3, validFileName3);
-            device.AddPhoto(validPhotoUid1, validPhotoName1);
-            device.AddPhoto(validPhotoUid2, validPhotoName2);
-            device.AddPhoto(validPhotoUid3, validPhotoName3);
+            device.SetPhoto(validPhotoUid1, validPhotoName1);
 
-            //These variables are used during testing to see if the files and photos were correctly inserted into a BsonArray
-            var file1 = new BsonDocument
-            {
-                new BsonElement("fileUid", validFileUid1),
-                new BsonElement("fileName", validFileName1)
-            };
-            var file2 = new BsonDocument
-            {
-                new BsonElement("fileUid", validFileUid2),
-                new BsonElement("fileName", validFileName2)
-            };
-            var file3 = new BsonDocument
-            {
-                new BsonElement("fileUid", validFileUid3),
-                new BsonElement("fileName", validFileName3)
-            };
-
-            var photo1 = new BsonDocument
-            {
-                new BsonElement("fileUid", validPhotoUid1),
-                new BsonElement("fileName", validPhotoName1)
-            };
-            var photo2 = new BsonDocument
-            {
-                new BsonElement("fileUid", validPhotoUid2),
-                new BsonElement("fileName", validPhotoName2)
-            };
-            var photo3 = new BsonDocument
-            {
-                new BsonElement("fileUid", validPhotoUid3),
-                new BsonElement("fileName", validPhotoName3)
-            };
 
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
@@ -105,29 +72,27 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.Notes, Is.EqualTo(validNotes));
 
             var lastModified = device.LastModified;
-            Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
-            Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
+            Assert.That(lastModified.Date, Is.EqualTo(validDate).Within(5).Seconds);
+            Assert.That(lastModified.User, Is.EqualTo(validUser));
 
             var location = device.Location;
-            Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
-            Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
-            Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(validLatitude));
-            Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(validLongitude));
+            Assert.That(location.BuildingId, Is.EqualTo(validBuildingId));
+            Assert.That(location.Notes, Is.EqualTo(validLocationNotes));
+            Assert.That(location.Latitude, Is.EqualTo(validLatitude));
+            Assert.That(location.Longitude, Is.EqualTo(validLongitude));
 
             var fields = device.Fields;
-            Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
-            Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
-            Assert.That((int)fields.GetElement(validKey3).Value, Is.EqualTo(validValue3));
+            Assert.That(fields[validKey1], Is.EqualTo(validValue1));
+            Assert.That(fields[validKey2], Is.EqualTo(validValue2));
+            Assert.That(fields[validKey3], Is.EqualTo(validValue3));
 
             var files = device.Files;
-            Assert.That(files.Contains(file1), Is.True);
-            Assert.That(files.Contains(file2), Is.True);
-            Assert.That(files.Contains(file3), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.Not.Null);
 
-            var photos = device.Photos;
-            Assert.That(photos.Contains(photo1), Is.True);
-            Assert.That(photos.Contains(photo2), Is.True);
-            Assert.That(photos.Contains(photo3), Is.True);
+            var photo = device.Photo;
+            Assert.That(photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1, Is.True);
         }
 
         [Test]
@@ -152,42 +117,7 @@ namespace BEIMA.Backend.MongoService.Test
             device.AddFile(validFileUid1, validFileName1);
             device.AddFile(validFileUid2, validFileName2);
             device.AddFile(validFileUid3, validFileName3);
-            device.AddPhoto(validPhotoUid1, validPhotoName1);
-            device.AddPhoto(validPhotoUid2, validPhotoName2);
-            device.AddPhoto(validPhotoUid3, validPhotoName3);
-
-            //These variables are used during testing to see if the files and photos were correctly inserted into a BsonArray
-            var file1 = new BsonDocument
-            {
-                new BsonElement("fileUid", validFileUid1),
-                new BsonElement("fileName", validFileName1)
-            };
-            var file2 = new BsonDocument
-            {
-                new BsonElement("fileUid", validFileUid2),
-                new BsonElement("fileName", validFileName2)
-            };
-            var file3 = new BsonDocument
-            {
-                new BsonElement("fileUid", validFileUid3),
-                new BsonElement("fileName", validFileName3)
-            };
-
-            var photo1 = new BsonDocument
-            {
-                new BsonElement("fileUid", validPhotoUid1),
-                new BsonElement("fileName", validPhotoName1)
-            };
-            var photo2 = new BsonDocument
-            {
-                new BsonElement("fileUid", validPhotoUid2),
-                new BsonElement("fileName", validPhotoName2)
-            };
-            var photo3 = new BsonDocument
-            {
-                new BsonElement("fileUid", validPhotoUid3),
-                new BsonElement("fileName", validPhotoName3)
-            };
+            device.SetPhoto(validPhotoUid1, validPhotoName1);
 
             Assert.That(device.Id, Is.EqualTo(validObjId));
             Assert.That(device.DeviceTypeId, Is.EqualTo(validDeviceTypeId));
@@ -199,29 +129,27 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.Notes, Is.EqualTo(validNotes));
 
             var lastModified = device.LastModified;
-            Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(validDate).Within(5).Seconds);
-            Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(validUser));
+            Assert.That(lastModified.Date, Is.EqualTo(validDate).Within(5).Seconds);
+            Assert.That(lastModified.User, Is.EqualTo(validUser));
 
             var location = device.Location;
-            Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
-            Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(validLocationNotes));
-            Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(validLatitude));
-            Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(validLongitude));
+            Assert.That(location.BuildingId, Is.EqualTo(validBuildingId));
+            Assert.That(location.Notes, Is.EqualTo(validLocationNotes));
+            Assert.That(location.Latitude, Is.EqualTo(validLatitude));
+            Assert.That(location.Longitude, Is.EqualTo(validLongitude));
 
             var fields = device.Fields;
-            Assert.That((string)fields.GetElement(validKey1).Value, Is.EqualTo(validValue1));
-            Assert.That((bool)fields.GetElement(validKey2).Value, Is.EqualTo(validValue2));
-            Assert.That((int)fields.GetElement(validKey3).Value, Is.EqualTo(validValue3));
+            Assert.That(fields[validKey1], Is.EqualTo(validValue1));
+            Assert.That(fields[validKey2], Is.EqualTo(validValue2));
+            Assert.That(fields[validKey3], Is.EqualTo(validValue3));
 
             var files = device.Files;
-            Assert.That(files.Contains(file1), Is.True);
-            Assert.That(files.Contains(file2), Is.True);
-            Assert.That(files.Contains(file3), Is.True);
+            Assert.That(files.Single(file => file.FileUid == validFileUid1 && file.FileName == validFileName1), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid2 && file.FileName == validFileName2), Is.Not.Null);
+            Assert.That(files.Single(file => file.FileUid == validFileUid3 && file.FileName == validFileName3), Is.Not.Null);
 
-            var photos = device.Photos;
-            Assert.That(photos.Contains(photo1), Is.True);
-            Assert.That(photos.Contains(photo2), Is.True);
-            Assert.That(photos.Contains(photo3), Is.True);
+            var photo = device.Photo;
+            Assert.That(photo.FileUid == validPhotoUid1 && photo.FileName == validPhotoName1, Is.True);
         }
 
         [Test]
@@ -308,14 +236,14 @@ namespace BEIMA.Backend.MongoService.Test
             device.SetLocation(validBuildingId, null, null, null);
 
             var lastModified = device.LastModified;
-            Assert.That((DateTime)lastModified.GetElement("date").Value, Is.EqualTo(DateTime.UtcNow).Within(10).Seconds);
-            Assert.That((string)lastModified.GetElement("user").Value, Is.EqualTo(string.Empty));
+            Assert.That(lastModified.Date, Is.EqualTo(DateTime.UtcNow).Within(10).Seconds);
+            Assert.That(lastModified.User, Is.EqualTo(string.Empty));
 
             var location = device.Location;
-            Assert.That((ObjectId)location.GetElement("buildingId").Value, Is.EqualTo(validBuildingId));
-            Assert.That((string)location.GetElement("notes").Value, Is.EqualTo(string.Empty));
-            Assert.That((string)location.GetElement("latitude").Value, Is.EqualTo(string.Empty));
-            Assert.That((string)location.GetElement("longitude").Value, Is.EqualTo(string.Empty));
+            Assert.That(location.BuildingId, Is.EqualTo(validBuildingId));
+            Assert.That(location.Notes, Is.EqualTo(string.Empty));
+            Assert.That(location.Latitude, Is.EqualTo(string.Empty));
+            Assert.That(location.Longitude, Is.EqualTo(string.Empty));
         }
     }
 }

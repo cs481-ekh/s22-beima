@@ -1,5 +1,145 @@
+## Minutes: 2022-03-15
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 2 Retro:
+### Overall Thoughts
+Very happy with the increased amount of tasks completed.
+We did not meet sprint goal. Remaining tasks are very close
+to being completed that will allow sprint goal to be met however.
+### What went wrong
+Task prioritization could have been better.
+Big pr's could have been split out better.
+Planned to many tasks in the sprint.
+Tasks descriptions could be better.
+Tests were broken on build machine, but worked on vm's
+and personal pc's.
+### What went well
+We doubled the amount of completed tasks.
+The work we are commiting is very good quality.
+Code reviews have been really good.
+### What can be improved
+We should add more columns in the task board to show if a task is blocked.
+Communication can still be improved.
+Frontend tests will be disabled as they will sometimes not work only
+on the build machine.
+### Other notes:
+PR Auther should be the one to close branch.
+We should go back to merging into main instead of a sprint branch.
+We should use tasknumber_description for branch names.
+Reminder to use the chosen pr format message.
+## New Roles:
+Scribe - Ashlyn \
+Product Owner - Kenny \
+Scrum Master - Joseph \
+Dev - Tom \
+Dev - Keelan
+
+## Minutes: 2022-03-10
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Standup
+* Ashlyn
+	* Continuing work on updating pages with device calls.
+	* Working on Creating building pages
+* Tom
+	* Working on js connector for update deivce ypt
+	* Working on user pages
+* Joseph
+	* Working on verifying device and device type fields match
+* Keelan
+	* Working on Building out poco for building and user
+	* Implementing mongo connector for building and user documents.
+* Kenny
+	* Finish testing for storage provider
+	* Working on converting device class to c# object
+## Other
+* We should try not to create any new pull requests on Tuesday.
+
+## Minutes: 2022-03-8
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Standup
+* Kenny
+	* Working on hooking storage into endpoints
+* Keelan
+	* Working on pocos for user and mongo connection calls
+* Tom
+	* Working on device types warning/errors
+* Joseph
+	* Working on building endpoints
+* Ashlyn
+	* Working on hooking pages up with api calls
+
+## Minutes: 2022-03-4
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	Brian Emtman
+### Sponsorship Meeting
+#### Overview
+Gave demo to sponsorship, recieved feedback, and asked questions
+#### Feedback
+* Sponsor likes our current design of the UI.
+* Sponsor would like to have filtering/pagination added to list views
+	* Emphasised flexibility for this
+	* Would like ability to export a csv of this data
+* Asked about integrating with Microsoft Power BI
+* Said to present a warning if longitude and latitude is off campus, but this can be the case
+	
+## Minutes: 2022-03-3
+### scribe: Kenny
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+### Standup
+* Kenny
+	* Fix Cors issue
+	* Fix typo and remove Homepage
+	* Work on storage provider
+
+* Ashlyn
+	* Get PR from pulled over work up
+	* Update pages to call the backend API
+
+* Keelan
+	* Add file and photo properties to the device schema
+
+* Joseph
+	* Get PR for device endpoints up
+	* Work on device type endpoints
+
+* Tom
+	* Add longitude and latitude validation\
+	* Update list pages to call backend API
+
+### Other Notes
+#### Tomorrow's Sponsorship Meeting
+* Should ask about longitude and latitude radius for validation
+
 ## Mintues: 2022-03-2
-### scribe: kenny
+### scribe: Kenny
 ### Attendees:
 	Joseph Moore
 	Kenny Miller

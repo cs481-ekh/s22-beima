@@ -104,8 +104,8 @@ namespace BEIMA.Backend.Test
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
-            var device = (Dictionary<string, object>)((OkObjectResult)response).Value;
-            Assert.That(device["serialNum"], Is.EqualTo("1234"));
+            var device = (Device)((OkObjectResult)response).Value;
+            Assert.That(device.SerialNum, Is.EqualTo("1234"));
         }
 
         #endregion SuccessTests

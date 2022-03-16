@@ -10,6 +10,8 @@ using Newtonsoft.Json;
 using MongoDB.Bson;
 using BEIMA.Backend.MongoService;
 using System.Net;
+using BEIMA.Backend.Models;
+using MongoDB.Bson.Serialization;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
@@ -42,20 +44,29 @@ namespace BEIMA.Backend.DeviceFunctions
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                dynamic data = JsonConvert.DeserializeObject(requestBody);
-                device = new Device(new ObjectId(id),
-                                    ObjectId.Parse((string)data.deviceTypeId),
-                                    (string)data.deviceTag,
-                                    (string)data.manufacturer,
-                                    (string)data.modelNum,
-                                    (string)data.serialNum,
-                                    (int)data.yearManufactured,
-                                    (string)data.notes);
+                var data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(requestBody);
+                device = new Device(
+                     ObjectId.Parse(id),
+                     ObjectId.Parse(data.DeviceTypeId),
+                     data.DeviceTag,
+                     data.Manufacturer,
+                     data.ModelNum,
+                     data.SerialNum,
+                     data.YearManufactured,
+                     data.Notes
+                 );
 
-                device.SetLocation(ObjectId.Parse((string)data.location.buildingId),
-                                   (string)data.location.notes,
-                                   (string)data.location.latitude,
-                                   (string)data.location.longitude);
+                var reqBuildingId = data.Location.BuildingId;
+                ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+
+                device.SetLocation(
+                    buildingId,
+                    data.Location.Notes,
+                    data.Location.Latitude,
+                    data.Location.Longitude
+                );
+
+                device.SetFields(data.Fields);
 
                 device.SetLastModified(DateTime.UtcNow, "Anonymous");
                 // TODO: include device type attributes
@@ -80,7 +91,7 @@ namespace BEIMA.Backend.DeviceFunctions
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
             }
-            var dotNetObj = BsonTypeMapper.MapToDotNetValue(updatedDevice);
+            var dotNetObj = BsonSerializer.Deserialize<Device>(updatedDevice);
             return new OkObjectResult(dotNetObj);
         }
     }

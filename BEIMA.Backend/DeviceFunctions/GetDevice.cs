@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using System;
 
 namespace BEIMA.Backend
@@ -49,8 +50,8 @@ namespace BEIMA.Backend
                 }
 
                 // Return the device.
-                var dotNetObj = BsonTypeMapper.MapToDotNetValue(doc);
-                return new OkObjectResult(dotNetObj);
+                var device = BsonSerializer.Deserialize<Device>(doc);
+                return new OkObjectResult(device);
             }
             else
             {
