@@ -15,13 +15,13 @@ env:
   LocalMongoConnection: mongodb://localhost:27017
   CurrentEnv: dev-cloud
   DatabaseName: beima
-  DeviceCollectionName: devices
+  DeviceCollectionName: devices-test
   AzureCosmosConnection: ${{ secrets.AZURE_COSMOS_CONNECTION }}
   AzureStorageConnection: ${{ secrets.AZURE_STORAGE_CONNECTION }}
   AzureContainer: "test-files"
-  DeviceTypeCollectionName: deviceTypes
-  BuildingCollectionName: buildings
-  UserCollectionName: users
+  DeviceTypeCollectionName: deviceTypes-test
+  BuildingCollectionName: buildings-test
+  UserCollectionName: users-test
   REACT_APP_API_URL: http://localhost:7071/api/
   Host: '{ "CORS" : "*"}'
   MinioAccessKey: "minioadmin"
@@ -44,9 +44,3 @@ jobs:
         run: ./build.sh
       - name: Test
         run: ./test.sh
-      - name: Upload screenshots
-        uses: actions/upload-artifact@v3
-        if: failure()
-        with:
-            name: cypress-snapshots
-            path: BEIMA.Client/cypress/screenshots
