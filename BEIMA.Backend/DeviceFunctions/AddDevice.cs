@@ -6,6 +6,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -33,6 +34,7 @@ namespace BEIMA.Backend.DeviceFunctions
             log.LogInformation("C# HTTP trigger function processed a device post request.");
 
             Device device;
+            var mongo = MongoDefinition.MongoInstance;
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -58,7 +60,20 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                device.SetFields(data.Fields);
+                // Check that each field is a valid device type field.
+                if (data.Fields != null)
+                {
+                    var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
+
+                    foreach (var field in data.Fields)
+                    {
+                        if (!deviceType.Fields.Contains(field.Key))
+                        {
+                            return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                        }
+                    }
+                    device.SetFields(data.Fields);
+                }
             }
             catch (Exception)
             {
@@ -76,7 +91,6 @@ namespace BEIMA.Backend.DeviceFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
             var id = mongo.InsertDevice(device.GetBsonDocument());
 
             return new OkObjectResult(id.ToString());
