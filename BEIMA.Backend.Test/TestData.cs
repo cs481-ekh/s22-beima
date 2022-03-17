@@ -1,5 +1,7 @@
 ﻿using BEIMA.Backend.Models;
 using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
 using System.Collections.Generic;
 
 namespace BEIMA.Backend.Test
@@ -74,6 +76,7 @@ namespace BEIMA.Backend.Test
 
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
+        public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
 
         private static string GenerateAddDeviceNoLocation()
         {

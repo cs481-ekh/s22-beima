@@ -44,5 +44,32 @@ namespace BEIMA.Backend.Test
             }
             return reqMock.Object;
         }
+
+        /// <summary>
+        /// Builds a generic multipart http request from the given request method
+        /// </summary>
+        /// <param name="data">Json data to be sent in the request</param>
+        /// <param name="files">Collection of files to be sent in the request</param>
+        /// <returns></returns>
+        public static HttpRequest CreateMultiPartHttpRequest(string data, FormFileCollection? files = null)
+        {
+            DefaultHttpContext httpContext = new DefaultHttpContext();
+
+            var formKeys = new Dictionary<string, StringValues>();
+            formKeys.Add("data", data);
+
+            var formFiles = new FormFileCollection();
+            if (files != null)
+            {
+                foreach (var file in files)
+                {
+                    formFiles.Add(file);
+                }
+            }
+
+            var form = new FormCollection(formKeys, formFiles);
+            httpContext.Request.Form = form;
+            return httpContext.Request;
+        }
     }
 }

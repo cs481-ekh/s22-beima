@@ -1,5 +1,6 @@
 using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -33,12 +34,14 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device post request.");
 
+
             Device device;
+            IFormCollection reqForm;
             var mongo = MongoDefinition.MongoInstance;
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var data = JsonConvert.DeserializeObject<AddDeviceRequest>(requestBody);
+                reqForm = await req.ReadFormAsync();
+                var data = JsonConvert.DeserializeObject<AddDeviceRequest>(reqForm["data"]);
                 device = new Device(
                     ObjectId.GenerateNewId(),
                     ObjectId.Parse(data.DeviceTypeId),
@@ -81,6 +84,23 @@ namespace BEIMA.Backend.DeviceFunctions
             }
             // TODO: Use actual user.
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            // Store attached files and add file uid to device
+            var _storage = StorageDefinition.StorageInstance;
+
+            foreach (var file in reqForm.Files)
+            {
+                if (file.Name == "photo" && file.Length > 0)
+                {
+                    var fileUid = await _storage.PutFile(file);
+                    device.SetPhoto(fileUid, file.FileName);
+                }
+                else if (file.Name == "files" && file.Length > 0)
+                {
+                    var fileUid = await _storage.PutFile(file);
+                    device.AddFile(fileUid, file.FileName);
+                }
+            }
 
             string message;
             HttpStatusCode statusCode;

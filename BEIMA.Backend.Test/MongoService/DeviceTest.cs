@@ -41,11 +41,7 @@ namespace BEIMA.Backend.MongoService.Test
         readonly string validFileUid3 = Guid.NewGuid().ToString();
 
         readonly string validPhotoName1 = "manual.pdf";
-        readonly string validPhotoName2 = "information.txt";
-        readonly string validPhotoName3 = "document.docx";
         readonly string validPhotoUid1 = Guid.NewGuid().ToString();
-        readonly string validPhotoUid2 = Guid.NewGuid().ToString();
-        readonly string validPhotoUid3 = Guid.NewGuid().ToString();
 
         [Test]
         public void DeviceNotInstantiated_InstantiateUsingFullConstructor_DeviceInstantiatedWithCorrectValues()
