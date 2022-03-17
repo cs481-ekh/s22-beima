@@ -127,16 +127,38 @@ const AddDevicePage = () => {
   }
   
   /*
-  *  gathers all the input and puts it into JSON, files are just assigned to state variables for now
+  * gathers data from the form and saves the device to the DB
   */
-  function createJSON(addButtonEvent){
+  function saveDeviceToDb(addButtonEvent) {
+    const formFields = addButtonEvent.target.form.elements;
+    const dbJson = createJSON(formFields);
+    AddDevice(dbJson).then(response => {
+      //reset or show problem
+      if(response.status === HTTP_SUCCESS){
+        setErrors({});
+        setSelectedDeviceType(defaultDeviceTypeObj);
+        setDropDownStyle(styles.button);
+        for(let i = 0; i < formFields.length; i++){
+          formFields[i].value = "";
+        }
+        /* TODO add success messaging*/
+      } else {
+        /*TODO push error to display*/
+        alert('API responded with: ' + response.status + ' ' + response.response);
+      }
+    })
+  }
+  
+  /*
+  *  gathers all the input and puts it into JSON, files are just assigned to state variables for now
+  * @return the compiled JSON
+  */
+  function createJSON(formFields){
     //TODO temporary until we have error signaling figured out
     if (selectedDeviceType === 'Select Device Type'){
       alert ('No device type selected');
       return;
     }
-    
-    let formFields = addButtonEvent.target.form.elements;
     
     //sets up base db object/clears errors
     let dbJson = {fields: {}, location: { 'notes' : ""}};
@@ -189,20 +211,7 @@ const AddDevicePage = () => {
 
       dbJson.deviceTypeId = selectedDeviceType._id;
       
-      AddDevice(dbJson).then(response => {
-        //reset or show problem
-        if(response.status === HTTP_SUCCESS){
-          setErrors({});
-          setSelectedDeviceType(defaultDeviceTypeObj);
-          setDropDownStyle(styles.button);
-          for(let i = 0; i < formFields.length; i++){
-            formFields[i].value = "";
-          }
-        } else {
-          /*TODO push error to display*/
-          alert('API responded with: ' + response.status + ' ' + response.response);
-        }
-      })
+      return dbJson;
     }
   }
   
@@ -216,7 +225,7 @@ const AddDevicePage = () => {
                 <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={dropDownStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
-                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={createJSON}>
+                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
                   Add Device
                 </Button>
               </Col>
