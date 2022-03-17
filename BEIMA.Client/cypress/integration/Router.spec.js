@@ -1,9 +1,7 @@
 /// <reference types="cypress" />
-import { skipOn } from '@cypress/skip-test';
 
 describe("Router Doesn't Redirect On Valid Pages", () =>{
   it('Visit Help Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/help')
     cy.url().should('include', '/help')
     cy.get('.sharedNavBar').contains('Devices')
@@ -13,31 +11,26 @@ describe("Router Doesn't Redirect On Valid Pages", () =>{
     cy.get('.sharedNavBar').contains('Help')
   })
   it('Visit Device Types Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/deviceTypes')
     cy.url().should('include', 'deviceTypes')
     cy.get('.pageTitle').contains('Device Types')
   })
   it('Visit Devices Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/devices')
     cy.url().should('include', 'devices')
     cy.get('.pageTitle').contains('Devices')
   })
   it('Visit Device Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/devices/5')
     cy.url().should('include', 'devices/5')
     cy.get('.pageTitle').contains('View Device')
   })
   it('Visit Device Template Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/deviceTypes/5')
     cy.url().should('include', 'deviceTypes/5')
     cy.get('.pageTitle').contains('View Device Type')
   })
   it('Visit Login Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/login')
     cy.url().should('include', 'login')
     cy.get('.pageTitle').contains('Login')
@@ -46,7 +39,6 @@ describe("Router Doesn't Redirect On Valid Pages", () =>{
 
 describe("Router Redirects On Invalid Pages", () => {
   it('Visits Invalid Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/h3lp')
     cy.url().should('eq','http://localhost:3000/devices')
     cy.get('.sharedNavBar').then(($nav) => {
@@ -59,7 +51,6 @@ describe("Router Redirects On Invalid Pages", () => {
     })
   })
   it('Visits /', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/')
     cy.url().should('eq','http://localhost:3000/devices')
     cy.get('.sharedNavBar').then(($nav) => {
@@ -75,7 +66,6 @@ describe("Router Redirects On Invalid Pages", () => {
 
 describe("NavBar links route correctly", () => {
   it('Visits Help Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Help").click();
     cy.url().should('include', '/help')
@@ -90,7 +80,6 @@ describe("NavBar links route correctly", () => {
   })
 
   it('Visit Add Device Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Add Device").click();
     cy.url().should('include', '/addDevice')
@@ -105,7 +94,6 @@ describe("NavBar links route correctly", () => {
   })
 
   it('Visit Add Device Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Add Device Type").click();
     cy.url().should('include', '/addDeviceType')
@@ -120,7 +108,6 @@ describe("NavBar links route correctly", () => {
   })
 
   it('Visit Buildings Page', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000')
     cy.get('.sharedNavBar').contains("Buildings").click();
     cy.url().should('include', '/buildings')
