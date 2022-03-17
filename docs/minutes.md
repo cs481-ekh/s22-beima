@@ -1,3 +1,34 @@
+## Minutes: 2022-03-16
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 3 Planning:
+### Scope
+ * Frontend work
+	* Integrate api calls to existing pages
+	* Integrate adding/updating/removing photo/documents
+	* Add remaining pages, like user and building
+	* Error messages shared component and add them to needed pages
+	* Authenication integration/any other validation
+	* Filtering
+ * Backend work
+ 	* Building and user endpoints
+ 	* Finish photo/files storage
+ 	* Authentication endpoints and validation code
+ 	* Filtering functionality in mongo and endpoints
+ 	* Export to csv
+ * Other
+	* If any of us have time, start on manuals, readme, and/or how-to articles for developing BEIMA
+
+### Additional Items
+ * Spring break will be a bonus week and no one will be required to produce work during that week.
+ * For tasks with dependencies, we will have a "blocked" column in our board to indicate tasks that are blocked, as well as 
+communicating in the scrum discord channel to left everyone know.
+
 ## Minutes: 2022-03-15
 ### scribe: Kenny
 ### Attendees:
