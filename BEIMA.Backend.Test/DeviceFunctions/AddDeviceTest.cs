@@ -23,8 +23,16 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         public async Task NoDevice_AddDevice_ReturnsValidId()
         {
             // ARRANGE
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
                   .Returns(ObjectId.GenerateNewId())
                   .Verifiable();
@@ -55,6 +63,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             }
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
+
             Assert.IsNotNull(deviceId);
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
@@ -65,8 +76,16 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         public async Task NoDevice_AddDeviceWithNoLocation_ReturnsValidId()
         {
             // ARRANGE
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
                   .Returns(ObjectId.GenerateNewId())
                   .Verifiable();
@@ -97,6 +116,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             }
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
+
             Assert.IsNotNull(deviceId);
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));

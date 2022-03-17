@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Text;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.Test
 {
@@ -11,6 +12,10 @@ namespace BEIMA.Backend.Test
             "{" +
                 "\"deviceTag\": \"A-2\"," +
                 "\"deviceTypeId\": \"12341234abcdabcd43214321\"," +
+                "\"fields\":{" +
+                    "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": \"TestValue1\"," +
+                    "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": \"TestValue2\"," +
+                "}," +
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes\"," +
@@ -73,13 +78,17 @@ namespace BEIMA.Backend.Test
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
 
-
         private static string GenerateAddDeviceNoLocation()
         {
             var request = new AddDeviceRequest()
             {
                 DeviceTag = "tag",
                 DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
                 Manufacturer = "man",
                 SerialNum = "serial",
                 YearManufactured = 1880,
