@@ -1,5 +1,4 @@
 /// <reference types="cypress" />
-import { skipOn } from '@cypress/skip-test'
 
 describe("Verify Buttons on Add Device Type Page", () => {
   it('Check for Add Device Type Button', () => {
@@ -24,7 +23,6 @@ describe("Verify Data can be entered into fields", () => {
 
 describe("Verify Data in fields is cleared when Add Device Type is selected", () => {
   it('Enter data, click Add Device, verify fields are empty', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#inputName').scrollIntoView().type("new type")
     cy.get('#inputDescription').scrollIntoView().type("newly added type")
@@ -72,7 +70,6 @@ describe("Verify custom fields can be deleted", () => {
 
 describe("Verify custom fields get cleared when Add Device Type is clicked", () => {
   it('Add new fields', () => {
-    skipOn('linux')
     cy.visit('http://localhost:3000/addDeviceType')
     cy.get('#newField').scrollIntoView().type("field1")
     cy.get("#addField").scrollIntoView().click()
@@ -123,5 +120,25 @@ describe("Verify error message on invalid custom field inputs", () => {
     cy.get('#customFields').then(($custfields) => {
       cy.wrap($custfields).children().should('be.empty')
     })
+  })
+})
+
+describe("Verify the max character length of 1024", function () {
+  it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
+    cy.visit('http://localhost:3000/addDeviceType')
+    cy.get('#inputName').scrollIntoView().type(randomString1024())
+    cy.get('#inputName').should('not.include.value', 'This text should not be included')
+    
+    function randomString1024() {
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  
+      for (var i = 0; i < 1024; i++){
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      }
+      text += "This text should not be included";
+
+      return text;
+    }
   })
 })

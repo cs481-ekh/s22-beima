@@ -1,0 +1,6 @@
+Database Name: beima
+Collection Names:
+devices
+deviceTypes
+buildings
+users

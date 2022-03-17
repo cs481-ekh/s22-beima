@@ -41,14 +41,14 @@ const LoadingItemList = () => {
  * @param RenderItem
  * @returns html
  */
-const Item = ({item, RenderItem}) => {
+const Item = ({item, RenderItem, isDeviceList}) => {
   const [visable, setVisibility] = useState(false);
   let navigate = useNavigate();
 
   return (
     <div className={styles.item}>
       <div className={styles.row}> 
-        <div className={styles.itemName}>{item.deviceTag} - {"<Device Type Name>"} - {"<Building Name>"}</div>
+        {isDeviceList ? <div className={styles.itemName}>{item.deviceTag} - {"<Device Type Name>"} - {"<Building Name>"}</div> : <div className={styles.itemName}>{item.name}</div>}
         <MdMoreHoriz color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/>
       </div>
 
@@ -73,11 +73,11 @@ const Item = ({item, RenderItem}) => {
  * @parm RenderItem : html model that will render one item in list
  * @returns html
  */
-const List = ({list, RenderItem}) => {
+const List = ({list, RenderItem, isDeviceList}) => {
   return (
     <div>
       {list.map((item, i) => 
-        <Item item={item} RenderItem={RenderItem} key={i}/>
+        <Item item={item} RenderItem={RenderItem} key={i} isDeviceList={isDeviceList}/>
       )}
     </div>
   )
@@ -93,11 +93,11 @@ const List = ({list, RenderItem}) => {
  * @param renderItem : details render object
  * @param loading: loading status
  */
-const ItemList = ({list, RenderItem, loading}) => {
+const ItemList = ({list, RenderItem, loading, isDeviceList}) => {
   return (
     <Card className={styles.card} id="itemList">
       <Card.Body>
-        {loading ? <LoadingItemList/>: <List list={list} RenderItem={RenderItem}/>}
+        {loading ? <LoadingItemList/>: <List list={list} RenderItem={RenderItem} isDeviceList={isDeviceList}/>}
       </Card.Body>
     </Card>
   )

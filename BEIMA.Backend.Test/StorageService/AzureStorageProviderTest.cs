@@ -13,15 +13,7 @@ namespace BEIMA.Backend.Test.StorageService
     [TestFixture]
     public class AzureStorageTest : UnitTestBase
     {
-        private readonly IStorageProvider _storage = SetupStorageProvider();
-
-        private static IStorageProvider SetupStorageProvider()
-        {
-            var services = new ServiceCollection();
-            services.AddSingleton<IStorageProvider, AzureStorageProvider>();
-            var serviceProivder = services.BuildServiceProvider();
-            return serviceProivder.GetRequiredService<IStorageProvider>();
-        }
+        private readonly IStorageProvider _storage = new AzureStorageProvider();
 
         [Test]
         public void SmokeTest()

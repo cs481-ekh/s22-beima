@@ -54,7 +54,7 @@ namespace BEIMA.Backend.StorageService
                     await client.UploadAsync(stream);
                 }                   
                 return fileUid;
-            } catch (Exception e)
+            } catch (Exception)
             {
                 return null;
             }

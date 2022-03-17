@@ -28,10 +28,8 @@
             "fileName": String
         }
     ],
-    photos: [
-        {
-            "fileUid": String,
-            "fileName": String
-        }
-    ]
+    photo: {
+        "fileUid": String,
+        "fileName": String
+    }    
 }

@@ -1,10 +1,16 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Internal;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using Moq;
 using NUnit.Framework;
+using System;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
 
@@ -17,23 +23,105 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         public async Task NoDevice_AddDevice_ReturnsValidId()
         {
             // ARRANGE
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
                   .Returns(ObjectId.GenerateNewId())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            // Create request
-            var body = TestData._testDevice;
-            var request = CreateHttpRequest(RequestMethod.POST, body: body);
-            var logger = (new LoggerFactory()).CreateLogger("Testing");
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.PutFile(It.IsAny<IFormFile>()))
+                .Returns(Task.FromResult(Guid.NewGuid().ToString() + ".txt"))
+                .Verifiable();
 
-            // ACT
-            var deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            // Create request
+            var data = TestData._testDevice;
+            var fileCollection = new FormFileCollection();
+
+            string? deviceId;
+            using (var fileStream = new ByteArrayContent(TestData._fileBytes).ReadAsStream())
+            {
+                fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
+
+                var request = CreateMultiPartHttpRequest(data, fileCollection);
+                var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+
+                // ACT
+                deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
+            }
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
+
             Assert.IsNotNull(deviceId);
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
+            Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
+        }
+
+        [Test]
+        public async Task NoDevice_AddDeviceWithNoLocation_ReturnsValidId()
+        {
+            // ARRANGE
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
+            // Setup mock database client.
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.PutFile(It.IsAny<IFormFile>()))
+                .Returns(Task.FromResult(Guid.NewGuid().ToString() + ".txt"))
+                .Verifiable();
+
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            // Create request
+            var data = TestData._testAddDeviceNoLocation;
+            var fileCollection = new FormFileCollection();
+
+            string? deviceId;
+            using (var fileStream = new ByteArrayContent(TestData._fileBytes).ReadAsStream())
+            {
+                fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
+
+                var request = CreateMultiPartHttpRequest(data, fileCollection);
+                var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+
+                // ACT
+                deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
+            }
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
+
+            Assert.IsNotNull(deviceId);
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
             Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
         }
     }

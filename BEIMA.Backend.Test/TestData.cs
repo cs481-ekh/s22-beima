@@ -1,4 +1,10 @@
-﻿namespace BEIMA.Backend.Test
+﻿using BEIMA.Backend.Models;
+using Newtonsoft.Json;
+using System.Net.Http;
+using System.Text;
+using System.Collections.Generic;
+
+namespace BEIMA.Backend.Test
 {
     public static class TestData
     {
@@ -6,6 +12,10 @@
             "{" +
                 "\"deviceTag\": \"A-2\"," +
                 "\"deviceTypeId\": \"12341234abcdabcd43214321\"," +
+                "\"fields\":{" +
+                    "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": \"TestValue1\"," +
+                    "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": \"TestValue2\"," +
+                "}," +
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes\"," +
@@ -64,5 +74,42 @@
                 "]" +
             "}";
 
+        public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
+        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
+        public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
+
+        private static string GenerateAddDeviceNoLocation()
+        {
+            var request = new AddDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = 1880,
+                Notes = "notes",
+
+            };
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateUpdateDeviceNoLocation()
+        {
+            var request = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = 1880,
+                Notes = "notes",
+            };
+            return JsonConvert.SerializeObject(request);
+        }
     }
 }
