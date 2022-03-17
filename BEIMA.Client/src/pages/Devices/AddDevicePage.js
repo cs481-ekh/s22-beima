@@ -158,7 +158,7 @@ const AddDevicePage = () => {
       //year manufactured validation
       if (formName === 'Year Manufactured') {
         if(formFields[i].value.match(/[^\d]/)) {
-          newErrors[formName] = `${formName} value is invalid. Must be a valid year.`;
+          newErrors[formName] = `${formName} value is invalid. Must be a numeric value.`;
         }
       }
       
