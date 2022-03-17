@@ -97,6 +97,13 @@ const AddDevicePage = () => {
             newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
           }
         }
+
+        //year manufactured validation
+        if (formName === 'Year Manufactured') {
+          if(formFields[i].value.match(/[^\d]/)) {
+            newErrors[formName] = `${formName} value is invalid. Must be a valid year.`;
+          }
+        }
         
         Object.assign(fieldValues, formJSON);
       } else if (formName === "Device Image"){
