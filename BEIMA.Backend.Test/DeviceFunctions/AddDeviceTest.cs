@@ -42,20 +42,22 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var fileCollection = new FormFileCollection();
 
             string? deviceId;
-            using (var fileStream = new ByteArrayContent(Encoding.ASCII.GetBytes("TestOne")).ReadAsStream())
+            using (var fileStream = new ByteArrayContent(TestData._fileBytes).ReadAsStream())
             {
                 fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
-                
+
                 var request = CreateMultiPartHttpRequest(data, fileCollection);
                 var logger = (new LoggerFactory()).CreateLogger("Testing");
 
 
                 // ACT
-                deviceId = ((ObjectResult) await AddDevice.Run(request, logger)).Value?.ToString();
+                deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
             }
 
             // ASSERT
             Assert.IsNotNull(deviceId);
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
             Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
         }
 
@@ -82,7 +84,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var fileCollection = new FormFileCollection();
 
             string? deviceId;
-            using (var fileStream = new ByteArrayContent(Encoding.ASCII.GetBytes("TestOne")).ReadAsStream())
+            using (var fileStream = new ByteArrayContent(TestData._fileBytes).ReadAsStream())
             {
                 fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
 
@@ -96,6 +98,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             // ASSERT
             Assert.IsNotNull(deviceId);
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
             Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
         }
     }

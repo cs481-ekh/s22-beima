@@ -127,7 +127,7 @@ namespace BEIMA.Backend.FT
         /// <param name="files">List of files to send with the request</param>
         /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null)
+        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string queryString = "")
         {
             StringContent json;
             HttpResponseMessage response;
@@ -140,6 +140,11 @@ namespace BEIMA.Backend.FT
             {
                 var jsonObject = JsonConvert.SerializeObject(data);
                 json = new StringContent(jsonObject, Encoding.UTF8, "application/json");
+            }
+
+            if (!string.IsNullOrEmpty(queryString))
+            {
+                route = $"{route}?{queryString}";
             }
 
             MultipartFormDataContent form = new MultipartFormDataContent();

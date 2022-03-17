@@ -71,7 +71,7 @@ namespace BEIMA.Backend.DeviceFunctions
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
 
             // Store attached files and add file uid to device
-            var _storage = StorageProvider.Instance;
+            var _storage = StorageDefinition.StorageInstance;
 
             foreach (var file in reqForm.Files)
             {
