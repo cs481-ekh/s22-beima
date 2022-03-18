@@ -1,5 +1,6 @@
 ﻿using BEIMA.Backend.DeviceFunctions;
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -24,20 +25,29 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             var testId = "abcdef123456789012345678";
-            mockDb.Setup(mock => mock.UpdateDevice(It.Is<BsonDocument>(bd => bd["_id"].AsObjectId.ToString().Equals(testId))))
+            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(id => id.ToString().Equals(testId))))
                   .Returns<BsonDocument>(null)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.DeleteFile(It.IsAny<string>()))
+                .Returns<bool>(null)
+                .Verifiable();
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
             // Set up the http request.
-            var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDevice);
+            var data = TestData._testUpdateDeviceDeleteFiles;
+            var request = CreateMultiPartHttpRequest(data);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
             var response = await UpdateDevice.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Never));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
             Assert.That(((NotFoundObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
@@ -52,12 +62,19 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         {
             // ARRANGE
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.UpdateDevice(It.Is<BsonDocument>(bd => bd["_id"].AsObjectId.ToString().Equals(id))))
-                  .Returns<BsonDocument>(null)
-                  .Verifiable();
+            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(id => id.ToString().Equals(id))))
+                 .Returns<BsonDocument>(null)
+                 .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDevice);
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.DeleteFile(It.IsAny<string>()))
+                .Returns<bool>(null)
+                .Verifiable();
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            var data = TestData._testUpdateDeviceDeleteFiles;
+            var request = CreateMultiPartHttpRequest(data);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -65,6 +82,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
             Assert.That(((BadRequestObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
@@ -81,13 +99,23 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDevice(It.IsAny<ObjectId>()))
+                  .Returns(device.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()))
                   .Returns(device.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var body = TestData._testUpdateDevice;
-            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.GetPresignedURL(It.IsAny<string>()))
+                .Returns(Task.FromResult("url"))
+                .Verifiable();
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            // Create request
+            var data = TestData._testUpdateDeviceDeleteFiles;
+            var request = CreateMultiPartHttpRequest(data);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -97,6 +125,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Exactly(2)));
             var resDevice = (Device)((OkObjectResult)response).Value;
 
             Assert.That(resDevice.ModelNum, Is.EqualTo(device.ModelNum));
@@ -113,13 +142,22 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDevice(It.IsAny<ObjectId>()))
+                  .Returns(device.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()))
                   .Returns(device.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
-            var body = TestData._testUpdateDeviceNoLocation;
-            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.GetPresignedURL(It.IsAny<string>()))
+                .Returns(Task.FromResult("url"))
+                .Verifiable();
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            var data = TestData._testUpdateDeviceNoLocation;
+            var request = CreateMultiPartHttpRequest(data);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
@@ -129,6 +167,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Never));
             var resDevice = (Device)((OkObjectResult)response).Value;
 
             Assert.That(resDevice.ModelNum, Is.EqualTo(device.ModelNum));

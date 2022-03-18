@@ -75,7 +75,8 @@ namespace BEIMA.Backend.Test
             "}";
 
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
-        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
+        public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
+        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
 
         private static string GenerateAddDeviceNoLocation()
@@ -98,17 +99,48 @@ namespace BEIMA.Backend.Test
             return JsonConvert.SerializeObject(request);
         }
 
-        private static string GenerateUpdateDeviceNoLocation()
+        private static string GenerateUpdateDeviceRequest()
         {
             var request = new UpdateDeviceRequest()
             {
                 DeviceTag = "tag",
-                DeviceTypeId = "12341234abcdabcd43214321",
+                DeviceTypeId = "622cf00109137c26f913b282",
                 Manufacturer = "man",
-                SerialNum = "serial",
-                YearManufactured = 1880,
-                Notes = "notes",
+                ModelNum = "1234",
+                SerialNum = "ser",
+                Notes = "Some notes.",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                Fields = new Dictionary<string, string>(),
+                DeletedFiles = new List<string>()
             };
+            request.Fields.Add("customIdOne", "valueOne");
+            request.Fields.Add("customIdTwo", "valueTwo");
+            request.DeletedFiles.Add("fileOneUid");
+            request.DeletedFiles.Add("fileTwoUid");
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateUpdateDeviceNoLocationRequest()
+        {
+            var request = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "622cf00109137c26f913b282",
+                Manufacturer = "man",
+                ModelNum = "1234",
+                SerialNum = "ser",
+                Notes = "Some notes.",
+                Fields = new Dictionary<string, string>(),
+                DeletedFiles = new List<string>()
+            };
+            request.Fields.Add("customIdOne", "valueOne");
+            request.Fields.Add("customIdTwo", "valueTwo");
             return JsonConvert.SerializeObject(request);
         }
     }

@@ -127,7 +127,7 @@ namespace BEIMA.Backend.FT
         /// <param name="files">List of files to send with the request</param>
         /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string queryString = "")
+        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string? queryString = "")
         {
             StringContent json;
             HttpResponseMessage response;
@@ -201,9 +201,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to add.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<string> AddDevice(Device device, FormFileCollection? files = null)
+        public async Task<string> AddDevice(Device device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendMultiPartRequest("api/device", device, files);
+            var response = await SendMultiPartRequest("api/device", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -224,9 +224,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to update.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<Device> UpdateDevice(Device device)
+        public async Task<Device> UpdateDevice(Device device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendRequest($"api/device/{device.Id}/update", HttpVerb.POST, device);
+            var response = await SendMultiPartRequest($"api/device/{device.Id}/update", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
         }

@@ -12,6 +12,8 @@ using BEIMA.Backend.MongoService;
 using System.Net;
 using BEIMA.Backend.Models;
 using MongoDB.Bson.Serialization;
+using System.Linq;
+using BEIMA.Backend.StorageService;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
@@ -40,41 +42,97 @@ namespace BEIMA.Backend.DeviceFunctions
                 return new BadRequestObjectResult(Resources.InvalidIdMessage);
             }
 
+            // Parse out necessary data            
+            var mongo = MongoDefinition.MongoInstance;
+            IFormCollection reqForm;            
             Device device;
+            UpdateDeviceRequest data;
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(requestBody);
-                device = new Device(
-                     ObjectId.Parse(id),
-                     ObjectId.Parse(data.DeviceTypeId),
-                     data.DeviceTag,
-                     data.Manufacturer,
-                     data.ModelNum,
-                     data.SerialNum,
-                     data.YearManufactured,
-                     data.Notes
-                 );
+                reqForm = await req.ReadFormAsync();
+                data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);                              
+                
+                var deviceDocument = mongo.GetDevice(new ObjectId(id));
+                if (deviceDocument == null)
+                {
+                    return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
+                }
 
-                var reqBuildingId = data.Location.BuildingId;
-                ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
-
-                device.SetLocation(
-                    buildingId,
-                    data.Location.Notes,
-                    data.Location.Latitude,
-                    data.Location.Longitude
-                );
-
-                device.SetFields(data.Fields);
-
-                device.SetLastModified(DateTime.UtcNow, "Anonymous");
-                // TODO: include device type attributes
+                device = BsonSerializer.Deserialize<Device>(deviceDocument);                
             }
             catch (Exception)
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
+
+            if (!ObjectId.TryParse(data.DeviceTypeId, out _))
+            {
+                return new BadRequestObjectResult(Resources.InvalidIdMessage);
+            }            
+
+            // Set Data to new values
+            device.DeviceTypeId = ObjectId.Parse(data.DeviceTypeId);
+            device.DeviceTag = data.DeviceTag;
+            device.Manufacturer = data.Manufacturer;
+            device.ModelNum = data.ModelNum;
+            device.SerialNum = data.SerialNum;
+            device.YearManufactured = data.YearManufactured;
+            device.Notes = data.Notes;
+
+            var reqBuildingId = data.Location.BuildingId;
+            ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+            device.SetLocation(
+                buildingId,
+                data.Location.Notes,
+                data.Location.Latitude,
+                data.Location.Longitude
+            );
+
+            device.SetFields(data.Fields);
+
+            var _storage = StorageDefinition.StorageInstance;
+
+            // Check if there is a new photo
+            var updatePhoto = reqForm.Files.Any(file => file.Name == "photos");
+            if (updatePhoto && device.Photo != null)
+            {
+                var result = await _storage.DeleteFile(device.Photo.FileUid);
+                if (!result)
+                {
+                    log.LogInformation($"Failed to delete a file: {device.Photo.FileUid.ToString()}.");
+                }
+                device.Photo = null;
+            }
+
+            // Remove files from device's file list
+            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));
+
+            // Removed deleted files from storage
+            foreach (var fileUid in data.DeletedFiles)
+            {
+                var result = await _storage.DeleteFile(fileUid);
+                if (!result)
+                {
+                    log.LogInformation($"Failed to delete a file: {fileUid.ToString()}.");
+                }
+            }
+
+            // Add new files and photos
+            foreach (var file in reqForm.Files)
+            {
+                var fileUid = await _storage.PutFile(file);
+                if (file.Name == "files")
+                {
+                    device.AddFile(fileUid, file.FileName);
+                }
+                else if (file.Name == "photos")
+                {
+                    device.SetPhoto(fileUid, file.FileName);
+                }
+            }
+
+            device.SetLastModified(DateTime.UtcNow, "Anonymous");
+
 
             string message;
             HttpStatusCode statusCode;
@@ -85,14 +143,12 @@ namespace BEIMA.Backend.DeviceFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
-            var updatedDevice = mongo.UpdateDevice(device.GetBsonDocument());
-            if (updatedDevice is null)
+            var updatedDeviceDocument = mongo.UpdateDevice(device.GetBsonDocument());
+            if (updatedDeviceDocument is null)
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
             }
-            var dotNetObj = BsonSerializer.Deserialize<Device>(updatedDevice);
-            return new OkObjectResult(dotNetObj);
+            return new OkObjectResult(device);
         }
     }
 }
