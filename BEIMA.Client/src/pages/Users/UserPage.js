@@ -67,26 +67,6 @@ const UserPage = () => {
   }
   
   /**
-   * Renders an input that lets a user change a field's input
-   * 
-   * @param editable: can this input be used
-   * @param id: id that should be set on the input
-   * @param label: label of the input
-   * @param value: value of the input
-   * @param onChange: function to update value of the field in higher level <RenderItem>
-   * @returns 
-   */
-  const FormItem = ({editable, id, label, value, onChange }) => {
-    return (
-      <Form.Group className="mb-3" controlId={id}>
-        <Form.Label><b>{label}</b></Form.Label>
-        <Form.Control required type="text" disabled={!editable} size="sm" value={value}  onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
-      </Form.Group>
-    )
-  }
-
-  
-  /**
    * Renders a custom form that enables a user
    * to update a user's fields
    * @param user: user json
