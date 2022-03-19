@@ -255,6 +255,10 @@ const DevicePage = () => {
       } else if (target === 'deviceSerialNumber'){
         setSerialNum(value)
       } else if (target === 'deviceYearManufactured'){
+        //year manufactured validation
+        if(value.match(/[^\d]/)) {
+          return;
+        }
         setYearManufactured(value)
       } else if (target === 'locationNotes'){
         setLocNotes(value)

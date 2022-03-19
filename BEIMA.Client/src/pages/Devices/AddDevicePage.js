@@ -135,21 +135,23 @@ const AddDevicePage = () => {
   function saveDeviceToDb(addButtonEvent) {
     const formFields = addButtonEvent.target.form.elements;
     const dbJson = createJSON(formFields);
-    AddDevice(dbJson).then(response => {
-      //reset the form or show a message regarding insertion failure
-      if(response.status === HTTP_SUCCESS){
-        setErrors({});
-        setSelectedDeviceType(noDeviceTypeObj);
-        setDropDownStyle(styles.button);
-        for(let i = 0; i < formFields.length; i++){
-          formFields[i].value = "";
+    if(dbJson){
+      AddDevice(dbJson).then(response => {
+        //reset the form or show a message regarding insertion failure
+        if(response.status === HTTP_SUCCESS){
+          setErrors({});
+          setSelectedDeviceType(noDeviceTypeObj);
+          setDropDownStyle(styles.button);
+          for(let i = 0; i < formFields.length; i++){
+            formFields[i].value = "";
+          }
+          /* TODO add success messaging*/
+        } else {
+          /*TODO push error to display*/
+          alert('API responded with: ' + response.status + ' ' + response.response);
         }
-        /* TODO add success messaging*/
-      } else {
-        /*TODO push error to display*/
-        alert('API responded with: ' + response.status + ' ' + response.response);
-      }
-    })
+      })
+    }
   }
   
   /*
@@ -178,6 +180,15 @@ const AddDevicePage = () => {
         const coordMax = formName === 'Latitude' ? MAX_LATITUDE : MAX_LONGITUDE;
         if(!(isFinite(deviceFields[formName]) && Math.abs(deviceFields[formName]) <= coordMax)) {
           newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
+        }
+      }
+
+      //year manufactured validation
+      if (formName === 'Year Manufactured') {
+        if(formFields[i].value.match(/[^\d]/)) {
+          newErrors[formName] = `${formName} value is invalid. Must be a numeric value.`;
+        } else if (formFields[i].value.length < 4 && formFields[i].value.length > 0){
+          newErrors[formName] = `${formName} value is invalid. Year must be 4 characters long.`;
         }
       }
       
@@ -210,6 +221,7 @@ const AddDevicePage = () => {
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
+      return false;
     } else {
       /*TODO Need ability to get a building ID, probably a DD on the page*/
 
