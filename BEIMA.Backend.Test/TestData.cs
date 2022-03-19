@@ -34,6 +34,10 @@ namespace BEIMA.Backend.Test
                 "\"_id\": \"abcdef123456789012345678\"," +
                 "\"deviceTag\": \"A-3\"," +
                 "\"deviceTypeId\": \"12341234abcdabcd43214321\"," +
+                "\"fields\":{" +
+                    "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": \"TestValue3\"," +
+                    "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": \"TestValue4\"," +
+                "}," +
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes.\"," +
@@ -104,6 +108,11 @@ namespace BEIMA.Backend.Test
             {
                 DeviceTag = "tag",
                 DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
                 Manufacturer = "man",
                 SerialNum = "serial",
                 YearManufactured = 1880,

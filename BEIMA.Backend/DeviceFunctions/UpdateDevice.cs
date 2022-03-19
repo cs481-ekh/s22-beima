@@ -41,6 +41,7 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             Device device;
+            var mongo = MongoDefinition.MongoInstance;
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
@@ -66,10 +67,27 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                device.SetFields(data.Fields);
+                // Check that each field is a valid device type field.
+                if (data.Fields != null)
+                {
+                    var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
+
+                    if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
+
+                    foreach (var field in data.Fields)
+                    {
+                        if (!deviceType.Fields.Contains(field.Key))
+                        {
+                            return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                        }
+                    }
+                    device.SetFields(data.Fields);
+                }
 
                 device.SetLastModified(DateTime.UtcNow, "Anonymous");
-                // TODO: include device type attributes
             }
             catch (Exception)
             {
@@ -85,7 +103,6 @@ namespace BEIMA.Backend.DeviceFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
             var updatedDevice = mongo.UpdateDevice(device.GetBsonDocument());
             if (updatedDevice is null)
             {
