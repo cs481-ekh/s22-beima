@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using System.Linq;
 
 namespace BEIMA.Backend.DeviceTypeFunctions
 {
@@ -35,6 +36,13 @@ namespace BEIMA.Backend.DeviceTypeFunctions
 
             var mongo = MongoDefinition.MongoInstance;
             var deviceTypeId = new ObjectId(id);
+
+            // Do not delete if at least one device exists with this device type.
+            // TODO: Use database filter for devices instead of getting the list of all devices.
+            if (mongo.GetAllDevices().Where(d => d["deviceTypeId"].AsObjectId.Equals(deviceTypeId)).Any())
+            {
+                return new ConflictObjectResult(Resources.CannotDeleteDeviceTypeMessage);
+            }
 
             if (!mongo.DeleteDeviceType(deviceTypeId))
             {
