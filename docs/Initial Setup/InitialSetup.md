@@ -23,6 +23,9 @@ Launch Visual Studio
 * API is ready to accept requests
 
 Launch Mongo Compass
+ * Click New Connection
+ * Type or paste " mongodb://localhost:27017 " into the connection string textbox
+ * Click Connect
  * Click the + sign at the bottom of the left pane to add a database
  * Database name: beima
  * Collection name: deviceTypes
