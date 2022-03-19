@@ -30,5 +30,5 @@ Launch Mongo Compass
  * Database name: beima
  * Collection name: deviceTypes
 This will create the DB with one of the required collections.
-Once that is completed the + sign inline with the DB name to add the remaining required collections to mirror the production environment.
+Once that is completed the + sign inline with the DB name can be used to add the remaining required collections to mirror the production environment.
 * DB is ready to accept documents for all collections created
