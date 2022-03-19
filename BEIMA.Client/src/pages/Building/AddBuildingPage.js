@@ -4,6 +4,7 @@ import { Card, Button, Form, Row, Col } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddBuildingPage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
+import { MAX_LATITUDE, MAX_LONGITUDE } from '../../Constants.js';
 
 
 const AddBuildingPage = () => {
@@ -40,7 +41,7 @@ const AddBuildingPage = () => {
         
         //lat lon validation
         if (formName === 'Latitude' || formName === 'Longitude') {
-          const coordMax = formName === 'Latitude' ? 90 : 180;
+          const coordMax = formName === 'Latitude' ? MAX_LATITUDE : MAX_LONGITUDE;
           if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
             newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
           }
