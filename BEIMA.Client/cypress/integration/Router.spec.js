@@ -120,4 +120,19 @@ describe("NavBar links route correctly", () => {
       cy.wrap($nav).contains('Help')
     })
   })
+  
+  it('Visit Users Page', () => {
+    cy.visit('http://localhost:3000')
+    cy.get('.sharedNavBar').contains("Users").click();
+    cy.url().should('include', '/users')
+    cy.get('.sharedNavBar').then(($nav) => {
+      cy.wrap($nav).contains('Devices')
+      cy.wrap($nav).contains('Device Types')
+      cy.wrap($nav).contains('Add Device')
+      cy.wrap($nav).contains('Add Device Type')
+      cy.wrap($nav).contains('Buildings')
+      cy.wrap($nav).contains('Users')
+      cy.wrap($nav).contains('Help')
+    })
+  })
 })
