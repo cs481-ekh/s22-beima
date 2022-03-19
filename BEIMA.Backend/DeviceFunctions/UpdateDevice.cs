@@ -148,7 +148,21 @@ namespace BEIMA.Backend.DeviceFunctions
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
             }
-            return new OkObjectResult(device);
+
+            var updatedDevice = BsonSerializer.Deserialize<Device>(updatedDeviceDocument);
+            
+            if(updatedDevice.Photo.FileUid != null)
+            {
+                var presignedUrl = await _storage.GetPresignedURL(updatedDevice.Photo.FileUid);
+                updatedDevice.Photo.FileUrl = presignedUrl;
+            }
+            foreach (var file in updatedDevice.Files)
+            {
+                var url = await _storage.GetPresignedURL(file.FileUid);
+                file.FileUrl = url;
+            }
+
+            return new OkObjectResult(updatedDevice);
         }
     }
 }

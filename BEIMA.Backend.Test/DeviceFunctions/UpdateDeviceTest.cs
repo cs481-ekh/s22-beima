@@ -82,6 +82,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Never));
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
@@ -111,6 +112,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             mockStorage.Setup(mock => mock.GetPresignedURL(It.IsAny<string>()))
                 .Returns(Task.FromResult("url"))
                 .Verifiable();
+            mockStorage.Setup(mock => mock.DeleteFile(It.IsAny<string>()))
+               .Returns(Task.FromResult(true))
+               .Verifiable();
             StorageDefinition.StorageInstance = mockStorage.Object;
 
             // Create request
@@ -126,6 +130,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Exactly(2)));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.GetPresignedURL(It.IsAny<string>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
             var resDevice = (Device)((OkObjectResult)response).Value;
 
             Assert.That(resDevice.ModelNum, Is.EqualTo(device.ModelNum));

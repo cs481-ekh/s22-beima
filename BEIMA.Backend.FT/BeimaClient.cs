@@ -224,7 +224,7 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to update.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<Device> UpdateDevice(Device device, FormFileCollection? files = null, string? queryString = "")
+        public async Task<Device> UpdateDevice(DeviceUpdate device, FormFileCollection? files = null, string? queryString = "")
         {
             var response = await SendMultiPartRequest($"api/device/{device.Id}/update", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();

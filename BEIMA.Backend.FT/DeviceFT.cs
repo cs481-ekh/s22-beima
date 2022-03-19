@@ -319,7 +319,7 @@ namespace BEIMA.Backend.FT
             var photoName = "photo.txt";
 
             Device updatedDevice;
-            Device updateItem;
+            DeviceUpdate updateItem;
             using (var fileStream = new MemoryStream(TestObjects._fileBytes))
             using (var photoStream = new MemoryStream(TestObjects._fileBytes))
             {
@@ -327,8 +327,24 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
                 var deviceId = await TestClient.AddDevice(origDevice, files);
-                updateItem = await TestClient.GetDevice(deviceId);
-                updateItem.Notes = "Updated Notes.";
+                var deviceItem = await TestClient.GetDevice(deviceId);
+                updateItem = new DeviceUpdate()
+                {
+                    Id = deviceItem.Id,
+                    Manufacturer = deviceItem.Manufacturer, 
+                    ModelNum = deviceItem.ModelNum, 
+                    DeviceTag = deviceItem.DeviceTag,
+                    DeviceTypeId = deviceItem.DeviceTypeId,
+                    Fields = deviceItem.Fields,
+                    LastModified = deviceItem.LastModified,
+                    Location = deviceItem.Location,
+                    SerialNum = deviceItem.SerialNum,
+                    Photo = deviceItem.Photo,
+                    YearManufactured = deviceItem.YearManufactured,
+                    Notes = "Updated Notes.",
+                    Files = deviceItem.Files
+                };
+
                 updateItem.DeletedFiles = new List<string>();
 
                 var fileUid = updateItem.Files?[0].FileUid;
@@ -364,6 +380,12 @@ namespace BEIMA.Backend.FT
 
             Assert.That(updatedDevice.Fields?.Single().Key, Is.EqualTo(updateItem.Fields?.Single().Key));
             Assert.That(updatedDevice.Fields?.Single().Value, Is.EqualTo(updateItem.Fields?.Single().Value));
+
+            Assert.That(updatedDevice.Photo?.FileName, Is.EqualTo(photoName));
+            Assert.That(updatedDevice.Photo?.FileUid, Is.Not.Null);
+            Assert.That(updatedDevice.Photo?.FileUrl, Is.Not.Null);
+
+            Assert.That(updatedDevice.Files?.Count, Is.EqualTo(0));
         }
     }
 }
