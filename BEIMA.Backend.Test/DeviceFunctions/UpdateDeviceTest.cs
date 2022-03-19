@@ -20,10 +20,17 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         public async Task IdNotInDatabase_UpdateDevice_ReturnsNotFound()
         {
             // ARRANGE
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
 
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             var testId = "abcdef123456789012345678";
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.UpdateDevice(It.Is<BsonDocument>(bd => bd["_id"].AsObjectId.ToString().Equals(testId))))
                   .Returns<BsonDocument>(null)
                   .Verifiable();
@@ -37,6 +44,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = await UpdateDevice.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
@@ -80,7 +88,15 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
             device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
 
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()))
                   .Returns(device.GetBsonDocument())
                   .Verifiable();
@@ -94,6 +110,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = await UpdateDevice.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
+
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
@@ -112,7 +131,15 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
             device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
 
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
             mockDb.Setup(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()))
                   .Returns(device.GetBsonDocument())
                   .Verifiable();
@@ -126,6 +153,9 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = await UpdateDevice.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
+
             Assert.IsNotNull(response);
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
