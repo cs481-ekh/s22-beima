@@ -27,8 +27,9 @@ namespace BEIMA.Backend.MongoService
         public string FileName { get; set; }
         [BsonElement("fileUid")]
         public string FileUid { get; set; }
+
         [BsonElement("fileUrl")]
-        public string Url { get; set; }
+        public string FileUrl { get; set; }
     }
 
     /// <summary>
