@@ -14,6 +14,7 @@ using BEIMA.Backend.Models;
 using MongoDB.Bson.Serialization;
 using System.Linq;
 using BEIMA.Backend.StorageService;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
@@ -92,31 +93,18 @@ namespace BEIMA.Backend.DeviceFunctions
 
             var _storage = StorageDefinition.StorageInstance;
 
+            List<string> filesToDelete = new List<string>(data.DeletedFiles);
+
             // Check if there is a new photo
-            var updatePhoto = reqForm.Files.Any(file => file.Name == "photos");
+            var updatePhoto = reqForm.Files.Any(file => file.Name == "photo");
             if (updatePhoto && device.Photo != null)
             {
-                var result = await _storage.DeleteFile(device.Photo.FileUid);
-                if (!result)
-                {
-                    log.LogInformation($"Failed to delete a file: {device.Photo.FileUid.ToString()}.");
-                }
-                device.Photo = null;
+                filesToDelete.Add(device.Photo.FileUid);
             }
 
             // Remove files from device's file list
-            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));
-
-            // Removed deleted files from storage
-            foreach (var fileUid in data.DeletedFiles)
-            {
-                var result = await _storage.DeleteFile(fileUid);
-                if (!result)
-                {
-                    log.LogInformation($"Failed to delete a file: {fileUid.ToString()}.");
-                }
-            }
-
+            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));          
+            
             // Add new files and photos
             foreach (var file in reqForm.Files)
             {
@@ -147,6 +135,16 @@ namespace BEIMA.Backend.DeviceFunctions
             if (updatedDeviceDocument is null)
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
+            }
+
+            // Removed deleted files from storage
+            foreach (var fileUid in filesToDelete)
+            {
+                var result = await _storage.DeleteFile(fileUid);
+                if (!result)
+                {
+                    log.LogInformation($"Failed to delete a file: {fileUid.ToString()}.");
+                }
             }
 
             var updatedDevice = BsonSerializer.Deserialize<Device>(updatedDeviceDocument);
