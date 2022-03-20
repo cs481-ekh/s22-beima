@@ -300,6 +300,18 @@ namespace BEIMA.Backend.FT
         #region Building Requests
 
         /// <summary>
+        /// Sends a building get request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the building.</param>
+        /// <returns>The building with the given id.</returns>
+        public async Task<Building> GetBuilding(string id)
+        {
+            var response = await SendRequest($"api/building/{id}", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Building>(content);
+        }
+
+        /// <summary>
         /// Sends a building post request to the BEIMA api.
         /// </summary>
         /// <param name="building">The building to add.</param>
