@@ -62,6 +62,10 @@ namespace BEIMA.Backend.DeviceFunctions
                 device = BsonSerializer.Deserialize<Device>(deviceDocument);
 
                 // Get related device type document
+                if (!ObjectId.TryParse(data.DeviceTypeId, out _))
+                {
+                    return new BadRequestObjectResult(Resources.InvalidIdMessage);
+                }
                 var deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
                 var deviceTypeDocument = mongo.GetDeviceType(deviceTypeId);
                 var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
