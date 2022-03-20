@@ -20,7 +20,7 @@ namespace BEIMA.Backend.MongoService
         private static readonly Lazy<MongoConnector> instance = new(() => new MongoConnector());
 
         //Environment variables
-        private readonly string dbName = Environment.GetEnvironmentVariable("DatabaseName");
+        private readonly string beimaDb = Environment.GetEnvironmentVariable("DatabaseName");
         private readonly string deviceCollection = Environment.GetEnvironmentVariable("DeviceCollectionName");
         private readonly string deviceTypeCollection = Environment.GetEnvironmentVariable("DeviceTypeCollectionName");
         private readonly string buildingCollection = Environment.GetEnvironmentVariable("BuildingCollectionName");
@@ -68,7 +68,7 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        private ObjectId? Insert(BsonDocument doc, string collectionName)
+        private ObjectId? Insert(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -86,7 +86,7 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        private BsonDocument Get(ObjectId objectId, string collectionName)
+        private BsonDocument Get(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -105,7 +105,7 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        private List<BsonDocument> GetAll(string collectionName)
+        private List<BsonDocument> GetAll(string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -122,6 +122,26 @@ namespace BEIMA.Backend.MongoService
             {
                 Console.Error.WriteLine(ex.Message);
                 return null;
+            }
+        }
+
+        private bool Delete(ObjectId objectId, string dbName, string collectionName)
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                var result = collection.DeleteOne(filter);
+                return result.DeletedCount > 0;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return false;
             }
         }
 
