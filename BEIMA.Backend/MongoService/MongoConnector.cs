@@ -81,7 +81,7 @@ namespace BEIMA.Backend.MongoService
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
         }
@@ -100,7 +100,7 @@ namespace BEIMA.Backend.MongoService
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
         }
@@ -120,7 +120,7 @@ namespace BEIMA.Backend.MongoService
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
         }
@@ -140,8 +140,35 @@ namespace BEIMA.Backend.MongoService
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return false;
+            }
+        }
+
+        private BsonDocument Update(BsonDocument doc, string dbName, string collectionName)
+        {
+            CheckIsConnected();
+
+            try
+            {
+                ObjectId objectId = (ObjectId)doc["_id"];
+                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+                var db = client.GetDatabase(dbName);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                var result = collection.ReplaceOne(filter, doc);
+                if (result.ModifiedCount > 0)
+                {
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
+                return null;
             }
         }
 
