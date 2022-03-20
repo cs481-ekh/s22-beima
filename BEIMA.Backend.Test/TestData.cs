@@ -129,7 +129,7 @@ namespace BEIMA.Backend.Test
                 ModelNum = "1234",
                 SerialNum = "ser",
                 Notes = "Some notes.",
-                Location = new Location()
+                Location = new DeviceLocation()
                 {
                     BuildingId = "622cf00109137c26f913b281",
                     Notes = "notes",
