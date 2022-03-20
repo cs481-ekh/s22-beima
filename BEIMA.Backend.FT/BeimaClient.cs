@@ -127,7 +127,7 @@ namespace BEIMA.Backend.FT
         /// <param name="files">List of files to send with the request</param>
         /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string queryString = "")
+        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string? queryString = "")
         {
             StringContent json;
             HttpResponseMessage response;
@@ -173,6 +173,8 @@ namespace BEIMA.Backend.FT
             return response;
         }
 
+        #region Device Requests
+
         /// <summary>
         /// Sends a device get request to the BEIMA api.
         /// </summary>
@@ -201,9 +203,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to add.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<string> AddDevice(Device device, FormFileCollection? files = null)
+        public async Task<string> AddDevice(Device device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendMultiPartRequest("api/device", device, files);
+            var response = await SendMultiPartRequest("api/device", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -224,12 +226,16 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to update.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<Device> UpdateDevice(Device device)
+        public async Task<Device> UpdateDevice(DeviceUpdate device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendRequest($"api/device/{device.Id}/update", HttpVerb.POST, device);
+            var response = await SendMultiPartRequest($"api/device/{device.Id}/update", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
         }
+
+        #endregion Device Requests
+
+        #region Device Type Requests
 
         /// <summary>
         /// Sends a device type get request to the BEIMA api.
@@ -288,6 +294,24 @@ namespace BEIMA.Backend.FT
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DeviceType>(content);
         }
+
+        #endregion Device Type Requests
+
+        #region Building Requests
+
+        /// <summary>
+        /// Sends a building post request to the BEIMA api.
+        /// </summary>
+        /// <param name="building">The building to add.</param>
+        /// <returns>The id of the new building.</returns>
+        public async Task<string> AddBuilding(Building building)
+        {
+            var response = await SendRequest("api/building", HttpVerb.POST, building);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
+        }
+
+        #endregion Building Requests
 
         /// <summary>
         /// Disposes the http client.

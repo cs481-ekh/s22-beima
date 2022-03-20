@@ -14,7 +14,7 @@ namespace BEIMA.Backend.Models
         public string SerialNum { get; set; }
         public int YearManufactured { get; set; }
         public string Notes { get; set; }
-        public Location Location { get; set; } = new Location();
+        public DeviceLocation Location { get; set; } = new DeviceLocation();
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
     }
 
@@ -30,7 +30,7 @@ namespace BEIMA.Backend.Models
         public string SerialNum { get; set; }
         public int YearManufactured { get; set; }
         public string Notes { get; set; }
-        public Location Location { get; set; } = new Location();
+        public DeviceLocation Location { get; set; } = new DeviceLocation();
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
         public List<string> DeletedFiles { get; set; } = new List<string>();
     }
@@ -38,10 +38,29 @@ namespace BEIMA.Backend.Models
     /// <summary>
     /// Location Object representation of location field in an add device request
     /// </summary>
-    public class Location
+    public class DeviceLocation : Location
     {
         public string BuildingId { get; set; }
         public string Notes { get; set; }
+    }
+
+    /// <summary>
+    /// Object representation of the data object in an add building request
+    /// </summary>
+    public class AddBuildingRequest
+    {
+        public string Name { get; set; }
+        public string Number { get; set; }
+        public string Notes { get; set; }
+        public Location Location { get; set; }
+
+    }
+
+    /// <summary>
+    /// Location Object representation of location field in an add building request
+    /// </summary>
+    public class Location
+    {
         public string Latitude { get; set; }
         public string Longitude { get; set; }
     }

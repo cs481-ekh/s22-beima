@@ -10,7 +10,6 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using Newtonsoft.Json;
 using System;
-using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -67,6 +66,11 @@ namespace BEIMA.Backend.DeviceFunctions
                 if (data.Fields != null)
                 {
                     var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
+
+                    if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
 
                     foreach (var field in data.Fields)
                     {

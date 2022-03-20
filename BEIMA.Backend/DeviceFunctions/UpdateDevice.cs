@@ -12,6 +12,9 @@ using BEIMA.Backend.MongoService;
 using System.Net;
 using BEIMA.Backend.Models;
 using MongoDB.Bson.Serialization;
+using System.Linq;
+using BEIMA.Backend.StorageService;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
@@ -41,23 +44,44 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             Device device;
+            IFormCollection reqForm;
+            UpdateDeviceRequest data;
+            var mongo = MongoDefinition.MongoInstance;            
             try
             {
-                string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(requestBody);
-                device = new Device(
-                     ObjectId.Parse(id),
-                     ObjectId.Parse(data.DeviceTypeId),
-                     data.DeviceTag,
-                     data.Manufacturer,
-                     data.ModelNum,
-                     data.SerialNum,
-                     data.YearManufactured,
-                     data.Notes
-                 );
+                // Read Form and parse out request data
+                reqForm = await req.ReadFormAsync();
+                data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);                              
+                
+                // Get original device
+                var deviceDocument = mongo.GetDevice(new ObjectId(id));
+                if (deviceDocument == null)
+                {
+                    return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
+                }
+                device = BsonSerializer.Deserialize<Device>(deviceDocument);
 
+                // Get related device type document
+                if (!ObjectId.TryParse(data.DeviceTypeId, out _))
+                {
+                    return new BadRequestObjectResult(Resources.InvalidIdMessage);
+                }
+                var deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
+                var deviceTypeDocument = mongo.GetDeviceType(deviceTypeId);
+                var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
+
+                // Parse building id if it exists
                 var reqBuildingId = data.Location.BuildingId;
                 ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+
+                // Set device properties to new values
+                device.DeviceTypeId = deviceTypeId;
+                device.DeviceTag = data.DeviceTag;
+                device.Manufacturer = data.Manufacturer;
+                device.ModelNum = data.ModelNum;
+                device.SerialNum = data.SerialNum;
+                device.YearManufactured = data.YearManufactured;
+                device.Notes = data.Notes;
 
                 device.SetLocation(
                     buildingId,
@@ -66,15 +90,57 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                device.SetFields(data.Fields);
+                // Check that each request field matches the device type fields
+                if (data.Fields != null)
+                {
+                    if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
 
-                device.SetLastModified(DateTime.UtcNow, "Anonymous");
-                // TODO: include device type attributes
+                    foreach (var field in data.Fields)
+                    {
+                        if (!deviceType.Fields.Contains(field.Key))
+                        {
+                            return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                        }
+                    }
+                    device.SetFields(data.Fields);
+                }
             }
             catch (Exception)
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
+            }                   
+
+            List<string> filesToDelete = new List<string>(data.DeletedFiles);
+
+            // Check if there is a new photo to replace the old one
+            var updatePhoto = reqForm.Files.Any(file => file.Name == "photo");
+            if (updatePhoto && device.Photo != null)
+            {
+                filesToDelete.Add(device.Photo.FileUid);
             }
+
+            // Remove files from device's file list
+            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));
+
+            // Add new files and photos
+            var _storage = StorageDefinition.StorageInstance;
+            foreach (var file in reqForm.Files)
+            {
+                var fileUid = await _storage.PutFile(file);
+                if (file.Name == "files")
+                {
+                    device.AddFile(fileUid, file.FileName);
+                }
+                else if (file.Name == "photo")
+                {
+                    device.SetPhoto(fileUid, file.FileName);
+                }
+            }
+
+            device.SetLastModified(DateTime.UtcNow, "Anonymous");
 
             string message;
             HttpStatusCode statusCode;
@@ -85,14 +151,36 @@ namespace BEIMA.Backend.DeviceFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
-            var updatedDevice = mongo.UpdateDevice(device.GetBsonDocument());
-            if (updatedDevice is null)
+            var updatedDeviceDocument = mongo.UpdateDevice(device.GetBsonDocument());
+            if (updatedDeviceDocument is null)
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
             }
-            var dotNetObj = BsonSerializer.Deserialize<Device>(updatedDevice);
-            return new OkObjectResult(dotNetObj);
+
+            // Removed deleted files from storage
+            foreach (var fileUid in filesToDelete)
+            {
+                var result = await _storage.DeleteFile(fileUid);
+                if (!result)
+                {
+                    log.LogInformation($"Failed to delete a file: {fileUid.ToString()}.");
+                }
+            }
+
+            var updatedDevice = BsonSerializer.Deserialize<Device>(updatedDeviceDocument);
+            
+            if(updatedDevice.Photo.FileUid != null)
+            {
+                var presignedUrl = await _storage.GetPresignedURL(updatedDevice.Photo.FileUid);
+                updatedDevice.Photo.FileUrl = presignedUrl;
+            }
+            foreach (var file in updatedDevice.Files)
+            {
+                var url = await _storage.GetPresignedURL(file.FileUid);
+                file.FileUrl = url;
+            }
+
+            return new OkObjectResult(updatedDevice);
         }
     }
 }

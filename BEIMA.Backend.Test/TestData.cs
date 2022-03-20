@@ -34,6 +34,10 @@ namespace BEIMA.Backend.Test
                 "\"_id\": \"abcdef123456789012345678\"," +
                 "\"deviceTag\": \"A-3\"," +
                 "\"deviceTypeId\": \"12341234abcdabcd43214321\"," +
+                "\"fields\":{" +
+                    "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": \"TestValue3\"," +
+                    "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": \"TestValue4\"," +
+                "}," +
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes.\"," +
@@ -74,8 +78,20 @@ namespace BEIMA.Backend.Test
                 "]" +
             "}";
 
+        public const string _testBuilding =
+            "{" +
+                "\"name\": \"Student Union\"," +
+                "\"number\": \"1234\"," +
+                "\"notes\": \"Some building notes.\"," +
+                "\"location\": {" +
+                    "\"latitude\": \"123.456\"," +
+                    "\"longitude\": \"101.101\"" +
+                "}" +
+            "}";
+
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
-        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
+        public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
+        public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
 
         private static string GenerateAddDeviceNoLocation()
@@ -98,16 +114,51 @@ namespace BEIMA.Backend.Test
             return JsonConvert.SerializeObject(request);
         }
 
-        private static string GenerateUpdateDeviceNoLocation()
+        private static string GenerateUpdateDeviceRequest()
+        {
+            var request = new UpdateDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
+                Manufacturer = "man",
+                ModelNum = "1234",
+                SerialNum = "ser",
+                Notes = "Some notes.",
+                Location = new Location()
+                {
+                    BuildingId = "622cf00109137c26f913b281",
+                    Notes = "notes",
+                    Latitude = "1231232",
+                    Longitude = "123213213"
+                },
+                DeletedFiles = new List<string>()
+            };
+            request.DeletedFiles.Add("fileOneUid");
+            request.DeletedFiles.Add("fileTwoUid");
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateUpdateDeviceNoLocationRequest()
         {
             var request = new UpdateDeviceRequest()
             {
                 DeviceTag = "tag",
                 DeviceTypeId = "12341234abcdabcd43214321",
                 Manufacturer = "man",
-                SerialNum = "serial",
-                YearManufactured = 1880,
-                Notes = "notes",
+                ModelNum = "1234",
+                SerialNum = "ser",
+                Notes = "Some notes.",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
+                DeletedFiles = new List<string>()
             };
             return JsonConvert.SerializeObject(request);
         }

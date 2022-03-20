@@ -56,5 +56,28 @@ namespace BEIMA.Backend
             }
             return isValid;
         }
+
+        /// <summary>
+        /// Verifies that a given building has valid properties.
+        /// </summary>
+        /// <param name="device">Building to verify.</param>
+        /// <param name="message">The error message for a failed validation.</param>
+        /// <param name="httpStatusCode">The status code for a failed validation.</param>
+        /// <returns>True if the building is valid, otherwise false.</returns>
+        public static bool IsBuildingValid(Building building, out string message, out HttpStatusCode httpStatusCode)
+        {
+            bool isValid = true;
+            message = string.Empty;
+            httpStatusCode = HttpStatusCode.OK;
+
+            if (building is null)
+            {
+                message = "Building is null.";
+                httpStatusCode = HttpStatusCode.BadRequest;
+                return false;
+            }
+
+            return isValid;
+        }
     }
 }
