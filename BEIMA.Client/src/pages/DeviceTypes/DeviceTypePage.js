@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DeviceTypePage.module.css'
-import { useOutletContext, useParams } from 'react-router-dom';
+import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Form, Card, Button, FormControl} from "react-bootstrap";
 import { IoAdd } from "react-icons/io5";
 import { v4 as uuidv4 } from 'uuid';
@@ -76,8 +76,8 @@ const DeviceTypePage = () => {
     const [fields, setFields] = useState({...item.fields})
     const [addedFields, setAddedFields] = useState({...item.addedFields})
     const [deletedFields, setDeletedFields] = useState([...item.deletedFields])
+    const navigate = useNavigate();
     
-
     const handleSubmit = () => {
       // we keep track of the added fields as an object, but the endpoint takes in an array
       // so we grab the values from the addFields object and send it to the endpoint
@@ -156,7 +156,10 @@ const DeviceTypePage = () => {
       // the endpoint returns an error message if there is more than one device with that type
       // let's show that message to the user
       if(response){
+        // replace with more descriptive and prettier error message
         alert(response);
+      } else {
+        navigate('/deviceTypes')
       }
     }
 
