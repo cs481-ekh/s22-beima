@@ -315,7 +315,7 @@ namespace BEIMA.Backend.FT
                     { origItem.Fields?.Keys?.ToList()[1] ?? "Bad Fields", "23" },
                     { origItem.Fields?.Keys?.ToList()[2] ?? "Bad Fields", "38" },
                 },
-                Location = new Location()
+                Location = new DeviceLocation()
                 {
                     BuildingId = null,
                     Latitude = "78.6",
