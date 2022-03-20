@@ -19,8 +19,8 @@ namespace BEIMA.Backend.FT
                 Notes = "Some notes.",
                 Location = new Location
                 {
-                    Longitude = "123.001",
-                    Latitude = "101.321",
+                    Longitude = "12.001",
+                    Latitude = "24.321",
                 },
             };
 
