@@ -89,7 +89,6 @@ const AddUserPage = () => {
         formFields[i].value = "";
       }
       setErrors({});
-      setUserFields(mandatoryUserFields);
     }
   }
   
