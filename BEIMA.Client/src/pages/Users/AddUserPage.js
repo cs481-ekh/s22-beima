@@ -18,7 +18,6 @@ const AddUserPage = () => {
   const [userFields, setUserFields] = useState(mandatoryUserFields);
   const [setPageName] = useOutletContext();
   const [fullUserJSON, setFullUserJSON] = useState({});
-  const [passwordErrors, setPasswordErrors] = useState({});
   const [errors, setErrors] = useState({});
   
   useEffect(() => {
