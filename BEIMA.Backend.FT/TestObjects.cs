@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace BEIMA.Backend.FT
 {
     public class TestObjects
     {
+        public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
         public class Device
         {
             [JsonProperty(PropertyName = "_id")]
@@ -45,7 +47,7 @@ namespace BEIMA.Backend.FT
             public List<DeviceFile>? Files { get; set; }
 
             [JsonProperty(PropertyName = "photo")]
-            public DeviceFile? Photo { get; set; }
+            public DeviceFile? Photo { get; set; }            
         }
 
         public class DeviceFile
@@ -55,7 +57,7 @@ namespace BEIMA.Backend.FT
             [JsonProperty(PropertyName = "fileUid")]
             public string? FileUid { get; set; }
             [JsonProperty(PropertyName = "fileUrl")]
-            public string? Url { get; set; }
+            public string? FileUrl { get; set; }
         }
 
         public class LastModified
@@ -91,6 +93,11 @@ namespace BEIMA.Backend.FT
             public string? Notes { get; set; }
         }
 
+        public class DeviceUpdate : Device
+        {
+            [JsonProperty(PropertyName = "deletedFiles")]
+            public List<string>? DeletedFiles { get; set; }
+        }
         public class DeviceTypeAdd : DeviceTypeBase
         {
             [JsonProperty(PropertyName = "fields")]
