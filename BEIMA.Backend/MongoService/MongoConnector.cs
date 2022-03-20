@@ -105,7 +105,7 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        private List<BsonDocument> GetAll()
+        private List<BsonDocument> GetAll(string collectionName)
         {
             CheckIsConnected();
 
@@ -114,8 +114,8 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var docs = devices.Find(filter).ToList();
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                var docs = collection.Find(filter).ToList();
                 return docs;
             }
             catch (Exception ex)
