@@ -152,6 +152,8 @@ const DeviceTypePage = () => {
     }
 
     const attemptDeleteType = async (id) => {
+      // replace with more descriptive and prettier error message
+      alert('Are you sure?')
       let response = await deleteDeviceType(id);
       // the endpoint returns an error message if there is more than one device with that type
       // let's show that message to the user

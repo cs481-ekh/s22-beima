@@ -27,7 +27,7 @@ const DevicesPage = () => {
       devices = await Promise.all(devices.map(async (item) => {
         type = await GetDeviceType(item.deviceType)
         if(type.status === 404){
-          item['deviceTypeName'] = '';
+          item['deviceTypeName'] = 'Device Type Not Found';
         } else {
           item['deviceTypeName'] = type.response.name;
         }
