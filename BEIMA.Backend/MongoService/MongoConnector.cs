@@ -69,14 +69,14 @@ namespace BEIMA.Backend.MongoService
         }
 
         #region Base CRUD Methods
-        
+
         /// <summary>
         /// Inserts a BsonDocument into the given database/collection.
         /// </summary>
         /// <param name="doc">BsonDocument to insert.</param>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns></returns>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         private ObjectId? Insert(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -101,7 +101,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">ObjectId of the object to be retrieved ("_id" field).</param>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns></returns>
+        /// <returns>BsonDocument that was requested</returns>
         private BsonDocument Get(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -126,7 +126,7 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns></returns>
+        /// <returns>List of BsonDocuments that was requested</returns>
         private List<BsonDocument> GetAll(string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -153,7 +153,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">The ObjectId of the object to delete. ("_id" field)</param>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns></returns>
+        /// <returns>true if successful, false if not successful</returns>
         private bool Delete(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -180,7 +180,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">The fully formed updated BsonDocument.</param>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns></returns>
+        /// <returns>true if successful, false if not successful</returns>
         private BsonDocument Update(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -232,9 +232,9 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Gets a device from the "devices" collection, given an objectID.
+        /// Gets all devices from the "devices" collection.
         /// </summary>
-        /// <returns>BsonDocument that was requested</returns>
+        /// <returns>List of BsonDocuments that was requested</returns>
         public List<BsonDocument> GetAllDevices()
         {
             return GetAll(beimaDb, deviceCollection);
