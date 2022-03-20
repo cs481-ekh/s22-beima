@@ -173,6 +173,8 @@ namespace BEIMA.Backend.FT
             return response;
         }
 
+        #region Device Requests
+
         /// <summary>
         /// Sends a device get request to the BEIMA api.
         /// </summary>
@@ -231,6 +233,10 @@ namespace BEIMA.Backend.FT
             return JsonConvert.DeserializeObject<Device>(content);
         }
 
+        #endregion Device Requests
+
+        #region Device Type Requests
+
         /// <summary>
         /// Sends a device type get request to the BEIMA api.
         /// </summary>
@@ -288,6 +294,24 @@ namespace BEIMA.Backend.FT
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DeviceType>(content);
         }
+
+        #endregion Device Type Requests
+
+        #region Building Requests
+
+        /// <summary>
+        /// Sends a building post request to the BEIMA api.
+        /// </summary>
+        /// <param name="building">The building to add.</param>
+        /// <returns>The id of the new building.</returns>
+        public async Task<string> AddBuilding(Building building)
+        {
+            var response = await SendRequest("api/building", HttpVerb.POST, building);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
+        }
+
+        #endregion Building Requests
 
         /// <summary>
         /// Disposes the http client.

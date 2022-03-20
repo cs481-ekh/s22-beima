@@ -78,6 +78,17 @@ namespace BEIMA.Backend.Test
                 "]" +
             "}";
 
+        public const string _testBuilding =
+            "{" +
+                "\"name\": \"Student Union\"," +
+                "\"number\": \"1234\"," +
+                "\"notes\": \"Some building notes.\"," +
+                "\"location\": {" +
+                    "\"latitude\": \"123.456\"," +
+                    "\"longitude\": \"101.101\"" +
+                "}" +
+            "}";
+
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocation();
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");

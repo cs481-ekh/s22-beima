@@ -88,7 +88,7 @@ namespace BEIMA.Backend.FT
                 {
                     { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
                 },
-                Location = new Location
+                Location = new DeviceLocation
                 {
                     BuildingId = "111111111111111111111111",
                     Notes = "Some building notes.",
@@ -143,7 +143,7 @@ namespace BEIMA.Backend.FT
                     {
                         { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
                     },
-                    Location = new Location
+                    Location = new DeviceLocation
                     {
                         BuildingId = "192830495728394829103986",
                         Latitude = "101.001",
@@ -164,7 +164,7 @@ namespace BEIMA.Backend.FT
                     {
                         { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
                     },
-                    Location = new Location
+                    Location = new DeviceLocation
                     {
                         BuildingId = "192831695728394829103456",
                         Latitude = "74.003",
@@ -185,7 +185,7 @@ namespace BEIMA.Backend.FT
                     {
                         { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
                     },
-                    Location = new Location
+                    Location = new DeviceLocation
                     {
                         BuildingId = "192830495728214829103456",
                         Latitude = "101.989",
@@ -245,7 +245,7 @@ namespace BEIMA.Backend.FT
             {
                 DeviceTag = "D-4",
                 DeviceTypeId = "473830495728394823103456",
-                Location = new Location
+                Location = new DeviceLocation
                 {
                     BuildingId = "a19830495728394829103986",
                     Latitude = "111.001",
@@ -282,7 +282,7 @@ namespace BEIMA.Backend.FT
                 {
                     { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
                 },
-                Location = new Location
+                Location = new DeviceLocation
                 {
                     BuildingId = "cab830495728394829103986",
                     Latitude = "11.001",
