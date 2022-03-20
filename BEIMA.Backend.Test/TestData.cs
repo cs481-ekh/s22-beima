@@ -34,6 +34,10 @@ namespace BEIMA.Backend.Test
                 "\"_id\": \"abcdef123456789012345678\"," +
                 "\"deviceTag\": \"A-3\"," +
                 "\"deviceTypeId\": \"12341234abcdabcd43214321\"," +
+                "\"fields\":{" +
+                    "\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\": \"TestValue3\"," +
+                    "\"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\": \"TestValue4\"," +
+                "}," +
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes.\"," +
@@ -104,7 +108,12 @@ namespace BEIMA.Backend.Test
             var request = new UpdateDeviceRequest()
             {
                 DeviceTag = "tag",
-                DeviceTypeId = "622cf00109137c26f913b282",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
                 Manufacturer = "man",
                 ModelNum = "1234",
                 SerialNum = "ser",
@@ -116,11 +125,8 @@ namespace BEIMA.Backend.Test
                     Latitude = "1231232",
                     Longitude = "123213213"
                 },
-                Fields = new Dictionary<string, string>(),
                 DeletedFiles = new List<string>()
             };
-            request.Fields.Add("customIdOne", "valueOne");
-            request.Fields.Add("customIdTwo", "valueTwo");
             request.DeletedFiles.Add("fileOneUid");
             request.DeletedFiles.Add("fileTwoUid");
             return JsonConvert.SerializeObject(request);

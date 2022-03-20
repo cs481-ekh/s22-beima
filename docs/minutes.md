@@ -1,3 +1,30 @@
+## Minutes: 2022-03-17
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 3 Scrum Meeting
+### Sprint load check in 
+ * Tom
+ 	* 13 open tasks
+ * Ashlyn
+ 	* 10 open tasks
+ * Keelan 
+ 	* 6 open tasks
+ * Kenny
+ 	* 6 open tasks (still need to make authentication tasks)
+ * Joe
+ 	* 11 open tasks
+
+### Action Items
+ * Some tasks need title updated to be clear
+ * Tasks still need to be made for some stories
+ * Add notes to Blocked column or make a message in the scrum channel for blocked issues
+ * Meet next Wednesday @ 6 for quick scrum
+
 ## Minutes: 2022-03-16
 ### scribe: Ashlyn
 ### Attendees:

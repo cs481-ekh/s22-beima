@@ -68,6 +68,11 @@ namespace BEIMA.Backend.DeviceFunctions
                 {
                     var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
 
+                    if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
+
                     foreach (var field in data.Fields)
                     {
                         if (!deviceType.Fields.Contains(field.Key))
