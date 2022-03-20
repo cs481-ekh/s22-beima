@@ -61,6 +61,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The device type could not be deleted because at least one device exists in the database with this device type..
+        /// </summary>
+        internal static string CannotDeleteDeviceTypeMessage {
+            get {
+                return ResourceManager.GetString("CannotDeleteDeviceTypeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not parse the request body..
         /// </summary>
         internal static string CouldNotParseBody {

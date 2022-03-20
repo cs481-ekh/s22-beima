@@ -77,5 +77,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateDeviceType(BsonDocument doc);
+
+        /// <summary>
+        /// Inserts a building into the "buildings" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed building document</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertBuilding(BsonDocument doc);
     }
 }

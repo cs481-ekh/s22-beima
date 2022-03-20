@@ -12,6 +12,8 @@ using System.Net;
 using BEIMA.Backend.MongoService;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
+using System.Linq;
+using MongoDB.Bson.Serialization;
 
 namespace BEIMA.Backend.DeviceTypeFunctions
 {
@@ -31,6 +33,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             }
 
             DeviceType deviceType;
+            List<Device> updatedDevices = new List<Device>();
             var mongo = MongoDefinition.MongoInstance;
             try
             {
@@ -57,11 +60,50 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                     deviceType.AddField(new Guid(field.Key).ToString(), field.Value);
                 }
 
+                var removedFields = currentDeviceType["fields"].AsBsonDocument.ToDictionary().Keys.Where(k => !fieldDictionary.ContainsKey(k));
+
                 var newFieldList = ((JArray)data.newFields).ToObject<List<string>>();
+                var addedFields = new List<string>();
                 foreach (var newField in newFieldList)
                 {
-                    deviceType.AddField(Guid.NewGuid().ToString(), newField);
+                    var newGuid = Guid.NewGuid().ToString();
+                    deviceType.AddField(newGuid, newField);
+                    addedFields.Add(newGuid);
                 }
+
+                // Updated the devices affected by this device type change.
+                if (removedFields.Count() > 0 || addedFields.Count() > 0)
+                {
+                    // TODO: use database filter to only retrieve devices with the specified device type.
+                    var affectedDevices = mongo.GetAllDevices().Where(d => d["deviceTypeId"].AsObjectId.Equals(deviceType.Id));
+                    foreach (var device in affectedDevices)
+                    {
+                        var deviceObj = BsonSerializer.Deserialize<Device>(device);
+
+                        // Update removed fields.
+                        if (removedFields.Count() > 0)
+                        {
+                            foreach (var field in removedFields)
+                            {
+                                deviceObj.Fields.Remove(field);
+                            }
+                        }
+
+                        // Update added fields.
+                        if (addedFields.Count() > 0)
+                        {
+                            foreach (var field in addedFields)
+                            {
+                                deviceObj.Fields.Add(field, null);
+                            }
+                        }
+
+                        // Add the devices to a list and wait to update them until
+                        // the actual device type is updated in the database.
+                        updatedDevices.Add(deviceObj);
+                    }
+                }
+
             }
             catch (Exception)
             {
@@ -79,11 +121,15 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                 return response;
             }
 
+            // Update the device type in the db
             var updatedDeviceType = mongo.UpdateDeviceType(deviceType.GetBsonDocument());
             if (updatedDeviceType is null)
             {
                 return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
             }
+            // Update the affected devices in the db.
+            updatedDevices.ForEach(d => mongo.UpdateDevice(d.GetBsonDocument()));
+
             var dotNetObj = BsonTypeMapper.MapToDotNetValue(updatedDeviceType);
             return new OkObjectResult(dotNetObj);
         }

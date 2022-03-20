@@ -1,11 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 namespace BEIMA.Backend.FT
 {
     public class TestObjects
     {
+        public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
         public class Device
         {
             [JsonProperty(PropertyName = "_id")]
@@ -24,7 +26,7 @@ namespace BEIMA.Backend.FT
             public LastModified? LastModified { get; set; }
 
             [JsonProperty(PropertyName = "location")]
-            public Location? Location { get; set; }
+            public DeviceLocation? Location { get; set; }
 
             [JsonProperty(PropertyName = "manufacturer")]
             public string? Manufacturer { get; set; }
@@ -45,7 +47,7 @@ namespace BEIMA.Backend.FT
             public List<DeviceFile>? Files { get; set; }
 
             [JsonProperty(PropertyName = "photo")]
-            public DeviceFile? Photo { get; set; }
+            public DeviceFile? Photo { get; set; }            
         }
 
         public class DeviceFile
@@ -55,7 +57,7 @@ namespace BEIMA.Backend.FT
             [JsonProperty(PropertyName = "fileUid")]
             public string? FileUid { get; set; }
             [JsonProperty(PropertyName = "fileUrl")]
-            public string? Url { get; set; }
+            public string? FileUrl { get; set; }
         }
 
         public class LastModified
@@ -67,20 +69,13 @@ namespace BEIMA.Backend.FT
             public string? User { get; set; }
         }
 
-        public class Location
+        public class DeviceLocation : Location
         {
             [JsonProperty(PropertyName = "buildingId")]
             public string? BuildingId { get; set; }
 
             [JsonProperty(PropertyName = "notes")]
             public string? Notes { get; set; }
-
-            [JsonProperty(PropertyName = "longitude")]
-            public string? Longitude { get; set; }
-
-            [JsonProperty(PropertyName = "latitude")]
-            public string? Latitude { get; set; }
-
         }
 
         public abstract class DeviceTypeBase
@@ -98,6 +93,11 @@ namespace BEIMA.Backend.FT
             public string? Notes { get; set; }
         }
 
+        public class DeviceUpdate : Device
+        {
+            [JsonProperty(PropertyName = "deletedFiles")]
+            public List<string>? DeletedFiles { get; set; }
+        }
         public class DeviceTypeAdd : DeviceTypeBase
         {
             [JsonProperty(PropertyName = "fields")]
@@ -120,6 +120,33 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "fields")]
             public Dictionary<string, string>? Fields { get; set; }
+        }
+
+        public class Building
+        {
+            [JsonProperty(PropertyName = "_id")]
+            public string? Id { get; set; }
+
+            [JsonProperty(PropertyName = "name")]
+            public string? Name { get; set; }
+
+            [JsonProperty(PropertyName = "number")]
+            public string? Number { get; set; }
+
+            [JsonProperty(PropertyName = "notes")]
+            public string? Notes { get; set; }
+
+            [JsonProperty(PropertyName = "location")]
+            public Location? Location { get; set; }
+        }
+
+        public class Location
+        {
+            [JsonProperty(PropertyName = "latitude")]
+            public string? Latitude { get; set; }
+
+            [JsonProperty(PropertyName = "longitude")]
+            public string? Longitude { get; set; }
         }
     }
 }

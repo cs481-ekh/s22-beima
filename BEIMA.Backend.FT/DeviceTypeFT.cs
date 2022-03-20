@@ -15,6 +15,15 @@ namespace BEIMA.Backend.FT
         [SetUp]
         public async Task SetUp()
         {
+            // Delete all the devices in the database.
+            var deviceList = await TestClient.GetDeviceList();
+            foreach (var device in deviceList)
+            {
+                if (device?.Id is not null)
+                {
+                    await TestClient.DeleteDevice(device.Id);
+                }
+            }
             // Delete all the device types in the database
             var deviceTypeList = await TestClient.GetDeviceTypeList();
             foreach (var deviceType in deviceTypeList)
@@ -275,6 +284,107 @@ namespace BEIMA.Backend.FT
             }
             Assert.That(updatedDeviceType.Fields?.Where(kv => kv.Value.Equals("Type")), Is.Empty);
             Assert.That(Guid.TryParse(updatedDeviceType.Fields?.Single(kv => kv.Value.Equals("Capacity")).Key, out _), Is.True);
+        }
+
+        [Test]
+        public async Task DeviceAndDeviceTypeInDatabase_UpdateDeviceType_ReturnsUpdatedDeviceAndDeviceType()
+        {
+            // ARRANGE
+            var origDeviceType = new DeviceTypeAdd
+            {
+                Description = "Boiler description.",
+                Name = "Boiler",
+                Notes = "Some boiler notes.",
+                Fields = new List<string>
+                {
+                    "Boiler Type",
+                    "Fuel Input Rate",
+                    "Output",
+                },
+            };
+
+            var deviceTypeId = await TestClient.AddDeviceType(origDeviceType);
+            var origItem = await TestClient.GetDeviceType(deviceTypeId);
+
+            var origDevice = new Device()
+            {
+                DeviceTag = "B-34",
+                DeviceTypeId = deviceTypeId,
+                Fields = new Dictionary<string, string> {
+                    { origItem.Fields?.Keys?.ToList()[0] ?? "Bad Fields", "Tall boiler." },
+                    { origItem.Fields?.Keys?.ToList()[1] ?? "Bad Fields", "23" },
+                    { origItem.Fields?.Keys?.ToList()[2] ?? "Bad Fields", "38" },
+                },
+                Location = new DeviceLocation()
+                {
+                    BuildingId = null,
+                    Latitude = "78.6",
+                    Longitude = "43.2",
+                    Notes = "Some notes."
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "1234",
+                Notes = "Some notes.",
+                SerialNum = "4321",
+                YearManufactured = 2001,
+            };
+
+            var updateDictionary = new Dictionary<string, string>();
+            if (origItem.Fields != null)
+            {
+                foreach (var item in origItem.Fields)
+                {
+                    if (!item.Value.Equals("Boiler Type"))
+                    {
+                        updateDictionary.Add(item.Key, item.Value);
+                    }
+                }
+            }
+
+            var deviceId = await TestClient.AddDevice(origDevice);
+
+            var updateItem = new DeviceTypeUpdate
+            {
+                Id = origItem.Id,
+                Description = origItem.Description,
+                Name = origItem.Name,
+                Notes = "Some other boiler notes.",
+                Fields = updateDictionary,
+                NewFields = new List<string>
+                {
+                    "Capacity",
+                },
+            };
+
+            // ACT
+            var updatedDeviceType = await TestClient.UpdateDeviceType(updateItem);
+
+            // ASSERT
+            Assert.That(updatedDeviceType, Is.Not.Null);
+            Assert.That(updatedDeviceType.Notes, Is.Not.EqualTo(origDeviceType.Notes));
+
+            Assert.That(updatedDeviceType.LastModified?.Date, Is.Not.EqualTo(origItem.LastModified?.Date));
+            Assert.That(updatedDeviceType.LastModified?.User, Is.EqualTo(origItem.LastModified?.User));
+
+            Assert.That(updatedDeviceType.Id, Is.EqualTo(updateItem.Id));
+            Assert.That(updatedDeviceType.Description, Is.EqualTo(updateItem.Description));
+            Assert.That(updatedDeviceType.Name, Is.EqualTo(updateItem.Name));
+            Assert.That(updatedDeviceType.Notes, Is.EqualTo(updateItem.Notes));
+
+            Assume.That(origItem, Is.Not.Null);
+            foreach (var item in updateItem.Fields)
+            {
+                Assert.That(updatedDeviceType.Fields, Contains.Key(item.Key));
+                Assert.That(updatedDeviceType.Fields?[item.Key], Is.EqualTo(item.Value));
+            }
+            Assert.That(updatedDeviceType.Fields?.Where(kv => kv.Value.Equals("Type")), Is.Empty);
+            Assert.That(Guid.TryParse(updatedDeviceType.Fields?.Single(kv => kv.Value.Equals("Capacity")).Key, out _), Is.True);
+
+            var device = await TestClient.GetDevice(deviceId);
+            foreach (var key in device.Fields?.Keys.ToList() ?? new List<string>())
+            {
+                Assert.That(updatedDeviceType.Fields, Contains.Key(key));
+            }
         }
     }
 }
