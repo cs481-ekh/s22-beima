@@ -24,7 +24,7 @@ namespace BEIMA.Backend.FT
             public LastModified? LastModified { get; set; }
 
             [JsonProperty(PropertyName = "location")]
-            public Location? Location { get; set; }
+            public DeviceLocation? Location { get; set; }
 
             [JsonProperty(PropertyName = "manufacturer")]
             public string? Manufacturer { get; set; }
@@ -67,20 +67,13 @@ namespace BEIMA.Backend.FT
             public string? User { get; set; }
         }
 
-        public class Location
+        public class DeviceLocation : Location
         {
             [JsonProperty(PropertyName = "buildingId")]
             public string? BuildingId { get; set; }
 
             [JsonProperty(PropertyName = "notes")]
             public string? Notes { get; set; }
-
-            [JsonProperty(PropertyName = "longitude")]
-            public string? Longitude { get; set; }
-
-            [JsonProperty(PropertyName = "latitude")]
-            public string? Latitude { get; set; }
-
         }
 
         public abstract class DeviceTypeBase
@@ -120,6 +113,33 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "fields")]
             public Dictionary<string, string>? Fields { get; set; }
+        }
+
+        public class Building
+        {
+            [JsonProperty(PropertyName = "_id")]
+            public string? Id { get; set; }
+
+            [JsonProperty(PropertyName = "name")]
+            public string? Name { get; set; }
+
+            [JsonProperty(PropertyName = "number")]
+            public string? Number { get; set; }
+
+            [JsonProperty(PropertyName = "notes")]
+            public string? Notes { get; set; }
+
+            [JsonProperty(PropertyName = "location")]
+            public Location? Location { get; set; }
+        }
+
+        public class Location
+        {
+            [JsonProperty(PropertyName = "latitude")]
+            public string? Latitude { get; set; }
+
+            [JsonProperty(PropertyName = "longitude")]
+            public string? Longitude { get; set; }
         }
     }
 }
