@@ -151,13 +151,13 @@ const DeviceTypePage = () => {
       setDeletedFields([...item.deletedFields])
     }
 
-    const attemptDeleteType = (id) => {
-      let response = deleteDeviceType(id).response;
+    const attemptDeleteType = async (id) => {
+      let response = await deleteDeviceType(id);
       // the endpoint returns an error message if there is more than one device with that type
       // let's show that message to the user
-      if(response){
+      if(response.response){
         // replace with more descriptive and prettier error message
-        alert(response);
+        alert(response.response);
       } else {
         navigate('/deviceTypes')
       }
