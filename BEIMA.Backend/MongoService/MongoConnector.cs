@@ -286,21 +286,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetBuilding(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                return buildings.Find(filter).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Get(objectId, beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -309,22 +295,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>List of all building BsonDocuments</returns>
         public List<BsonDocument> GetAllBuildings()
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Empty;
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                var docs = buildings.Find(filter).ToList();
-                return docs;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return GetAll(beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -334,20 +305,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertBuilding(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                buildings.InsertOne(doc);
-                return (ObjectId)doc["_id"];
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Insert(doc, beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -357,22 +315,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteBuilding(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                var result = buildings.DeleteOne(filter);
-                return result.DeletedCount > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return false;
-            }
+            return Delete(objectId, beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -382,29 +325,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                ObjectId objectId = (ObjectId)doc["_id"];
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                var result = buildings.ReplaceOne(filter, doc);
-                if (result.ModifiedCount > 0)
-                {
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Update(doc, beimaDb, buildingCollection);
         }
 
         #endregion
