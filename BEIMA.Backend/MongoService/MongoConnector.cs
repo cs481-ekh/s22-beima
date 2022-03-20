@@ -180,20 +180,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertDevice(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                devices.InsertOne(doc);
-                return (ObjectId)doc["_id"];
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Insert(doc, beimaDb, deviceCollection);
         }
 
         /// <summary>
@@ -203,21 +190,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetDevice(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                return devices.Find(filter).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Get(objectId, beimaDb, deviceCollection);
         }
 
         /// <summary>
@@ -226,22 +199,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public List<BsonDocument> GetAllDevices()
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Empty;
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var docs = devices.Find(filter).ToList();
-                return docs;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return GetAll(beimaDb, deviceCollection);
         }
 
         /// <summary>
@@ -251,22 +209,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteDevice(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var result = devices.DeleteOne(filter);
-                return result.DeletedCount > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return false;
-            }
+            return Delete(objectId, beimaDb, deviceCollection);
         }
 
         /// <summary>
@@ -276,29 +219,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateDevice(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                ObjectId objectId = (ObjectId)doc["_id"];
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-                var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var result = devices.ReplaceOne(filter, doc);
-                if (result.ModifiedCount > 0)
-                {
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Update(doc, beimaDb, deviceCollection);
         }
         #endregion
 
