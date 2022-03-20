@@ -3,6 +3,7 @@ import styles from  "./DevicesPage.module.css"
 import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext } from 'react-router-dom';
 import GetDeviceList from "../../services/GetDeviceList";
+import GetDeviceType from '../../services/GetDeviceType';
 
 const DevicesPage = () => {
   const [devices, setDevices] = useState([]);
@@ -22,6 +23,16 @@ const DevicesPage = () => {
     const loadData = async () => {
       setLoading(true)
       let devices = await DeviceListCall();
+      let type;
+      devices = await Promise.all(devices.map(async (item) => {
+        type = await GetDeviceType(item.deviceType)
+        if(type.status === 404){
+          item['deviceTypeName'] = '';
+        } else {
+          item['deviceTypeName'] = type.response.name;
+        }
+        return item;
+      }));
       setLoading(false)
       setDevices(devices)
     }
