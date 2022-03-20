@@ -2,7 +2,7 @@ import styles from './AddUserPage.module.css';
 import { useOutletContext, Link } from 'react-router-dom';
 import { IoArrowBack } from "react-icons/io5";
 import { Card, Button, Form, Row, Col } from 'react-bootstrap';
-import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
+import FormList from '../../shared/FormList/FormList.js';
 import { useEffect, useState } from "react";
 
 const AddUserPage = () => {
@@ -36,6 +36,7 @@ const AddUserPage = () => {
         let formJSON =  {[formName] : formFields[i].value};
         
         Object.assign(fieldValues, formJSON);
+        formFields[i].value = "";
       }
     }
 
@@ -43,16 +44,6 @@ const AddUserPage = () => {
     
     // replace with user api calls when ready
     console.log(fullUserJSON);
-
-    if ( Object.keys(newErrors).length > 0 ) {
-      setErrors(newErrors);
-    } else {
-      setErrors({});
-      for(let i = 0; i < formFields.length; i++){
-        formFields[i].value = "";
-      }
-      
-    }
   }
   
   return (
@@ -75,7 +66,7 @@ const AddUserPage = () => {
             <br/>
             <h4>User Fields</h4>
             <div>
-              <FormListWithErrorFeedback fields={Object.keys(mandatoryUserFields)} errors={errors} />
+              <FormList fields={Object.keys(mandatoryUserFields)} />
             </div>
          </Form>
         </Card.Body>
