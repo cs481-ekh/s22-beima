@@ -61,6 +61,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Building could not be found..
+        /// </summary>
+        internal static string BuildingNotFoundMessage {
+            get {
+                return ResourceManager.GetString("BuildingNotFoundMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not parse the request body..
         /// </summary>
         internal static string CouldNotParseBody {
