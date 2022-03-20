@@ -14,7 +14,6 @@ const AddUserPage = () => {
   }
   
   const [userFields] = useState(mandatoryUserFields);
-  const [errors, setErrors] = useState(mandatoryUserFields);
   const [setPageName] = useOutletContext();
   const [fullUserJSON, setFullUserJSON] = useState({});
   
@@ -26,7 +25,6 @@ const AddUserPage = () => {
   function createJSON(addButtonEvent){
     let formFields = addButtonEvent.target.form.elements;
     let fieldValues = {};
-    let newErrors = {};
 
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
