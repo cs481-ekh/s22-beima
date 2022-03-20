@@ -339,21 +339,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetUser(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                return users.Find(filter).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Get(objectId, beimaDb, userCollection);
         }
 
         /// <summary>
@@ -362,22 +348,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>List of all user BsonDocuments</returns>
         public List<BsonDocument> GetAllUsers()
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Empty;
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                var docs = users.Find(filter).ToList();
-                return docs;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return GetAll(beimaDb, userCollection);
         }
 
         /// <summary>
@@ -387,20 +358,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertUser(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                users.InsertOne(doc);
-                return (ObjectId)doc["_id"];
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Insert(doc, beimaDb, userCollection);
         }
 
         /// <summary>
@@ -410,22 +368,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteUser(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                var result = users.DeleteOne(filter);
-                return result.DeletedCount > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return false;
-            }
+            return Delete(objectId, beimaDb, userCollection);
         }
 
         /// <summary>
@@ -435,29 +378,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateUser(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                ObjectId objectId = (ObjectId)doc["_id"];
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                var result = users.ReplaceOne(filter, doc);
-                if (result.ModifiedCount > 0)
-                {
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Update(doc, beimaDb, userCollection);
         }
 
         #endregion
