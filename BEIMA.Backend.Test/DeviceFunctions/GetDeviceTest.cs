@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test
@@ -18,7 +19,7 @@ namespace BEIMA.Backend.Test
         #region FailureTests
 
         [Test]
-        public void IdNotInDatabase_GetDevice_ReturnsNotFound()
+        public async Task IdNotInDatabase_GetDevice_ReturnsNotFound()
         {
             // ARRANGE
 
@@ -35,7 +36,7 @@ namespace BEIMA.Backend.Test
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, testId, logger);
+            var response = await GetDevice.Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
@@ -49,7 +50,7 @@ namespace BEIMA.Backend.Test
         [TestCase("xxx")]
         [TestCase("123")]
         [TestCase("10alskdjfhgytur74839skcm")]
-        public void InvalidId_GetDevice_ReturnsInvalidId(string id)
+        public async Task InvalidId_GetDevice_ReturnsInvalidId(string id)
         {
             // ARRANGE
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
@@ -62,7 +63,7 @@ namespace BEIMA.Backend.Test
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, id, logger);
+            var response = await GetDevice.Run(request, id, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
@@ -77,7 +78,7 @@ namespace BEIMA.Backend.Test
         #region SuccessTests
 
         [Test]
-        public void IdIsValid_GetDevice_ReturnsDevice()
+        public async Task IdIsValid_GetDevice_ReturnsDevice()
         {
             // ARRANGE
 
@@ -97,7 +98,7 @@ namespace BEIMA.Backend.Test
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
             // ACT
-            var response = GetDevice.Run(request, testId, logger);
+            var response = await GetDevice.Run(request, testId, logger);
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
