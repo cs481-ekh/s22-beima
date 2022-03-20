@@ -76,7 +76,7 @@ const UserPage = () => {
     const [editable, setEditable] = useState(false);
 
     const [userId] = useState(user.id);
-    const [username, setUserName] = useState(user.username);
+    const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
     const [role, setRole] = useState(user.role);
@@ -101,7 +101,7 @@ const UserPage = () => {
     }
 
     const cancel = () => {      
-      setUserName(user.username);
+      setUsername(user.username);
       setFirstName(user.firstName);
       setLastName(user.firstName);
       setRole(user.role);
@@ -112,7 +112,7 @@ const UserPage = () => {
       const target = event.target.id
       const value = event.target.value
       if(target === 'userName'){
-        setUserName(value);
+        setUsername(value);
       } else if (target === 'userFirstName'){
         setFirstName(value);
       }else if (target === 'userLastName'){
