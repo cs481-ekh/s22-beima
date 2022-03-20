@@ -69,6 +69,14 @@ namespace BEIMA.Backend.MongoService
         }
 
         #region Base CRUD Methods
+        
+        /// <summary>
+        /// Inserts a BsonDocument into the given database/collection.
+        /// </summary>
+        /// <param name="doc">BsonDocument to insert.</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns></returns>
         private ObjectId? Insert(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -87,6 +95,13 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
+        /// <summary>
+        /// Gets a single BsonDocument from the given database/collection, given an ObjectId.
+        /// </summary>
+        /// <param name="objectId">ObjectId of the object to be retrieved ("_id" field).</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns></returns>
         private BsonDocument Get(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -106,6 +121,12 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
+        /// <summary>
+        /// Get all documents from the given database/collection.
+        /// </summary>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns></returns>
         private List<BsonDocument> GetAll(string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -126,6 +147,13 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
+        /// <summary>
+        /// Deletes one document given an ObjectId, from the given database/collection.
+        /// </summary>
+        /// <param name="objectId">The ObjectId of the object to delete. ("_id" field)</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns></returns>
         private bool Delete(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -146,6 +174,13 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
+        /// <summary>
+        /// Replaces a single document given the updated BsonDocument, inside the given database/collection.
+        /// </summary>
+        /// <param name="doc">The fully formed updated BsonDocument.</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns></returns>
         private BsonDocument Update(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
