@@ -137,16 +137,18 @@ namespace BEIMA.Backend.Test
             var request = new UpdateDeviceRequest()
             {
                 DeviceTag = "tag",
-                DeviceTypeId = "622cf00109137c26f913b282",
+                DeviceTypeId = "12341234abcdabcd43214321",
                 Manufacturer = "man",
                 ModelNum = "1234",
                 SerialNum = "ser",
                 Notes = "Some notes.",
-                Fields = new Dictionary<string, string>(),
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
                 DeletedFiles = new List<string>()
             };
-            request.Fields.Add("customIdOne", "valueOne");
-            request.Fields.Add("customIdTwo", "valueTwo");
             return JsonConvert.SerializeObject(request);
         }
     }

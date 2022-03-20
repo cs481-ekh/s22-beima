@@ -45,9 +45,12 @@ namespace BEIMA.Backend.DeviceFunctions
 
             // Parse out necessary data            
             var mongo = MongoDefinition.MongoInstance;
-            IFormCollection reqForm;            
-            Device device;
+            IFormCollection reqForm;
             UpdateDeviceRequest data;
+            Device device;
+            DeviceType deviceType;
+            ObjectId deviceTypeId;
+            ObjectId? buildingId;
             try
             {
                 reqForm = await req.ReadFormAsync();
@@ -59,7 +62,14 @@ namespace BEIMA.Backend.DeviceFunctions
                     return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
                 }
 
-                device = BsonSerializer.Deserialize<Device>(deviceDocument);                
+                device = BsonSerializer.Deserialize<Device>(deviceDocument);
+                deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
+
+                var deviceTypeDocument = mongo.GetDeviceType(deviceTypeId);
+                deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
+
+                var reqBuildingId = data.Location.BuildingId;
+                buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
             }
             catch (Exception)
             {
@@ -72,7 +82,7 @@ namespace BEIMA.Backend.DeviceFunctions
             }            
 
             // Set Data to new values
-            device.DeviceTypeId = ObjectId.Parse(data.DeviceTypeId);
+            device.DeviceTypeId = deviceTypeId;
             device.DeviceTag = data.DeviceTag;
             device.Manufacturer = data.Manufacturer;
             device.ModelNum = data.ModelNum;
@@ -80,8 +90,6 @@ namespace BEIMA.Backend.DeviceFunctions
             device.YearManufactured = data.YearManufactured;
             device.Notes = data.Notes;
 
-            var reqBuildingId = data.Location.BuildingId;
-            ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
             device.SetLocation(
                 buildingId,
                 data.Location.Notes,
@@ -89,7 +97,23 @@ namespace BEIMA.Backend.DeviceFunctions
                 data.Location.Longitude
             );
 
-            device.SetFields(data.Fields);
+            // Check that each field is a valid device type field.
+            if (data.Fields != null)
+            {
+                if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
+                {
+                    return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                }
+
+                foreach (var field in data.Fields)
+                {
+                    if (!deviceType.Fields.Contains(field.Key))
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
+                }
+                device.SetFields(data.Fields);
+            }
 
             var _storage = StorageDefinition.StorageInstance;
 

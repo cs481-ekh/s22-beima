@@ -29,7 +29,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             var testId = "abcdef123456789012345678";
-            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(id => id.ToString().Equals(testId))))
+            mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(id => id.ToString().Equals(testId))));
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
                   .Returns(deviceType.GetBsonDocument())
                   .Verifiable();
@@ -56,8 +56,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Never));
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Never));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
             Assert.That(((NotFoundObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
@@ -116,7 +115,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.IsAny<ObjectId>()))
-                  .Returns(device.GetBsonDocument())
+                  .Returns(device.GetBsonDocument());
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
                   .Returns(deviceType.GetBsonDocument())
                   .Verifiable();
@@ -175,7 +174,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.IsAny<ObjectId>()))
-                  .Returns(device.GetBsonDocument())
+                  .Returns(device.GetBsonDocument());
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
                   .Returns(deviceType.GetBsonDocument())
                   .Verifiable();
