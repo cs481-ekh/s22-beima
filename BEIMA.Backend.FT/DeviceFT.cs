@@ -317,13 +317,6 @@ namespace BEIMA.Backend.FT
             Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId));
 
             // ASSERT
-            var _storage = StorageDefinition.StorageInstance;
-            var photoExists = _storage.GetFileExists(photoUid);
-            var fileExists = _storage.GetFileExists(fileUid);
-
-            Assert.That(photoExists, Is.False);
-            Assert.That(fileExists, Is.False);
-
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }

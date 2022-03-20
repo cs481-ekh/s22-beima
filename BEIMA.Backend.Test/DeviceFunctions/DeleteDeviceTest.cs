@@ -63,7 +63,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = await DeleteDevice.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteDevice(It.IsAny<ObjectId>()), Times.Never));
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.DeleteFile(It.IsAny<string>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
@@ -77,8 +78,10 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             var testId = "1234567890abcdef12345678";
             var device = new Device(ObjectId.Parse(testId), ObjectId.GenerateNewId(), "A-1", "Generic Inc.", "43", "x46b", 2005, "Comment");
+            device.SetLastModified(DateTime.UtcNow, "Anonymous");
             device.SetPhoto(Guid.NewGuid() + ".png", "photo");
             device.AddFile(Guid.NewGuid() + ".txt", "file");
+            device.SetLocation(null,null,null,null); 
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))

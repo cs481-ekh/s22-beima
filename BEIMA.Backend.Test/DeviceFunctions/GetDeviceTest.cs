@@ -1,4 +1,5 @@
 ﻿using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -30,6 +31,8 @@ namespace BEIMA.Backend.Test
                   .Returns<BsonDocument>(null)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            StorageDefinition.StorageInstance = mockStorage.Object;
 
             // Set up the http request.
             var request = CreateHttpRequest(RequestMethod.GET);
@@ -40,6 +43,7 @@ namespace BEIMA.Backend.Test
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.GetPresignedURL(It.IsAny<string>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
             Assert.That(((NotFoundObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
@@ -58,6 +62,8 @@ namespace BEIMA.Backend.Test
                   .Returns<BsonDocument>(null)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            StorageDefinition.StorageInstance = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -67,6 +73,7 @@ namespace BEIMA.Backend.Test
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Never));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.GetPresignedURL(It.IsAny<string>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
             Assert.That(((BadRequestObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
@@ -87,12 +94,19 @@ namespace BEIMA.Backend.Test
             var dbDevice = new Device(new ObjectId(testId), ObjectId.GenerateNewId(), "a", "b", "c", "1234", 2020, "d");
             dbDevice.SetLocation(ObjectId.GenerateNewId(), "notes", "0", "1");
             dbDevice.SetLastModified(DateTime.UtcNow, "Anonymous");
+            dbDevice.SetPhoto(Guid.NewGuid() + ".png", "photo");
+            dbDevice.AddFile(Guid.NewGuid() + ".txt", "file");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDevice(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(dbDevice.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.GetPresignedURL(It.IsAny<string>()))
+                .Returns(Task.FromResult("url"))
+                .Verifiable();
+            StorageDefinition.StorageInstance = mockStorage.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -102,6 +116,7 @@ namespace BEIMA.Backend.Test
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDevice(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.GetPresignedURL(It.IsAny<string>()), Times.Exactly(2)));
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
