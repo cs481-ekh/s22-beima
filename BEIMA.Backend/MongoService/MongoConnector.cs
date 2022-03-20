@@ -68,6 +68,63 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
+        private ObjectId? Insert(BsonDocument doc, string collectionName)
+        {
+            CheckIsConnected();
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                collection.InsertOne(doc);
+                return (ObjectId)doc["_id"];
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        private BsonDocument Get(ObjectId objectId, string collectionName)
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                return collection.Find(filter).FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        private List<BsonDocument> GetAll()
+        {
+            CheckIsConnected();
+
+            var filter = Builders<BsonDocument>.Filter.Empty;
+
+            try
+            {
+                var db = client.GetDatabase(dbName);
+                var devices = db.GetCollection<BsonDocument>(deviceCollection);
+                var docs = devices.Find(filter).ToList();
+                return docs;
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         #region Device Methods
         /// <summary>
         /// Inserts a device into the "devices" collection
