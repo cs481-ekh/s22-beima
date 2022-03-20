@@ -117,6 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CannotDeleteDeviceTypeMessage" xml:space="preserve">
+    <value>The device type could not be deleted because at least one device exists in the database with this device type.</value>
+    <comment>Error message for trying to delete a device type that has at least one associated device in the database.</comment>
+  </data>
   <data name="CouldNotParseBody" xml:space="preserve">
     <value>Could not parse the request body.</value>
     <comment>Error message for when trying to parse a http request body fails.</comment>
