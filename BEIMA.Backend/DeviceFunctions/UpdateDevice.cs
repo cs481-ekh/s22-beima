@@ -43,83 +43,75 @@ namespace BEIMA.Backend.DeviceFunctions
                 return new BadRequestObjectResult(Resources.InvalidIdMessage);
             }
 
-            // Parse out necessary data            
-            var mongo = MongoDefinition.MongoInstance;
+            Device device;
             IFormCollection reqForm;
             UpdateDeviceRequest data;
-            Device device;
-            DeviceType deviceType;
-            ObjectId deviceTypeId;
-            ObjectId? buildingId;
+            var mongo = MongoDefinition.MongoInstance;            
             try
             {
+                // Read Form and parse out request data
                 reqForm = await req.ReadFormAsync();
                 data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);                              
                 
+                // Get original device
                 var deviceDocument = mongo.GetDevice(new ObjectId(id));
                 if (deviceDocument == null)
                 {
                     return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
                 }
-
                 device = BsonSerializer.Deserialize<Device>(deviceDocument);
-                deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
 
+                // Get related device type document
+                var deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
                 var deviceTypeDocument = mongo.GetDeviceType(deviceTypeId);
-                deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
+                var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
 
+                // Parse building id if it exists
                 var reqBuildingId = data.Location.BuildingId;
-                buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+                ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+
+                // Set device properties to new values
+                device.DeviceTypeId = deviceTypeId;
+                device.DeviceTag = data.DeviceTag;
+                device.Manufacturer = data.Manufacturer;
+                device.ModelNum = data.ModelNum;
+                device.SerialNum = data.SerialNum;
+                device.YearManufactured = data.YearManufactured;
+                device.Notes = data.Notes;
+
+                device.SetLocation(
+                    buildingId,
+                    data.Location.Notes,
+                    data.Location.Latitude,
+                    data.Location.Longitude
+                );
+
+                // Check that each request field matches the device type fields
+                if (data.Fields != null)
+                {
+                    if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
+
+                    foreach (var field in data.Fields)
+                    {
+                        if (!deviceType.Fields.Contains(field.Key))
+                        {
+                            return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                        }
+                    }
+                    device.SetFields(data.Fields);
+                }
             }
             catch (Exception)
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
-            }
-
-            if (!ObjectId.TryParse(data.DeviceTypeId, out _))
-            {
-                return new BadRequestObjectResult(Resources.InvalidIdMessage);
-            }            
-
-            // Set Data to new values
-            device.DeviceTypeId = deviceTypeId;
-            device.DeviceTag = data.DeviceTag;
-            device.Manufacturer = data.Manufacturer;
-            device.ModelNum = data.ModelNum;
-            device.SerialNum = data.SerialNum;
-            device.YearManufactured = data.YearManufactured;
-            device.Notes = data.Notes;
-
-            device.SetLocation(
-                buildingId,
-                data.Location.Notes,
-                data.Location.Latitude,
-                data.Location.Longitude
-            );
-
-            // Check that each field is a valid device type field.
-            if (data.Fields != null)
-            {
-                if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
-                {
-                    return new BadRequestObjectResult(Resources.CouldNotParseBody);
-                }
-
-                foreach (var field in data.Fields)
-                {
-                    if (!deviceType.Fields.Contains(field.Key))
-                    {
-                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
-                    }
-                }
-                device.SetFields(data.Fields);
-            }
-
-            var _storage = StorageDefinition.StorageInstance;
+            }                   
 
             List<string> filesToDelete = new List<string>(data.DeletedFiles);
 
-            // Check if there is a new photo
+            // Check if there is a new photo to replace the old one
             var updatePhoto = reqForm.Files.Any(file => file.Name == "photo");
             if (updatePhoto && device.Photo != null)
             {
@@ -127,9 +119,10 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             // Remove files from device's file list
-            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));          
-            
+            device.Files = device.Files.FindAll(file => !data.DeletedFiles.Contains(file.FileUid));
+
             // Add new files and photos
+            var _storage = StorageDefinition.StorageInstance;
             foreach (var file in reqForm.Files)
             {
                 var fileUid = await _storage.PutFile(file);
@@ -144,7 +137,6 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
-
 
             string message;
             HttpStatusCode statusCode;
