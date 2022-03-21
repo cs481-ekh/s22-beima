@@ -20,7 +20,7 @@ namespace BEIMA.Backend.MongoService
         private static readonly Lazy<MongoConnector> instance = new(() => new MongoConnector());
 
         //Environment variables
-        private readonly string dbName = Environment.GetEnvironmentVariable("DatabaseName");
+        private readonly string beimaDb = Environment.GetEnvironmentVariable("DatabaseName");
         private readonly string deviceCollection = Environment.GetEnvironmentVariable("DeviceCollectionName");
         private readonly string deviceTypeCollection = Environment.GetEnvironmentVariable("DeviceTypeCollectionName");
         private readonly string buildingCollection = Environment.GetEnvironmentVariable("BuildingCollectionName");
@@ -68,36 +68,41 @@ namespace BEIMA.Backend.MongoService
             }
         }
 
-        #region Device Methods
+        #region Base CRUD Methods
+
         /// <summary>
-        /// Inserts a device into the "devices" collection
+        /// Inserts a BsonDocument into the given database/collection.
         /// </summary>
-        /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
+        /// <param name="doc">BsonDocument to insert.</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
-        public ObjectId? InsertDevice(BsonDocument doc)
+        private ObjectId? Insert(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
 
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                devices.InsertOne(doc);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                collection.InsertOne(doc);
                 return (ObjectId)doc["_id"];
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// Gets a device from the "devices" collection, given an objectID.
+        /// Gets a single BsonDocument from the given database/collection, given an ObjectId.
         /// </summary>
-        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <param name="objectId">ObjectId of the object to be retrieved ("_id" field).</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
         /// <returns>BsonDocument that was requested</returns>
-        public BsonDocument GetDevice(ObjectId objectId)
+        private BsonDocument Get(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -106,21 +111,23 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                return devices.Find(filter).FirstOrDefault();
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                return collection.Find(filter).FirstOrDefault();
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// Gets a device from the "devices" collection, given an objectID.
+        /// Get all documents from the given database/collection.
         /// </summary>
-        /// <returns>BsonDocument that was requested</returns>
-        public List<BsonDocument> GetAllDevices()
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns>List of BsonDocuments that was requested</returns>
+        private List<BsonDocument> GetAll(string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -129,23 +136,25 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var docs = devices.Find(filter).ToList();
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                var docs = collection.Find(filter).ToList();
                 return docs;
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
         }
 
         /// <summary>
-        /// Deletes from the "devices" collection, given the objectID.
+        /// Deletes one document given an ObjectId, from the given database/collection.
         /// </summary>
-        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <param name="objectId">The ObjectId of the object to delete. ("_id" field)</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
         /// <returns>true if successful, false if not successful</returns>
-        public bool DeleteDevice(ObjectId objectId)
+        private bool Delete(ObjectId objectId, string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -154,23 +163,25 @@ namespace BEIMA.Backend.MongoService
             try
             {
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var result = devices.DeleteOne(filter);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                var result = collection.DeleteOne(filter);
                 return result.DeletedCount > 0;
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return false;
             }
         }
 
         /// <summary>
-        /// Updates a device in the "devices" collection, given a fully formed updated device.
+        /// Replaces a single document given the updated BsonDocument, inside the given database/collection.
         /// </summary>
-        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
-        /// <returns>true if successful, false if unsuccessful</returns>
-        public BsonDocument UpdateDevice(BsonDocument doc)
+        /// <param name="doc">The fully formed updated BsonDocument.</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns>true if successful, false if not successful</returns>
+        private BsonDocument Update(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
 
@@ -179,8 +190,8 @@ namespace BEIMA.Backend.MongoService
                 ObjectId objectId = (ObjectId)doc["_id"];
                 var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
                 var db = client.GetDatabase(dbName);
-                var devices = db.GetCollection<BsonDocument>(deviceCollection);
-                var result = devices.ReplaceOne(filter, doc);
+                var collection = db.GetCollection<BsonDocument>(collectionName);
+                var result = collection.ReplaceOne(filter, doc);
                 if (result.ModifiedCount > 0)
                 {
                     return doc;
@@ -192,9 +203,61 @@ namespace BEIMA.Backend.MongoService
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine(ex.Message);
+                Console.Error.WriteLine($"{dbName} {collectionName}: {ex.Message}");
                 return null;
             }
+        }
+
+        #endregion
+
+        #region Device Methods
+        /// <summary>
+        /// Inserts a device into the "devices" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertDevice(BsonDocument doc)
+        {
+            return Insert(doc, beimaDb, deviceCollection);
+        }
+
+        /// <summary>
+        /// Gets a device from the "devices" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetDevice(ObjectId objectId)
+        {
+            return Get(objectId, beimaDb, deviceCollection);
+        }
+
+        /// <summary>
+        /// Gets all devices from the "devices" collection.
+        /// </summary>
+        /// <returns>List of BsonDocuments that was requested</returns>
+        public List<BsonDocument> GetAllDevices()
+        {
+            return GetAll(beimaDb, deviceCollection);
+        }
+
+        /// <summary>
+        /// Deletes from the "devices" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteDevice(ObjectId objectId)
+        {
+            return Delete(objectId, beimaDb, deviceCollection);
+        }
+
+        /// <summary>
+        /// Updates a device in the "devices" collection, given a fully formed updated device.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>true if successful, false if unsuccessful</returns>
+        public BsonDocument UpdateDevice(BsonDocument doc)
+        {
+            return Update(doc, beimaDb, deviceCollection);
         }
         #endregion
 
@@ -206,21 +269,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetDeviceType(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                return deviceTypes.Find(filter).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Get(objectId, beimaDb, deviceTypeCollection);
         }
 
         /// <summary>
@@ -229,22 +278,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public List<BsonDocument> GetAllDeviceTypes()
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Empty;
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                var docs = deviceTypes.Find(filter).ToList();
-                return docs;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return GetAll(beimaDb, deviceTypeCollection);
         }
 
         /// <summary>
@@ -254,20 +288,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertDeviceType(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                deviceTypes.InsertOne(doc);
-                return (ObjectId)doc["_id"];
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Insert(doc, beimaDb, deviceTypeCollection);
         }
 
         /// <summary>
@@ -277,22 +298,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteDeviceType(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                var result = deviceTypes.DeleteOne(filter);
-                return result.DeletedCount > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return false;
-            }
+            return Delete(objectId, beimaDb, deviceTypeCollection);
         }
 
         /// <summary>
@@ -302,29 +308,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateDeviceType(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                ObjectId objectId = (ObjectId)doc["_id"];
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-                var db = client.GetDatabase(dbName);
-                var deviceTypes = db.GetCollection<BsonDocument>(deviceTypeCollection);
-                var result = deviceTypes.ReplaceOne(filter, doc);
-                if (result.ModifiedCount > 0)
-                {
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Update(doc, beimaDb, deviceTypeCollection);
         }
         #endregion
 
@@ -337,21 +321,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetBuilding(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                return buildings.Find(filter).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Get(objectId, beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -360,22 +330,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>List of all building BsonDocuments</returns>
         public List<BsonDocument> GetAllBuildings()
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Empty;
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                var docs = buildings.Find(filter).ToList();
-                return docs;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return GetAll(beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -385,20 +340,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertBuilding(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                buildings.InsertOne(doc);
-                return (ObjectId)doc["_id"];
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Insert(doc, beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -408,22 +350,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteBuilding(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                var result = buildings.DeleteOne(filter);
-                return result.DeletedCount > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return false;
-            }
+            return Delete(objectId, beimaDb, buildingCollection);
         }
 
         /// <summary>
@@ -433,29 +360,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                ObjectId objectId = (ObjectId)doc["_id"];
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-                var db = client.GetDatabase(dbName);
-                var buildings = db.GetCollection<BsonDocument>(buildingCollection);
-                var result = buildings.ReplaceOne(filter, doc);
-                if (result.ModifiedCount > 0)
-                {
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Update(doc, beimaDb, buildingCollection);
         }
 
         #endregion
@@ -469,21 +374,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetUser(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                return users.Find(filter).FirstOrDefault();
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Get(objectId, beimaDb, userCollection);
         }
 
         /// <summary>
@@ -492,22 +383,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>List of all user BsonDocuments</returns>
         public List<BsonDocument> GetAllUsers()
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Empty;
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                var docs = users.Find(filter).ToList();
-                return docs;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return GetAll(beimaDb, userCollection);
         }
 
         /// <summary>
@@ -517,20 +393,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertUser(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                users.InsertOne(doc);
-                return (ObjectId)doc["_id"];
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Insert(doc, beimaDb, userCollection);
         }
 
         /// <summary>
@@ -540,22 +403,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteUser(ObjectId objectId)
         {
-            CheckIsConnected();
-
-            var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-
-            try
-            {
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                var result = users.DeleteOne(filter);
-                return result.DeletedCount > 0;
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return false;
-            }
+            return Delete(objectId, beimaDb, userCollection);
         }
 
         /// <summary>
@@ -565,29 +413,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateUser(BsonDocument doc)
         {
-            CheckIsConnected();
-
-            try
-            {
-                ObjectId objectId = (ObjectId)doc["_id"];
-                var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
-                var db = client.GetDatabase(dbName);
-                var users = db.GetCollection<BsonDocument>(userCollection);
-                var result = users.ReplaceOne(filter, doc);
-                if (result.ModifiedCount > 0)
-                {
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.Error.WriteLine(ex.Message);
-                return null;
-            }
+            return Update(doc, beimaDb, userCollection);
         }
 
         #endregion
