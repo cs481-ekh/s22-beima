@@ -1,4 +1,5 @@
 using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using System;
+using System.Threading.Tasks;
 
 namespace BEIMA.Backend
 {
@@ -23,7 +25,7 @@ namespace BEIMA.Backend
         /// <param name="log">The logger to log to.</param>
         /// <returns>An http response containing the device information.</returns>
         [FunctionName("GetDevice")]
-        public static IActionResult Run(
+        public static async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "device/{id}")] HttpRequest req,
             string id,
             ILogger log)
@@ -40,17 +42,33 @@ namespace BEIMA.Backend
                 }
 
                 // Retrieve the device from the database.
+                var mongo = MongoDefinition.MongoInstance;
                 ObjectId oid = new ObjectId(id);
-                BsonDocument doc = MongoDefinition.MongoInstance.GetDevice(oid);
+                BsonDocument deviceDocument = mongo.GetDevice(oid);
 
                 // Check that the device returned is not null.
-                if (doc is null)
+                if (deviceDocument is null)
                 {
                     return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
                 }
 
                 // Return the device.
-                var device = BsonSerializer.Deserialize<Device>(doc);
+                var device = BsonSerializer.Deserialize<Device>(deviceDocument);
+
+                var _storage = StorageDefinition.StorageInstance;
+                if (device.Photo.FileUid != null)
+                {
+                    var presignedUrl = await _storage.GetPresignedURL(device.Photo.FileUid);
+                    device.Photo.FileUrl = presignedUrl;
+                }                
+
+                // Add url to every file
+                foreach (var file in device.Files)
+                {
+                    var url = await _storage.GetPresignedURL(file.FileUid);
+                    file.FileUrl = url;
+                }
+
                 return new OkObjectResult(device);
             }
             else

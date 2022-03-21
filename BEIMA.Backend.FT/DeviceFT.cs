@@ -288,8 +288,29 @@ namespace BEIMA.Backend.FT
                 YearManufactured = 2000,
             };
 
-            var deviceId = await TestClient.AddDevice(device);
-            Assume.That(await TestClient.GetDevice(deviceId), Is.Not.Null);
+            FormFileCollection files = new FormFileCollection();
+            var fileName = "file.txt";
+            var photoName = "photo.txt";
+
+            string deviceId;
+            using (var fileStream = new MemoryStream(TestObjects._fileBytes))
+            using (var photoStream = new MemoryStream(TestObjects._fileBytes))
+            {
+                files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
+                files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
+
+                // ACT
+                deviceId = await TestClient.AddDevice(device, files);
+            }
+
+            var response = await TestClient.GetDevice(deviceId);
+            Assert.That(response, Is.Not.Null);
+
+            var photoUid = response.Photo?.FileUid;
+            var fileUid = response.Files?[0].FileUid;
+
+            Assert.That(photoUid, Is.Not.Null);
+            Assert.That(fileUid, Is.Not.Null);
 
             // ACT
             Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId));
