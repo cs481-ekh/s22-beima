@@ -161,7 +161,7 @@ const AddDevicePage = () => {
   */
   function createJSON(formFields){
     //TODO temporary until we have error signaling figured out
-    if (selectedDeviceType === 'Select Device Type'){
+    if (selectedDeviceType.name === 'Select Device Type'){
       alert ('No device type selected');
       return;
     }
