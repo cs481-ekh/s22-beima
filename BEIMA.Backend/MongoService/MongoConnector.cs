@@ -243,6 +243,16 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
+        /// Gets a list of Device BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter)
+        {
+            return GetFiltered(filter, beimaDb, deviceCollection);
+        }
+
+        /// <summary>
         /// Gets all devices from the "devices" collection.
         /// </summary>
         /// <returns>List of BsonDocuments that was requested</returns>
