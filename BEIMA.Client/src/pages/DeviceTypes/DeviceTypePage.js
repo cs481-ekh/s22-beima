@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './DeviceTypePage.module.css'
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Form, Card, Button, FormControl} from "react-bootstrap";
 import { IoAdd } from "react-icons/io5";
 import { v4 as uuidv4 } from 'uuid';
+import GetDeviceType from '../../services/GetDeviceType';
+import updateDeviceType from '../../services/UpdateDeviceType';
+import deleteDeviceType from '../../services/DeleteDeviceType';
 import * as Constants from '../../Constants';
 
 const DeviceTypePage = () => {
@@ -12,49 +15,20 @@ const DeviceTypePage = () => {
   const [loading, setLoading] = useState(true)
   const [setPageName] = useOutletContext();
 
+  const { typeId } = useParams();
+
   useEffect(() => {
     setPageName('View Device Type')
-  },[setPageName])
-
-  const mockCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(1000)
-    let data = {
-      deviceTypeId: 54,
-      name: `Batteries`,
-      description: "Battery devices are used to store power that other devices can use.",
-      notes: "There are no notes",
-      fields: {
-        fieldIdOne: "Dimensions",
-        fieldIdTwo: "Weight",
-        fieldIdThree: "Color",
-        fieldIdFour: "Manufactorer"
-      }
-    }
-    
-    // Map data into format supported by list
-    let mapped = {
-      id: data.deviceTypeId,
-      name: data.name,
-      description: data.description,
-      notes: data.notes,
-      fields: data.fields,
-      addedFields:{},
-      deletedFields:[]
-    }
-
-    return mapped
-  }
-
-  useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      let type = await mockCall()
+      let type = (await GetDeviceType(typeId)).response
+      type['addedFields'] = [];
+      type['deletedFields'] = [];
       setDeviceType(type)
       setLoading(false)
     }
     loadData()
-  },[])
+  },[typeId, setPageName])
 
   /**
    * Renders a card styled field in a device type.
@@ -72,7 +46,6 @@ const DeviceTypePage = () => {
       <Card>
         <Card.Body >
             <Form.Group className="mb-3" controlId={field}>
-              <Form.Label>Field Name</Form.Label>
               <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}  maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
             </Form.Group>                
           { editable ? 
@@ -103,19 +76,25 @@ const DeviceTypePage = () => {
     const [fields, setFields] = useState({...item.fields})
     const [addedFields, setAddedFields] = useState({...item.addedFields})
     const [deletedFields, setDeletedFields] = useState([...item.deletedFields])
+    const navigate = useNavigate();
     
-
     const handleSubmit = () => {
+      // we keep track of the added fields as an object, but the endpoint takes in an array
+      // so we grab the values from the addFields object and send it to the endpoint
+      let newFields = Object.values(addedFields);
+
       const result = {
+        id: typeId,
+        name: item.name,
         description: description,
         notes: notes,
         fields: fields,
-        addedFields: addedFields,
+        newFields: newFields,
         deletedFields: deletedFields
       }
       //call endpoint
-      setItem(result)
-      console.log(result)
+      updateDeviceType(result);
+      setEditable(false);
     }
 
     const addField = () => {
@@ -172,9 +151,26 @@ const DeviceTypePage = () => {
       setDeletedFields([...item.deletedFields])
     }
 
+    const attemptDeleteType = async (id) => {
+      // replace with more descriptive and prettier error message
+      alert('Are you sure?')
+      let response = await deleteDeviceType(id);
+      // the endpoint returns an error message if there is more than one device with that type
+      // let's show that message to the user
+      if(response.response){
+        // replace with more descriptive and prettier error message
+        alert(response.response);
+      } else {
+        navigate('/deviceTypes')
+      }
+    }
+
     return (
       <Form className={styles.form}>
         <Form.Group className="mb-3">
+        <Button variant="danger" id="deletebtn" onClick={() => attemptDeleteType(typeId)} className={styles.deleteButton}>
+          Delete Device Type
+        </Button>
           {editable ? 
            <div className={styles.buttonRow}>
               <Button id="savebtn" onClick={handleSubmit}>
