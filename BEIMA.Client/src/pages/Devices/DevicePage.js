@@ -15,7 +15,7 @@ const DevicePage = () => {
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState(null);
   const [image, setImage] = useState(null)
-  const [documents, setDocuments] = useState([])
+  const [documents, setDocuments] = useState({})
   const [deviceType, setDeviceType] = useState(null)
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const DevicePage = () => {
   
       setDevice(device)
       setImage(device.photo.fileUrl)
-      setDocuments([])
+      setDocuments(device.files)
       setDeviceType(deviceType)
       setLoading(false)
     }
@@ -171,7 +171,8 @@ const DevicePage = () => {
     const [long, setLong] = useState(device.location.longitude)
     const [locNotes, setLocNotes] = useState(device.location.notes)
 
-    const [imageCopy, setImageCopy] = useState(image)
+    const [newImage, setNewImage] = useState([])
+    const [imageCopyUrl, setImageCopyUrl] = useState(image)
 
     const [docCopy, setDocCopy] = useState(documents)
     const [addedDocs, setAddedDocs] = useState([])
@@ -197,17 +198,17 @@ const DevicePage = () => {
         }
       }
 
-      const newImage = imageCopy
-      const docs = docCopy
-      const newDocs = addedDocs
-      const delDocs = removedDocs
-
+      let docs;
+      if(addedDocs.length > 0){
+        docs = docCopy.push(addedDocs);
+      } else {
+        docs = docCopy;
+      }
+      
       // Hit endpoints here
-      updateDevice(newDevice);
+      updateDevice(newDevice, newImage, docs);
       console.log(newImage)
       console.log(docs)
-      console.log(newDocs)
-      console.log(delDocs)
       setEditable(false)
     }
 
@@ -228,7 +229,7 @@ const DevicePage = () => {
       setLat(device.location.latitude)
       setLong(device.location.longitude)
       setLocNotes(device.location.notes)
-      setImageCopy(image)
+      setImageCopyUrl(image)
       setDocCopy(documents)
       setAddedDocs([])
       setRemovedDocs([])
@@ -275,7 +276,8 @@ const DevicePage = () => {
 
     const onImageChange = (event) => {
       if(event.target.files && event.target.files[0]){
-        setImageCopy(URL.createObjectURL(event.target.files[0]))
+        setImageCopyUrl(URL.createObjectURL(event.target.files[0]))
+        setNewImage(event.target.files[0])
       }
     }
 
@@ -296,15 +298,21 @@ const DevicePage = () => {
       let tempAdded = [...addedDocs]
       let tempDel = [...removedDocs]
 
-      if(tempDocs.includes(doc)){
-        tempDocs = tempDocs.filter(val => val !== doc)
-        tempDel.push(doc)
-        setDocCopy(tempDocs)
-        setRemovedDocs(tempDel)
-      } else {
-        tempAdded = tempAdded.filter(val => val.name !== doc)
-        setAddedDocs(tempAdded)
-      }
+      tempDocs.map((tempDoc) => {
+        if(tempDoc.fileName.includes(doc)){
+          tempDocs = tempDocs.filter(val => val.fileName !== doc)
+          tempDel.push(doc)
+          setDocCopy(tempDocs)
+          setRemovedDocs(tempDel)
+        }
+      });
+
+      tempAdded.map((tempDoc) => {
+        if(tempDoc.fileName.includes(doc)){
+          tempAdded = tempAdded.filter(val => val.fileName !== doc);
+          setAddedDocs(tempAdded)
+        }
+      });
     }
 
     return (
@@ -336,8 +344,8 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
-              { imageCopy !== '' ?
-              <Image src={imageCopy} fluid/>
+              { imageCopyUrl !== '' ?
+              <Image src={imageCopyUrl} fluid/>
               : "No image for device"}
             </Card.Body>
           </Card>
@@ -352,7 +360,7 @@ const DevicePage = () => {
 
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
           { docCopy.length > 0 ?
-          docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )
+          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
           : "No documents for device"}
           {addedDocs.map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )}
         </div>

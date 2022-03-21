@@ -17,11 +17,10 @@ export default async function addDevice(deviceDetails, photo, files) {
   // add each additional file to the files key
   if(files){
     tempFiles.map((file, index) => {
-      formData.append(`files[${index}]`, file)
+      formData.append(`files${index}`, file)
     });
   }
 
-  console.log(formData)
   //performs the post and returns an error message or the inserted device ID
   const dbCall = await axios.post(API_URL + "device/", formData).catch(function (error) {
       if (error.response) {
