@@ -20,14 +20,29 @@ describe("Verify Data can be entered into fields", () => {
   })
 })
 
-describe("Verify Data in fields is cleared when Add User is selected", () => {
+describe("Verify Data in fields is cleared when Add User is selected with valid data", () => {
   it('Enter data, click Add User, verify fields are empty', () => {
     cy.visit('http://localhost:3000/users/addUser')
     cy.get('#inputUsername').scrollIntoView().type("firstLast")
     cy.get("#inputRole").scrollIntoView().type("admin")
+    cy.get('#inputPassword').scrollIntoView().type("200")
+    cy.get('input[name="Password Confirmation"]').type('200')
     cy.get("#addUser").scrollIntoView().click()
     cy.get('#inputUsername').should('have.value', '')
     cy.get("#inputRole").should('have.value', '')
+  })
+})
+
+describe("Verify Data in fields is still present when invalid password is present", () => {
+  it('Enter data, click Add User, verify fields are empty', () => {
+    cy.visit('http://localhost:3000/users/addUser')
+    cy.get('#inputUsername').scrollIntoView().type("firstLast")
+    cy.get("#inputRole").scrollIntoView().type("admin")
+    cy.get('#inputPassword').scrollIntoView().type("200")
+    cy.get("#addUser").scrollIntoView().click()
+    cy.get('#inputUsername').should('have.value', 'firstLast')
+    cy.get('#inputRole').should('have.value', 'admin')
+    cy.get('#inputPassword').should('have.value', '200')
   })
 })
 
