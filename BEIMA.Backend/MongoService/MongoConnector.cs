@@ -104,15 +104,26 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         private BsonDocument Get(ObjectId objectId, string dbName, string collectionName)
         {
-            CheckIsConnected();
-
             var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+            return GetFiltered(filter, dbName, collectionName)?.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets a single BsonDocument from the given database/collection, given an ObjectId.
+        /// </summary>
+        /// <param name="filter">The filter that is being applied.</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns>BsonDocument that was requested</returns>
+        private List<BsonDocument> GetFiltered(FilterDefinition<BsonDocument> filter, string dbName, string collectionName)
+        {
+            CheckIsConnected();
 
             try
             {
                 var db = client.GetDatabase(dbName);
                 var collection = db.GetCollection<BsonDocument>(collectionName);
-                return collection.Find(filter).FirstOrDefault();
+                return collection.Find(filter).ToList();
             }
             catch (Exception ex)
             {
