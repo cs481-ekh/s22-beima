@@ -39,15 +39,12 @@ const AddDevicePage = () => {
   
   useEffect(() => {
     setPageName('Add Device')
-  }, [setPageName])
-  
-  useEffect(() => {
     const loadData = async () => {
       let types = await getDeviceTypes();
       setDeviceTypes(types);
     }
    loadData()
-  },[])
+  },[setPageName])
   
   /*
   * gets the list of device types from the database
@@ -136,7 +133,7 @@ const AddDevicePage = () => {
     const formFields = addButtonEvent.target.form.elements;
     const dbJson = createJSON(formFields);
     if(dbJson){
-      AddDevice(dbJson).then(response => {
+      AddDevice(dbJson, deviceImage, deviceAdditionalDocs).then(response => {
         //reset the form or show a message regarding insertion failure
         if(response.status === HTTP_SUCCESS){
           setErrors({});
@@ -207,10 +204,6 @@ const AddDevicePage = () => {
         } else if ('location' in jsonKey){
           dbJson.location[jsonKey.location.type] = deviceFields[formName];
         }
-      } else if (formName === "Device Image"){
-        setDeviceImage(formFields[i].files[0]);
-      } else if (formName === "Additional Documents"){
-        setAdditionalDocs(formFields[i].files);
       }
     }
     
@@ -228,6 +221,18 @@ const AddDevicePage = () => {
       dbJson.deviceTypeId = selectedDeviceType._id;
       
       return dbJson;
+    }
+  }
+
+  const setImage = (event) => {
+    if(event.target.files && event.target.files[0]){
+      setDeviceImage(event.target.files[0])
+    }
+  }
+
+  const setDocuments = (event) => {
+    if(event.target.files){
+      setAdditionalDocs(event.target.files)
     }
   }
   
@@ -248,10 +253,10 @@ const AddDevicePage = () => {
             </Row>
             <br/>
             <h4>Device Image</h4>
-            <ImageFileUpload type="Device Image" multiple={false} />
+            <ImageFileUpload type="Device Image" multiple={false} onChange={setImage}/>
             <br/>
             <h4>Additional Documents</h4>
-            <ImageFileUpload type="Additional Documents" multiple={true}/>
+            <ImageFileUpload type="Additional Documents" multiple={true} onChange={setDocuments}/>
             <br/>
             <h4>Fields</h4>
             <div>

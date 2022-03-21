@@ -31,7 +31,7 @@ const DevicePage = () => {
       const deviceType = (await GetDeviceType(device.deviceTypeId)).response;
   
       setDevice(device)
-      setImage('')
+      setImage(device.photo.fileUrl)
       setDocuments([])
       setDeviceType(deviceType)
       setLoading(false)
