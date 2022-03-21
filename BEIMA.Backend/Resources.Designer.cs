@@ -61,6 +61,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Building could not be found..
+        /// </summary>
+        internal static string BuildingNotFoundMessage {
+            get {
+                return ResourceManager.GetString("BuildingNotFoundMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The device type could not be deleted because at least one device exists in the database with this device type..
         /// </summary>
         internal static string CannotDeleteDeviceTypeMessage {

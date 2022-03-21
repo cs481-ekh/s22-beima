@@ -79,6 +79,13 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument UpdateDeviceType(BsonDocument doc);
 
         /// <summary>
+        /// Gets a Building from the "buildings" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetBuilding(ObjectId objectId);
+
+        /// <summary>
         /// Inserts a building into the "buildings" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed building document</param>
