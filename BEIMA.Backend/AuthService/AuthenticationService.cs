@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 
 namespace BEIMA.Backend.AuthService
 {
+    /// <summary>
+    /// This class implements basic JWT functions such as creating a token from a user
+    /// and parsing headers for a token and its claims. It is implemented as a singleton.
+    /// </summary>
     public sealed class AuthenticationService : IAuthenticationService
     {
         private static readonly Lazy<AuthenticationService> instance = new(() => new AuthenticationService());
@@ -32,6 +36,11 @@ namespace BEIMA.Backend.AuthService
 
         public static AuthenticationService Instance { get { return instance.Value; } }
 
+        /// <summary>
+        /// Creates a JWT token from a passed in user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns>string encoding of a JWT token</returns>
         public string CreateToken(User user)
         {
             var claims = new Claims()
@@ -43,9 +52,15 @@ namespace BEIMA.Backend.AuthService
             var token = _jwtEncoder.Encode(claims, secretKey);
             return token;
         }
-
+        /// <summary>
+        /// Parses the headers of an HttpRequest for
+        /// a JWT and returnes the claims found inside of it
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns>JWT claims</returns>
         public Claims ParseToken(HttpRequest req)
         {
+            // Check if headers or Authorization header are null;
             if (req.Headers == null || !req.Headers.ContainsKey("Authorization"))
             {
                 return null;
@@ -59,7 +74,8 @@ namespace BEIMA.Backend.AuthService
 
             try
             {
-                if (authHeader.StartsWith("Bearer"))
+                // Strip of frontal 'Bearer ' if it exists
+                if (authHeader.StartsWith("Bearer "))
                 {
                     authHeader = authHeader.Substring(7);
                 }

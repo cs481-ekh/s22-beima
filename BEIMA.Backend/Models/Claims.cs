@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 
 namespace BEIMA.Backend.Models
 {
+    /// <summary>
+    /// Object representation of the claims that are
+    /// stored in the JWT token given out to authenticate users
+    /// </summary>
     public class Claims
     {
         public static readonly string Issuer = "Beima";
