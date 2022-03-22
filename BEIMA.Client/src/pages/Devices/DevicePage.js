@@ -7,6 +7,7 @@ import { TiDelete } from "react-icons/ti";
 import updateDevice from "../../services/UpdateDevice.js";
 import deleteDevice from "../../services/DeleteDevice.js";
 import getDevice from "../../services/GetDevice.js";
+import GetDeviceType from '../../services/GetDeviceType';
 import * as Constants from '../../Constants';
 
 const DevicePage = () => {
@@ -22,19 +23,12 @@ const DevicePage = () => {
   },[setPageName])
 
   const { id } = useParams();
-
-  const mockDeviceTypeCall = async(docId) => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const type = {}
-    return type
-  }
   
   useEffect(() => {
     const loadData = async() => {
       let deviceCall = await getDevice(id);
       const device = deviceCall.response;
-      const deviceType = await mockDeviceTypeCall(device.deviceTypeId)
+      const deviceType = (await GetDeviceType(device.deviceTypeId)).response;
   
       setDevice(device)
       setImage('')
@@ -399,7 +393,7 @@ const DevicePage = () => {
   return (
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${device.deviceTag} - <Device Type Name> - <Building Name>`}
+        title={loading ? 'Loading' : `${device.deviceTag} - ${deviceType.name} - <Building Name>`}
         RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
         loading={loading}
         route="/devices"
