@@ -27,6 +27,7 @@ env:
   MinioAccessKey: "minioadmin"
   MinioSecretKey: "minioadmin"
   MinioBucket: "test-files"
+  JwtKey: ${{ secrets.JWT_SECRET_KEY }}
 
 jobs:
   build:
