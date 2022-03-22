@@ -438,5 +438,10 @@ namespace BEIMA.Backend.MongoService
         }
 
         #endregion
+
+        public FilterDefinition<BsonDocument> GetEqualsFilter(string key, dynamic value)
+        {
+            return Builders<BsonDocument>.Filter.Eq(key, value);
+        }
     }
 }
