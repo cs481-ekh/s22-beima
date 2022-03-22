@@ -130,7 +130,7 @@ namespace BEIMA.Backend.DeviceFunctions
             foreach (var file in reqForm.Files)
             {
                 var fileUid = await _storage.PutFile(file);
-                if (file.Name == "files")
+                if (file.Name.Contains("files"))
                 {
                     device.AddFile(fileUid, file.FileName);
                 }
