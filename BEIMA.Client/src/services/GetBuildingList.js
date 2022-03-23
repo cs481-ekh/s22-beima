@@ -19,8 +19,6 @@ const GetBuildingList = async() => {
     name: item.name,
     number: item.number,
     notes: item.notes,
-    latitude: item.location.latitude,
-    longitude: item.location.longitude
     }
   })
 
