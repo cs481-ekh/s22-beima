@@ -59,19 +59,27 @@ const AddUserPage = () => {
   function createJSON(addButtonEvent){
     let formFields = addButtonEvent.target.form.elements;
     let fieldValues = {};
-
+    
+    let newErrors = checkPassword();
+    
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let fieldNames = Object.keys(userFields);
       
       if(fieldNames.includes(formName)){
+        if(formFields[i].value === '') {
+          newErrors[formName] = `${formName} cannot be blank`;
+        }
+        
         let formJSON =  {[formName] : formFields[i].value};
         
         Object.assign(fieldValues, formJSON);
       }
     }
     
-    let newErrors = checkPassword();
+
+    
+    
     
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
