@@ -47,7 +47,7 @@ namespace BEIMA.Backend.FT
             public List<DeviceFile>? Files { get; set; }
 
             [JsonProperty(PropertyName = "photo")]
-            public DeviceFile? Photo { get; set; }            
+            public DeviceFile? Photo { get; set; }
         }
 
         public class DeviceFile
@@ -138,6 +138,9 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "location")]
             public Location? Location { get; set; }
+
+            [JsonProperty(PropertyName = "lastModified")]
+            public LastModified? LastModified { get; set; }
         }
 
         public class Location

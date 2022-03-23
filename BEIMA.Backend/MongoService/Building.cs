@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
+using Newtonsoft.Json;
 
 namespace BEIMA.Backend.MongoService
-{ 
+{
     /// <summary>
     /// Object representation of a last modified document in a Building document
     /// </summary>
@@ -36,6 +37,7 @@ namespace BEIMA.Backend.MongoService
     {
         //Properties of a Building object
         [BsonId]
+        [JsonProperty(PropertyName = "_id")]
         public ObjectId Id { get; set; }
 
         [BsonElement("name")]
