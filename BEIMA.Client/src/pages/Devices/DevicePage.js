@@ -348,13 +348,9 @@ const DevicePage = () => {
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
           {docCopy.length > 0 ?
           docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
-          : null}
-          {newDocs.length > 0 ?
+          : <> {newDocs.length > 0 ?
           Array.from(newDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
-          : null}
-          {docCopy.length > 0 && newDocs.length > 0 ?
-          "No documents for device"
-          : null}
+          : "No documents for device"} </>}
         </div>
 
         {editable ? <FileUpload editable={editable} onDocumentchange={onDocumentChange}/> : null }
