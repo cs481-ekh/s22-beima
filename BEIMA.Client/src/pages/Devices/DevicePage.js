@@ -31,7 +31,7 @@ const DevicePage = () => {
       const deviceType = (await GetDeviceType(device.deviceTypeId)).response;
   
       setDevice(device)
-      setImage(device.photo.fileUrl)
+      setImage(device.photo)
       setDocuments(device.files)
       setDeviceType(deviceType)
       setLoading(false)
@@ -171,7 +171,8 @@ const DevicePage = () => {
     const [locNotes, setLocNotes] = useState(device.location.notes)
 
     const [newImage, setNewImage] = useState()
-    const [imageCopyUrl, setImageCopyUrl] = useState(image)
+    const [imageCopyUrl, setImageCopyUrl] = useState(image.fileUrl)
+    const [imageCopy, setImageCopy] = useState(image)
 
     const [docCopy, setDocCopy] = useState(documents)
     const [newDocs, setNewDocs] = useState([])
@@ -272,6 +273,15 @@ const DevicePage = () => {
       }
     }
 
+    const deleteImage = () => {
+      let delDocs = deletedDocs;
+      delDocs.push(imageCopy.fileUid);
+
+      setDeletedDocs(delDocs);
+      setNewImage(new File([""], ""))
+      setImageCopyUrl('')
+    }
+
     const onDocumentChange = (event) => {
       if(event.target.files){
         setNewDocs(event.target.files)
@@ -331,7 +341,10 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
-              { imageCopyUrl !== '' ?
+              { editable && (imageCopyUrl !== '' && imageCopyUrl !== null) ? 
+                <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteImage()}/>
+              : null}  
+              { imageCopyUrl !== '' && imageCopyUrl !== null?
               <Image src={imageCopyUrl} fluid/>
               : "No image for device"}
             </Card.Body>
