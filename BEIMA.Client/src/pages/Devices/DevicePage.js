@@ -172,7 +172,7 @@ const DevicePage = () => {
 
     const [newImage, setNewImage] = useState()
     const [imageCopyUrl, setImageCopyUrl] = useState(image.fileUrl)
-    const [imageCopy, setImageCopy] = useState(image)
+    const [imageCopy] = useState(image)
 
     const [docCopy, setDocCopy] = useState(documents)
     const [newDocs, setNewDocs] = useState([])
@@ -299,6 +299,7 @@ const DevicePage = () => {
           tempDocs = tempDocs.filter(val => val.fileName !== doc)
           delDocs.push(tempDoc.fileUid)
         }
+        return null;
       });
       setDocCopy(tempDocs)
 
@@ -306,6 +307,7 @@ const DevicePage = () => {
         if(tempDoc.fileName.includes(doc)){
           tempNewDocs = tempNewDocs.filter(val => val.fileName !== doc)
         }
+        return null;
       });
       setNewDocs(tempNewDocs)
 
