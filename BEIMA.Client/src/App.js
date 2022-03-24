@@ -18,6 +18,9 @@ import LoginPage from './pages/Authentication/LoginPage';
 import BuildingListPage from './pages/Building/BuildingListPage';
 import AddBuildingPage from './pages/Building/AddBuildingPage';
 import BuildingPage from './pages/Building/BuildingPage';
+import ListUsersPage from './pages/Users/ListUsersPage';
+import AddUserPage from './pages/Users/AddUserPage';
+import UserPage from './pages/Users/UserPage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -38,6 +41,9 @@ const App = () => {
           <Route path="buildings/:id" element={<BuildingPage/>}/>
           <Route path="buildings" element={<BuildingListPage/>}/>
           <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/>  
+          <Route path="users" element={<ListUsersPage/>}/>
+          <Route path="users/addUser" element={<AddUserPage/>}/>
+          <Route path="users/:id" element={<UserPage/>}/>
           <Route path="Help" element={<HelpPage />} />
           <Route path="*" element={<Navigate to="/devices" />} />
         </Route>
