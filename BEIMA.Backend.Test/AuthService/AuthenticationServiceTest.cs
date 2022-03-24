@@ -132,6 +132,7 @@ namespace BEIMA.Backend.Test.AuthService
             var requestOne = CreateMultiPartHttpRequest("", authToken: token);
 
             var claims = authService.ParseToken(requestOne);
+            Assume.That(claims.Role , Is.EqualTo("role"));
             claims.Role = "admin";
 
             var algorithm = new HMACSHA256Algorithm();
