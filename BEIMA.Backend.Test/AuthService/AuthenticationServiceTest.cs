@@ -4,17 +4,10 @@ using BEIMA.Backend.MongoService;
 using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
-using Microsoft.AspNetCore.Http;
-using Moq;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
 
-namespace BEIMA.Backend.Test.AuthenticationService
+namespace BEIMA.Backend.Test.AuthService
 {
     [TestFixture]
     public class AuthenticationServiceTest : UnitTestBase
@@ -23,11 +16,11 @@ namespace BEIMA.Backend.Test.AuthenticationService
         public void ServiceNotCreated_CallConstructorFiveTimes_FiveInstancesAreEqual()
         {
             //Tests to make sure singleton is working
-            var authSerivce1 = AuthService.AuthenticationService.Instance;
-            var authSerivce2 = AuthService.AuthenticationService.Instance;
-            var authSerivce3 = AuthService.AuthenticationService.Instance;
-            var authSerivce4 = AuthService.AuthenticationService.Instance;
-            var authSerivce5 = AuthService.AuthenticationService.Instance;
+            var authSerivce1 = AuthenticationService.Instance;
+            var authSerivce2 = AuthenticationService.Instance;
+            var authSerivce3 = AuthenticationService.Instance;
+            var authSerivce4 = AuthenticationService.Instance;
+            var authSerivce5 = AuthenticationService.Instance;
             Assert.That(authSerivce1, Is.EqualTo(authSerivce2));
             Assert.That(authSerivce1, Is.EqualTo(authSerivce3));
             Assert.That(authSerivce1, Is.EqualTo(authSerivce4));
@@ -37,7 +30,7 @@ namespace BEIMA.Backend.Test.AuthenticationService
         [Test]
         public void HttpRequestNoHeaders_NoClaimsReturned()
         {
-            var authService = AuthService.AuthenticationService.Instance;
+            var authService = AuthenticationService.Instance;
             var request = CreateHttpRequest(RequestMethod.GET);
 
             var claims = authService.ParseToken(request);
@@ -47,7 +40,7 @@ namespace BEIMA.Backend.Test.AuthenticationService
         [Test]
         public void MultiPartHttpRequestNoHeaders_ParseToken_NoClaimsReturned()
         {
-            var authService = AuthService.AuthenticationService.Instance;
+            var authService = AuthenticationService.Instance;
             var request = CreateMultiPartHttpRequest("");
 
             var claims = authService.ParseToken(request);
@@ -57,7 +50,7 @@ namespace BEIMA.Backend.Test.AuthenticationService
         [Test]
         public void HttpRequestWithHeaders_ParseToken_ClaimsReturned()
         {
-            var authService = AuthService.AuthenticationService.Instance;
+            var authService = AuthenticationService.Instance;
             User user = new User()
             {
                 Username = "username",
@@ -78,7 +71,7 @@ namespace BEIMA.Backend.Test.AuthenticationService
         [Test]
         public void MultiPartHttpRequestWithHeaders_ParseToken_ClaimsReturned()
         {
-            var authService = AuthService.AuthenticationService.Instance;
+            var authService = AuthenticationService.Instance;
             User user = new User()
             {
                 Username = "username",
@@ -99,7 +92,7 @@ namespace BEIMA.Backend.Test.AuthenticationService
         [Test]
         public void HttpRequestWithHeader_ModifyToken_ParseToken_NoClaimsReturned()
         {
-            var authService = AuthService.AuthenticationService.Instance;
+            var authService = AuthenticationService.Instance;
             User user = new User()
             {
                 Username = "username",
@@ -128,7 +121,7 @@ namespace BEIMA.Backend.Test.AuthenticationService
         [Test]
         public void MultiParttHttpRequestWithHeader_ModifyToken_ParseToken_NoClaimsReturned()
         {
-            var authService = AuthService.AuthenticationService.Instance;
+            var authService = AuthenticationService.Instance;
             User user = new User()
             {
                 Username = "username",
