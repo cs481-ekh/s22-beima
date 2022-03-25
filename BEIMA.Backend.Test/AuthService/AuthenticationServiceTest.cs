@@ -28,7 +28,7 @@ namespace BEIMA.Backend.Test.AuthService
         }
 
         [Test]
-        public void HttpRequestNoHeaders_NoClaimsReturned()
+        public void HttpRequestNoHeaders_ParseToken_NoClaimsReturned()
         {
             var authService = AuthenticationService.Instance;
             var request = CreateHttpRequest(RequestMethod.GET);
