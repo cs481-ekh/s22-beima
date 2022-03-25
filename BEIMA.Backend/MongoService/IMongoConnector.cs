@@ -86,6 +86,12 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetBuilding(ObjectId objectId);
 
         /// <summary>
+        /// Gets all buildings from the "buildings" collection.
+        /// </summary>
+        /// <returns>List of all building BsonDocuments</returns>
+        public List<BsonDocument> GetAllBuildings();
+
+        /// <summary>
         /// Inserts a building into the "buildings" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed building document</param>

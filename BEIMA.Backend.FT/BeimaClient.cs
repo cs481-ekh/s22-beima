@@ -312,6 +312,17 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sends a building get list request to the BEIMA api.
+        /// </summary>
+        /// <returns>The building list.</returns>
+        public async Task<List<Building>> GetBuildingList()
+        {
+            var response = await SendRequest("api/building-list", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Building>>(content);
+        }
+
+        /// <summary>
         /// Sends a building post request to the BEIMA api.
         /// </summary>
         /// <param name="building">The building to add.</param>
