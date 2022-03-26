@@ -23,7 +23,7 @@ namespace BEIMA.Backend.BuildingFunctions
         /// <returns>An http response indicating whether or not the deletion was successful.</returns>
         [FunctionName("DeleteBuilding")]
         public static IActionResult Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "buildling/{id}/delete")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "building/{id}/delete")] HttpRequest req,
             string id,
             ILogger log)
         {
