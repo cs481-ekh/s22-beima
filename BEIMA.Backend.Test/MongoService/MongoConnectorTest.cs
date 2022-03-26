@@ -163,6 +163,47 @@ namespace BEIMA.Backend.Test.MongoService
             Assert.IsNull(result);
         }
 
+        [TestCase("serialNumber", "a12345")]
+        [TestCase("key1", 12345)]
+        [TestCase("key2", true)]
+        public void InsertDevice_GetFilteredDevices_DeviceInList(string key, dynamic value)
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument
+            {
+                { key, value }
+            };
+            //Insert device
+            var insertResult = mongo.InsertDevice(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //GetFiltered
+            var filter = mongo.GetEqualsFilter(key, value);
+            var list = mongo.GetFilteredDevices(filter);
+            foreach (var device in list)
+            {
+                Assert.That(device.GetElement(key).Value.ToString().ToLower(), Is.EqualTo(value.ToString().ToLower()));
+            }
+        }
+
+        [TestCase("InvalidKey1", "aaaaaaaaaaaa")]
+        [TestCase("aaaaaaaaaaaaaa", 12345)]
+        [TestCase("bbbbbbb", true)]
+        public void CreateFilterWithNoResults_GetFilteredDevices_NoResultsInList(string key, dynamic value)
+        {
+            var mongo = MongoConnector.Instance;
+
+            //Create filter
+            var filter = mongo.GetEqualsFilter(key, value);
+
+            //GetFilteredDevices
+            var list = mongo.GetFilteredDevices(filter);
+            
+            //NoResultsInList
+            Assert.That(list.Count, Is.EqualTo(0));
+        }
+
         #endregion
 
         #region DeviceType Tests
