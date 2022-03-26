@@ -41,7 +41,7 @@ namespace BEIMA.Backend.BuildingFunctions
             // TODO: Use database filter for devices instead of getting the list of all buildings.
             if (mongo.GetAllDevices().Where(d => d["location"]["buildingId"].AsObjectId.Equals(buildingId)).Any())
             {
-                return new ConflictObjectResult(Resources.CannotDeleteDeviceTypeMessage);
+                return new ConflictObjectResult(Resources.CannotDeleteBuildingMessage);
             }
 
             if (!mongo.DeleteBuilding(buildingId))
