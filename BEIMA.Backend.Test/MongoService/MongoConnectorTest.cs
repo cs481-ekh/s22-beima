@@ -354,6 +354,22 @@ namespace BEIMA.Backend.Test.MongoService
             }
         }
 
+        [TestCase("InvalidKey1", "aaaaaaaaaaaa")]
+        [TestCase("aaaaaaaaaaaaaa", 12345)]
+        [TestCase("bbbbbbb", true)]
+        public void CreateFilterWithNoResults_GetFilteredDeviceTypes_NoResultsInList(string key, dynamic value)
+        {
+            var mongo = MongoConnector.Instance;
+
+            //Create filter
+            var filter = mongo.GetEqualsFilter(key, value);
+
+            //GetFilteredDeviceTypes
+            var list = mongo.GetFilteredDeviceTypes(filter);
+
+            //NoResultsInList
+            Assert.That(list.Count, Is.EqualTo(0));
+        }
 
         #endregion
 
