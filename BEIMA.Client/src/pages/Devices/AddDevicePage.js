@@ -31,8 +31,8 @@ const AddDevicePage = () => {
   const [deviceFields, setDeviceFields] = useState(mandatoryDeviceFields);
   const [errors, setErrors] = useState({});
   const [setPageName] = useOutletContext();
-  const [deviceImage, setDeviceImage] = useState();
-  const [deviceAdditionalDocs, setAdditionalDocs] = useState();
+  const [deviceImage, setDeviceImage] = useState(null);
+  const [deviceAdditionalDocs, setAdditionalDocs] = useState([]);
   const [deviceTypes, setDeviceTypes] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState(noDeviceTypeObj);
   const [dropDownStyle, setDropDownStyle] = useState(styles.button);

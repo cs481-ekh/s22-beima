@@ -15,7 +15,7 @@ const DevicePage = () => {
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState(null);
   const [image, setImage] = useState(null)
-  const [documents, setDocuments] = useState({})
+  const [documents, setDocuments] = useState([])
   const [deviceType, setDeviceType] = useState(null)
 
   useEffect(() => {
@@ -170,8 +170,8 @@ const DevicePage = () => {
     const [long, setLong] = useState(device.location.longitude)
     const [locNotes, setLocNotes] = useState(device.location.notes)
 
-    const [newImage, setNewImage] = useState()
-    const [imageCopyUrl, setImageCopyUrl] = useState(image.fileUrl)
+    const [newImage, setNewImage] = useState(null)
+    const [imagePreviewUrl, setImagePreviewUrl] = useState(image.fileUrl)
     const [imageCopy] = useState(image)
 
     const [docCopy, setDocCopy] = useState(documents)
@@ -223,7 +223,7 @@ const DevicePage = () => {
       setLat(device.location.latitude)
       setLong(device.location.longitude)
       setLocNotes(device.location.notes)
-      setImageCopyUrl(image)
+      setImagePreviewUrl(image.fileUrl)
       setDocCopy(documents)
       setEditable(false)
     }
@@ -268,7 +268,7 @@ const DevicePage = () => {
 
     const onImageChange = (event) => {
       if(event.target.files && event.target.files[0]){
-        setImageCopyUrl(URL.createObjectURL(event.target.files[0]))
+        setImagePreviewUrl(URL.createObjectURL(event.target.files[0]))
         setNewImage(event.target.files[0])
       }
     }
@@ -278,8 +278,8 @@ const DevicePage = () => {
       delDocs.push(imageCopy.fileUid);
 
       setDeletedDocs(delDocs);
-      setNewImage(new File([""], ""))
-      setImageCopyUrl('')
+      setNewImage(null);
+      setImagePreviewUrl('')
     }
 
     const onDocumentChange = (event) => {
@@ -343,11 +343,11 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
-              { editable && (imageCopyUrl !== '' && imageCopyUrl !== null) ? 
+              { editable && (imagePreviewUrl !== '' && imagePreviewUrl !== null) ? 
                 <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteImage()}/>
               : null}  
-              { imageCopyUrl !== '' && imageCopyUrl !== null?
-              <Image src={imageCopyUrl} fluid/>
+              { imagePreviewUrl !== '' && imagePreviewUrl !== null?
+              <Image src={imagePreviewUrl} fluid/>
               : "No image for device"}
             </Card.Body>
           </Card>
@@ -361,11 +361,15 @@ const DevicePage = () => {
         </Form.Group>
 
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
+          {docCopy.length === 0 && newDocs.length === 0 ?
+          "No documents for device"
+          : <></>}
           {docCopy.length > 0 ?
           docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
-          : <> {newDocs.length > 0 ?
+          : <></>}
+          {newDocs.length > 0 ?
           Array.from(newDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
-          : "No documents for device"} </>}
+          : <></>}
         </div>
 
         {editable ? <FileUpload editable={editable} onDocumentchange={onDocumentChange}/> : null }
