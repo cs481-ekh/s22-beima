@@ -175,8 +175,8 @@ const DevicePage = () => {
     const [imageCopy] = useState(image)
 
     const [docCopy, setDocCopy] = useState(documents)
-    const [newDocs, setNewDocs] = useState([])
-    const [deletedDocs, setDeletedDocs] = useState([])
+    const [addedDocs, setAddedDocs] = useState([])
+    const [removedDocs, setRemovedDocs] = useState([])
     const navigate = useNavigate();
 
     const updateDeviceCall = () => {
@@ -196,13 +196,11 @@ const DevicePage = () => {
           latitude: lat,
           longitude: long
         },
-        deletedFiles: deletedDocs
+        deletedFiles: removedDocs
       }
 
       // Hit endpoints here
-      updateDevice(newDevice, newImage, newDocs);
-      console.log(newImage)
-      console.log(docCopy)
+      updateDevice(newDevice, newImage, addedDocs);
       setEditable(false)
     }
 
@@ -224,6 +222,8 @@ const DevicePage = () => {
       setLong(device.location.longitude)
       setLocNotes(device.location.notes)
       setImagePreviewUrl(image.fileUrl)
+      setAddedDocs([])
+      setRemovedDocs([])
       setDocCopy(documents)
       setEditable(false)
     }
@@ -274,25 +274,24 @@ const DevicePage = () => {
     }
 
     const deleteImage = () => {
-      let delDocs = deletedDocs;
+      let delDocs = removedDocs;
       delDocs.push(imageCopy.fileUid);
 
-      setDeletedDocs(delDocs);
+      setRemovedDocs(delDocs);
       setNewImage(null);
       setImagePreviewUrl('')
     }
 
     const onDocumentChange = (event) => {
       if(event.target.files){
-        setNewDocs(event.target.files)
-        console.log(newDocs)
+        setAddedDocs(event.target.files)
       }
     }
 
     const deleteDocument = (doc) => {
       let tempDocs = [...docCopy]
-      let tempNewDocs = [...newDocs]
-      let delDocs = deletedDocs;
+      let tempNewDocs = [...addedDocs]
+      let delDocs = removedDocs;
 
       tempDocs.map((tempDoc) => {
         if(tempDoc.fileName.includes(doc)){
@@ -309,9 +308,9 @@ const DevicePage = () => {
         }
         return null;
       });
-      setNewDocs(tempNewDocs)
+      setAddedDocs(tempNewDocs)
 
-      setDeletedDocs(delDocs)
+      setRemovedDocs(delDocs)
     }
 
     return (
@@ -361,14 +360,14 @@ const DevicePage = () => {
         </Form.Group>
 
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
-          {docCopy.length === 0 && newDocs.length === 0 ?
+          {docCopy.length === 0 && addedDocs.length === 0 ?
           "No documents for device"
           : <></>}
           {docCopy.length > 0 ?
           docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
           : <></>}
-          {newDocs.length > 0 ?
-          Array.from(newDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
+          {addedDocs.length > 0 ?
+          Array.from(addedDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
           : <></>}
         </div>
 
