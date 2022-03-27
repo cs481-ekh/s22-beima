@@ -17,7 +17,7 @@ export default async function addDevice(deviceDetails, photo, files) {
   // add each additional file to the files key
   if(files){
     tempFiles.map((file, index) => {
-      formData.append(`files${index}`, file);
+      formData.append(`files`, file);
       return null;
     });
   }
