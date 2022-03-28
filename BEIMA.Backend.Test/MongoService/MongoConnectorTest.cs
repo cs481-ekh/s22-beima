@@ -193,6 +193,14 @@ namespace BEIMA.Backend.Test.MongoService
         public void CreateFilterWithNoResults_GetFilteredDevices_NoResultsInList(string key, dynamic value)
         {
             var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument
+            {
+                { "item", "isNotInDb" }
+            };
+            //Insert device
+            var insertResult = mongo.InsertDevice(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Create filter
             var filter = mongo.GetEqualsFilter(key, value);
