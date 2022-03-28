@@ -179,7 +179,7 @@ namespace BEIMA.Backend.Test.MongoService
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //GetFiltered
-            var filter = mongo.GetEqualsFilter(key, value);
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
             var list = mongo.GetFilteredDevices(filter);
             foreach (var device in list)
             {
@@ -203,7 +203,7 @@ namespace BEIMA.Backend.Test.MongoService
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Create filter
-            var filter = mongo.GetEqualsFilter(key, value);
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
 
             //GetFilteredDevices
             var list = mongo.GetFilteredDevices(filter);
