@@ -346,7 +346,7 @@ namespace BEIMA.Backend.Test.MongoService
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //GetFiltered
-            var filter = mongo.GetEqualsFilter(key, value);
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
             var list = mongo.GetFilteredDeviceTypes(filter);
             foreach (var device in list)
             {
@@ -360,9 +360,17 @@ namespace BEIMA.Backend.Test.MongoService
         public void CreateFilterWithNoResults_GetFilteredDeviceTypes_NoResultsInList(string key, dynamic value)
         {
             var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument
+            {
+                { "item", "isNotInDb" }
+            };
+            //Insert device
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
 
             //Create filter
-            var filter = mongo.GetEqualsFilter(key, value);
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
 
             //GetFilteredDeviceTypes
             var list = mongo.GetFilteredDeviceTypes(filter);
