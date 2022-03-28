@@ -109,12 +109,12 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Gets a single BsonDocument from the given database/collection, given an ObjectId.
+        /// Gets a BsonDocument list from the given database/collection, given a BsonDocument filter.
         /// </summary>
         /// <param name="filter">The filter that is being applied.</param>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns>BsonDocument that was requested</returns>
+        /// <returns>List of BsonDocuments that were requested</returns>
         private List<BsonDocument> GetFiltered(FilterDefinition<BsonDocument> filter, string dbName, string collectionName)
         {
             CheckIsConnected();
