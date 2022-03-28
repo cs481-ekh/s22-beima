@@ -11,6 +11,38 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class BuildingFT : FunctionalTestBase
     {
+        [SetUp]
+        public async Task SetUp()
+        {
+            // Delete all the devices in the database.
+            var deviceList = await TestClient.GetDeviceList();
+            foreach (var device in deviceList)
+            {
+                if (device?.Id is not null)
+                {
+                    await TestClient.DeleteDevice(device.Id);
+                }
+            }
+            // Delete all the device types in the database
+            var deviceTypeList = await TestClient.GetDeviceTypeList();
+            foreach (var deviceType in deviceTypeList)
+            {
+                if (deviceType?.Id is not null)
+                {
+                    await TestClient.DeleteDeviceType(deviceType.Id);
+                }
+            }
+            // Delete all the buildings in the database
+            var buildingList = await TestClient.GetBuildingList();
+            foreach (var building in buildingList)
+            {
+                if (building?.Id is not null)
+                {
+                    await TestClient.DeleteBuilding(building.Id);
+                }
+            }
+        }
+
         [TestCase("xxx")]
         [TestCase("1234")]
         [TestCase("1234567890abcdef1234567x")]
@@ -71,8 +103,8 @@ namespace BEIMA.Backend.FT
             Assert.That(getBuilding.Location?.Longitude, Is.EqualTo(building.Location?.Longitude));
         }
 
-        [Test, Explicit("Must run on a database with no buildings. Will need to implement the delete endpoint to run with the others.")]
-        public async Task DeviceTypesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
+        [Test]
+        public async Task BuildingsInDatabase_GetBuildingList_ReturnsBuildingList()
         {
             // ARRANGE
             var buildingList = new List<Building>
@@ -140,6 +172,33 @@ namespace BEIMA.Backend.FT
                 Assert.That(building.Location?.Latitude, Is.EqualTo(expectedBuilding.Location?.Latitude));
                 Assert.That(building.Location?.Longitude, Is.EqualTo(expectedBuilding.Location?.Longitude));
             }
+        }
+
+        [Test]
+        public async Task BuildingInDatabase_DeleteBuilding_BuildingDeletedSuccessfully()
+        {
+            // ARRANGE
+            var building = new Building
+            {
+                Name = "Student Union",
+                Number = "1234",
+                Notes = "Some notes.",
+                Location = new Location
+                {
+                    Latitude = "1.234",
+                    Longitude = "2.345",
+                },
+            };
+
+            var buildingId = await TestClient.AddBuilding(building);
+            Assume.That(await TestClient.GetBuilding(buildingId), Is.Not.Null);
+
+            // ACT
+            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteBuilding(buildingId));
+
+            // ASSERT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetBuilding(buildingId));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
     }
 }
