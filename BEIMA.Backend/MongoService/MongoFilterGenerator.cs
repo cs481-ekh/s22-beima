@@ -21,6 +21,10 @@ namespace BEIMA.Backend.MongoService
         /// <returns>An "equals" filter of type FilterDefinition for BsonDocument</returns>
         public static FilterDefinition<BsonDocument> GetEqualsFilter(string key, dynamic value)
         {
+            if(value == null)
+            {
+                value = BsonNull.Value;
+            }
             return Builders<BsonDocument>.Filter.Eq(key, value);
         }
     }
