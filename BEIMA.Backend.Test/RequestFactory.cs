@@ -23,10 +23,18 @@ namespace BEIMA.Backend.Test
         /// </summary>
         /// <param name="requestMethod">The http request method (GET or POST)</param>
         /// <returns>A new http request object.</returns>
-        public static HttpRequest CreateHttpRequest(RequestMethod requestMethod, Dictionary<string, StringValues>? query = null, string body = "")
+        public static HttpRequest CreateHttpRequest(RequestMethod requestMethod, Dictionary<string, StringValues>? query = null, string body = "", string? authToken = null)
         {
             var reqMock = new Mock<HttpRequest>();
             reqMock.Setup(req => req.Method).Returns(requestMethod.ToString());
+
+            if(authToken != null)
+            {
+                reqMock.Setup(req => req.Headers).Returns(new HeaderDictionary()
+                {
+                    {"Authorization", $"Bearer {authToken}"}
+                });
+            }
 
             if (query != null)
             {
@@ -51,7 +59,7 @@ namespace BEIMA.Backend.Test
         /// <param name="data">Json data to be sent in the request</param>
         /// <param name="files">Collection of files to be sent in the request</param>
         /// <returns></returns>
-        public static HttpRequest CreateMultiPartHttpRequest(string data, FormFileCollection? files = null)
+        public static HttpRequest CreateMultiPartHttpRequest(string data, FormFileCollection? files = null, string? authToken = null)
         {
             DefaultHttpContext httpContext = new DefaultHttpContext();
 
@@ -69,6 +77,12 @@ namespace BEIMA.Backend.Test
 
             var form = new FormCollection(formKeys, formFiles);
             httpContext.Request.Form = form;
+
+            if(authToken != null)
+            {
+                httpContext.Request.Headers["Authorization"] = $"Bearer {authToken}";
+            }
+
             return httpContext.Request;
         }
     }
