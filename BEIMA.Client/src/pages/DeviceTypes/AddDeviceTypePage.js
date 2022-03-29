@@ -88,7 +88,7 @@ const AddDeviceTypePage = () => {
       success("Add Device Type Successful", "Adding Device completed successfully.");
       setCustomDeviceFields([]);
     } else {
-      error("Unable to Add Device Type", `Adding Device Type failed, ${addResult.response}`);
+      error("Unable to Add Device Type", `Adding Device Type failed.`);
     }
   }
 

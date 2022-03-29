@@ -99,7 +99,7 @@ const DeviceTypePage = () => {
         success("Device Type Update Successful", `Device Type ${item.name} updated successfully.`)
         setEditable(false)
       } else {
-        error("Unable to Update Device Type", `Update of Device Type ${item.name} failed, ${updateResult.response}.`);
+        error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
       }
     }
 

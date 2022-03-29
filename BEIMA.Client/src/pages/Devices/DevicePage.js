@@ -206,7 +206,7 @@ const DevicePage = () => {
         success("Device Update Successful", `Device ${tag} updated successfully.`)
         setEditable(false)
       } else {
-        error("Unable to Update Device", `Update of Device ${tag} failed, ${updateResult.response}.`);
+        error("Unable to Update Device", `Update of Device ${tag} failed.`);
       }
     }
 

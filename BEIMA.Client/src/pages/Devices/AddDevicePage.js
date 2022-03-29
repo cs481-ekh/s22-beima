@@ -145,7 +145,7 @@ const AddDevicePage = () => {
           }
           success("Add Device Successful", "Adding Device completed successfully.");
         } else {
-          error("Unable to Add Device", `Adding Device failed, ${response.response}`);
+          error("Unable to Add Device", `Adding Device failed.`);
         }
       })
     }
