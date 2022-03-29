@@ -203,7 +203,7 @@ const DevicePage = () => {
       // Hit endpoints here
       let updateResult = await updateDevice(newDevice, newImage, addedDocs);
       if(updateResult.status === 200){
-        Notifications.success("Device Update Successful", `Device ${tag} updated successfully.`)
+        Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
         setEditable(false)
       } else {
         Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
