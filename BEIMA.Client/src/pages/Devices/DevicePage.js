@@ -206,7 +206,7 @@ const DevicePage = () => {
     }
 
     const deleteDeviceCall = async (id) => {
-      let deleteNotif = await warning("Warning: Device Deletion", `Are you sure you want to delete device ${tag}?`);
+      let deleteNotif = await warning("Warning: Device Deletion", [`Are you sure you want to delete device ${tag}?`]);
       if(deleteNotif.isConfirmed){
         let deleteResult = await deleteDevice(id);
         if(deleteResult.status === 200){

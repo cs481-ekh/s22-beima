@@ -153,7 +153,7 @@ const DeviceTypePage = () => {
     }
 
     const attemptDeleteType = async (id) => {
-      let deleteNotif = await warning("Warning: Device Type Deletion", `Are you sure you want to delete device ${item.name}?`);
+      let deleteNotif = await warning("Warning: Device Type Deletion", [`Are you sure you want to delete device ${item.name}?`]);
       if(deleteNotif.isConfirmed){
         let response = await deleteDeviceType(id);
         // the endpoint returns an error message if there is more than one device with that type

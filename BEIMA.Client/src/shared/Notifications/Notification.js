@@ -35,10 +35,11 @@ export async function success(title, message){
   })
 };
 
+// message is an array of strings to support multiple items needing a warning
 export async function warning(title, message){
   return await notification.fire({
         title: title,
-        html: message + '',
+        html: message.join(''),
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Proceed',
