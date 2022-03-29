@@ -85,7 +85,7 @@ const AddDeviceTypePage = () => {
     setCustomDeviceFields([]);
     let addResult = await AddDeviceType(fullTypeJSON);
     if(addResult.status === 200){
-      success("Add Device Type Successful", "Adding Device completed successfully.");
+      success("Add Device Type Successful", "Adding Device Type completed successfully.");
       setCustomDeviceFields([]);
     } else {
       error("Unable to Add Device Type", `Adding Device Type failed.`);
