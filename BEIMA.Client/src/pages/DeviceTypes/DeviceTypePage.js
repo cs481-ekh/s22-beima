@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
+import {error, warning, success} from '../../shared/Notifications/Notification.js'
 import styles from './DeviceTypePage.module.css'
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Form, Card, Button, FormControl} from "react-bootstrap";
@@ -153,15 +154,17 @@ const DeviceTypePage = () => {
 
     const attemptDeleteType = async (id) => {
       // replace with more descriptive and prettier error message
-      alert('Are you sure?')
-      let response = await deleteDeviceType(id);
-      // the endpoint returns an error message if there is more than one device with that type
-      // let's show that message to the user
-      if(response.response){
-        // replace with more descriptive and prettier error message
-        alert(response.response);
-      } else {
-        navigate('/deviceTypes')
+      let deleteNotif = await warning("Warning: Device Type Deletion", `Are you sure you want to delete device ${item.name}?`);
+      if(deleteNotif.isConfirmed){
+        let response = await deleteDeviceType(id);
+        // the endpoint returns an error message if there is more than one device with that type
+        // let's show that message to the user
+        if(response.status === 200){
+          success("Device Type Deletion Successful", `Device Type ${item.name} successfully deleted.`);
+          navigate('/deviceTypes');
+        } else {
+          error("Unable to Delete Device", response.response);
+        }
       }
     }
 

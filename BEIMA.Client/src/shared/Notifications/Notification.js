@@ -39,7 +39,7 @@ export async function success(title, message){
 export async function warning(title, message){
   return await notification.fire({
         title: title,
-        html: message.join(''),
+        html: message + '',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonText: 'Proceed',
