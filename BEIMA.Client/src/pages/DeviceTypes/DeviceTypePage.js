@@ -153,7 +153,6 @@ const DeviceTypePage = () => {
     }
 
     const attemptDeleteType = async (id) => {
-      // replace with more descriptive and prettier error message
       let deleteNotif = await warning("Warning: Device Type Deletion", `Are you sure you want to delete device ${item.name}?`);
       if(deleteNotif.isConfirmed){
         let response = await deleteDeviceType(id);
