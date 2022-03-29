@@ -180,7 +180,7 @@ const DevicePage = () => {
     const [removedDocs, setRemovedDocs] = useState([])
     const navigate = useNavigate();
 
-    const updateDeviceCall = () => {
+    const updateDeviceCall = async () => {
       const newDevice = {
         _id:deviceID,
         deviceTypeId:deviceTypeID,
@@ -201,7 +201,10 @@ const DevicePage = () => {
       }
 
       // Hit endpoints here
-      updateDevice(newDevice, newImage, addedDocs);
+      let updateResult = await updateDevice(newDevice, newImage, addedDocs);
+      if(updateResult.status === 200){
+        success("Device Update Successful", `Device ${tag} updated successfully.`)
+      }
       setEditable(false)
     }
 
