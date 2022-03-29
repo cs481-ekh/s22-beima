@@ -212,8 +212,8 @@ namespace BEIMA.Backend.FT
                 Notes = "Some building notes.",
                 Location = new Location
                 {
-                    Latitude = "123.456",
-                    Longitude = "101.101",
+                    Latitude = "12.345",
+                    Longitude = "10.101",
                 },
             };
 
@@ -229,8 +229,8 @@ namespace BEIMA.Backend.FT
                 Notes = "Some new building notes.",
                 Location = new Location
                 {
-                    Latitude = "-123.456",
-                    Longitude = "-101.101",
+                    Latitude = "-12.345",
+                    Longitude = "-10.101",
                 }
             };
 

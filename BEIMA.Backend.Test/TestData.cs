@@ -84,8 +84,8 @@ namespace BEIMA.Backend.Test
                 "\"number\": \"1234\"," +
                 "\"notes\": \"Some building notes.\"," +
                 "\"location\": {" +
-                    "\"latitude\": \"123.456\"," +
-                    "\"longitude\": \"101.101\"" +
+                    "\"latitude\": \"12.345\"," +
+                    "\"longitude\": \"10.101\"" +
                 "}" +
             "}";
 
@@ -95,8 +95,8 @@ namespace BEIMA.Backend.Test
                 "\"number\": \"1234\"," +
                 "\"notes\": \"Some new building notes.\"," +
                 "\"location\": {" +
-                    "\"latitude\": \"-123.456\"," +
-                    "\"longitude\": \"-101.101\"" +
+                    "\"latitude\": \"-12.345\"," +
+                    "\"longitude\": \"-10.101\"" +
                 "}" +
             "}";
 

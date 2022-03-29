@@ -74,7 +74,7 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var testId = "abcdef123456789012345678";
 
             var building = new Building(new ObjectId(testId), "Student Union Building", "1234", "Some new building notes.");
-            building.SetLocation("-123.456", "-101.101");
+            building.SetLocation("-12.345", "-10.101");
             building.SetLastModified(DateTime.UtcNow, "Anonymous");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
