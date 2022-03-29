@@ -31,8 +31,8 @@ const DevicePage = () => {
       const deviceType = (await GetDeviceType(device.deviceTypeId)).response;
   
       setDevice(device)
-      setImage('')
-      setDocuments([])
+      setImage(device.photo)
+      setDocuments(device.files)
       setDeviceType(deviceType)
       setLoading(false)
     }
@@ -108,7 +108,6 @@ const DevicePage = () => {
     
     const docChange = (event) => {
       onDocumentchange(event)
-      ref.current.value = ''
     }
 
     return (
@@ -152,7 +151,7 @@ const DevicePage = () => {
    * @param setDocuments: function to set document names in higher level Device Page
    * @returns 
    */
-  const RenderItem = ({device, setDevice, deviceType, image, setImage, documents, setDocuments}) => {
+  const RenderItem = ({device, deviceType, image, documents}) => {
     const [editable, setEditable] = useState(false)
     
     const [deviceID] = useState(device._id)
@@ -171,7 +170,9 @@ const DevicePage = () => {
     const [long, setLong] = useState(device.location.longitude)
     const [locNotes, setLocNotes] = useState(device.location.notes)
 
-    const [imageCopy, setImageCopy] = useState(image)
+    const [newImage, setNewImage] = useState(null)
+    const [imagePreviewUrl, setImagePreviewUrl] = useState(image.fileUrl)
+    const [imageCopy] = useState(image)
 
     const [docCopy, setDocCopy] = useState(documents)
     const [addedDocs, setAddedDocs] = useState([])
@@ -194,20 +195,12 @@ const DevicePage = () => {
           notes: locNotes,
           latitude: lat,
           longitude: long
-        }
+        },
+        deletedFiles: removedDocs
       }
 
-      const newImage = imageCopy
-      const docs = docCopy
-      const newDocs = addedDocs
-      const delDocs = removedDocs
-
       // Hit endpoints here
-      updateDevice(newDevice);
-      console.log(newImage)
-      console.log(docs)
-      console.log(newDocs)
-      console.log(delDocs)
+      updateDevice(newDevice, newImage, addedDocs);
       setEditable(false)
     }
 
@@ -228,10 +221,10 @@ const DevicePage = () => {
       setLat(device.location.latitude)
       setLong(device.location.longitude)
       setLocNotes(device.location.notes)
-      setImageCopy(image)
-      setDocCopy(documents)
+      setImagePreviewUrl(image.fileUrl)
       setAddedDocs([])
       setRemovedDocs([])
+      setDocCopy(documents)
       setEditable(false)
     }
 
@@ -275,36 +268,49 @@ const DevicePage = () => {
 
     const onImageChange = (event) => {
       if(event.target.files && event.target.files[0]){
-        setImageCopy(URL.createObjectURL(event.target.files[0]))
+        setImagePreviewUrl(URL.createObjectURL(event.target.files[0]))
+        setNewImage(event.target.files[0])
       }
     }
 
+    const deleteImage = () => {
+      let delDocs = removedDocs;
+      delDocs.push(imageCopy.fileUid);
+
+      setRemovedDocs(delDocs);
+      setNewImage(null);
+      setImagePreviewUrl('')
+    }
+
     const onDocumentChange = (event) => {
-      let files = event.target.files
-      if(files && files.length > 0){
-        let tempAdded = [...addedDocs]
-        let temp = [...files]
-        temp.forEach(file => {
-          tempAdded.push(file)
-        })
-        setAddedDocs(tempAdded)
+      if(event.target.files){
+        setAddedDocs(event.target.files)
       }
     }
 
     const deleteDocument = (doc) => {
       let tempDocs = [...docCopy]
-      let tempAdded = [...addedDocs]
-      let tempDel = [...removedDocs]
+      let tempNewDocs = [...addedDocs]
+      let delDocs = removedDocs;
 
-      if(tempDocs.includes(doc)){
-        tempDocs = tempDocs.filter(val => val !== doc)
-        tempDel.push(doc)
-        setDocCopy(tempDocs)
-        setRemovedDocs(tempDel)
-      } else {
-        tempAdded = tempAdded.filter(val => val.name !== doc)
-        setAddedDocs(tempAdded)
-      }
+      tempDocs.map((tempDoc) => {
+        if(tempDoc.fileName.includes(doc)){
+          tempDocs = tempDocs.filter(val => val.fileName !== doc)
+          delDocs.push(tempDoc.fileUid)
+        }
+        return null;
+      });
+      setDocCopy(tempDocs)
+
+      tempNewDocs.map((tempDoc) => {
+        if(tempDoc.fileName.includes(doc)){
+          tempNewDocs = tempNewDocs.filter(val => val.fileName !== doc)
+        }
+        return null;
+      });
+      setAddedDocs(tempNewDocs)
+
+      setRemovedDocs(delDocs)
     }
 
     return (
@@ -336,8 +342,11 @@ const DevicePage = () => {
         <Form.Group className={[styles.image, "mb-3"].join(' ')} id="imageDisplay">
           <Card>
             <Card.Body>
-              { imageCopy !== '' ?
-              <Image src={imageCopy} fluid/>
+              { editable && (imagePreviewUrl !== '' && imagePreviewUrl !== null) ? 
+                <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteImage()}/>
+              : null}  
+              { imagePreviewUrl !== '' && imagePreviewUrl !== null?
+              <Image src={imagePreviewUrl} fluid/>
               : "No image for device"}
             </Card.Body>
           </Card>
@@ -351,10 +360,15 @@ const DevicePage = () => {
         </Form.Group>
 
         <div className={[styles.fields,'mb-3'].join(' ')} id="documents">
-          { docCopy.length > 0 ?
-          docCopy.map((doc, i) => <DocumentCard key={i} editable={editable} document={doc} deleteDocument={deleteDocument}/> )
-          : "No documents for device"}
-          {addedDocs.map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )}
+          {docCopy.length === 0 && addedDocs.length === 0 ?
+          "No documents for device"
+          : <></>}
+          {docCopy.length > 0 ?
+          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
+          : <></>}
+          {addedDocs.length > 0 ?
+          Array.from(addedDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
+          : <></>}
         </div>
 
         {editable ? <FileUpload editable={editable} onDocumentchange={onDocumentChange}/> : null }
@@ -394,7 +408,7 @@ const DevicePage = () => {
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
         title={loading ? 'Loading' : `${device.deviceTag} - ${deviceType.name} - <Building Name>`}
-        RenderItem={<RenderItem device={device} setDevice={setDevice} deviceType={deviceType} image={image} setImage={setImage} documents={documents} setDocuments={setDocuments}/>} 
+        RenderItem={<RenderItem device={device} deviceType={deviceType} image={image} documents={documents}/>} 
         loading={loading}
         route="/devices"
       />
