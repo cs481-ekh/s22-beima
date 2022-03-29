@@ -89,6 +89,17 @@ namespace BEIMA.Backend.Test
                 "}" +
             "}";
 
+        public const string _testUpdateBuilding =
+            "{" +
+                "\"name\": \"Student Union Building\"," +
+                "\"number\": \"1234\"," +
+                "\"notes\": \"Some new building notes.\"," +
+                "\"location\": {" +
+                    "\"latitude\": \"-123.456\"," +
+                    "\"longitude\": \"-101.101\"" +
+                "}" +
+            "}";
+
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
