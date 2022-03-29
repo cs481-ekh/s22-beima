@@ -104,5 +104,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteBuilding(ObjectId objectId);
+
+        /// <summary>
+        /// Updates a building in the "buildings" collection, given a fully formed updated building.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
+        public BsonDocument UpdateBuilding(BsonDocument doc);
     }
 }

@@ -45,9 +45,9 @@ namespace BEIMA.Backend.Models
     }
 
     /// <summary>
-    /// Object representation of the data object in an add building request
+    /// Object representation of the data object in a building request
     /// </summary>
-    public class AddBuildingRequest
+    public class BuildingRequest
     {
         public string Name { get; set; }
         public string Number { get; set; }
