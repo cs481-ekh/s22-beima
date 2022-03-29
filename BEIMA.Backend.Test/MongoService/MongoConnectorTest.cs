@@ -348,9 +348,9 @@ namespace BEIMA.Backend.Test.MongoService
             //GetFiltered
             var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
             var list = mongo.GetFilteredDeviceTypes(filter);
-            foreach (var device in list)
+            foreach (var deviceType in list)
             {
-                Assert.That(device.GetElement(key).Value.ToString().ToLower(), Is.EqualTo(value.ToString().ToLower()));
+                Assert.That(deviceType.GetElement(key).Value.ToString().ToLower(), Is.EqualTo(value.ToString().ToLower()));
             }
         }
 
@@ -364,7 +364,7 @@ namespace BEIMA.Backend.Test.MongoService
             {
                 { "item", "isNotInDb" }
             };
-            //Insert device
+            //Insert device type
             var insertResult = mongo.InsertDeviceType(doc);
             Assume.That(insertResult, Is.Not.Null);
             Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
