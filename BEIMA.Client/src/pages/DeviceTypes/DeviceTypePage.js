@@ -158,7 +158,7 @@ const DeviceTypePage = () => {
     }
 
     const attemptDeleteType = async (id) => {
-      let deleteNotif = await warning("Warning: Device Type Deletion", `Are you sure you want to delete device ${item.name}?`);
+      let deleteNotif = await warning("Warning: Device Type Deletion", [`Are you sure you want to delete device ${item.name}?`]);
       if(deleteNotif.isConfirmed){
         let response = await deleteDeviceType(id);
         // the endpoint returns an error message if there is more than one device with that type
@@ -167,7 +167,7 @@ const DeviceTypePage = () => {
           success("Device Type Deletion Successful", `Device Type ${item.name} successfully deleted.`);
           navigate('/deviceTypes');
         } else {
-          error("Unable to Delete Device", response.response);
+          error("Unable to Delete Device Type", `Deletion of Device ${item.name} failed, ${response.response}`);
         }
       }
     }
