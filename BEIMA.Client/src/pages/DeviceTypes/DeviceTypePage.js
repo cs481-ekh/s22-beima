@@ -162,7 +162,7 @@ const DeviceTypePage = () => {
           success("Device Type Deletion Successful", `Device Type ${item.name} successfully deleted.`);
           navigate('/deviceTypes');
         } else {
-          error("Unable to Delete Device", response.response);
+          error("Unable to Delete Device Type", `Deletion of Device ${item.name} failed, ${response.response}`);
         }
       }
     }
