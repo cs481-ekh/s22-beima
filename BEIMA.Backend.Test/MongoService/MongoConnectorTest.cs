@@ -329,6 +329,56 @@ namespace BEIMA.Backend.Test.MongoService
             var result = mongo.UpdateDeviceType(null);
             Assert.IsNull(result);
         }
+
+        [TestCase("name", "a12345")]
+        [TestCase("key1", 12345)]
+        [TestCase("key2", true)]
+        public void InsertDeviceType_GetFilteredDeviceTypes_DeviceInList(string key, dynamic value)
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument
+            {
+                { key, value }
+            };
+            //Insert device type
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //GetFiltered
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
+            var list = mongo.GetFilteredDeviceTypes(filter);
+            foreach (var deviceType in list)
+            {
+                Assert.That(deviceType.GetElement(key).Value.ToString().ToLower(), Is.EqualTo(value.ToString().ToLower()));
+            }
+        }
+
+        [TestCase("InvalidKey1", "aaaaaaaaaaaa")]
+        [TestCase("aaaaaaaaaaaaaa", 12345)]
+        [TestCase("bbbbbbb", true)]
+        public void CreateFilterWithNoResults_GetFilteredDeviceTypes_NoResultsInList(string key, dynamic value)
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument
+            {
+                { "item", "isNotInDb" }
+            };
+            //Insert device type
+            var insertResult = mongo.InsertDeviceType(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Create filter
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
+
+            //GetFilteredDeviceTypes
+            var list = mongo.GetFilteredDeviceTypes(filter);
+
+            //NoResultsInList
+            Assert.That(list.Count, Is.EqualTo(0));
+        }
+
         #endregion
 
         #region Building Tests
