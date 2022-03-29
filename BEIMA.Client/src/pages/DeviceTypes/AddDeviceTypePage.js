@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { IoMdCloseCircle } from "react-icons/io";
 import styles from './AddDeviceTypePage.module.css';
 import FormList from '../../shared/FormList/FormList.js';
+import {error, success} from '../../shared/Notifications/Notification.js';
 import AddDeviceType from '../../services/AddDeviceType';
 import * as Constants from '../../Constants';
 
@@ -82,7 +83,13 @@ const AddDeviceTypePage = () => {
     let fieldsJSON = {"fields" : customDeviceFields};
     fullTypeJSON = Object.assign(attributeValues, fieldsJSON);
     setCustomDeviceFields([]);
-    await AddDeviceType(fullTypeJSON);
+    let addResult = await AddDeviceType(fullTypeJSON);
+    if(addResult.status === 200){
+      success("Add Device Type Successful", "Adding Device completed successfully.");
+      setCustomDeviceFields([]);
+    } else {
+      error("Unable to Add Device Type", `Adding Device Type failed, ${addResult.response}`);
+    }
   }
 
   // list for fields

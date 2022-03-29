@@ -79,7 +79,7 @@ const DeviceTypePage = () => {
     const [deletedFields, setDeletedFields] = useState([...item.deletedFields])
     const navigate = useNavigate();
     
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       // we keep track of the added fields as an object, but the endpoint takes in an array
       // so we grab the values from the addFields object and send it to the endpoint
       let newFields = Object.values(addedFields);
@@ -94,8 +94,13 @@ const DeviceTypePage = () => {
         deletedFields: deletedFields
       }
       //call endpoint
-      updateDeviceType(result);
-      setEditable(false);
+      let updateResult = await updateDeviceType(result);
+      if(updateResult.status === 200){
+        success("Device Type Update Successful", `Device Type ${item.name} updated successfully.`)
+        setEditable(false)
+      } else {
+        error("Unable to Update Device Type", `Update of Device Type ${item.name} failed, ${updateResult.response}.`);
+      }
     }
 
     const addField = () => {

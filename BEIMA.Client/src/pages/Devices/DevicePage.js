@@ -204,8 +204,10 @@ const DevicePage = () => {
       let updateResult = await updateDevice(newDevice, newImage, addedDocs);
       if(updateResult.status === 200){
         success("Device Update Successful", `Device ${tag} updated successfully.`)
+        setEditable(false)
+      } else {
+        error("Unable to Update Device", `Update of Device ${tag} failed, ${updateResult.response}.`);
       }
-      setEditable(false)
     }
 
     const deleteDeviceCall = async (id) => {
