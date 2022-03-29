@@ -210,10 +210,10 @@ const DevicePage = () => {
       if(deleteNotif.isConfirmed){
         let deleteResult = await deleteDevice(id);
         if(deleteResult.status === 200){
-          success("Device Deletion Successful", "Device " + tag + " successfully deleted.");
+          success("Device Deletion Successful", `Device ${tag} successfully deleted.`);
           navigate('/devices');
         } else {
-          error("Unable to Delete Device", "Deletion of Device " + tag + " failed.");
+          error("Unable to Delete Device", `Deletion of Device ${tag} failed.`);
         }
       }
     }
