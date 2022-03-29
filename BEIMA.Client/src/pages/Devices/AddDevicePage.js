@@ -5,7 +5,7 @@ import styles from './AddDevicePage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
 import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import ImageFileUpload from '../../shared/ImageFileUpload/ImageFileUpload.js';
-import {error, success} from '../../shared/Notifications/Notification.js';
+import * as Notifications from '../../shared/Notifications/Notification.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 import GetDeviceType from '../../services/GetDeviceType.js';
 import AddDevice from '../../services/AddDevice.js';
@@ -143,9 +143,9 @@ const AddDevicePage = () => {
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
-          success("Add Device Successful", "Adding Device completed successfully.");
+          Notifications.success("Add Device Successful", "Adding Device completed successfully.");
         } else {
-          error("Unable to Add Device", `Adding Device failed.`);
+          Notifications.error("Unable to Add Device", `Adding Device failed.`);
         }
       })
     }
