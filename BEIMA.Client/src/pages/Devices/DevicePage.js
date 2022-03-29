@@ -213,7 +213,7 @@ const DevicePage = () => {
           Notifications.success("Device Deletion Successful", `Device ${tag} successfully deleted.`);
           navigate('/devices');
         } else {
-          Notifications.error("Unable to Delete Device", `Deletion of Device ${tag} failed, ${deleteResult.response}`);
+          Notifications.error("Unable to Delete Device", `Deletion of Device ${tag} failed.`);
         }
       }
     }
