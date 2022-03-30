@@ -27,5 +27,16 @@ namespace BEIMA.Backend.MongoService
             }
             return Builders<BsonDocument>.Filter.Eq(key, value);
         }
+
+        /// <summary>
+        /// Combines two passed in filters. Will return one filter with the AND operation applied between the two separate filters.
+        /// </summary>
+        /// <param name="f1">The first filter.</param>
+        /// <param name="f2">The second filter.</param>
+        /// <returns>One filter that has the AND operation applied to both filters.</returns>
+        public static FilterDefinition<BsonDocument> CombineFilters(FilterDefinition<BsonDocument> f1, FilterDefinition<BsonDocument> f2)
+        {
+            return Builders<BsonDocument>.Filter.And(f1, f2);
+        }
     }
 }
