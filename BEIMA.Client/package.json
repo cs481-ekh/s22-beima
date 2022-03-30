@@ -19,6 +19,9 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "^5.0.0",
     "start-server-and-test": "^1.14.0",
+    "sweetalert2": "^11.4.6",
+    "sweetalert2-react-content": "^4.2.0",
+    "use-awaitable-component": "^0.0.2",
     "uuid": "^8.3.2",
     "web-vitals": "^2.1.4",
     "yarn": "^1.22.17"

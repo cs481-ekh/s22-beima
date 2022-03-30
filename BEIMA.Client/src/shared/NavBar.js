@@ -28,6 +28,9 @@ const NavBar = () => {
                 <Link to="/buildings" className="sharedText">Buildings</Link>
               </Row>
               <Row className="pageLink">
+                <Link to="/users" className="sharedText">Users</Link>
+              </Row>
+              <Row className="pageLink">
                 <Link to="help" className="sharedText">? Help</Link>
               </Row>
             </Col>

@@ -312,6 +312,17 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sends a building get list request to the BEIMA api.
+        /// </summary>
+        /// <returns>The building list.</returns>
+        public async Task<List<Building>> GetBuildingList()
+        {
+            var response = await SendRequest("api/building-list", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<Building>>(content);
+        }
+
+        /// <summary>
         /// Sends a building post request to the BEIMA api.
         /// </summary>
         /// <param name="building">The building to add.</param>
@@ -321,6 +332,17 @@ namespace BEIMA.Backend.FT
             var response = await SendRequest("api/building", HttpVerb.POST, building);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
+        }
+
+        /// <summary>
+        /// Sends a building delete request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the building to delete.</param>
+        /// <returns>True if the deletion was successful, otherwise false.</returns>
+        public async Task<bool> DeleteBuilding(string id)
+        {
+            var response = await SendRequest($"api/building/{id}/delete", HttpVerb.POST);
+            return response.IsSuccessStatusCode;
         }
 
         #endregion Building Requests

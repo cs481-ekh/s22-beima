@@ -1,0 +1,9 @@
+.proceedButton{
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+  color: #FFFFFF !important;
+}
+
+.cancelButton{
+  margin-left: 40px;
+}
