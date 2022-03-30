@@ -16,6 +16,7 @@ import { HTTP_SUCCESS, MAX_LATITUDE, MAX_LONGITUDE } from '../../Constants.js';
 const AddDevicePage = () => {
   // this will be appended to with custom fields from the API call when selecting the device type
   const mandatoryDeviceFields = {
+    "Building": "",
     "Longitude": "",
     "Latitude": "",
     "Device Tag": "",
@@ -26,34 +27,24 @@ const AddDevicePage = () => {
     "Notes": ""
   }
   
-  const testBuildings = [{name:'SUB', id: '62379b404853420bb8a67030'}, {name:'ACCS', id: '62379b404853420bb8a97030'}];
-  
   const noDeviceTypeObj = { name: 'Select Device Type'};
-  const noBuildingObj = { name : 'Select Building' };
   const [deviceFields, setDeviceFields] = useState(mandatoryDeviceFields);
   const [errors, setErrors] = useState({});
   const [setPageName] = useOutletContext();
-  const [deviceImage, setDeviceImage] = useState();
-  const [deviceAdditionalDocs, setAdditionalDocs] = useState();
+  const [deviceImage, setDeviceImage] = useState(null);
+  const [deviceAdditionalDocs, setAdditionalDocs] = useState([]);
   const [deviceTypes, setDeviceTypes] = useState([]);
-  const [buildings, setBuildings] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState(noDeviceTypeObj);
-  const [selectedBuilding, setSelectedBuilding] = useState(noBuildingObj);
-  const [deviceTypeDropDownStyle, setDeviceTypeDropDownStyle] = useState(styles.button);
-  const [buildingDropDownStyle, setBuildingDropDownStyle] = useState(styles.button);
+  const [dropDownStyle, setDropDownStyle] = useState(styles.button);
   
   useEffect(() => {
     setPageName('Add Device')
-  }, [setPageName])
-  
-  useEffect(() => {
     const loadData = async () => {
       let types = await getDeviceTypes();
       setDeviceTypes(types);
     }
-   loadData();
-   setBuildings(testBuildings);;
-  },[])
+   loadData()
+  },[setPageName])
   
   /*
   * gets the list of device types from the database
@@ -82,7 +73,7 @@ const AddDevicePage = () => {
     
     //change the dropdown text and store the fields for their keys
     setSelectedDeviceType(deviceTypeFields.response);
-    setDeviceTypeDropDownStyle(styles.dropDownSelected);
+    setDropDownStyle(styles.dropDownSelected);
     
     //retireve the values from teh response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
@@ -95,14 +86,6 @@ const AddDevicePage = () => {
     //add them to the forms errors lists
     setDeviceFields(deviceFields);
     setErrors({});
-  }
-  
-  function changeSelectedBuilding(buildingId) {
-    let building = buildings.find(buildings => {
-      return buildings.id === buildingId;
-    })
-    setSelectedBuilding(building);
-    setBuildingDropDownStyle(styles.dropDownSelected);
   }
   
   /*
@@ -150,12 +133,12 @@ const AddDevicePage = () => {
     const formFields = addButtonEvent.target.form.elements;
     const dbJson = createJSON(formFields);
     if(dbJson){
-      AddDevice(dbJson).then(response => {
+      AddDevice(dbJson, deviceImage, deviceAdditionalDocs).then(response => {
         //reset the form or show a message regarding insertion failure
         if(response.status === HTTP_SUCCESS){
           setErrors({});
           setSelectedDeviceType(noDeviceTypeObj);
-          setDeviceTypeDropDownStyle(styles.button);
+          setDropDownStyle(styles.button);
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
@@ -174,7 +157,6 @@ const AddDevicePage = () => {
   * @return the compiled JSON
   */
   function createJSON(formFields){
-    console.log(formFields);
     //TODO temporary until we have error signaling figured out
     if (selectedDeviceType.name === 'Select Device Type'){
       alert ('No device type selected');
@@ -222,10 +204,6 @@ const AddDevicePage = () => {
         } else if ('location' in jsonKey){
           dbJson.location[jsonKey.location.type] = deviceFields[formName];
         }
-      } else if (formName === "Device Image"){
-        setDeviceImage(formFields[i].files[0]);
-      } else if (formName === "Additional Documents"){
-        setAdditionalDocs(formFields[i].files);
       }
     }
     
@@ -241,10 +219,20 @@ const AddDevicePage = () => {
       /*TODO Need ability to get a building ID, probably a DD on the page*/
 
       dbJson.deviceTypeId = selectedDeviceType._id;
-      dbJson.building = selectedBuilding.id;
-      console.log(dbJson);
       
       return dbJson;
+    }
+  }
+
+  const setImage = (event) => {
+    if(event.target.files && event.target.files[0]){
+      setDeviceImage(event.target.files[0])
+    }
+  }
+
+  const setDocuments = (event) => {
+    if(event.target.files){
+      setAdditionalDocs(event.target.files)
     }
   }
   
@@ -255,7 +243,7 @@ const AddDevicePage = () => {
           <Form >
             <Row className={styles.buttonGroup}>
               <Col>
-                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
+                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={dropDownStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
                   <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
@@ -265,15 +253,12 @@ const AddDevicePage = () => {
             </Row>
             <br/>
             <h4>Device Image</h4>
-            <ImageFileUpload type="Device Image" multiple={false} />
+            <ImageFileUpload type="Device Image" multiple={false} onChange={setImage}/>
             <br/>
             <h4>Additional Documents</h4>
-            <ImageFileUpload type="Additional Documents" multiple={true}/>
+            <ImageFileUpload type="Additional Documents" multiple={true} onChange={setDocuments}/>
             <br/>
             <h4>Fields</h4>
-            <div>
-              <FilledDropDown dropDownText={selectedBuilding.name} items={buildings} selectFunction={changeSelectedBuilding} buttonStyle={buildingDropDownStyle} dropDownId={"typeDropDown"} />
-            </div>
             <div>
               <FormListWithErrorFeedback fields={Object.keys(deviceFields)} errors={errors} changeHandler={updateFieldState}/>
             </div>

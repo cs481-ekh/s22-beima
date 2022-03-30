@@ -86,10 +86,23 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetBuilding(ObjectId objectId);
 
         /// <summary>
+        /// Gets all buildings from the "buildings" collection.
+        /// </summary>
+        /// <returns>List of all building BsonDocuments</returns>
+        public List<BsonDocument> GetAllBuildings();
+
+        /// <summary>
         /// Inserts a building into the "buildings" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed building document</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertBuilding(BsonDocument doc);
+
+        /// <summary>
+        /// Deletes from the "buildings" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteBuilding(ObjectId objectId);
     }
 }

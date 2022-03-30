@@ -1,3 +1,39 @@
+## Minutes: 2022-03-29
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 3 Scrum Meeting
+ * standup
+ 	* Keelan
+ 		* got filtering for device and device types done
+ 		* working on filters for building and users
+ 		* then, will be working on user endpoints
+ 	* Kenny
+ 		* finished auth service in backend
+ 		* need user functionality for other tasks
+ 		* csv writter service is in progress
+ 	* Ashlyn
+ 		* working on adding success/warning/error messages to frontend
+ 		* frontend user tasks are blocked by user endpoints
+ 		* will start doing research on jwt and frontend auth, then will start on those tasks
+ 		* found a bug in backend, will get it logged and Kenny will look into it
+ 	* Joe
+ 		* last building endpoint in PR
+ 		* looking into updating device endpoints for building validation
+ 		* after that, look at other backend tasks
+ 	* Tom
+ 		* blocked by last building endpoint, but should be merged soon
+ 		* working on integrating building API call into add device page
+ 		* found a bug with warning message component and assigned to self
+ 		* looking into EXIF data extraction, there are libraries out there
+ * we need to think about getting a docker file setup, will probably do that next sprint
+ * if some of us have time, will start looking into incorporating a map view
+ * will meet next on Thursday the 31st
+
 ## Minutes: 2022-03-17
 ### scribe: Ashlyn
 ### Attendees:

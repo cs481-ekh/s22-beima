@@ -104,15 +104,26 @@ namespace BEIMA.Backend.MongoService
         /// <returns>BsonDocument that was requested</returns>
         private BsonDocument Get(ObjectId objectId, string dbName, string collectionName)
         {
-            CheckIsConnected();
-
             var filter = Builders<BsonDocument>.Filter.Eq("_id", objectId);
+            return GetFiltered(filter, dbName, collectionName)?.FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets a BsonDocument list from the given database/collection, given a BsonDocument filter.
+        /// </summary>
+        /// <param name="filter">The filter that is being applied.</param>
+        /// <param name="dbName">Name of the database.</param>
+        /// <param name="collectionName">Name of the collection.</param>
+        /// <returns>List of BsonDocuments that were requested</returns>
+        private List<BsonDocument> GetFiltered(FilterDefinition<BsonDocument> filter, string dbName, string collectionName)
+        {
+            CheckIsConnected();
 
             try
             {
                 var db = client.GetDatabase(dbName);
                 var collection = db.GetCollection<BsonDocument>(collectionName);
-                return collection.Find(filter).FirstOrDefault();
+                return collection.Find(filter).ToList();
             }
             catch (Exception ex)
             {
@@ -232,6 +243,16 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
+        /// Gets a list of Device BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter)
+        {
+            return GetFiltered(filter, beimaDb, deviceCollection);
+        }
+
+        /// <summary>
         /// Gets all devices from the "devices" collection.
         /// </summary>
         /// <returns>List of BsonDocuments that was requested</returns>
@@ -270,6 +291,16 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetDeviceType(ObjectId objectId)
         {
             return Get(objectId, beimaDb, deviceTypeCollection);
+        }
+
+        /// <summary>
+        /// Gets a list of DeviceType BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredDeviceTypes(FilterDefinition<BsonDocument> filter)
+        {
+            return GetFiltered(filter, beimaDb, deviceTypeCollection);
         }
 
         /// <summary>
