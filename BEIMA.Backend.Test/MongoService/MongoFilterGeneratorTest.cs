@@ -49,6 +49,7 @@ namespace BEIMA.Backend.Test.MongoService
         }
 
         [TestCase("key1", "value1", "key2", "value2")]
+        [TestCase("aaa", true, "abcdef", 123)]
         public void TwoFiltersGenerated_CombineFilters_FiltersCombined(string key1, dynamic value1, string key2, dynamic value2)
         {
             //Create filters
