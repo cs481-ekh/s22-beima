@@ -521,7 +521,30 @@ namespace BEIMA.Backend.Test.MongoService
             }
         }
 
-        
+        [TestCase("InvalidKey1", "aaaaaaaaaaaa")]
+        [TestCase("aaaaaaaaaaaaaa", 12345)]
+        [TestCase("bbbbbbb", true)]
+        public void CreateFilterWithNoResults_GetFilteredBuildings_NoResultsInList(string key, dynamic value)
+        {
+            var mongo = MongoConnector.Instance;
+            var doc = new BsonDocument
+            {
+                { "item", "isNotInDb" }
+            };
+            //Insert building
+            var insertResult = mongo.InsertBuilding(doc);
+            Assume.That(insertResult, Is.Not.Null);
+            Assume.That(insertResult, Is.TypeOf(typeof(ObjectId)));
+
+            //Create filter
+            var filter = MongoFilterGenerator.GetEqualsFilter(key, value);
+
+            //GetFilteredBuildings
+            var list = mongo.GetFilteredBuildings(filter);
+
+            //NoResultsInList
+            Assert.That(list.Count, Is.EqualTo(0));
+        }
 
         #endregion
 
