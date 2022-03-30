@@ -54,6 +54,10 @@ namespace BEIMA.Backend.DeviceFunctions
 
                 var reqBuildingId = data.Location.BuildingId;
                 ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+                if (buildingId != null && mongo.GetBuilding((ObjectId)buildingId) is null)
+                {
+                    return new NotFoundObjectResult(Resources.BuildingNotFoundMessage);
+                }
 
                 device.SetLocation(
                     buildingId,
