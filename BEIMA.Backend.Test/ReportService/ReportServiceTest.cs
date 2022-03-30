@@ -36,10 +36,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         [Test]
         public void NoDevicesOrDeviceTypesExist_GenerateAll_NullReturned()
         {
-            Environment.SetEnvironmentVariable("AzureCosmosConnection", "mongodb://cs481-database:MCHV2HiJIjb7TDWq9S9EtZ1JfRqUKhKEmfUuXUSUFaT5ROO44p4utNndvNX8ixtWOjeOL740fIQ6l7P44EYJJw==@cs481-database.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@cs481-database@");
-            Environment.SetEnvironmentVariable("DatabaseName", "beima");
-            Environment.SetEnvironmentVariable("DeviceCollectionName", "devices");
-            Environment.SetEnvironmentVariable("DeviceTypeCollectionName", "deviceTypes");
+   
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetAllDevices())
@@ -62,10 +59,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         [Test]
         public void NoDevicesExist_GenerateAll_ZipContainesAllDevices()
         {
-            Environment.SetEnvironmentVariable("AzureCosmosConnection", "mongodb://cs481-database:MCHV2HiJIjb7TDWq9S9EtZ1JfRqUKhKEmfUuXUSUFaT5ROO44p4utNndvNX8ixtWOjeOL740fIQ6l7P44EYJJw==@cs481-database.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@cs481-database@");
-            Environment.SetEnvironmentVariable("DatabaseName", "beima");
-            Environment.SetEnvironmentVariable("DeviceCollectionName", "devices");
-            Environment.SetEnvironmentVariable("DeviceTypeCollectionName", "deviceTypes");
+
 
 
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
@@ -140,10 +134,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         [Test]
         public void DevicesAndDeviceTypesExists_GenerateAll_ZipContainesAllDevices()
         {
-            Environment.SetEnvironmentVariable("AzureCosmosConnection", "mongodb://cs481-database:MCHV2HiJIjb7TDWq9S9EtZ1JfRqUKhKEmfUuXUSUFaT5ROO44p4utNndvNX8ixtWOjeOL740fIQ6l7P44EYJJw==@cs481-database.mongo.cosmos.azure.com:10255/?ssl=true&retrywrites=false&replicaSet=globaldb&maxIdleTimeMS=120000&appName=@cs481-database@");
-            Environment.SetEnvironmentVariable("DatabaseName", "beima");
-            Environment.SetEnvironmentVariable("DeviceCollectionName", "devices");
-            Environment.SetEnvironmentVariable("DeviceTypeCollectionName", "deviceTypes");
+
             // Test Data
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
             deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
