@@ -1,81 +1,75 @@
-﻿using BEIMA.Backend.MongoService;
+﻿using BEIMA.Backend.Models;
+using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
-using MongoDB.Bson.Serialization;
-using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BEIMA.Backend.ReportService
 {
     /// <summary>
-    /// This class abstracts basic report generation operations. It is implemented as a 
-    /// singleton class. 
+    /// This class abstracts basic report generation operations.
     /// </summary>
-    public class ReportWriter : IReportService
+    public static class ReportWriter
     {
-        private static readonly Lazy<ReportWriter> instance = new(() => new ReportWriter());
-
-        public static ReportWriter Instance { get { return instance.Value; } }
-
         /// <summary>
         /// Generates a byte[] containing a file object. The
-        /// file contains a header and then the data of all devices
-        /// related to the specific deviceTypeId. If the device type id
-        /// doesn't exist, return null, 
+        /// file contains a header based on the paramter deviceType
+        /// and then the data of all devices related to the specific deviceTypeId.
         /// </summary>
+        /// <param name="deviceType"></param>
+        /// <param name="devices"></param>
+        /// <param name="delimiter"></param>
         /// <returns>Byte[] containing a file filled with device data associated with the passed in deviceTypeId</returns>
-        public byte[] GeneratDeviceReportByDeviceType(ObjectId deviceTypeId)
+        public static byte[] GeneratDeviceReportByDeviceType(DeviceType deviceType, List<Device> devices, string delimiter = ",")
         {
-            var db = MongoDefinition.MongoInstance;
-
-            // Check if device type exists
-            var deviceTypeDocument = db.GetDeviceType(deviceTypeId);
-            if(deviceTypeDocument == null)
+            // Return if deviceType is null
+            if(deviceType == null)
             {
                 return null;
             }
-
-            // Get all devices associated with the device type
-            var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
-            var deviceFilter = MongoFilterGenerator.GetEqualsFilter("deviceTypeId", deviceType.Id);
-            var deviceDocuments = db.GetFilteredDevices(deviceFilter);
+            // Ensure devices is not null;
+            if(devices == null)
+            {
+                devices = new List<Device>();
+            }
 
             byte[] fileBytes;
             using(var stream = new MemoryStream())
             using (var csvWriter = new StreamWriter(stream))
             {
-                var headers = GenerateDeviceHeaders(deviceType);
-                if (deviceDocuments.Count == 0)
+                // Create object containing all props and fields that need to be printed
+                var fieldsKeys = deviceType.Fields.Elements.Select(element => element.Name).ToList();
+
+                // Write headers
+                var headers = GenerateDeviceReportHeaders(deviceType);
+                var headerString = string.Join(delimiter, headers);
+                if (devices.Count > 0)
                 {
-                    csvWriter.Write(headers);
+                    headerString += Environment.NewLine;
                 }
-                else
-                {
-                    csvWriter.WriteLine(headers);
-                }
+                csvWriter.Write(headerString);
 
                 // Write all device data                            
-                for (var i = 0; i < deviceDocuments.Count; i++)
-                {
-                    // Write device's values
-                    var deviceDoc = deviceDocuments[i];
-                    var device = BsonSerializer.Deserialize<Device>(deviceDoc);
-                    var values = GenerateDeviceValues(device, deviceType);
+                for (var i = 0; i < devices.Count; i++)
+                {                                        
+                    var device = devices[i];
+                    // Ensure that device doesn't print if it doesn't match deviceType Id. Should not happen.
+                    if(device.DeviceTypeId != deviceType.Id)
+                    {
+                        continue;
+                    }
 
-                    // Ensure newline isn't added on last record
-                    if (i != deviceDocuments.Count - 1)
+                    // Write device's values
+                    var values = GenerateDeviceValues(device, deviceType);
+                    var valueString = string.Join(delimiter, values);
+                    if (i != devices.Count - 1)
                     {
-                        csvWriter.WriteLine(values);
+                        valueString += Environment.NewLine;
                     }
-                    else
-                    {
-                        csvWriter.Write(values);
-                    }
+                    csvWriter.Write(valueString);
                 }
                 // Flush writer and copy data to byte[]
                 csvWriter.Flush();
@@ -92,46 +86,47 @@ namespace BEIMA.Backend.ReportService
         /// A file entry may contain only the header row if no device is associated
         /// with that specific device type
         /// </summary>
+        /// <param name="deviceTypes"></param>
+        /// <param name="devices"></param>
+        /// <param name="delimiter"></param> 
         /// <returns>Byte[] containing a zipfile of device type files filled with associated devices</returns>
-        public byte[] GenerateAllDeviceReports()
+        public static byte[] GenerateAllDeviceReports(List<DeviceType> deviceTypes, List<Device> devices, string delimiter = ",")
         {
-            var db = MongoDefinition.MongoInstance;
-
-            // Get a list of all device types
-            var deviceTypesDocuments = db.GetAllDeviceTypes();
-            if (deviceTypesDocuments == null || deviceTypesDocuments.Count == 0)
+            // Return if no devicesTypes
+            if (deviceTypes == null || deviceTypes.Count == 0)
             {
                 return null;
+            }
+            // Ensure devices is not null;
+            if (devices == null)
+            {
+                devices = new List<Device>();
             }
 
             // Create dict to group devices based on device type id
             var typeToDevices = new Dictionary<ObjectId, List<Device>>();
-            foreach(var deviceTypeDoc in deviceTypesDocuments)
+            foreach(var deviceType in deviceTypes)
             {
-                var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDoc);
                 typeToDevices.Add(deviceType.Id, new List<Device>());
             }
 
-            // Get all devices and add them to the dict based on deviceTypeId
-            var deviceDocuments = db.GetAllDevices();           
-            if(deviceDocuments != null)
+            // Get all devices and add them to the dict based on deviceTypeId            
+            foreach (var device in devices)
             {
-                foreach (var deviceDoc in deviceDocuments)
+                // Only add a device if it's deviceType exists in the deviceTypes list. Should always be the case
+                if (typeToDevices.ContainsKey(device.DeviceTypeId))
                 {
-                    var device = BsonSerializer.Deserialize<Device>(deviceDoc);                    
                     typeToDevices[device.DeviceTypeId].Add(device);
-                }
-            }      
+                }                
+            } 
 
             byte[] zipFileBytes;
             using (var outStream = new MemoryStream()) // Create memory stream to convert zip file stream to byte[]
             {
                 using (var zipStream = new ZipArchive(outStream, ZipArchiveMode.Create, true)) // Create zip file stream that files can be streamed into
                 {
-                    foreach (var deviceTypeDoc in deviceTypesDocuments)
+                    foreach (var deviceType in deviceTypes)
                     {
-                        var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDoc);
-
                         var fileInZip = zipStream.CreateEntry($"{deviceType.Name}.csv", CompressionLevel.Optimal); // Create new zip file entry that can be streamed into
                         using (var fileInZipStream = fileInZip.Open())                                             // Open zip file entry's stream
                         using (var dataStream = new MemoryStream())                                                // Create memory stream that data can be written into
@@ -140,31 +135,26 @@ namespace BEIMA.Backend.ReportService
                             var deviceTypeDevices = typeToDevices[deviceType.Id];
 
                             // Write file headers                            
-                            var headers = GenerateDeviceHeaders(deviceType);
-                            if(deviceTypeDevices.Count == 0)
+                            var headers = GenerateDeviceReportHeaders(deviceType);
+                            var headerString = string.Join(delimiter, headers);
+                            if (deviceTypeDevices.Count > 0)
                             {
-                                csvWriter.Write(headers);
+                                headerString += Environment.NewLine;
                             }
-                            else
-                            {
-                                csvWriter.WriteLine(headers);
-                            }
+                            csvWriter.Write(headerString);
 
                             // Write all device data                            
-                            for(var i = 0; i < deviceTypeDevices.Count; i++)
+                            for (var i = 0; i < deviceTypeDevices.Count; i++)
                             {
                                 // Write device's values
                                 var device = deviceTypeDevices[i];
-                                var values = GenerateDeviceValues(device, deviceType);  
-
-                                // Ensure newline isn't added on last record
+                                var values = GenerateDeviceValues(device, deviceType);
+                                var valueString = string.Join(delimiter, values);
                                 if(i != deviceTypeDevices.Count - 1)
                                 {
-                                    csvWriter.WriteLine(values);
-                                } else
-                                {
-                                    csvWriter.Write(values);
-                                }                                
+                                    valueString += Environment.NewLine;
+                                }
+                                csvWriter.Write(valueString);
                             }
                             // Flush writer and copy data in datastream to zip file entry's stream
                             csvWriter.Flush();
@@ -183,38 +173,28 @@ namespace BEIMA.Backend.ReportService
         /// property is replaced with the field names contained in the parameter deviceType's Fields dictionary
         /// </summary>
         /// <param name="deviceType"></param>
-        /// <param name="delimiter"></param>
-        /// <returns></returns>
-        private static string GenerateDeviceHeaders(DeviceType deviceType, string delimiter = ",")
+        /// <returns>List of headers for a device object</returns>
+        private static List<string> GenerateDeviceReportHeaders(DeviceType deviceType)
         {
             var headers = new List<string>();
-            foreach (var deviceProp in typeof(Device).GetProperties())
-            {
-                if (deviceProp.Name == "Fields")
-                {
-                    // Add all of the DeviceType field names
-                    var fieldProps = deviceType.Fields.ToDictionary().Values.Select(field => { return (string)field; });
-                    headers.AddRange(fieldProps);
-                }
-                else if (deviceProp.Name == "Location")
-                {
-                    // Add all of the DeviceLocation prop names
-                    var locProps = typeof(DeviceLocation).GetProperties().Select(prop => prop.Name);
-                    headers.AddRange(locProps);
-                }
-                else if (deviceProp.Name == "LastModified")
-                {
-                    // Add all of the DeviceLastModified prop names
-                    var modProps = typeof(DeviceLastModified).GetProperties().Select(prop => prop.Name);
-                    headers.AddRange(modProps);
-                }
-                else if (deviceProp.Name != "Photo" && deviceProp.Name != "Files")
-                {
-                    // Add all 'primative' prop names
-                    headers.Add(deviceProp.Name);
-                }
-            }
-            return string.Join(delimiter, headers);
+
+            // Add all of the general prop names associated with the Device object
+            var generalProps = DeviceReportProps.GeneralProps.Select(p => p.Name);
+            headers.AddRange(generalProps);
+
+            // Create a list of the device types's field values ordered by the field keys
+            var sortedFieldsValues = deviceType.Fields.OrderBy(f => f.Name).Select(f => f.Value.AsString);
+            headers.AddRange(sortedFieldsValues);
+
+            // Add all of the location prop names associated with the DeviceLocation object
+            var locationProps = DeviceReportProps.LocationProps.Select(p => p.Name);
+            headers.AddRange(locationProps);
+
+            // Add all of the last modified prop names associated with the DeviceLastModified object
+            var lastModifiedProps = DeviceReportProps.LastModifiedProps.Select(p => p.Name);
+            headers.AddRange(lastModifiedProps);
+
+            return headers;
         }
 
         /// <summary>
@@ -225,62 +205,56 @@ namespace BEIMA.Backend.ReportService
         /// <param name="deviceType"></param>
         /// <param name="delimiter"></param>
         /// <returns></returns>
-        private static string GenerateDeviceValues(Device device, DeviceType deviceType, string delimiter = ",")
+        private static List<string> GenerateDeviceValues(Device device, DeviceType deviceType)
         {
             var values = new List<string>();
-            foreach (var deviceProp in typeof(Device).GetProperties())
+
+            // Add all of the general prop values contained in the device
+            foreach (var prop in DeviceReportProps.GeneralProps)
             {
-                if (deviceProp.Name == "Fields")
-                {
-                    // Add all DeviceType field values contained in the device
-                    var deviceTypeFieldKeys = deviceType.Fields.ToDictionary().Keys;
-                    foreach (var key in deviceTypeFieldKeys)
-                    {
-                        string value = "";
-                        if (device.Fields != null && device.Fields.ContainsKey(key)){
-                            value = device.Fields[key];
-                        }
-                        values.Add(value);
-                    }
-                }
-                else if (deviceProp.Name == "Location")
-                {
-                    // Add all of the DeviceLocation prop values contained in the device
-                    var locProps = typeof(DeviceLocation).GetProperties();
-                    foreach (var locProp in locProps)
-                    {
-                        string value = "";
-                        if (device.Location != null)
-                        {
-                            var propVal = locProp.GetValue(device.Location);
-                            value = propVal?.ToString() ?? "";
-                        }
-                        values.Add(value);
-                    }
-                }
-                else if (deviceProp.Name == "LastModified")
-                {
-                    // Add all of the DeviceLastModified prop values contained in the device
-                    var modProps = typeof(DeviceLastModified).GetProperties();
-                    foreach (var modProp in modProps)
-                    {
-                        string value = "";
-                        if(device.LastModified != null){
-                            var propVal = modProp.GetValue(device.LastModified);
-                            value = propVal?.ToString() ?? "";
-                        }
-                        values.Add(value);
-                    }
-                }
-                else if (deviceProp.Name != "Photo" && deviceProp.Name != "Files")
-                {
-                    // Add all of the 'primative' prop values contained in the device                    
-                    var propVal = deviceProp.GetValue(device);
-                    string value = propVal?.ToString() ?? "";
-                    values.Add(value);
-                }
+                var propVal = prop.GetValue(device);
+                string value = propVal != null ? propVal.ToString() : "";
+                values.Add(value);
             }
-            return string.Join(delimiter, values);
+
+            // Create a sorted list of the device types's field keys ordered by the field keys
+            var sortedFieldKeys = deviceType.Fields.OrderBy(f => f.Name).Select(f => f.Name);
+            foreach (var key in sortedFieldKeys)
+            {
+                // Add all of the field values in the device based on the deviceType
+                string value = "";
+                if (device.Fields != null && device.Fields.ContainsKey(key))
+                {
+                    value = device.Fields[key];
+                }
+                values.Add(value);
+            }
+
+            // Add all of the location values contained in the device
+            foreach(var prop in DeviceReportProps.LocationProps)
+            {
+                string value = "";
+                if (device.Location != null)
+                {
+                    var propval = prop.GetValue(device.Location);
+                    value = propval != null ? propval.ToString() : "";
+                }
+                values.Add(value);
+            }
+
+            // Add all of the last modified values contained in the device
+            foreach (var prop in DeviceReportProps.LastModifiedProps)
+            {
+                string value = "";
+                if (device.LastModified != null)
+                {
+                    var propval = prop.GetValue(device.LastModified);
+                    value = propval != null ? propval.ToString() : "";
+                }
+                values.Add(value);
+            }
+            
+            return values;
         }
     }
 }
