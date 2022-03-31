@@ -12,6 +12,10 @@ using System.Threading.Tasks;
 
 namespace BEIMA.Backend.ReportService
 {
+    /// <summary>
+    /// This class abstracts basic report generation operations. It is implemented as a 
+    /// singleton class. 
+    /// </summary>
     public class ReportWriter : IReportService
     {
         private static readonly Lazy<ReportWriter> instance = new(() => new ReportWriter());
