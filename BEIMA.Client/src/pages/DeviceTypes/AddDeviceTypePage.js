@@ -66,16 +66,33 @@ const AddDeviceTypePage = () => {
     event.target.form.elements.newFieldForm.value = "";
   }
 
-  // gathers input and puts it into JSON
-  async function createJSON(addButtonEvent){
+  async function saveDeviceTypeToDb(addButtonEvent){
     let formFields = addButtonEvent.target.form.elements;
+    let finalJson = createJSON(formFields);
+
+    if(finalJson){
+      AddDeviceType(finalJson).then(response => {
+        if(response.status === Constants.HTTP_SUCCESS){
+          Notifications.success("Add Device Type Successful", "Adding Device Type completed successfully.");
+          setCustomDeviceFields([]);
+          for(let i = 0; i < formFields.length; i++){
+            formFields[i].value = "";
+          }
+        } else {
+          Notifications.error("Unable to Add Device Type", `Adding Device Type failed.`);
+        }
+      })
+    }
+  }
+
+  // gathers input and puts it into JSON
+  function createJSON(formFields){
     let attributeValues = {};
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
       let attributeNames = Object.keys(typeAttributes);
       if(attributeNames.includes(formName)){
         let formJSON =  {[formName.toLowerCase()] : formFields[i].value};
-        formFields[i].value = "";
         Object.assign(attributeValues, formJSON);
       }
     }
@@ -83,13 +100,8 @@ const AddDeviceTypePage = () => {
     let fieldsJSON = {"fields" : customDeviceFields};
     fullTypeJSON = Object.assign(attributeValues, fieldsJSON);
     setCustomDeviceFields([]);
-    let addResult = await AddDeviceType(fullTypeJSON);
-    if(addResult.status === 200){
-      Notifications.success("Add Device Type Successful", "Adding Device Type completed successfully.");
-      setCustomDeviceFields([]);
-    } else {
-      Notifications.error("Unable to Add Device Type", `Adding Device Type failed.`);
-    }
+    
+    return fullTypeJSON;
   }
 
   // list for fields
@@ -116,7 +128,7 @@ const AddDeviceTypePage = () => {
         <Card.Body>
           <Form>
             <div>
-              <Button variant="primary" type="button" className={styles.addButton} id="addDeviceType" onClick={(event) => createJSON(event)}>
+              <Button variant="primary" type="button" className={styles.addButton} id="addDeviceType" onClick={(event) => saveDeviceTypeToDb(event)}>
                 Add Device Type
               </Button>
               <h4>Device Type Information</h4>

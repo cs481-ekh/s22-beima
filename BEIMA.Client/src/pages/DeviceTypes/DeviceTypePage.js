@@ -95,7 +95,7 @@ const DeviceTypePage = () => {
       }
       //call endpoint
       let updateResult = await updateDeviceType(result);
-      if(updateResult.status === 200){
+      if(updateResult.status === Constants.HTTP_SUCCESS){
         Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
         setEditable(false)
       } else {
