@@ -38,10 +38,11 @@ namespace BEIMA.Backend.UserFunctions
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<UserRequest>(requestBody);
                 user = new User(ObjectId.GenerateNewId(),
-                                        data.Name,
-                                        data.Number,
-                                        data.Notes);
-                user.SetLocation(data.Location.Latitude, data.Location.Longitude);
+                                        data.Username,
+                                        data.Password,
+                                        data.FirstName,
+                                        data.LastName,
+                                        data.Role);
             }
             catch (Exception)
             {
