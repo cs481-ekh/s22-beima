@@ -87,7 +87,7 @@ namespace BEIMA.Backend
         /// <param name="message">The error message for a failed validation.</param>
         /// <param name="httpStatusCode">The status code for a failed validation.</param>
         /// <returns>True if the user is valid, otherwise false.</returns>
-        public static bool IsBuildingValid(User user, out string message, out HttpStatusCode httpStatusCode)
+        public static bool IsUserValid(User user, out string message, out HttpStatusCode httpStatusCode)
         {
             bool isValid = true;
             message = string.Empty;
