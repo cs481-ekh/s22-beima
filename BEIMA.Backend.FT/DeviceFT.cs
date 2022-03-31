@@ -15,6 +15,7 @@ namespace BEIMA.Backend.FT
     {
         private string? _deviceTypeId;
         private string? _deviceTypeFieldUuid;
+        private string? _buildingId;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -37,6 +38,18 @@ namespace BEIMA.Backend.FT
                     await TestClient.DeleteDeviceType(deviceType.Id);
                 }
             }
+
+            // Delete all the buildings in the database
+            var buildingList = await TestClient.GetBuildingList();
+            foreach (var building in buildingList)
+            {
+                if (building?.Id is not null)
+                {
+                    await TestClient.DeleteBuilding(building.Id);
+                }
+            }
+
+            // Add back in a test device type
             _deviceTypeId = await TestClient.AddDeviceType(
                 new DeviceTypeAdd
                 {
@@ -49,6 +62,20 @@ namespace BEIMA.Backend.FT
                     },
                 });
             _deviceTypeFieldUuid = (await TestClient.GetDeviceType(_deviceTypeId)).Fields?.Keys.Single();
+
+            // Add back in a test building
+            _buildingId = await TestClient.AddBuilding(
+                new Building
+                {
+                    Name = "Student Union",
+                    Number = "1234",
+                    Notes = "Some building notes.",
+                    Location = new Location
+                    {
+                        Latitude = "0.123",
+                        Longitude = "4.567",
+                    },
+                });
         }
 
         [SetUp]
@@ -102,7 +129,7 @@ namespace BEIMA.Backend.FT
                 },
                 Location = new DeviceLocation
                 {
-                    BuildingId = "111111111111111111111111",
+                    BuildingId = _buildingId,
                     Notes = "Some building notes.",
                     Longitude = "123.001",
                     Latitude = "101.321",
@@ -174,7 +201,7 @@ namespace BEIMA.Backend.FT
                     },
                     Location = new DeviceLocation
                     {
-                        BuildingId = "192830495728394829103986",
+                        BuildingId = _buildingId,
                         Latitude = "101.001",
                         Longitude = "6.234",
                         Notes = "Outside",
@@ -195,7 +222,7 @@ namespace BEIMA.Backend.FT
                     },
                     Location = new DeviceLocation
                     {
-                        BuildingId = "192831695728394829103456",
+                        BuildingId = _buildingId,
                         Latitude = "74.003",
                         Longitude = "138.123",
                         Notes = "Inside",
@@ -216,7 +243,7 @@ namespace BEIMA.Backend.FT
                     },
                     Location = new DeviceLocation
                     {
-                        BuildingId = "192830495728214829103456",
+                        BuildingId = _buildingId,
                         Latitude = "101.989",
                         Longitude = "25.004",
                         Notes = "Above",
@@ -276,7 +303,7 @@ namespace BEIMA.Backend.FT
                 DeviceTypeId = "473830495728394823103456",
                 Location = new DeviceLocation
                 {
-                    BuildingId = "a19830495728394829103986",
+                    BuildingId = _buildingId,
                     Latitude = "111.001",
                     Longitude = "8.242",
                     Notes = "Outside",
@@ -334,7 +361,7 @@ namespace BEIMA.Backend.FT
                 },
                 Location = new DeviceLocation
                 {
-                    BuildingId = "cab830495728394829103986",
+                    BuildingId = _buildingId,
                     Latitude = "11.001",
                     Longitude = "61.234",
                     Notes = "Near",
@@ -362,8 +389,8 @@ namespace BEIMA.Backend.FT
                 updateItem = new DeviceUpdate()
                 {
                     Id = deviceItem.Id,
-                    Manufacturer = deviceItem.Manufacturer, 
-                    ModelNum = deviceItem.ModelNum, 
+                    Manufacturer = deviceItem.Manufacturer,
+                    ModelNum = deviceItem.ModelNum,
                     DeviceTag = deviceItem.DeviceTag,
                     DeviceTypeId = deviceItem.DeviceTypeId,
                     Fields = deviceItem.Fields,
