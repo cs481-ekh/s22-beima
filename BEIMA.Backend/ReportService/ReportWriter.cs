@@ -28,7 +28,7 @@ namespace BEIMA.Backend.ReportService
         /// related to the specific deviceTypeId. If the device type id
         /// doesn't exist, return null, 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Byte[] containing a file filled with device data associated with the passed in deviceTypeId</returns>
         public byte[] GeneratDeviceReportByDeviceType(ObjectId deviceTypeId)
         {
             var db = MongoDefinition.MongoInstance;
@@ -92,7 +92,7 @@ namespace BEIMA.Backend.ReportService
         /// A file entry may contain only the header row if no device is associated
         /// with that specific device type
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Byte[] containing a zipfile of device type files filled with associated devices</returns>
         public byte[] GenerateAllDeviceReports()
         {
             var db = MongoDefinition.MongoInstance;
