@@ -19,7 +19,7 @@ namespace BEIMA.Backend.ReportService
         /// file contains a header based on the paramter deviceType
         /// and then the data of all devices related to the specific deviceTypeId.
         /// </summary>
-        /// <param name="deviceTypes">DeviceType that the report should be based on</param>
+        /// <param name="deviceType">DeviceType that the report should be based on</param>
         /// <param name="devices">List of all devices assoicated with deviceType</param>
         /// <param name="delimiter">String used to seperate every value in the report</param>
         /// <returns>Byte[] containing a file filled with device data associated with the passed in deviceTypeId</returns>
@@ -187,7 +187,7 @@ namespace BEIMA.Backend.ReportService
         /// Creates a list of strings filled with all of the property names in the Device object. The Fields
         /// property is replaced with the field names contained in the parameter deviceType's Fields dictionary
         /// </summary>
-        /// <param name="deviceType"></param>
+        /// <param name="deviceType">DeviceType that the headers should be based on</param>
         /// <returns>List of headers for a device object</returns>
         private static List<string> GenerateDeviceReportHeaders(DeviceType deviceType)
         {
@@ -216,9 +216,8 @@ namespace BEIMA.Backend.ReportService
         /// Creates a list of strings filled with all of the property values in the parameter Device object. The Fields
         /// property values are based on the keys in the parameter deviceType's fields and the values of the parameter device's fields.
         /// </summary>
-        /// <param name="device"></param>
-        /// <param name="deviceType"></param>
-        /// <param name="delimiter"></param>
+        /// <param name="device">Device that's data values should be used</param>
+        /// <param name="deviceType">DeviceType that the field keys should be based on</param>
         /// <returns></returns>
         private static List<string> GenerateDeviceValues(Device device, DeviceType deviceType)
         {
