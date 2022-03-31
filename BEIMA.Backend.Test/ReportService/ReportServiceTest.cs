@@ -12,7 +12,7 @@ using System.IO.Compression;
 using System.IO;
 using MongoDB.Driver;
 
-namespace BEIMA.Backend.Test.ReportServicesa
+namespace BEIMA.Backend.Test.ReportServices
 {
     [TestFixture]
     public class ReportServiceTest : UnitTestBase
