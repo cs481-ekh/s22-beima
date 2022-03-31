@@ -356,6 +356,16 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
+        /// Gets a list of Building BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredBuildings(FilterDefinition<BsonDocument> filter)
+        {
+            return GetFiltered(filter, beimaDb, buildingCollection);
+        }
+
+        /// <summary>
         /// Gets all buildings from the "buildings" collection.
         /// </summary>
         /// <returns>List of all building BsonDocuments</returns>
