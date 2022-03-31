@@ -17,70 +17,220 @@ namespace BEIMA.Backend.Test.ReportServices
     [TestFixture]
     public class ReportServiceTest : UnitTestBase
     {
+        #region Null Device Types
 
         [Test]
-        public void ServiceNotCreated_CallConstructorFiveTimes_FiveInstancesAreEqual()
+        public void NullDeviceTypeAndNullDeviceList_GenerateReportByDeviceType_NullReturned()
         {
-            //Tests to make sure singleton is working
-            var reportService1 = ReportWriter.Instance;
-            var reportService2 = ReportWriter.Instance;
-            var reportService3 = ReportWriter.Instance;
-            var reportService4 = ReportWriter.Instance;
-            var reportService5 = ReportWriter.Instance;
-            Assert.That(reportService1, Is.EqualTo(reportService2));
-            Assert.That(reportService1, Is.EqualTo(reportService3));
-            Assert.That(reportService1, Is.EqualTo(reportService4));
-            Assert.That(reportService1, Is.EqualTo(reportService5));
-        }
-
-        [Test]
-        public void InvalidDeviceType_GenerateReportByDeviceType_NullReturned()
-        {
-            var invalidDeviceTypeId = ObjectId.GenerateNewId();
-
-            // Setup mock database client.
-            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == invalidDeviceTypeId)))
-                  .Returns<List<BsonDocument>>(null)
-                  .Verifiable();
-            MongoDefinition.MongoInstance = mockDb.Object;
-
-            var reportService = ReportWriter.Instance;
-
             // ACT
-            var bytes = reportService.GeneratDeviceReportByDeviceType(invalidDeviceTypeId);
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(null, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == invalidDeviceTypeId)), Times.Once));
         }
 
         [Test]
-        public void NoDevicesOrDeviceTypesExist_GenerateAllReport_NullReturned()
+        public void NullDeviceTypeListAndNullDeviceList_GenerateAllReport_NullReturned()
         {
-            // Setup mock database client.
-            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns<List<BsonDocument>>(null)
-                  .Verifiable();
-            mockDb.Setup(mock => mock.GetAllDeviceTypes())
-                  .Returns<List<BsonDocument>>(null)
-                  .Verifiable();
-            MongoDefinition.MongoInstance = mockDb.Object;
-
-            var reportService = ReportWriter.Instance;
-
             // ACT
-            var bytes = reportService.GenerateAllDeviceReports();
+            var bytes = ReportWriter.GenerateAllDeviceReports(null, null);
 
             // Assert
-            Assert.That(bytes, Is.Null);            
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Never));
+            Assert.That(bytes, Is.Null);
         }
 
         [Test]
-        public void ValidDeviceType_GenerateReportByDeviceType_ReportReturned()
+        public void EmptyDeviceTypeListAndNullDeviceList_GenerateAllReport_NullReturned()
+        {
+            // Arrange
+            var deviceTypes = new List<DeviceType>();
+
+            // ACT
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, null);
+
+            // Assert
+            Assert.That(bytes, Is.Null);
+        }
+
+        #endregion
+
+        #region Valid Device Types Empty/Null Device Lists
+
+        [Test]
+        public void DeviceTypeAndNullDeviceList_GenerateReportByDeviceType_FileContainsOnlyHeader()
+        {
+            // Arrange
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            // ACT
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, null);
+
+            // Assert
+            Assert.That(bytes, Is.Not.Null);
+            var content = Encoding.UTF8.GetString(bytes);
+            var contentRows = content.Split(Environment.NewLine);
+            Assert.That(contentRows.Count, Is.EqualTo(1));
+
+            string[] generalHeaders = { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" };
+            string[] fieldHeaders = { "BoilerField1", "BoilerField2", "BoilerField3" };
+            string[] locationHeaders = { "BuildingId", "Notes", "Latitude", "Longitude" };
+            string[] lastModHeaders = { "Date", "User" };
+
+            List<string> headers = new List<string>();
+            headers.AddRange(generalHeaders);
+            headers.AddRange(fieldHeaders);
+            headers.AddRange(locationHeaders);
+            headers.AddRange(lastModHeaders);
+
+            var headerString = string.Join(",", headers);
+            Assert.That(contentRows[0], Is.EqualTo(headerString));
+        }
+
+        [Test]
+        public void DeviceTypeAndEmptyDeviceList_GenerateReportByDeviceType_FileContainsOnlyHeader()
+        {
+            // Arrange
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceList = new List<Device>();
+
+            // ACT
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, deviceList);
+
+            // Assert
+            Assert.That(bytes, Is.Not.Null);
+            var content = Encoding.UTF8.GetString(bytes);
+            var contentRows = content.Split(Environment.NewLine);
+            Assert.That(contentRows.Count, Is.EqualTo(1));
+
+            var headers = new List<List<string>>()
+            {
+                new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                new List<string>() { "Date", "User" }
+            };
+            var headerString = CombineColumnValues(headers);
+            Assert.That(contentRows[0], Is.EqualTo(headerString));
+        }
+
+        [Test]
+        public void DeviceTypeListAndNullDeviceList_GenerateAllReport_ZipFileContainsFileWithOnlyHeader()
+        {
+            // Arrange
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceTypeList = new List<DeviceType>() { deviceTypeOne };
+
+            // ACT
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, null);
+
+            // Assert
+            Assert.That(bytes, Is.Not.Null);
+            using (var memStream = new MemoryStream(bytes))
+            {
+                var zipFile = new ZipArchive(memStream);
+
+                // Test that the zip has the right amount of files and that they have the right names
+                Assert.That(zipFile.Entries.Count, Is.EqualTo(1));
+
+                var file = zipFile.Entries[0];
+
+                Assert.That(file.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
+
+                // Read all the files and validate their content
+                string fileText;
+                using (var readerOne = new StreamReader(file.Open()))
+                {
+                    fileText = readerOne.ReadToEnd();
+                }
+
+                // Test that there is a header row a leftover empty row
+                var fileRows = fileText.Split(Environment.NewLine);
+                Assert.That(fileRows.Count, Is.EqualTo(1));
+
+                var headers = new List<List<string>>()
+                {
+                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "Date", "User" }
+                };
+                var headerString = CombineColumnValues(headers);
+                Assert.That(fileRows[0], Is.EqualTo(headerString));
+            }
+        }
+
+        [Test]
+        public void DeviceTypeListAndEmptyDeviceList_GenerateAllReport_ZipFileContainsFileWithOnlyHeader()
+        {
+            // Arrange
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceTypeList = new List<DeviceType>() { deviceTypeOne };
+            var deviceList = new List<Device>();
+
+            // ACT
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, deviceList);
+
+            // Assert
+            Assert.That(bytes, Is.Not.Null);
+            using (var memStream = new MemoryStream(bytes))
+            {
+                var zipFile = new ZipArchive(memStream);
+
+                // Test that the zip has the right amount of files and that they have the right names
+                Assert.That(zipFile.Entries.Count, Is.EqualTo(1));
+
+                var file1 = zipFile.Entries[0];
+
+                Assert.That(file1.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
+
+                // Read all the files and validate their content
+                string file1Text;
+                using (var readerOne = new StreamReader(file1.Open()))
+                {
+                    file1Text = readerOne.ReadToEnd();
+                }
+
+                // Test that there is a header row a leftover empty row
+                var file1Rows = file1Text.Split(Environment.NewLine);
+                Assert.That(file1Rows.Count, Is.EqualTo(1));
+
+                var headers = new List<List<string>>()
+                {
+                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "Date", "User" }
+                };
+                var headerString = CombineColumnValues(headers);
+                Assert.That(file1Rows[0], Is.EqualTo(headerString));
+            }
+        }
+
+        #endregion
+
+        #region Valid Device Types Filled Device List
+
+        [Test]
+        public void DeviceTypeFilledDeviceList_GenerateReportByDeviceType_FileContainsHeaderAndDeviceData()
         {
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
             deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
@@ -102,114 +252,39 @@ namespace BEIMA.Backend.Test.ReportServices
             deviceTwo.AddField("boilerf2", "BoilerValue2D2");
             deviceTwo.AddField("boilerf3", "BoilerValue3D2");
 
-            var deviceDocs = new List<BsonDocument>()
+            var devices = new List<Device>()
             {
-                deviceOne.GetBsonDocument(),
-                deviceTwo.GetBsonDocument(),
-            };
-
-            // Setup mock database client.
-            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == deviceTypeOne.Id)))
-                  .Returns(deviceTypeOne.GetBsonDocument())
-                  .Verifiable();
-            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
-                  .Returns(deviceDocs)
-                  .Verifiable();
-            MongoDefinition.MongoInstance = mockDb.Object;
-
-            var reportService = ReportWriter.Instance;
+                deviceOne,
+                deviceTwo
+            };            
 
             // ACT
-            var bytes = reportService.GeneratDeviceReportByDeviceType(deviceTypeOne.Id);
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, devices);
 
             // Assert
             Assert.That(bytes, Is.Not.Null);
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == deviceTypeOne.Id)), Times.Once));
 
             var content = Encoding.UTF8.GetString(bytes);
             var contentRows = content.Split(Environment.NewLine);
             Assert.That(contentRows.Count, Is.EqualTo(3));
 
-            // Tests that first row is a header row
-            Assert.That(GenerateDeviceHeaders(deviceTypeOne), Is.EqualTo(contentRows[0]));
-            Assert.That(GenerateDeviceValues(deviceOne, deviceTypeOne), Is.EqualTo(contentRows[1]));
-            Assert.That(GenerateDeviceValues(deviceTwo, deviceTypeOne), Is.EqualTo(contentRows[2]));
-        }
-
-        [Test]
-        public void NoDevicesExist_GenerateAllReport_ZipContainsAllDeviceTypesNoDeviceData()
-        {
-            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
-            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceTypeOne.AddField("boilerf1", "BoilerField1");
-            deviceTypeOne.AddField("boilerf2", "BoilerField2");
-            deviceTypeOne.AddField("boilerf3", "BoilerField3");
-
-            var deviceTypeTwo = new DeviceType(ObjectId.GenerateNewId(), "Hvac", "This is a hvac", "Hvac type notes");
-            deviceTypeTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceTypeTwo.AddField("havcf1", "HvacField1");
-            deviceTypeTwo.AddField("hvacf2", "HvacFeild2");
-
-            var deviceTypeDocs = new List<BsonDocument>()
+            var headers = new List<List<string>>()
             {
-                deviceTypeOne.GetBsonDocument(),
-                deviceTypeTwo.GetBsonDocument(),
+                new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                new List<string>() { "Date", "User" }
             };
+            var headerString = CombineColumnValues(headers);
+            Assert.That(contentRows[0], Is.EqualTo(headerString));
 
-            // Setup mock database client.
-            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns<List<BsonDocument>>(null)
-                  .Verifiable();
-            mockDb.Setup(mock => mock.GetAllDeviceTypes())
-                  .Returns(deviceTypeDocs)
-                  .Verifiable();
-            MongoDefinition.MongoInstance = mockDb.Object;
+            var rowOne = DeviceToColumnValues(deviceOne);
+            var rowOneString = CombineColumnValues(rowOne);
+            Assert.That(contentRows[1], Is.EqualTo(rowOneString));
 
-            var reportService = ReportWriter.Instance;
-
-            // ACT
-            var bytes = reportService.GenerateAllDeviceReports();
-
-            // Assert
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
-
-            using (var memStream = new MemoryStream(bytes))
-            {
-                var zipFile = new ZipArchive(memStream);
-
-                // Test that the zip has the right amount of files and that they have the right names
-                Assert.That(zipFile.Entries.Count, Is.EqualTo(2));
-
-                var file1 = zipFile.Entries[0];
-                var file2 = zipFile.Entries[1];
-
-                Assert.That(file1.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
-                Assert.That(file2.Name, Is.EqualTo($"{deviceTypeTwo.Name}.csv"));
-
-                // Read all the files and validate their content
-                string file1Text;
-                string file2Text;
-                using (var readerOne = new StreamReader(file1.Open()))
-                using (var readerTwo = new StreamReader(file2.Open()))
-                {
-                    file1Text = readerOne.ReadToEnd();
-                    file2Text = readerTwo.ReadToEnd();
-                }
-
-                // Test that there is a header row and a row for every device
-                var file1Rows = file1Text.Split(Environment.NewLine);
-                var file2Rows = file2Text.Split(Environment.NewLine);
-
-                Assert.That(file1Rows.Count, Is.EqualTo(1));
-                Assert.That(file2Rows.Count, Is.EqualTo(1));
-
-                // Tests that first row is a header row
-                Assert.That(GenerateDeviceHeaders(deviceTypeOne), Is.EqualTo(file1Rows[0]));
-                Assert.That(GenerateDeviceHeaders(deviceTypeTwo), Is.EqualTo(file2Rows[0]));
-            }
+            var rowTwo = DeviceToColumnValues(deviceTwo);
+            var rowTwoString = CombineColumnValues(rowTwo);
+            Assert.That(contentRows[2], Is.EqualTo(rowTwoString));
         }
 
         [Test]
@@ -247,45 +322,24 @@ namespace BEIMA.Backend.Test.ReportServices
             deviceThree.AddField("havcf1", "HvacField1D3");
             deviceThree.AddField("hvacf2", "HvacFeild2D3");
 
-            var deviceDocs = new List<BsonDocument>()
+            var devices = new List<Device>()
             {
-                deviceOne.GetBsonDocument(),
-                deviceTwo.GetBsonDocument(),
-                deviceThree.GetBsonDocument()
+                deviceOne,
+                deviceTwo,
+                deviceThree
             };
 
-            var deviceTypeDocs = new List<BsonDocument>()
-            {
-                deviceTypeOne.GetBsonDocument(),
-                deviceTypeTwo.GetBsonDocument(),
-            };
-
-            // Validation Data
-            var excludedProps = new List<string>()
-            {
-                "Fields", "Location", "LastModified", "Photo", "Files"
-            };
-            var devicePropCount = typeof(Device).GetProperties().Where(val => excludedProps.Contains(val.Name) == false).Count();
-            devicePropCount += typeof(DeviceLocation).GetProperties().Count();
-            devicePropCount += typeof(DeviceLastModified).GetProperties().Count();
-
-            // Setup mock database client.
-            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(deviceDocs)
-                  .Verifiable();
-            mockDb.Setup(mock => mock.GetAllDeviceTypes())
-                  .Returns(deviceTypeDocs)
-                  .Verifiable();
-            MongoDefinition.MongoInstance = mockDb.Object;
-
-            var reportService = ReportWriter.Instance;
+            var deviceTypes = new List<DeviceType>() { 
+                deviceTypeOne,
+                deviceTypeTwo
+            };                        
 
             // ACT
-            var bytes = reportService.GenerateAllDeviceReports();
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices);
 
             //ASSERT 
-            using (var memStream = new MemoryStream(bytes)){
+            using (var memStream = new MemoryStream(bytes))
+            {
                 var zipFile = new ZipArchive(memStream);
 
                 // Test that the zip has the right amount of files and that they have the right names
@@ -314,122 +368,97 @@ namespace BEIMA.Backend.Test.ReportServices
                 Assert.That(file1Rows.Count, Is.EqualTo(3));
                 Assert.That(file2Rows.Count, Is.EqualTo(2));
 
-                // Tests that first row is a header row
-                Assert.That(GenerateDeviceHeaders(deviceTypeOne), Is.EqualTo(file1Rows[0]));
-                Assert.That(GenerateDeviceHeaders(deviceTypeTwo), Is.EqualTo(file2Rows[0]));
+                // Tests that file 1 has correct data
+                var file1Headers = new List<List<string>>()
+                {
+                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "Date", "User" }
+                };
+                var file1HeaderString = CombineColumnValues(file1Headers);
+                Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
-                // Tests that subsequent rows are device data
-                Assert.That(GenerateDeviceValues(deviceOne, deviceTypeOne), Is.EqualTo(file1Rows[1]));
-                Assert.That(GenerateDeviceValues(deviceTwo, deviceTypeOne), Is.EqualTo(file1Rows[2]));
-                Assert.That(GenerateDeviceValues(deviceThree, deviceTypeTwo), Is.EqualTo(file2Rows[1]));
-            }            
+                var file1RowOne = DeviceToColumnValues(deviceOne);
+                var file1RowOneString = CombineColumnValues(file1RowOne);
+                Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
+
+                var file1RowTwo = DeviceToColumnValues(deviceTwo);
+                var file1RowTwoString = CombineColumnValues(file1RowTwo);
+                Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
+
+                // Tests that file 2 has correct data
+                var file2Headers = new List<List<string>>()
+                {
+                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "HvacField1", "HvacFeild2" },
+                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "Date", "User" }
+                };
+                var file2HeaderString = CombineColumnValues(file2Headers);
+                Assert.That(file2Rows[0], Is.EqualTo(file2HeaderString));
+
+                var file2RowOne = DeviceToColumnValues(deviceThree);
+                var file2RowOneString = CombineColumnValues(file2RowOne);
+                Assert.That(file2Rows[1], Is.EqualTo(file2RowOneString));
+            }
         }
 
+        #endregion
+
         /// <summary>
-        /// Creates a list of strings filled with all of the property names in the Device object. The Fields
-        /// property is replaced with the field names contained in the parameter deviceType's Fields dictionary
+        /// Iterates through each list in columnLists and produces a string containing
+        /// all of those values seperated by a ','
         /// </summary>
-        /// <param name="deviceType"></param>
-        /// <param name="delimiter"></param>
-        /// <returns></returns>
-        private static string GenerateDeviceHeaders(DeviceType deviceType, string delimiter = ",")
+        /// <param name="columnLists"></param>
+        /// <returns>String containing all string values in columnlists joined together by a ','</returns>
+        private static string CombineColumnValues(List<List<string>> columnLists)
         {
-            var headers = new List<string>();
-            foreach (var deviceProp in typeof(Device).GetProperties())
+            var columns = new List<string>();
+            foreach (var columnList in columnLists)
             {
-                if (deviceProp.Name == "Fields")
+                foreach(var column in columnList)
                 {
-                    // Add all of the DeviceType field names
-                    var fieldProps = deviceType.Fields.ToDictionary().Values.Select(field => { return (string)field; });
-                    headers.AddRange(fieldProps);
-                }
-                else if (deviceProp.Name == "Location")
-                {
-                    // Add all of the DeviceLocation prop names
-                    var locProps = typeof(DeviceLocation).GetProperties().Select(prop => prop.Name);
-                    headers.AddRange(locProps);
-                }
-                else if (deviceProp.Name == "LastModified")
-                {
-                    // Add all of the DeviceLastModified prop names
-                    var modProps = typeof(DeviceLastModified).GetProperties().Select(prop => prop.Name);
-                    headers.AddRange(modProps);
-                }
-                else if (deviceProp.Name != "Photo" && deviceProp.Name != "Files")
-                {
-                    // Add all 'primative' prop names
-                    headers.Add(deviceProp.Name);
+                    columns.Add(column);
                 }
             }
-            return string.Join(delimiter, headers);
+            return string.Join(",", columns);
         }
 
         /// <summary>
-        /// Creates a list of strings filled with all of the property values in the parameter Device object. The Fields
-        /// property values are based on the keys in the parameter deviceType's fields and the values of the parameter device's fields.
+        /// Takes a device and generates a list of lists based off of its properties.
+        /// Is used in conjunction with CombineColumnValues in order to test if rows
+        /// created by the ReportWriter have the correct data in the correct order.
         /// </summary>
         /// <param name="device"></param>
-        /// <param name="deviceType"></param>
-        /// <param name="delimiter"></param>
         /// <returns></returns>
-        private static string GenerateDeviceValues(Device device, DeviceType deviceType, string delimiter = ",")
+        private static List<List<string>> DeviceToColumnValues(Device device)
         {
-            var values = new List<string>();
-            foreach (var deviceProp in typeof(Device).GetProperties())
+            var columns = new List<List<string>>()
             {
-                if (deviceProp.Name == "Fields")
+                new List<string>() { 
+                    device.Id.ToString(), 
+                    device.DeviceTypeId.ToString(), 
+                    device.DeviceTag, device.Manufacturer, 
+                    device.ModelNum, 
+                    device.SerialNum, 
+                    device.YearManufactured.ToString()?? "", 
+                    device.Notes
+                },
+                device.Fields.ToArray().OrderBy(val => val.Key).Select(val => val.Value).ToList(),
+                new List<string>() { 
+                    device.Location?.BuildingId.ToString() ?? "", 
+                    device.Location?.Notes ?? "", 
+                    device.Location?.Latitude ?? "",
+                    device.Location?.Longitude ?? ""
+                },
+                new List<string>()
                 {
-                    // Add all DeviceType field values contained in the device
-                    var deviceTypeFieldKeys = deviceType.Fields.ToDictionary().Keys;
-                    foreach (var key in deviceTypeFieldKeys)
-                    {
-                        string value = "";
-                        if (device.Fields != null && device.Fields.ContainsKey(key))
-                        {
-                            value = device.Fields[key];
-                        }
-                        values.Add(value);
-                    }
+                    device.LastModified?.Date.ToString() ?? "",
+                    device.LastModified?.User ?? "",
                 }
-                else if (deviceProp.Name == "Location")
-                {
-                    // Add all of the DeviceLocation prop values contained in the device
-                    var locProps = typeof(DeviceLocation).GetProperties();
-                    foreach (var locProp in locProps)
-                    {
-                        string value = "";
-                        if (device.Location != null)
-                        {
-                            var propVal = locProp.GetValue(device.Location);
-                            value = propVal?.ToString() ?? "";
-                        }
-                        values.Add(value);
-                    }
-                }
-                else if (deviceProp.Name == "LastModified")
-                {
-                    // Add all of the DeviceLastModified prop values contained in the device
-                    var modProps = typeof(DeviceLastModified).GetProperties();
-                    foreach (var modProp in modProps)
-                    {
-                        string value = "";
-                        if (device.LastModified != null)
-                        {
-                            var propVal = modProp.GetValue(device.LastModified);
-                            value = propVal?.ToString() ?? "";
-                        }
-                        values.Add(value);
-                    }
-                }
-                else if (deviceProp.Name != "Photo" && deviceProp.Name != "Files")
-                {
-                    // Add all of the 'primative' prop values contained in the device                    
-                    var propVal = deviceProp.GetValue(device);
-                    string value = propVal?.ToString() ?? "";
-                    values.Add(value);
-                }
-            }
-            return string.Join(delimiter, values);
+            };
+            return columns;
         }
     }
 }
