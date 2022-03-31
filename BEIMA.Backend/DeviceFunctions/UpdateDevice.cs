@@ -117,7 +117,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             // Check if there is a new photo to replace the old one
             var updatePhoto = reqForm.Files.Any(file => file.Name == "photo");
-            if (updatePhoto && device.Photo != null)
+            if (updatePhoto && device.Photo != null && device.Photo.FileUid != null)
             {
                 filesToDelete.Add(device.Photo.FileUid);
             }

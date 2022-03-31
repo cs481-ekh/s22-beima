@@ -35,6 +35,11 @@ namespace BEIMA.Backend.StorageService
         /// <returns>Uid of the file created or null if request failed</returns>
         public async Task<string> PutFile(IFormFile file)
         {
+            if (file == null)
+            {
+                return null;
+            }
+
             try
             {
                 string fileUid = null;
@@ -67,6 +72,11 @@ namespace BEIMA.Backend.StorageService
         /// <returns>Presigned url or null if request failed</returns>
         public async Task<string> GetPresignedURL(string fileUid)
         {
+            if (string.IsNullOrEmpty(fileUid))
+            {
+                return null;
+            }
+
             try
             {
                 var exists = await GetFileExists(fileUid);
@@ -100,6 +110,11 @@ namespace BEIMA.Backend.StorageService
         /// <returns>Memorystream of the target file or null if request failed</returns>
         public async Task<MemoryStream> GetFileStream(string fileUid)
         {
+            if (string.IsNullOrEmpty(fileUid))
+            {
+                return null;
+            }
+
             try
             {
                 var client = containerClient.GetBlobClient(fileUid);
@@ -122,6 +137,11 @@ namespace BEIMA.Backend.StorageService
         /// <returns>True if target file exists or false if it doesn't</returns>
         public async Task<bool> GetFileExists(string fileUid)
         {
+            if (string.IsNullOrEmpty(fileUid))
+            {
+                return false;
+            }
+
             try
             {
                 var client = containerClient.GetBlobClient(fileUid);
@@ -140,6 +160,11 @@ namespace BEIMA.Backend.StorageService
         /// <returns>True if target file was deleted or false if request failed</returns>
         public async Task<bool> DeleteFile(string fileUid)
         {
+            if (string.IsNullOrEmpty(fileUid))
+            {
+                return true;
+            }
+
             try
             {
                 var exists = await GetFileExists(fileUid);
