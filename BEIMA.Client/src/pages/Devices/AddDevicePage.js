@@ -60,9 +60,8 @@ const AddDevicePage = () => {
   const getBuildingList = async () => {
     const buildingList = await GetBuildingList();
     
-    /*TODO push error to display*/
     if(!(buildingList.status === Constants.HTTP_SUCCESS)){
-      alert('API responded with: ' + buildingList.status + ' ' + buildingList.response);
+      Notifications.error("Unable to get building list for dropdown", `Contact support. Possible database connectivity issue.`);
       return;
     }
     
@@ -78,9 +77,8 @@ const AddDevicePage = () => {
   const getDeviceTypes = async () => {
     const deviceTypeData = await GetDeviceTypeList();
     
-    /*TODO push error to display*/
     if(!(deviceTypeData.status === Constants.HTTP_SUCCESS)){
-      alert('API responded with: ' + deviceTypeData.status + ' ' + deviceTypeData.response);
+      Notifications.error("Unable to get device type list for dropdown", `Contact support. Possible database connectivity issue.`);
       return;
     }
     
