@@ -146,7 +146,8 @@ namespace BEIMA.Backend.Test
                     Latitude = "1231232",
                     Longitude = "123213213"
                 },
-                DeletedFiles = new List<string>()
+                YearManufactured = 1880,
+                DeletedFiles = new List<string>(),
             };
             request.DeletedFiles.Add("fileOneUid");
             request.DeletedFiles.Add("fileTwoUid");
@@ -168,6 +169,7 @@ namespace BEIMA.Backend.Test
                     { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
                     { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
                 },
+                YearManufactured = 1880,
                 DeletedFiles = new List<string>()
             };
             return JsonConvert.SerializeObject(request);
