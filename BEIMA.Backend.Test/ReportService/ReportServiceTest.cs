@@ -70,24 +70,7 @@ namespace BEIMA.Backend.Test.ReportServices
             var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, null);
 
             // Assert
-            Assert.That(bytes, Is.Not.Null);
-            var content = Encoding.UTF8.GetString(bytes);
-            var contentRows = content.Split(Environment.NewLine);
-            Assert.That(contentRows.Count, Is.EqualTo(1));
-
-            string[] generalHeaders = { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" };
-            string[] fieldHeaders = { "BoilerField1", "BoilerField2", "BoilerField3" };
-            string[] locationHeaders = { "BuildingId", "Notes", "Latitude", "Longitude" };
-            string[] lastModHeaders = { "Date", "User" };
-
-            List<string> headers = new List<string>();
-            headers.AddRange(generalHeaders);
-            headers.AddRange(fieldHeaders);
-            headers.AddRange(locationHeaders);
-            headers.AddRange(lastModHeaders);
-
-            var headerString = string.Join(",", headers);
-            Assert.That(contentRows[0], Is.EqualTo(headerString));
+            Assert.That(bytes, Is.Null);
         }
 
         [Test]
@@ -106,20 +89,7 @@ namespace BEIMA.Backend.Test.ReportServices
             var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, deviceList);
 
             // Assert
-            Assert.That(bytes, Is.Not.Null);
-            var content = Encoding.UTF8.GetString(bytes);
-            var contentRows = content.Split(Environment.NewLine);
-            Assert.That(contentRows.Count, Is.EqualTo(1));
-
-            var headers = new List<List<string>>()
-            {
-                new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
-                new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
-                new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
-                new List<string>() { "Date", "User" }
-            };
-            var headerString = CombineColumnValues(headers);
-            Assert.That(contentRows[0], Is.EqualTo(headerString));
+            Assert.That(bytes, Is.Null);
         }
 
         [Test]
@@ -138,39 +108,7 @@ namespace BEIMA.Backend.Test.ReportServices
             var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, null);
 
             // Assert
-            Assert.That(bytes, Is.Not.Null);
-            using (var memStream = new MemoryStream(bytes))
-            {
-                var zipFile = new ZipArchive(memStream);
-
-                // Test that the zip has the right amount of files and that they have the right names
-                Assert.That(zipFile.Entries.Count, Is.EqualTo(1));
-
-                var file = zipFile.Entries[0];
-
-                Assert.That(file.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
-
-                // Read all the files and validate their content
-                string fileText;
-                using (var readerOne = new StreamReader(file.Open()))
-                {
-                    fileText = readerOne.ReadToEnd();
-                }
-
-                // Test that there is a header row a leftover empty row
-                var fileRows = fileText.Split(Environment.NewLine);
-                Assert.That(fileRows.Count, Is.EqualTo(1));
-
-                var headers = new List<List<string>>()
-                {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
-                    new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
-                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
-                    new List<string>() { "Date", "User" }
-                };
-                var headerString = CombineColumnValues(headers);
-                Assert.That(fileRows[0], Is.EqualTo(headerString));
-            }
+            Assert.That(bytes, Is.Null);
         }
 
         [Test]
@@ -190,39 +128,7 @@ namespace BEIMA.Backend.Test.ReportServices
             var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, deviceList);
 
             // Assert
-            Assert.That(bytes, Is.Not.Null);
-            using (var memStream = new MemoryStream(bytes))
-            {
-                var zipFile = new ZipArchive(memStream);
-
-                // Test that the zip has the right amount of files and that they have the right names
-                Assert.That(zipFile.Entries.Count, Is.EqualTo(1));
-
-                var file1 = zipFile.Entries[0];
-
-                Assert.That(file1.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
-
-                // Read all the files and validate their content
-                string file1Text;
-                using (var readerOne = new StreamReader(file1.Open()))
-                {
-                    file1Text = readerOne.ReadToEnd();
-                }
-
-                // Test that there is a header row a leftover empty row
-                var file1Rows = file1Text.Split(Environment.NewLine);
-                Assert.That(file1Rows.Count, Is.EqualTo(1));
-
-                var headers = new List<List<string>>()
-                {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
-                    new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
-                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
-                    new List<string>() { "Date", "User" }
-                };
-                var headerString = CombineColumnValues(headers);
-                Assert.That(file1Rows[0], Is.EqualTo(headerString));
-            }
+            Assert.That(bytes, Is.Null);
         }
 
         #endregion
@@ -401,6 +307,94 @@ namespace BEIMA.Backend.Test.ReportServices
                 var file2RowOne = DeviceToColumnValues(deviceThree);
                 var file2RowOneString = CombineColumnValues(file2RowOne);
                 Assert.That(file2Rows[1], Is.EqualTo(file2RowOneString));
+            }
+        }
+
+        [Test]
+        public void DevicesAndDeviceTypesExists_OnlyOneDeviceTypeHasDevices_GenerateAllReport_ZipContainsOneDeviceTypesWithDeviceData()
+        {
+            // Test Data
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceTypeTwo = new DeviceType(ObjectId.GenerateNewId(), "Hvac", "This is a hvac", "Hvac type notes");
+            deviceTypeTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeTwo.AddField("havcf1", "HvacField1");
+            deviceTypeTwo.AddField("hvacf2", "HvacFeild2");
+
+            var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
+            deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceOne.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes1", "1", "1");
+            deviceOne.AddField("boilerf1", "BoilerValue1D1");
+            deviceOne.AddField("boilerf2", "BoilerValue2D1");
+            deviceOne.AddField("boilerf3", "BoilerValue3D1");
+
+            var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
+            deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTwo.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes2", "2", "2");
+            deviceTwo.AddField("boilerf1", "BoilerValue1D2");
+            deviceTwo.AddField("boilerf2", "BoilerValue2D2");
+            deviceTwo.AddField("boilerf3", "BoilerValue3D2");
+
+            var devices = new List<Device>()
+            {
+                deviceOne,
+                deviceTwo,
+            };
+
+            var deviceTypes = new List<DeviceType>() {
+                deviceTypeOne,
+                deviceTypeTwo
+            };
+
+            // ACT
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices);
+
+            //ASSERT 
+            using (var memStream = new MemoryStream(bytes))
+            {
+                var zipFile = new ZipArchive(memStream);
+
+                // Test that the zip has the right amount of files and that they have the right names
+                Assert.That(zipFile.Entries.Count, Is.EqualTo(1));
+
+                var file1 = zipFile.Entries[0];
+
+                Assert.That(file1.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
+
+                // Read all the files and validate their content
+                string file1Text;
+                using (var readerOne = new StreamReader(file1.Open()))
+                {
+                    file1Text = readerOne.ReadToEnd();
+                }
+
+                // Test that there is a header row and a row for every device
+                var file1Rows = file1Text.Split(Environment.NewLine);
+
+                Assert.That(file1Rows.Count, Is.EqualTo(3));
+
+                // Tests that file 1 has correct data
+                var file1Headers = new List<List<string>>()
+                {
+                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "Date", "User" }
+                };
+                var file1HeaderString = CombineColumnValues(file1Headers);
+                Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
+
+                var file1RowOne = DeviceToColumnValues(deviceOne);
+                var file1RowOneString = CombineColumnValues(file1RowOne);
+                Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
+
+                var file1RowTwo = DeviceToColumnValues(deviceTwo);
+                var file1RowTwoString = CombineColumnValues(file1RowTwo);
+                Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
             }
         }
 

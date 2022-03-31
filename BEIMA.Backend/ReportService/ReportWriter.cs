@@ -19,9 +19,9 @@ namespace BEIMA.Backend.ReportService
         /// file contains a header based on the paramter deviceType
         /// and then the data of all devices related to the specific deviceTypeId.
         /// </summary>
-        /// <param name="deviceType"></param>
-        /// <param name="devices"></param>
-        /// <param name="delimiter"></param>
+        /// <param name="deviceTypes">DeviceType that the report should be based on</param>
+        /// <param name="devices">List of all devices assoicated with deviceType</param>
+        /// <param name="delimiter">String used to seperate every value in the report</param>
         /// <returns>Byte[] containing a file filled with device data associated with the passed in deviceTypeId</returns>
         public static byte[] GeneratDeviceReportByDeviceType(DeviceType deviceType, List<Device> devices, string delimiter = ",")
         {
@@ -30,10 +30,10 @@ namespace BEIMA.Backend.ReportService
             {
                 return null;
             }
-            // Ensure devices is not null;
-            if(devices == null)
+
+            if(devices == null || devices.Count == 0)
             {
-                devices = new List<Device>();
+                return null;
             }
 
             byte[] fileBytes;
@@ -86,9 +86,9 @@ namespace BEIMA.Backend.ReportService
         /// A file entry may contain only the header row if no device is associated
         /// with that specific device type
         /// </summary>
-        /// <param name="deviceTypes"></param>
-        /// <param name="devices"></param>
-        /// <param name="delimiter"></param> 
+        /// <param name="deviceTypes">List of all device types in the database</param>
+        /// <param name="devices">List of all devices in the database</param>
+        /// <param name="delimiter">String used to seperate every value in the report</param> 
         /// <returns>Byte[] containing a zipfile of device type files filled with associated devices</returns>
         public static byte[] GenerateAllDeviceReports(List<DeviceType> deviceTypes, List<Device> devices, string delimiter = ",")
         {
@@ -100,7 +100,7 @@ namespace BEIMA.Backend.ReportService
             // Ensure devices is not null;
             if (devices == null)
             {
-                devices = new List<Device>();
+                return null;
             }
 
             // Create dict to group devices based on device type id
@@ -118,7 +118,14 @@ namespace BEIMA.Backend.ReportService
                 {
                     typeToDevices[device.DeviceTypeId].Add(device);
                 }                
-            } 
+            }
+
+            // Remove any deviceTypes that do not have any devices
+            typeToDevices = typeToDevices.Where(item => item.Value.Count > 0).ToDictionary(item => item.Key, item => item.Value);
+            if(typeToDevices.Keys.Count == 0)
+            {
+                return null;
+            }
 
             byte[] zipFileBytes;
             using (var outStream = new MemoryStream()) // Create memory stream to convert zip file stream to byte[]
@@ -127,12 +134,20 @@ namespace BEIMA.Backend.ReportService
                 {
                     foreach (var deviceType in deviceTypes)
                     {
+                        // Device type has no devices associated with it
+                        if (typeToDevices.ContainsKey(deviceType.Id) == false)
+                        {
+                            continue;
+                        }
+
+                        var deviceTypeDevices = typeToDevices[deviceType.Id];
+
                         var fileInZip = zipStream.CreateEntry($"{deviceType.Name}.csv", CompressionLevel.Optimal); // Create new zip file entry that can be streamed into
                         using (var fileInZipStream = fileInZip.Open())                                             // Open zip file entry's stream
                         using (var dataStream = new MemoryStream())                                                // Create memory stream that data can be written into
                         using (var csvWriter = new StreamWriter(dataStream))                                       // Create writer to write device/device type data to memory stream
                         {
-                            var deviceTypeDevices = typeToDevices[deviceType.Id];
+                            
 
                             // Write file headers                            
                             var headers = GenerateDeviceReportHeaders(deviceType);
