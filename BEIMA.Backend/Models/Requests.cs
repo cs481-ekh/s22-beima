@@ -12,7 +12,7 @@ namespace BEIMA.Backend.Models
         public string Manufacturer { get; set; }
         public string ModelNum { get; set; }
         public string SerialNum { get; set; }
-        public int YearManufactured { get; set; }
+        public int? YearManufactured { get; set; }
         public string Notes { get; set; }
         public DeviceLocation Location { get; set; } = new DeviceLocation();
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
@@ -28,7 +28,7 @@ namespace BEIMA.Backend.Models
         public string Manufacturer { get; set; }
         public string ModelNum { get; set; }
         public string SerialNum { get; set; }
-        public int YearManufactured { get; set; }
+        public int? YearManufactured { get; set; }
         public string Notes { get; set; }
         public DeviceLocation Location { get; set; } = new DeviceLocation();
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string>();
