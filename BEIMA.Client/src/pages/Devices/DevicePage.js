@@ -1,6 +1,7 @@
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
+import * as Notifications from '../../shared/Notifications/Notification.js'
 import styles from './DevicePage.module.css'
 import { Form, Card, Button, FormControl, Image} from "react-bootstrap";
 import { TiDelete } from "react-icons/ti";
@@ -179,7 +180,7 @@ const DevicePage = () => {
     const [removedDocs, setRemovedDocs] = useState([])
     const navigate = useNavigate();
 
-    const updateDeviceCall = () => {
+    const updateDeviceCall = async () => {
       const newDevice = {
         _id:deviceID,
         deviceTypeId:deviceTypeID,
@@ -200,13 +201,26 @@ const DevicePage = () => {
       }
 
       // Hit endpoints here
-      updateDevice(newDevice, newImage, addedDocs);
-      setEditable(false)
+      let updateResult = await updateDevice(newDevice, newImage, addedDocs);
+      if(updateResult.status === Constants.HTTP_SUCCESS){
+        Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
+        setEditable(false)
+      } else {
+        Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
+      }
     }
 
-    const deleteDeviceCall = (id) => {
-      deleteDevice(id);
-      navigate('/devices')
+    const deleteDeviceCall = async (id) => {
+      let deleteNotif = await Notifications.warning("Warning: Device Deletion", [`Are you sure you want to delete device ${tag}?`]);
+      if(deleteNotif.isConfirmed){
+        let deleteResult = await deleteDevice(id);
+        if(deleteResult.status === 200){
+          Notifications.success("Device Deletion Successful", `Device ${tag} successfully deleted.`);
+          navigate('/devices');
+        } else {
+          Notifications.error("Unable to Delete Device", `Deletion of Device ${tag} failed.`);
+        }
+      }
     }
 
     const cancel = () => {      

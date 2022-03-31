@@ -345,6 +345,18 @@ namespace BEIMA.Backend.FT
             return response.IsSuccessStatusCode;
         }
 
+        /// <summary>
+        /// Sends a building update request to the BEIMA api.
+        /// </summary>
+        /// <param name="building">The building to update.</param>
+        /// <returns>The id of the new building.</returns>
+        public async Task<Building> UpdateBuilding(Building building)
+        {
+            var response = await SendRequest($"api/building/{building.Id}/update", HttpVerb.POST, building);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<Building>(content);
+        }
+
         #endregion Building Requests
 
         /// <summary>

@@ -36,7 +36,7 @@ namespace BEIMA.Backend.BuildingFunctions
             try
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-                var data = JsonConvert.DeserializeObject<AddBuildingRequest>(requestBody);
+                var data = JsonConvert.DeserializeObject<BuildingRequest>(requestBody);
                 building = new Building(ObjectId.GenerateNewId(),
                                         data.Name,
                                         data.Number,

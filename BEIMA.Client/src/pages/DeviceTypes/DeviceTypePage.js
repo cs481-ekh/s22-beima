@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
+import * as Notifications from '../../shared/Notifications/Notification.js'
 import styles from './DeviceTypePage.module.css'
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Form, Card, Button, FormControl} from "react-bootstrap";
@@ -78,7 +79,7 @@ const DeviceTypePage = () => {
     const [deletedFields, setDeletedFields] = useState([...item.deletedFields])
     const navigate = useNavigate();
     
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
       // we keep track of the added fields as an object, but the endpoint takes in an array
       // so we grab the values from the addFields object and send it to the endpoint
       let newFields = Object.values(addedFields);
@@ -93,8 +94,13 @@ const DeviceTypePage = () => {
         deletedFields: deletedFields
       }
       //call endpoint
-      updateDeviceType(result);
-      setEditable(false);
+      let updateResult = await updateDeviceType(result);
+      if(updateResult.status === Constants.HTTP_SUCCESS){
+        Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
+        setEditable(false)
+      } else {
+        Notifications.error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
+      }
     }
 
     const addField = () => {
@@ -152,16 +158,17 @@ const DeviceTypePage = () => {
     }
 
     const attemptDeleteType = async (id) => {
-      // replace with more descriptive and prettier error message
-      alert('Are you sure?')
-      let response = await deleteDeviceType(id);
-      // the endpoint returns an error message if there is more than one device with that type
-      // let's show that message to the user
-      if(response.response){
-        // replace with more descriptive and prettier error message
-        alert(response.response);
-      } else {
-        navigate('/deviceTypes')
+      let deleteNotif = await Notifications.warning("Warning: Device Type Deletion", [`Are you sure you want to delete device ${item.name}?`]);
+      if(deleteNotif.isConfirmed){
+        let response = await deleteDeviceType(id);
+        // the endpoint returns an error message if there is more than one device with that type
+        // let's show that message to the user
+        if(response.status === 200){
+          Notifications.success("Device Type Deletion Successful", `Device Type ${item.name} successfully deleted.`);
+          navigate('/deviceTypes');
+        } else {
+          Notifications.error("Unable to Delete Device Type", `Deletion of Device ${item.name} failed. ${response.response}`);
+        }
       }
     }
 

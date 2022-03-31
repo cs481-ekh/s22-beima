@@ -191,7 +191,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">The fully formed updated BsonDocument.</param>
         /// <param name="dbName">Name of the database.</param>
         /// <param name="collectionName">Name of the collection.</param>
-        /// <returns>true if successful, false if not successful</returns>
+        /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
         private BsonDocument Update(BsonDocument doc, string dbName, string collectionName)
         {
             CheckIsConnected();
@@ -356,6 +356,16 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
+        /// Gets a list of Building BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredBuildings(FilterDefinition<BsonDocument> filter)
+        {
+            return GetFiltered(filter, beimaDb, buildingCollection);
+        }
+
+        /// <summary>
         /// Gets all buildings from the "buildings" collection.
         /// </summary>
         /// <returns>List of all building BsonDocuments</returns>
@@ -388,7 +398,7 @@ namespace BEIMA.Backend.MongoService
         /// Updates a building in the "buildings" collection, given a fully formed updated building.
         /// </summary>
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
-        /// <returns>true if successful, false if unsuccessful</returns>
+        /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc)
         {
             return Update(doc, beimaDb, buildingCollection);
@@ -406,6 +416,16 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetUser(ObjectId objectId)
         {
             return Get(objectId, beimaDb, userCollection);
+        }
+
+        /// <summary>
+        /// Gets a list of User BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter)
+        {
+            return GetFiltered(filter, beimaDb, userCollection);
         }
 
         /// <summary>

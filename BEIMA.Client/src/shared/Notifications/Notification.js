@@ -1,6 +1,5 @@
 import styles from './Notification.module.css';
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
 //site for the notification package, many options and customizations available
 //https://sweetalert2.github.io/
 
@@ -36,6 +35,7 @@ export async function success(title, message){
   })
 };
 
+// message is an array of strings to support multiple items needing a warning
 export async function warning(title, message){
   return await notification.fire({
         title: title,

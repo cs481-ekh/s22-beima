@@ -111,6 +111,12 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="filter"></param>
         /// <returns></returns>
+        
         public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter);
+        /// Updates a building in the "buildings" collection, given a fully formed updated building.
+        /// </summary>
+        /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
+        /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
+        public BsonDocument UpdateBuilding(BsonDocument doc);
     }
 }
