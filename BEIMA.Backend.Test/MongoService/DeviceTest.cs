@@ -184,7 +184,7 @@ namespace BEIMA.Backend.MongoService.Test
             Assert.That(device.Manufacturer, Is.EqualTo(string.Empty));
             Assert.That(device.ModelNum, Is.EqualTo(string.Empty));
             Assert.That(device.SerialNum, Is.EqualTo(string.Empty));
-            Assert.That(device.YearManufactured, Is.EqualTo(-1));
+            Assert.That(device.YearManufactured, Is.Null);
             Assert.That(device.Notes, Is.EqualTo(string.Empty));
         }
 
