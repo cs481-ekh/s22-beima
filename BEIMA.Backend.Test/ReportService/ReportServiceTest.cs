@@ -311,7 +311,7 @@ namespace BEIMA.Backend.Test.ReportServices
         }
 
         [Test]
-        public void DevicesAndDeviceTypesExists_OnlyOneDeviceTypeHasDevices_GenerateAllReport_ZipContainsOneDeviceTypesWithDeviceData()
+        public void DevicesAndDeviceTypesExists_OnlyOneDeviceTypeHasDevices_GenerateAllReport_ZipContainsOneDeviceTypeWithDeviceData()
         {
             // Test Data
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
