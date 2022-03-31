@@ -34,7 +34,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         }
 
         [Test]
-        public void InvalidDeviceType_GenerateByDeviceType_NullReturned()
+        public void InvalidDeviceType_GenerateReportByDeviceType_NullReturned()
         {
             var invalidDeviceTypeId = ObjectId.GenerateNewId();
 
@@ -56,7 +56,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         }
 
         [Test]
-        public void NoDevicesOrDeviceTypesExist_GenerateAll_NullReturned()
+        public void NoDevicesOrDeviceTypesExist_GenerateAllReport_NullReturned()
         {
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
@@ -80,7 +80,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         }
 
         [Test]
-        public void ValidDeviceType_GenerateByDeviceType_FileReturned()
+        public void ValidDeviceType_GenerateReportByDeviceType_ReportReturned()
         {
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
             deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
@@ -138,7 +138,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         }
 
         [Test]
-        public void NoDevicesExist_GenerateAll_ZipContainesAllDevices()
+        public void NoDevicesExist_GenerateAllReport_ZipContainsAllDeviceTypesNoDeviceData()
         {
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
             deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
@@ -213,7 +213,7 @@ namespace BEIMA.Backend.Test.ReportServicesa
         }
 
         [Test]
-        public void DevicesAndDeviceTypesExists_GenerateAll_ZipContainesAllDevices()
+        public void DevicesAndDeviceTypesExists_GenerateAllReport_ZipContainsAllDeviceTypesWithDeviceData()
         {
             // Test Data
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");

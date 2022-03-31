@@ -24,7 +24,7 @@ namespace BEIMA.Backend.ReportService
 
         /// <summary>
         /// Generates a byte[] containing a file object. The
-        /// file containes a header and then the data of all devices
+        /// file contains a header and then the data of all devices
         /// related to the specific deviceTypeId. If the device type id
         /// doesn't exist, return null, 
         /// </summary>
