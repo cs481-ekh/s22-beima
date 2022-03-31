@@ -18,8 +18,8 @@ namespace BEIMA.Backend.Test.StorageService
         [Test]
         public void SmokeTest()
         {
-            Assert.IsNotNull(_storage);
-            Assert.IsInstanceOf(typeof(AzureStorageProvider), _storage);
+            Assert.That(_storage, Is.Not.Null);
+            Assert.That(_storage, Is.InstanceOf(typeof(AzureStorageProvider)));
         }
 
         [Test]
