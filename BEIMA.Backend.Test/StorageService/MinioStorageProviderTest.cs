@@ -18,8 +18,8 @@ namespace BEIMA.Backend.Test.StorageService
         [Test]
         public void SmokeTest()
         {
-            Assert.IsNotNull(_storage);
-            Assert.IsInstanceOf(typeof(MinioStorageProvider), _storage);
+            Assert.That(_storage, Is.Not.Null);
+            Assert.That(_storage, Is.InstanceOf(typeof(MinioStorageProvider)));
         }
 
         [Test]
@@ -57,6 +57,16 @@ namespace BEIMA.Backend.Test.StorageService
 
             //Act
             var stream = await _storage.GetFileStream(fileUid);
+
+            //Assert
+            Assert.That(stream, Is.Null);
+        }
+
+        [Test]
+        public async Task NullFileUid_GetFileStream_StreamNotExists()
+        {
+            //Act
+            var stream = await _storage.GetFileStream(null);
 
             //Assert
             Assert.That(stream, Is.Null);
@@ -101,6 +111,16 @@ namespace BEIMA.Backend.Test.StorageService
         }
 
         [Test]
+        public async Task NullFileUid_GetPresignedUrl_PresignedUrlNotExists()
+        {
+            //Act
+            var url = await _storage.GetPresignedURL(null);
+
+            //Assert
+            Assert.That(url, Is.Null);
+        }
+
+        [Test]
         public async Task FileNotExists_PutFile_FileUidExists()
         {
             //Arrange
@@ -121,6 +141,16 @@ namespace BEIMA.Backend.Test.StorageService
 
             //Assert
             Assert.That(fileUid, Is.Not.Null);
+        }
+
+        [Test]
+        public async Task NullFile_PutFile_FileUidExists()
+        {
+            //Act
+            var fileUid = await _storage.PutFile(null);
+
+            //Assert
+            Assert.That(fileUid, Is.Null);
         }
 
         [Test]
@@ -166,6 +196,17 @@ namespace BEIMA.Backend.Test.StorageService
             //Assert
             Assert.That(result, Is.True);
             Assert.That(postDelExists, Is.False);
+        }
+
+        [Test]
+        public async Task Null_DeleteObject_DeletedTrue()
+        {
+            //Act
+            var result = await _storage.DeleteFile(null);
+
+            //Assert
+            Assert.That(result, Is.True);
+
         }
     }
 }
