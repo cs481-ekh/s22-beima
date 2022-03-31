@@ -29,14 +29,13 @@ namespace BEIMA.Backend.MongoService
         }
 
         /// <summary>
-        /// Combines two passed in filters. Will return one filter with the AND operation applied between the two separate filters.
+        /// Combines multiple passed in filters. Will return one filter with the AND operation applied between all of the passed in filters.
         /// </summary>
-        /// <param name="f1">The first filter.</param>
-        /// <param name="f2">The second filter.</param>
-        /// <returns>One filter that has the AND operation applied to both filters.</returns>
-        public static FilterDefinition<BsonDocument> CombineFilters(FilterDefinition<BsonDocument> f1, FilterDefinition<BsonDocument> f2)
+        /// <param name="filters">A variable number of filters.</param>
+        /// <returns>One filter that has the AND operation applied to all passed in filters.</returns>
+        public static FilterDefinition<BsonDocument> CombineFilters(params FilterDefinition<BsonDocument>[] filters)
         {
-            return Builders<BsonDocument>.Filter.And(f1, f2);
+            return Builders<BsonDocument>.Filter.And(filters);
         }
     }
 }
