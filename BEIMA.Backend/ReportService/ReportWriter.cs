@@ -1,6 +1,7 @@
 ﻿using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,19 +15,69 @@ namespace BEIMA.Backend.ReportService
     public class ReportWriter : IReportService
     {
         private static readonly Lazy<ReportWriter> instance = new(() => new ReportWriter());
-        private readonly IMongoConnector db;
-
-        private ReportWriter()
-        {
-            db = MongoDefinition.MongoInstance;
-        }
 
         public static ReportWriter Instance { get { return instance.Value; } }
 
-        public byte[] GeneratDeviceReportByDeviceType(ObjectId deviceType)
+        /// <summary>
+        /// Generates a byte[] containing a file object. The
+        /// file containes a header and then the data of all devices
+        /// related to the specific deviceTypeId. If the device type id
+        /// doesn't exist, return null, 
+        /// </summary>
+        /// <returns></returns>
+        public byte[] GeneratDeviceReportByDeviceType(ObjectId deviceTypeId)
         {
+            var db = MongoDefinition.MongoInstance;
 
-            return null;
+            // Check if device type exists
+            var deviceTypeDocument = db.GetDeviceType(deviceTypeId);
+            if(deviceTypeDocument == null)
+            {
+                return null;
+            }
+
+            // Get all devices associated with the device type
+            var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
+            var deviceFilter = MongoFilterGenerator.GetEqualsFilter("deviceTypeId", deviceType.Id);
+            var deviceDocuments = db.GetFilteredDevices(deviceFilter);
+
+            byte[] fileBytes;
+            using(var stream = new MemoryStream())
+            using (var csvWriter = new StreamWriter(stream))
+            {
+                var headers = GenerateDeviceHeaders(deviceType);
+                if (deviceDocuments.Count == 0)
+                {
+                    csvWriter.Write(headers);
+                }
+                else
+                {
+                    csvWriter.WriteLine(headers);
+                }
+
+                // Write all device data                            
+                for (var i = 0; i < deviceDocuments.Count; i++)
+                {
+                    // Write device's values
+                    var deviceDoc = deviceDocuments[i];
+                    var device = BsonSerializer.Deserialize<Device>(deviceDoc);
+                    var values = GenerateDeviceValues(device, deviceType);
+
+                    // Ensure newline isn't added on last record
+                    if (i != deviceDocuments.Count - 1)
+                    {
+                        csvWriter.WriteLine(values);
+                    }
+                    else
+                    {
+                        csvWriter.Write(values);
+                    }
+                }
+                // Flush writer and copy data to byte[]
+                csvWriter.Flush();
+                fileBytes = stream.ToArray();
+            }
+            return fileBytes;
         }
 
         /// <summary>
@@ -40,6 +91,8 @@ namespace BEIMA.Backend.ReportService
         /// <returns></returns>
         public byte[] GenerateAllDeviceReports()
         {
+            var db = MongoDefinition.MongoInstance;
+
             // Get a list of all device types
             var deviceTypesDocuments = db.GetAllDeviceTypes();
             if (deviceTypesDocuments == null || deviceTypesDocuments.Count == 0)

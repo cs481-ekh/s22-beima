@@ -10,7 +10,7 @@ using Moq;
 using MongoDB.Bson;
 using System.IO.Compression;
 using System.IO;
-using System.Linq;
+using MongoDB.Driver;
 
 namespace BEIMA.Backend.Test.ReportServicesa
 {
@@ -34,9 +34,30 @@ namespace BEIMA.Backend.Test.ReportServicesa
         }
 
         [Test]
+        public void InvalidDeviceType_GenerateByDeviceType_NullReturned()
+        {
+            var invalidDeviceTypeId = ObjectId.GenerateNewId();
+
+            // Setup mock database client.
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == invalidDeviceTypeId)))
+                  .Returns<List<BsonDocument>>(null)
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var reportService = ReportWriter.Instance;
+
+            // ACT
+            var bytes = reportService.GeneratDeviceReportByDeviceType(invalidDeviceTypeId);
+
+            // Assert
+            Assert.That(bytes, Is.Null);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == invalidDeviceTypeId)), Times.Once));
+        }
+
+        [Test]
         public void NoDevicesOrDeviceTypesExist_GenerateAll_NullReturned()
         {
-   
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetAllDevices())
@@ -53,15 +74,72 @@ namespace BEIMA.Backend.Test.ReportServicesa
             var bytes = reportService.GenerateAllDeviceReports();
 
             // Assert
-            Assert.That(bytes, Is.Null);
+            Assert.That(bytes, Is.Null);            
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Never));
+        }
+
+        [Test]
+        public void ValidDeviceType_GenerateByDeviceType_FileReturned()
+        {
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
+            deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceOne.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes1", "1", "1");
+            deviceOne.AddField("boilerf1", "BoilerValue1D1");
+            deviceOne.AddField("boilerf2", "BoilerValue2D1");
+            deviceOne.AddField("boilerf3", "BoilerValue3D1");
+
+            var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
+            deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTwo.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes2", "2", "2");
+            deviceTwo.AddField("boilerf1", "BoilerValue1D2");
+            deviceTwo.AddField("boilerf2", "BoilerValue2D2");
+            deviceTwo.AddField("boilerf3", "BoilerValue3D2");
+
+            var deviceDocs = new List<BsonDocument>()
+            {
+                deviceOne.GetBsonDocument(),
+                deviceTwo.GetBsonDocument(),
+            };
+
+            // Setup mock database client.
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == deviceTypeOne.Id)))
+                  .Returns(deviceTypeOne.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(deviceDocs)
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var reportService = ReportWriter.Instance;
+
+            // ACT
+            var bytes = reportService.GeneratDeviceReportByDeviceType(deviceTypeOne.Id);
+
+            // Assert
+            Assert.That(bytes, Is.Not.Null);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == deviceTypeOne.Id)), Times.Once));
+
+            var content = Encoding.UTF8.GetString(bytes);
+            var contentRows = content.Split(Environment.NewLine);
+            Assert.That(contentRows.Count, Is.EqualTo(3));
+
+            // Tests that first row is a header row
+            Assert.That(GenerateDeviceHeaders(deviceTypeOne), Is.EqualTo(contentRows[0]));
+            Assert.That(GenerateDeviceValues(deviceOne, deviceTypeOne), Is.EqualTo(contentRows[1]));
+            Assert.That(GenerateDeviceValues(deviceTwo, deviceTypeOne), Is.EqualTo(contentRows[2]));
         }
 
         [Test]
         public void NoDevicesExist_GenerateAll_ZipContainesAllDevices()
         {
-
-
-
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
             deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
             deviceTypeOne.AddField("boilerf1", "BoilerField1");
@@ -95,6 +173,9 @@ namespace BEIMA.Backend.Test.ReportServicesa
             var bytes = reportService.GenerateAllDeviceReports();
 
             // Assert
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+
             using (var memStream = new MemoryStream(bytes))
             {
                 var zipFile = new ZipArchive(memStream);
@@ -134,7 +215,6 @@ namespace BEIMA.Backend.Test.ReportServicesa
         [Test]
         public void DevicesAndDeviceTypesExists_GenerateAll_ZipContainesAllDevices()
         {
-
             // Test Data
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
             deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
@@ -182,9 +262,9 @@ namespace BEIMA.Backend.Test.ReportServicesa
 
             // Validation Data
             var excludedProps = new List<string>()
-                {
-                    "Fields", "Location", "LastModified", "Photo", "Files"
-                };
+            {
+                "Fields", "Location", "LastModified", "Photo", "Files"
+            };
             var devicePropCount = typeof(Device).GetProperties().Where(val => excludedProps.Contains(val.Name) == false).Count();
             devicePropCount += typeof(DeviceLocation).GetProperties().Count();
             devicePropCount += typeof(DeviceLastModified).GetProperties().Count();

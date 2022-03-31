@@ -11,7 +11,7 @@ namespace BEIMA.Backend.ReportService
 {
     public interface IReportService
     {
-        public byte[] GeneratDeviceReportByDeviceType(ObjectId deviceType);
+        public byte[] GeneratDeviceReportByDeviceType(ObjectId deviceTypeId);
 
         public byte[] GenerateAllDeviceReports();
     }
