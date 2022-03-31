@@ -14,7 +14,7 @@ describe("Verify the list has items present", function () {
 
     //get all children of the itemlist with class ItemList_item__2BOfJ
     //there should be at least 1 item in the list
-    cy.get('[id=itemList]').find('.ItemList_item__2BOfJ').its('length').should('be.gt', 0);
-
+    //cy.get('[id=itemList]').find('.^="ItemList_item"').its('length').should('be.gt', 0);
+    cy.get('[class^="ItemList_item"]').its('length').should('be.gt', 2);
   })
 })
