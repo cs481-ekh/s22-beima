@@ -235,11 +235,7 @@ const AddDevicePage = () => {
       setAdditionalDocs(event.target.files)
     }
   }
-async function testwarn(){
-  let testarr = ['warning one<br>', 'warning two'];
-   await Notifications.warning('warn test', 'one message');
-   await Notifications.multiWarning('multi warn test', testarr);
-  }
+  
   return (
     <div className={styles.fieldform}>
       <Card>
@@ -250,7 +246,7 @@ async function testwarn(){
                 <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={dropDownStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
-                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={testwarn}>
+                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
                   Add Device
                 </Button>
               </Col>
