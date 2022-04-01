@@ -61,7 +61,7 @@ const AddDevicePage = () => {
     const buildingList = await GetBuildingList();
     
     if(!(buildingList.status === Constants.HTTP_SUCCESS)){
-      Notifications.error("Unable to get building list for dropdown", `Contact support. Possible database connectivity issue.`);
+      Notifications.error("Unable to get building list for dropdown", `Contact support.`);
       return;
     }
     
@@ -78,7 +78,7 @@ const AddDevicePage = () => {
     const deviceTypeData = await GetDeviceTypeList();
     
     if(!(deviceTypeData.status === Constants.HTTP_SUCCESS)){
-      Notifications.error("Unable to get device type list for dropdown", `Contact support. Possible database connectivity issue.`);
+      Notifications.error("Unable to get device type list for dropdown", `Contact support.`);
       return;
     }
     
@@ -192,9 +192,8 @@ const AddDevicePage = () => {
   * @return the compiled JSON
   */
   function createJSON(formFields){
-    //TODO temporary until we have error signaling figured out
     if (selectedDeviceType.name === 'Select Device Type'){
-      alert ('No device type selected');
+      Notifications.error("Device Type not selected", 'A device Type selection is required.');
       return;
     }
     
