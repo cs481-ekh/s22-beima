@@ -11,6 +11,7 @@ using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
 using BEIMA.Backend.Models;
 using System.Net;
+using System.Web.Http;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -62,6 +63,12 @@ namespace BEIMA.Backend.UserFunctions
 
             var mongo = MongoDefinition.MongoInstance;
             var id = mongo.InsertUser(user.GetBsonDocument());
+
+            //InsertUser returned a null result, meaning it failed, so send a 500 error
+            if(id == null)
+            {
+                return new InternalServerErrorResult();
+            }
 
             return new OkObjectResult(id.ToString());
         }
