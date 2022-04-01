@@ -162,6 +162,9 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "role")]
             public string? Role { get; set; }
+
+            [JsonProperty(PropertyName = "lastModified")]
+            public LastModified? LastModified { get; set; }
         }
 
         public class Location
