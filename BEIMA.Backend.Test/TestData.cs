@@ -1,8 +1,7 @@
 ﻿using BEIMA.Backend.Models;
 using Newtonsoft.Json;
-using System.Net.Http;
-using System.Text;
 using System.Collections.Generic;
+using System.Text;
 
 namespace BEIMA.Backend.Test
 {
@@ -84,8 +83,19 @@ namespace BEIMA.Backend.Test
                 "\"number\": \"1234\"," +
                 "\"notes\": \"Some building notes.\"," +
                 "\"location\": {" +
-                    "\"latitude\": \"123.456\"," +
-                    "\"longitude\": \"101.101\"" +
+                    "\"latitude\": \"12.345\"," +
+                    "\"longitude\": \"10.101\"" +
+                "}" +
+            "}";
+
+        public const string _testUpdateBuilding =
+            "{" +
+                "\"name\": \"Student Union Building\"," +
+                "\"number\": \"1234\"," +
+                "\"notes\": \"Some new building notes.\"," +
+                "\"location\": {" +
+                    "\"latitude\": \"-12.345\"," +
+                    "\"longitude\": \"-10.101\"" +
                 "}" +
             "}";
 
@@ -136,7 +146,8 @@ namespace BEIMA.Backend.Test
                     Latitude = "1231232",
                     Longitude = "123213213"
                 },
-                DeletedFiles = new List<string>()
+                YearManufactured = 1880,
+                DeletedFiles = new List<string>(),
             };
             request.DeletedFiles.Add("fileOneUid");
             request.DeletedFiles.Add("fileTwoUid");
@@ -158,6 +169,7 @@ namespace BEIMA.Backend.Test
                     { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
                     { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
                 },
+                YearManufactured = 1880,
                 DeletedFiles = new List<string>()
             };
             return JsonConvert.SerializeObject(request);

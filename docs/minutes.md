@@ -1,3 +1,33 @@
+## Minutes: 2022-03-31
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 3 Scrum Meeting
+ * standup
+ 	* Keelan
+ 		* got all filtering tasks done and merged
+		* starting on user endpoints
+ 	* Kenny
+ 		* updated csv service, should be good to go
+		* put up PR to fix null photo exception. Minio delete function would throw exception on null
+		when azure didn't, added more tests
+ 	* Ashlyn
+ 		* did research on JWT, made some tasks for that
+		* some user frontend tasks and auth tasks are blocked by tasks in the backend
+		* there are few tasks I can do in the meantime
+ 	* Joe
+ 		* two PRs up for review, valid building id for device endpoints and year manu to be null
+		* working on attributes validated on backend
+ 	* Tom
+ 		* was waiting for Ashlyn's PR to merge, they are merged as well as other PRs he needed
+		* working on blank fields warning
+		* enhance Notification functions
+		* can start looking into the docker stuff
+
 ## Minutes: 2022-03-29
 ### scribe: Ashlyn
 ### Attendees:

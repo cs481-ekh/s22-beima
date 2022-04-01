@@ -46,13 +46,13 @@ namespace BEIMA.Backend.DeviceFunctions
             Device device;
             IFormCollection reqForm;
             UpdateDeviceRequest data;
-            var mongo = MongoDefinition.MongoInstance;            
+            var mongo = MongoDefinition.MongoInstance;
             try
             {
                 // Read Form and parse out request data
                 reqForm = await req.ReadFormAsync();
-                data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);                              
-                
+                data = JsonConvert.DeserializeObject<UpdateDeviceRequest>(reqForm["data"]);
+
                 // Get original device
                 var deviceDocument = mongo.GetDevice(new ObjectId(id));
                 if (deviceDocument == null)
@@ -73,6 +73,10 @@ namespace BEIMA.Backend.DeviceFunctions
                 // Parse building id if it exists
                 var reqBuildingId = data.Location.BuildingId;
                 ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
+                if (buildingId != null && mongo.GetBuilding((ObjectId)buildingId) is null)
+                {
+                    return new NotFoundObjectResult(Resources.BuildingNotFoundMessage);
+                }
 
                 // Set device properties to new values
                 device.DeviceTypeId = deviceTypeId;
@@ -111,13 +115,13 @@ namespace BEIMA.Backend.DeviceFunctions
             catch (Exception)
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
-            }                   
+            }
 
             List<string> filesToDelete = new List<string>(data.DeletedFiles);
 
             // Check if there is a new photo to replace the old one
             var updatePhoto = reqForm.Files.Any(file => file.Name == "photo");
-            if (updatePhoto && device.Photo != null)
+            if (updatePhoto && device.Photo != null && device.Photo.FileUid != null)
             {
                 filesToDelete.Add(device.Photo.FileUid);
             }
@@ -168,8 +172,8 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             var updatedDevice = BsonSerializer.Deserialize<Device>(updatedDeviceDocument);
-            
-            if(updatedDevice.Photo.FileUid != null)
+
+            if (updatedDevice.Photo.FileUid != null)
             {
                 var presignedUrl = await _storage.GetPresignedURL(updatedDevice.Photo.FileUid);
                 updatedDevice.Photo.FileUrl = presignedUrl;

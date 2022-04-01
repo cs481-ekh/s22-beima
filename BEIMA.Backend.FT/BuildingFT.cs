@@ -200,5 +200,57 @@ namespace BEIMA.Backend.FT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetBuilding(buildingId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        [Test]
+        public async Task BuildingInDatabase_UpdateBuilding_ReturnsUpdatedBuilding()
+        {
+            // ARRANGE
+            var origBuilding = new Building
+            {
+                Name = "Student Union",
+                Number = "1234",
+                Notes = "Some building notes.",
+                Location = new Location
+                {
+                    Latitude = "12.345",
+                    Longitude = "10.101",
+                },
+            };
+
+            var buildingId = await TestClient.AddBuilding(origBuilding);
+            var origItem = await TestClient.GetBuilding(buildingId);
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new Building
+            {
+                Id = origItem.Id,
+                Name = origItem.Name + " Building",
+                Number = origItem.Number,
+                Notes = "Some new building notes.",
+                Location = new Location
+                {
+                    Latitude = "-12.345",
+                    Longitude = "-10.101",
+                }
+            };
+
+            // ACT
+            var updatedBuilding = await TestClient.UpdateBuilding(updateItem);
+
+            // ASSERT
+            Assert.That(updatedBuilding, Is.Not.Null);
+            Assert.That(updatedBuilding.Notes, Is.Not.EqualTo(origBuilding.Notes));
+
+            Assert.That(updatedBuilding.LastModified?.Date, Is.Not.EqualTo(origItem.LastModified?.Date));
+            Assert.That(updatedBuilding.LastModified?.User, Is.EqualTo(origItem.LastModified?.User));
+
+            Assert.That(updatedBuilding.Id, Is.EqualTo(updateItem.Id));
+            Assert.That(updatedBuilding.Name, Is.EqualTo(updateItem.Name));
+            Assert.That(updatedBuilding.Number, Is.EqualTo(updateItem.Number));
+            Assert.That(updatedBuilding.Notes, Is.EqualTo(updateItem.Notes));
+
+            Assert.That(updatedBuilding.Location?.Latitude, Is.EqualTo(updateItem.Location?.Latitude));
+            Assert.That(updatedBuilding.Location?.Longitude, Is.EqualTo(updateItem.Location?.Longitude));
+        }
     }
 }

@@ -125,7 +125,7 @@ namespace BEIMA.Backend.MongoService
             Manufacturer = manufacturer ?? string.Empty;
             ModelNum = modelNum ?? string.Empty;
             SerialNum = serialNum ?? string.Empty;
-            YearManufactured = yearManufactured ?? -1;
+            YearManufactured = yearManufactured;
             Notes = notes ?? string.Empty;
             Location = new DeviceLocation();
             LastModified = new DeviceLastModified();

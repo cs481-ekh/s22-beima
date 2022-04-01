@@ -12,6 +12,8 @@ on :
     paths:
     - 'BEIMA.Backend/**'
     
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 env:
   AZURE_FUNCTIONAPP_NAME: beima-services
