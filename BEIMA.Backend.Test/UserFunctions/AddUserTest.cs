@@ -19,7 +19,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             // ARRANGE
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.InsertBuilding(It.IsAny<BsonDocument>()))
+            mockDb.Setup(mock => mock.InsertUser(It.IsAny<BsonDocument>()))
                   .Returns(ObjectId.GenerateNewId())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
