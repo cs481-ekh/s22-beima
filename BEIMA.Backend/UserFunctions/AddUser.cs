@@ -11,7 +11,6 @@ using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
 using BEIMA.Backend.Models;
 using System.Net;
-using System.Web.Http;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.UserFunctions
