@@ -3,6 +3,15 @@
 namespace BEIMA.Backend.Models
 {
     /// <summary>
+    /// Object representation of the body of a login request
+    /// </summary>
+    public class LoginRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }    
+    }
+
+    /// <summary>
     /// Object representation of the data object in an add device request
     /// </summary>
     public class AddDeviceRequest

@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System.Collections.Generic;
 
 namespace BEIMA.Backend.MongoService
@@ -111,5 +112,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc);
+
+        /// <summary>
+        /// Gets a list of User BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
     }
 }
