@@ -100,6 +100,15 @@ namespace BEIMA.Backend.Test
                 "}" +
             "}";
 
+        public const string _testUser =
+            "{" +
+                "\"username\": \"user.name\"," +
+                "\"password\": \"Abcdefg12345!\"," +
+                "\"firstName\": \"Alex\"," +
+                "\"lastName\": \"Smith\"," +
+                "\"role\": \"user\"" +
+            "}";
+
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
