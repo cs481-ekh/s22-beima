@@ -68,7 +68,7 @@ namespace BEIMA.Backend.UserFunctions
             //InsertUser returned a null result, meaning it failed, so send a 500 error
             if(id == null)
             {
-                var response = new ObjectResult("Internal server error");
+                var response = new ObjectResult(Resources.InternalServerErrorMessage);
                 response.StatusCode = StatusCodes.Status500InternalServerError;
                 return response;
             }
