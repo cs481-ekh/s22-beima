@@ -165,7 +165,7 @@ const AddDevicePage = () => {
   */
   async function saveDeviceToDb(addButtonEvent) {
     if (selectedDeviceType.name === 'Select Device Type'){
-      let isConfirmed = await Notifications.error("Device Type not selected", 'A device Type selection is required.');
+      Notifications.error("Device Type not selected", 'A device Type selection is required.');
       return;
     }
     
