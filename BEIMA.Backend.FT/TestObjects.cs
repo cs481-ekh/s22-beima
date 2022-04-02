@@ -143,6 +143,30 @@ namespace BEIMA.Backend.FT
             public LastModified? LastModified { get; set; }
         }
 
+        public class User
+        {
+            [JsonProperty(PropertyName = "_id")]
+            public string? Id { get; set; }
+
+            [JsonProperty(PropertyName = "username")]
+            public string? Username { get; set; }
+
+            [JsonProperty(PropertyName = "password")]
+            public string? Password { get; set; }
+
+            [JsonProperty(PropertyName = "firstName")]
+            public string? FirstName { get; set; }
+
+            [JsonProperty(PropertyName = "lastName")]
+            public string? LastName { get; set; }
+
+            [JsonProperty(PropertyName = "role")]
+            public string? Role { get; set; }
+
+            [JsonProperty(PropertyName = "lastModified")]
+            public LastModified? LastModified { get; set; }
+        }
+
         public class Location
         {
             [JsonProperty(PropertyName = "latitude")]

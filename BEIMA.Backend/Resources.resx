@@ -149,6 +149,10 @@
     <value>Device year manufactured is invalid.</value>
     <comment>Error message for an invalid device year manufactured.</comment>
   </data>
+  <data name="InternalServerErrorMessage" xml:space="preserve">
+    <value>An internal server error has occurred.</value>
+    <comment>Error message when a general internal server error has occurred. This is currently being used for when a MongoConnector operation has failed.</comment>
+  </data>
   <data name="InvalidIdMessage" xml:space="preserve">
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>
