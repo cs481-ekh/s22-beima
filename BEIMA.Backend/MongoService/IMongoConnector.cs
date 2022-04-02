@@ -133,5 +133,11 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetUser(ObjectId objectId);
+
+        /// <summary>
+        /// Gets all users from the "users" collection.
+        /// </summary>
+        /// <returns>List of all user BsonDocuments</returns>
+        public List<BsonDocument> GetAllUsers();
     }
 }
