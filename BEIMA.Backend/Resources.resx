@@ -137,12 +137,24 @@
     <value>Device could not be found.</value>
     <comment>Error message for when trying to access a device that could not found in the database.</comment>
   </data>
+  <data name="DeviceNullMessage" xml:space="preserve">
+    <value>Device is null.</value>
+    <comment>Error message for a null device.</comment>
+  </data>
   <data name="DeviceTypeNotFoundMessage" xml:space="preserve">
     <value>Device type could not be found.</value>
     <comment>Error message for when trying to access a device type that could not be found in the database.</comment>
   </data>
+  <data name="DeviceYearManufacturedInvalidMessage" xml:space="preserve">
+    <value>Device year manufactured is invalid.</value>
+    <comment>Error message for an invalid device year manufactured.</comment>
+  </data>
   <data name="InvalidIdMessage" xml:space="preserve">
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>
+  </data>
+  <data name="InvalidLocationMessage" xml:space="preserve">
+    <value>Location is invalid.</value>
+    <comment>Error message for an invalid location.</comment>
   </data>
 </root>
