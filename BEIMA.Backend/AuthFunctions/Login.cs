@@ -14,6 +14,7 @@ using MongoDB.Bson.Serialization;
 using BCryptNet = BCrypt.Net.BCrypt;
 using MongoDB.Bson;
 using System.Collections.Generic;
+using System.Net;
 
 namespace BEIMA.Backend.AuthFunctions
 {
@@ -41,9 +42,9 @@ namespace BEIMA.Backend.AuthFunctions
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<LoginRequest>(requestBody);
                 
-                if(data == null || data.Username == null || data.Password == null)
+                if(data == null || string.IsNullOrEmpty(data.Username) || string.IsNullOrEmpty(data.Password))
                 {
-                    return new UnauthorizedResult();
+                    return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
                 }
                 password = data.Password;
 
@@ -53,29 +54,22 @@ namespace BEIMA.Backend.AuthFunctions
                 userDocs = dbServce.GetFilteredUsers(usernameFilter);
             } catch (Exception)
             {
-                return new UnauthorizedResult();
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }
             
             if(userDocs == null || userDocs.Count == 0)
             {
-                return new UnauthorizedResult();
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }
 
-            // Go through the users and find the one whose password hash matches the request's password
+            // GetFilteredUsers by username returns a list, but it should only have 1 user in it
             // Doesn't use filter for password as bcrypt hashing creates a unique salt on every hash.
-            User user = null;
-            for(var i = 0; i < userDocs.Count && user == null; i++)
-            {
-                var person = BsonSerializer.Deserialize<User>(userDocs[i]);
-                if(BCryptNet.Verify(password, person.Password))
-                {
-                    user = person;
-                }
-            }
+            User user = BsonSerializer.Deserialize<User>(userDocs[0]);
+            var matches = BCryptNet.Verify(password, user.Password);
 
-            if(user == null)
+            if (!matches)
             {
-                return new UnauthorizedResult();
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }
 
             // Create a jwt token

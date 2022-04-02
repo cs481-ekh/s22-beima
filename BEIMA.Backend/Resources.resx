@@ -149,6 +149,10 @@
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>
   </data>
+  <data name="UnauthorizedMessage" xml:space="preserve">
+    <value>Invalid credentials.</value>
+    <comment>Error message for when the credentials that are being used are unauthorized to perform an action.</comment>
+  </data>
   <data name="UserNotFoundMessage" xml:space="preserve">
     <value>User could not be found.</value>
     <comment>Error message for when trying to access a user that could not be found in the database.</comment>
