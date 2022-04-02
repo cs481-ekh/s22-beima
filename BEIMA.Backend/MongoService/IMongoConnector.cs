@@ -139,5 +139,12 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <returns>List of all user BsonDocuments</returns>
         public List<BsonDocument> GetAllUsers();
+
+        /// <summary>
+        /// Gets a list of User BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
     }
 }
