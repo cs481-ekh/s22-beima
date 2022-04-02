@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System;
 using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {
@@ -82,9 +83,8 @@ namespace BEIMA.Backend.Test.UserFunctions
 
             var testId = "1234567890abcdef12345678";
 
-            var dbUser = new User(new ObjectId(testId), "Student Union", "1234", "Some Notes.");
+            var dbUser = new User(new ObjectId(testId), "user.name123", "ThisIsAPassword!123", "Alex", "Smith", "user");
             dbUser.SetLastModified(DateTime.UtcNow, "Anonymous");
-            dbUser.SetLocation("1.234", "5.678");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
@@ -104,11 +104,11 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             var user = (User)((OkObjectResult)response).Value;
-            Assert.That(user.Name, Is.EqualTo("Student Union"));
-            Assert.That(user.Number, Is.EqualTo("1234"));
-            Assert.That(user.Notes, Is.EqualTo("Some Notes."));
-            Assert.That(user.Location.Latitude, Is.EqualTo("1.234"));
-            Assert.That(user.Location.Longitude, Is.EqualTo("5.678"));
+            Assert.That(user.Username, Is.EqualTo("user.name123"));
+            Assert.That(user.Password, Is.EqualTo(""));
+            Assert.That(user.FirstName, Is.EqualTo("Alex"));
+            Assert.That(user.LastName, Is.EqualTo("Smith"));
+            Assert.That(user.Role, Is.EqualTo("user"));
         }
 
         #endregion SuccessTests
