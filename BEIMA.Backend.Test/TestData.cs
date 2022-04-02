@@ -143,8 +143,8 @@ namespace BEIMA.Backend.Test
                 {
                     BuildingId = "622cf00109137c26f913b281",
                     Notes = "notes",
-                    Latitude = "1231232",
-                    Longitude = "123213213"
+                    Latitude = "12",
+                    Longitude = "123"
                 },
                 YearManufactured = 1880,
                 DeletedFiles = new List<string>(),

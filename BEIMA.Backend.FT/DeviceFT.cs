@@ -131,7 +131,7 @@ namespace BEIMA.Backend.FT
                 {
                     BuildingId = _buildingId,
                     Notes = "Some building notes.",
-                    Longitude = "123.001",
+                    Longitude = "12.301",
                     Latitude = "101.321",
                 },
                 Manufacturer = "Generic Inc.",
@@ -202,7 +202,7 @@ namespace BEIMA.Backend.FT
                     Location = new DeviceLocation
                     {
                         BuildingId = _buildingId,
-                        Latitude = "101.001",
+                        Latitude = "10.101",
                         Longitude = "6.234",
                         Notes = "Outside",
                     },
@@ -244,7 +244,7 @@ namespace BEIMA.Backend.FT
                     Location = new DeviceLocation
                     {
                         BuildingId = _buildingId,
-                        Latitude = "101.989",
+                        Latitude = "11.989",
                         Longitude = "25.004",
                         Notes = "Above",
                     },
@@ -304,7 +304,7 @@ namespace BEIMA.Backend.FT
                 Location = new DeviceLocation
                 {
                     BuildingId = _buildingId,
-                    Latitude = "111.001",
+                    Latitude = "11.001",
                     Longitude = "8.242",
                     Notes = "Outside",
                 },
