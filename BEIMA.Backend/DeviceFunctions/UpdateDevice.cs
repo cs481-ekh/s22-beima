@@ -44,6 +44,7 @@ namespace BEIMA.Backend.DeviceFunctions
             }
 
             Device device;
+            DeviceType deviceType;
             IFormCollection reqForm;
             UpdateDeviceRequest data;
             var mongo = MongoDefinition.MongoInstance;
@@ -68,7 +69,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 }
                 var deviceTypeId = ObjectId.Parse(data.DeviceTypeId);
                 var deviceTypeDocument = mongo.GetDeviceType(deviceTypeId);
-                var deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
+                deviceType = BsonSerializer.Deserialize<DeviceType>(deviceTypeDocument);
 
                 // Parse building id if it exists
                 var reqBuildingId = data.Location.BuildingId;
@@ -111,6 +112,10 @@ namespace BEIMA.Backend.DeviceFunctions
                     }
                     device.SetFields(data.Fields);
                 }
+                else if (deviceType.Fields.ToDictionary().Count > 0)
+                {
+                    return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                }
             }
             catch (Exception)
             {
@@ -148,7 +153,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             string message;
             HttpStatusCode statusCode;
-            if (!Rules.IsDeviceValid(device, out message, out statusCode))
+            if (!Rules.IsDeviceValid(device, deviceType, out message, out statusCode))
             {
                 var response = new ObjectResult(message);
                 response.StatusCode = (int)statusCode;

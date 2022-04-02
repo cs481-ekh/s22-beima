@@ -161,4 +161,8 @@
     <value>Location is invalid.</value>
     <comment>Error message for an invalid location.</comment>
   </data>
+  <data name="MaxCharacterLengthExceededMessage" xml:space="preserve">
+    <value>The max character length on field "{0}" has been exceeded.</value>
+    <comment>Error message for when the max character length on a field has been exceeded.</comment>
+  </data>
 </root>

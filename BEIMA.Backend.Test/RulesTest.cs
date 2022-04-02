@@ -2,6 +2,7 @@
 using MongoDB.Bson;
 using NUnit.Framework;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 
 namespace BEIMA.Backend.Test
@@ -9,6 +10,8 @@ namespace BEIMA.Backend.Test
     [TestFixture]
     public class RulesTest : UnitTestBase
     {
+        private static string _longString = new string('x', Constants.MAX_CHARACTER_LENGTH + 1);
+
         #region Device Rules
 
         [TestCase(-1, "Device year manufactured is invalid.", HttpStatusCode.BadRequest)]
@@ -24,14 +27,16 @@ namespace BEIMA.Backend.Test
             // ARRANGE
             var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "Tag", "Manufacturer", "Model", "SerialNumber", yearManufactured, "Notes");
             device.SetLocation(null, "Notes", "0.0", "0.0");
-
+            device.SetFields(new Dictionary<string, string> { { ObjectId.GenerateNewId().ToString(), "TestValue" } });
+            var deviceType = new DeviceType(device.DeviceTypeId, "Name", "Description", "Notes.");
+            deviceType.AddField(device.Fields.Keys.Single(), "TestField");
             var expectedResult = expectedStatusCode.Equals(HttpStatusCode.OK);
 
             string message;
             HttpStatusCode statusCode;
 
             // ACT
-            var result = Rules.IsDeviceValid(device, out message, out statusCode);
+            var result = Rules.IsDeviceValid(device, deviceType, out message, out statusCode);
 
             // ASSERT
             Assert.That(result, Is.EqualTo(expectedResult));
@@ -45,6 +50,9 @@ namespace BEIMA.Backend.Test
             // ARRANGE
             var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "Tag", "Manufacturer", "Model", "SerialNumber", 2022, "Notes");
             device.SetLocation(null, "Notes", lat, lon);
+            device.SetFields(new Dictionary<string, string> { { ObjectId.GenerateNewId().ToString(), "TestValue" } });
+            var deviceType = new DeviceType(device.DeviceTypeId, "Name", "Description", "Notes.");
+            deviceType.AddField(device.Fields.Keys.Single(), "TestField");
 
             var expectedResult = expectedStatusCode.Equals(HttpStatusCode.OK);
 
@@ -52,7 +60,7 @@ namespace BEIMA.Backend.Test
             HttpStatusCode statusCode;
 
             // ACT
-            var result = Rules.IsDeviceValid(device, out message, out statusCode);
+            var result = Rules.IsDeviceValid(device, deviceType, out message, out statusCode);
 
             // ASSERT
             Assert.That(result, Is.EqualTo(expectedResult));
@@ -61,21 +69,34 @@ namespace BEIMA.Backend.Test
         }
 
         [Test]
-        public void DeviceYearAndLocationInvalid_IsDeviceValid_ReturnsFalseAndInvalidYearMessage()
+        public void DeviceAllFieldsInvalid_IsDeviceValid_ReturnsFalseAndInvalidMessages()
         {
             // ARRANGE
-            var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "Tag", "Manufacturer", "Model", "SerialNumber", -1, "Notes");
-            device.SetLocation(null, "Notes", "abc", "9999.0");
+            var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), _longString, _longString, _longString, _longString, -1, _longString);
+            device.SetLocation(null, _longString, "abc", "9999.0");
+            device.SetFields(new Dictionary<string, string> { { ObjectId.GenerateNewId().ToString(), _longString } });
+            var deviceType = new DeviceType(device.DeviceTypeId, "Name", "Description", "Notes.");
+            deviceType.AddField(device.Fields.Keys.Single(), "TestField");
 
             string message;
             HttpStatusCode statusCode;
 
+            var expectedMessage = "Device year manufactured is invalid.\n" +
+                                  "Location is invalid.\n" +
+                                  "The max character length on field \"DeviceTag\" has been exceeded.\n" +
+                                  "The max character length on field \"Manufacturer\" has been exceeded.\n" +
+                                  "The max character length on field \"ModelNum\" has been exceeded.\n" +
+                                  "The max character length on field \"SerialNum\" has been exceeded.\n" +
+                                  "The max character length on field \"Notes\" has been exceeded.\n" +
+                                  "The max character length on field \"TestField\" has been exceeded.\n" +
+                                  "The max character length on field \"Location Notes\" has been exceeded.";
+
             // ACT
-            var result = Rules.IsDeviceValid(device, out message, out statusCode);
+            var result = Rules.IsDeviceValid(device, deviceType, out message, out statusCode);
 
             // ASSERT
             Assert.That(result, Is.False);
-            Assert.That(message, Is.EqualTo("Device year manufactured is invalid."));
+            Assert.That(message, Is.EqualTo(expectedMessage));
             Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 

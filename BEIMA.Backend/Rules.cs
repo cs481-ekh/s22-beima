@@ -17,8 +17,9 @@ namespace BEIMA.Backend
         /// <param name="message">The error message for a failed validation.</param>
         /// <param name="httpStatusCode">The status code for a failed validation.</param>
         /// <returns>True if the device is valid, otherwise false.</returns>
-        public static bool IsDeviceValid(Device device, out string message, out HttpStatusCode httpStatusCode)
+        public static bool IsDeviceValid(Device device, DeviceType deviceType, out string message, out HttpStatusCode httpStatusCode)
         {
+            var isValid = true;
             message = string.Empty;
             httpStatusCode = HttpStatusCode.OK;
 
@@ -36,21 +37,57 @@ namespace BEIMA.Backend
                 device.YearManufactured.ToString().Length != 4)
                 )
             {
-                message = Resources.DeviceYearManufacturedInvalidMessage;
+                message += Resources.DeviceYearManufacturedInvalidMessage;
                 httpStatusCode = HttpStatusCode.BadRequest;
-                return false;
+                isValid = false;
             }
 
             // Check location
             if ((!string.IsNullOrEmpty(device.Location.Latitude) && !ValidateLatitude(device.Location.Latitude)) ||
                 (!string.IsNullOrEmpty(device.Location.Longitude) && !ValidateLongitude(device.Location.Longitude)))
             {
-                message = Resources.InvalidLocationMessage;
+                message += message.Length > 0 ? '\n' : string.Empty;
+                message += Resources.InvalidLocationMessage;
                 httpStatusCode = HttpStatusCode.BadRequest;
-                return false;
+                isValid = false;
             }
 
-            return true;
+            // Check mandatory field lengths
+            foreach (var prop in device.GetType().GetProperties())
+            {
+                if (prop.PropertyType.Equals(typeof(string)) &&
+                    prop.GetValue(device).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                {
+                    message += message.Length > 0 ? '\n' : string.Empty;
+                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                    httpStatusCode = HttpStatusCode.BadRequest;
+                    isValid = false;
+                }
+            }
+
+            // Check device field lengths
+            foreach (var field in device.Fields)
+            {
+                if (field.Value.Length > Constants.MAX_CHARACTER_LENGTH)
+                {
+                    message += message.Length > 0 ? '\n' : string.Empty;
+                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, deviceType.Fields[field.Key].AsString);
+                    httpStatusCode = HttpStatusCode.BadRequest;
+                    isValid = false;
+                }
+            }
+
+            // Check location notes length
+            if (device.Location.Notes is not null &&
+                device.Location.Notes.Length > Constants.MAX_CHARACTER_LENGTH)
+            {
+                message += message.Length > 0 ? '\n' : string.Empty;
+                message += string.Format(Resources.MaxCharacterLengthExceededMessage, "Location Notes");
+                httpStatusCode = HttpStatusCode.BadRequest;
+                isValid = false;
+            }
+
+            return isValid;
         }
 
         /// <summary>
@@ -98,7 +135,7 @@ namespace BEIMA.Backend
 
             return isValid;
         }
-      
+
         /// Verifies that a given user has valid properties.
         /// </summary>
         /// <param name="user">User to verify.</param>

@@ -158,5 +158,14 @@ namespace BEIMA.Backend {
                 return ResourceManager.GetString("InvalidLocationMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The max character length on field &quot;{0}&quot; has been exceeded..
+        /// </summary>
+        internal static string MaxCharacterLengthExceededMessage {
+            get {
+                return ResourceManager.GetString("MaxCharacterLengthExceededMessage", resourceCulture);
+            }
+        }
     }
 }
