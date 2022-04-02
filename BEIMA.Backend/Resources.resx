@@ -129,6 +129,10 @@
     <value>The device type could not be deleted because at least one device exists in the database with this device type.</value>
     <comment>Error message for trying to delete a device type that has at least one associated device in the database.</comment>
   </data>
+  <data name="CannotHaveMatchingFieldNamesMessage" xml:space="preserve">
+    <value>Cannot have matching field names.</value>
+    <comment>Error message for trying to create a device type with matching field names.</comment>
+  </data>
   <data name="CouldNotParseBody" xml:space="preserve">
     <value>Could not parse the request body.</value>
     <comment>Error message for when trying to parse a http request body fails.</comment>

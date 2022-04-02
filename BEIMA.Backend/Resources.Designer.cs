@@ -88,6 +88,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot have matching field names..
+        /// </summary>
+        internal static string CannotHaveMatchingFieldNamesMessage {
+            get {
+                return ResourceManager.GetString("CannotHaveMatchingFieldNamesMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not parse the request body..
         /// </summary>
         internal static string CouldNotParseBody {
