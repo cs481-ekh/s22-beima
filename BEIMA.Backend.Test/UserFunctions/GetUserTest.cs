@@ -105,6 +105,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             var user = (User)((OkObjectResult)response).Value;
             Assert.That(user.Username, Is.EqualTo("user.name123"));
+            // GetUser should return an empty string for password, as it should not be sending the password on the endpoint.
             Assert.That(user.Password, Is.EqualTo(""));
             Assert.That(user.FirstName, Is.EqualTo("Alex"));
             Assert.That(user.LastName, Is.EqualTo("Smith"));
