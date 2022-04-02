@@ -68,7 +68,7 @@ namespace BEIMA.Backend.FT
         }
 
         [Test, Explicit("Must run on a database with no users. Will need to implement the delete endpoint to run with the others.")]
-        public async Task DeviceTypesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
+        public async Task UsersInDatabase_GetUserList_ReturnsUserList()
         {
             // ARRANGE
             var userList = new List<User>
