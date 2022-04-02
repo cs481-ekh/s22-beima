@@ -23,6 +23,9 @@ namespace BEIMA.Backend.Test.AuthFunctions
         public async Task NullPostBody_Login_ReturnsNull()
         {
             // ARRANGE
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
             var body = TestData._testNullLoginRequest;
             var request = CreateHttpRequest(RequestMethod.POST, body: body);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -32,6 +35,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
 
             // ASSERT
             Assert.IsNotNull(token);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Never));
             Assert.That(token, Is.EqualTo("Invalid credentials."));
         }
 
@@ -39,6 +43,9 @@ namespace BEIMA.Backend.Test.AuthFunctions
         public async Task InvalidParameters_Login_ReturnsNull()
         {
             // ARRANGE
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
             var body = TestData._testNullKeysLoginRequest;
             var request = CreateHttpRequest(RequestMethod.POST, body: body);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -48,6 +55,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
 
             // ASSERT
             Assert.IsNotNull(token);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Never));
             Assert.That(token, Is.EqualTo("Invalid credentials."));
         }
 
@@ -59,6 +67,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
             mockDb.Setup(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()))
                   .Returns(new List<BsonDocument>())
                   .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
 
             var body = TestData._testValidKeysLoginRequest;
             var request = CreateHttpRequest(RequestMethod.POST, body: body);
@@ -69,6 +78,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
 
             // ASSERT
             Assert.IsNotNull(token);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.That(token, Is.EqualTo("Invalid credentials."));
         }
 
@@ -103,6 +113,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
 
             // ASSERT
             Assert.IsNotNull(token);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.That(token, Is.EqualTo("Invalid credentials."));
         }
 
@@ -147,6 +158,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
 
             // ASSERT
             Assert.IsNotNull(token);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             var claims = new JwtBuilder().Decode<Claims>(token);
             Assert.That(claims.Username, Is.EqualTo(user.Username));
             Assert.That(claims.Role, Is.EqualTo(user.Role));
