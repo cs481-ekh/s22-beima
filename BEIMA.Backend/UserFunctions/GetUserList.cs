@@ -33,6 +33,8 @@ namespace BEIMA.Backend.UserFunctions
             foreach (var user in users)
             {
                 var userObj = BsonSerializer.Deserialize<User>(user);
+                // Do not expose the password through this endpoint, return an empty string.
+                userObj.Password = "";
                 userObjList.Add(userObj);
             }
 
