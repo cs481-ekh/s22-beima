@@ -126,6 +126,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="filter">The filter to be applied.</param>
         /// <returns>List of BsonDocuments</returns>
         public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
+
         /// Inserts a user into the "users" collection
         /// </summary>
         /// <param name="doc">BsonDocument that contains the fully formed user document</param>
