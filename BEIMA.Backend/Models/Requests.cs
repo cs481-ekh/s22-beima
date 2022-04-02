@@ -66,6 +66,18 @@ namespace BEIMA.Backend.Models
     }
 
     /// <summary>
+    /// Object representation of the data object in a user request
+    /// </summary>
+    public class UserRequest
+    {
+        public string Username { get; set; }
+        public string Password { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Role { get; set; }
+    }
+
+    /// <summary>
     /// Location Object representation of location field in an add building request
     /// </summary>
     public class Location

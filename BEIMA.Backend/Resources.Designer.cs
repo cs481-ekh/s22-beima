@@ -115,6 +115,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to An internal server error has occurred..
+        /// </summary>
+        internal static string InternalServerErrorMessage {
+            get {
+                return ResourceManager.GetString("InternalServerErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Id..
         /// </summary>
         internal static string InvalidIdMessage {

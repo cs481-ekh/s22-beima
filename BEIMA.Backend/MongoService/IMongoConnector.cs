@@ -107,6 +107,13 @@ namespace BEIMA.Backend.MongoService
         public bool DeleteBuilding(ObjectId objectId);
 
         /// <summary>
+        /// Gets all devices that match the parameter filter's criteria
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter);
+
+        /// <summary>
         /// Updates a building in the "buildings" collection, given a fully formed updated building.
         /// </summary>
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
@@ -119,5 +126,10 @@ namespace BEIMA.Backend.MongoService
         /// <param name="filter">The filter to be applied.</param>
         /// <returns>List of BsonDocuments</returns>
         public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
+        /// Inserts a user into the "users" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed user document</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertUser(BsonDocument doc);
     }
 }

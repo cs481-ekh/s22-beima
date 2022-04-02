@@ -359,6 +359,22 @@ namespace BEIMA.Backend.FT
 
         #endregion Building Requests
 
+        #region User Requests
+
+        /// <summary>
+        /// Sends a user post request to the BEIMA api.
+        /// </summary>
+        /// <param name="user">The user to add.</param>
+        /// <returns>The id of the new user.</returns>
+        public async Task<string> AddUser(User user)
+        {
+            var response = await SendRequest("api/user", HttpVerb.POST, user);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
+        }
+
+        #endregion
+
         /// <summary>
         /// Disposes the http client.
         /// </summary>
