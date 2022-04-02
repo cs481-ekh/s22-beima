@@ -373,6 +373,18 @@ namespace BEIMA.Backend.FT
             return JsonConvert.DeserializeObject<string>(content);
         }
 
+        /// <summary>
+        /// Sends a user get request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the user.</param>
+        /// <returns>The user with the given id.</returns>
+        public async Task<User> GetUser(string id)
+        {
+            var response = await SendRequest($"api/user/{id}", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<User>(content);
+        }
+
         #endregion
 
         #region Auth Requests
