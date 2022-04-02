@@ -18,8 +18,8 @@ namespace BEIMA.Backend.Test
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes\"," +
-                    "\"latitude\": \"123.456\"," +
-                    "\"longitude\": \"101.101\"" +
+                    "\"latitude\": \"12.435\"," +
+                    "\"longitude\": \"10.101\"" +
                 "}," +
                 "\"manufacturer\": \"Generic Inc.\"," +
                 "\"modelNum\": \"1234\"," +
@@ -40,8 +40,8 @@ namespace BEIMA.Backend.Test
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes.\"," +
-                    "\"latitude\": \"123.456\"," +
-                    "\"longitude\": \"101.101\"" +
+                    "\"latitude\": \"12.345\"," +
+                    "\"longitude\": \"10.101\"" +
                 "}," +
                 "\"manufacturer\": \"Generic Inc.\"," +
                 "\"modelNum\": \"1234\"," +

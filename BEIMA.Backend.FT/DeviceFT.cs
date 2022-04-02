@@ -132,7 +132,7 @@ namespace BEIMA.Backend.FT
                     BuildingId = _buildingId,
                     Notes = "Some building notes.",
                     Longitude = "12.301",
-                    Latitude = "101.321",
+                    Latitude = "10.321",
                 },
                 Manufacturer = "Generic Inc.",
                 ModelNum = "26",
