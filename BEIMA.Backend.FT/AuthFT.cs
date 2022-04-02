@@ -11,7 +11,7 @@ namespace BEIMA.Backend.FT
     public class AuthFT : FunctionalTestBase
     {
         [SetUp]
-        public async Task SetUp()
+        public void SetUp()
         {
             // Add in deleting all the users in the database once functionality implemented
         }
@@ -80,7 +80,10 @@ namespace BEIMA.Backend.FT
 
             // Expiration of token is 7 days after creation. Should be 6 days 23 hours 59min xx seconds greater then datetime now
             var nowPlus6 = DateTime.Now.AddDays(6).AddHours(23).AddMinutes(59).Ticks;
+            var nowPlus7 = DateTime.Now.AddDays(7).Ticks;
+
             Assert.That(claims.Exp, Is.GreaterThan(nowPlus6));
+            Assert.That(claims.Exp, Is.LessThan(nowPlus7));
             Assert.That(claims.Sub, Is.EqualTo("User"));
             Assert.That(claims.Iss, Is.EqualTo("Beima"));
         }
