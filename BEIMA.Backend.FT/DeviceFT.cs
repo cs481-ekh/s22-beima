@@ -131,8 +131,8 @@ namespace BEIMA.Backend.FT
                 {
                     BuildingId = _buildingId,
                     Notes = "Some building notes.",
-                    Longitude = "123.001",
-                    Latitude = "101.321",
+                    Longitude = "12.301",
+                    Latitude = "10.321",
                 },
                 Manufacturer = "Generic Inc.",
                 ModelNum = "26",
@@ -202,7 +202,7 @@ namespace BEIMA.Backend.FT
                     Location = new DeviceLocation
                     {
                         BuildingId = _buildingId,
-                        Latitude = "101.001",
+                        Latitude = "10.101",
                         Longitude = "6.234",
                         Notes = "Outside",
                     },
@@ -244,7 +244,7 @@ namespace BEIMA.Backend.FT
                     Location = new DeviceLocation
                     {
                         BuildingId = _buildingId,
-                        Latitude = "101.989",
+                        Latitude = "11.989",
                         Longitude = "25.004",
                         Notes = "Above",
                     },
@@ -300,11 +300,15 @@ namespace BEIMA.Backend.FT
             var device = new Device
             {
                 DeviceTag = "D-4",
-                DeviceTypeId = "473830495728394823103456",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
                 Location = new DeviceLocation
                 {
                     BuildingId = _buildingId,
-                    Latitude = "111.001",
+                    Latitude = "11.001",
                     Longitude = "8.242",
                     Notes = "Outside",
                 },

@@ -35,6 +35,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
 
             Device device;
+            DeviceType deviceType;
             IFormCollection reqForm;
             var mongo = MongoDefinition.MongoInstance;
             try
@@ -67,10 +68,9 @@ namespace BEIMA.Backend.DeviceFunctions
                 );
 
                 // Check that each field is a valid device type field.
+                deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
                 if (data.Fields != null)
                 {
-                    var deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
-
                     if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
                     {
                         return new BadRequestObjectResult(Resources.CouldNotParseBody);
@@ -84,6 +84,10 @@ namespace BEIMA.Backend.DeviceFunctions
                         }
                     }
                     device.SetFields(data.Fields);
+                }
+                else if (deviceType.Fields.ToDictionary().Count > 0)
+                {
+                    return new BadRequestObjectResult(Resources.CouldNotParseBody);
                 }
             }
             catch (Exception)
@@ -112,7 +116,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             string message;
             HttpStatusCode statusCode;
-            if (!Rules.IsDeviceValid(device, out message, out statusCode))
+            if (!Rules.IsDeviceValid(device, deviceType, out message, out statusCode))
             {
                 var response = new ObjectResult(message);
                 response.StatusCode = (int)statusCode;
