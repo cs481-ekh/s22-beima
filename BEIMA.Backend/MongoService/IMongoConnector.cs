@@ -119,5 +119,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc);
+
+        /// <summary>
+        /// Inserts a user into the "users" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed user document</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertUser(BsonDocument doc);
     }
 }
