@@ -19,7 +19,7 @@ namespace BEIMA.Backend.FT
         [TestCase(null, null)]
         [TestCase("valid", null)]
         [TestCase(null, "valid")]
-        public void InvalidParameters_Login_ReturnsNull(string username, string password)
+        public void InvalidParameters_Login_ReturnsHttpStatus401(string username, string password)
         {
             var loginRequest = new LoginRequest()
             {
@@ -36,7 +36,7 @@ namespace BEIMA.Backend.FT
 
         [TestCase("notvalid", "notvalid")]
         [TestCase("notvalid2", "notvalid2")]
-        public void ValidParametersNoUsers_Login_ReturnsNull(string username, string password)
+        public void ValidParametersNoUsers_Login_ReturnsHttpStatus401(string username, string password)
         {
             var loginRequest = new LoginRequest()
             {
