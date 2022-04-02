@@ -230,7 +230,7 @@ const AddDevicePage = () => {
         let jsonKey = convertToDbFriendly(formName);
         
         if(formFields[i].value.length === 0){
-          warnings.push(`${formName} field is empty<br/>`);
+          warnings.push(`"${formName}" field is empty<br/>`);
         }
         
         //straight append when it's not part of a nested element
