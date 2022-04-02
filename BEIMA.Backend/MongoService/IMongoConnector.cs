@@ -126,5 +126,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument that contains the fully formed user document</param>
         /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
         public ObjectId? InsertUser(BsonDocument doc);
+
+        /// <summary>
+        /// Gets a User from the "users" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetUser(ObjectId objectId);
     }
 }

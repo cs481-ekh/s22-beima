@@ -131,5 +131,14 @@ namespace BEIMA.Backend {
                 return ResourceManager.GetString("InvalidIdMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User could not be found..
+        /// </summary>
+        internal static string UserNotFoundMessage {
+            get {
+                return ResourceManager.GetString("UserNotFoundMessage", resourceCulture);
+            }
+        }
     }
 }
