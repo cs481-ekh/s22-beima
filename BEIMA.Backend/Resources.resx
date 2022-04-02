@@ -165,4 +165,8 @@
     <value>The max character length on field "{0}" has been exceeded.</value>
     <comment>Error message for when the max character length on a field has been exceeded.</comment>
   </data>
+  <data name="UserNotFoundMessage" xml:space="preserve">
+    <value>User could not be found.</value>
+    <comment>Error message for when trying to access a user that could not be found in the database.</comment>
+  </data>
 </root>
