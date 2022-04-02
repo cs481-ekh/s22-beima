@@ -106,6 +106,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device is null..
+        /// </summary>
+        internal static string DeviceNullMessage {
+            get {
+                return ResourceManager.GetString("DeviceNullMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Device type could not be found..
         /// </summary>
         internal static string DeviceTypeNotFoundMessage {
@@ -115,11 +124,56 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device year manufactured is invalid..
+        /// </summary>
+        internal static string DeviceYearManufacturedInvalidMessage {
+            get {
+                return ResourceManager.GetString("DeviceYearManufacturedInvalidMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An internal server error has occurred..
+        /// </summary>
+        internal static string InternalServerErrorMessage {
+            get {
+                return ResourceManager.GetString("InternalServerErrorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid Id..
         /// </summary>
         internal static string InvalidIdMessage {
             get {
                 return ResourceManager.GetString("InvalidIdMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Location is invalid..
+        /// </summary>
+        internal static string InvalidLocationMessage {
+            get {
+                return ResourceManager.GetString("InvalidLocationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The max character length on field &quot;{0}&quot; has been exceeded..
+        /// </summary>
+        internal static string MaxCharacterLengthExceededMessage {
+            get {
+                return ResourceManager.GetString("MaxCharacterLengthExceededMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User could not be found..
+        /// </summary>
+        internal static string UserNotFoundMessage {
+            get {
+                return ResourceManager.GetString("UserNotFoundMessage", resourceCulture);
             }
         }
     }

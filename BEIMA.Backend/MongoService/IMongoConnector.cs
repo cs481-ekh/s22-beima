@@ -1,4 +1,5 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Driver;
 using System.Collections.Generic;
 
 namespace BEIMA.Backend.MongoService
@@ -106,10 +107,31 @@ namespace BEIMA.Backend.MongoService
         public bool DeleteBuilding(ObjectId objectId);
 
         /// <summary>
+        /// Gets all devices that match the parameter filter's criteria
+        /// </summary>
+        /// <param name="filter"></param>
+        /// <returns></returns>
+        public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter);
+
+        /// <summary>
         /// Updates a building in the "buildings" collection, given a fully formed updated building.
         /// </summary>
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc);
+
+        /// <summary>
+        /// Inserts a user into the "users" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed user document</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertUser(BsonDocument doc);
+
+        /// <summary>
+        /// Gets a User from the "users" collection, given an objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>BsonDocument that was requested</returns>
+        public BsonDocument GetUser(ObjectId objectId);
     }
 }

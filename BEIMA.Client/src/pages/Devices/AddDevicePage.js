@@ -285,12 +285,13 @@ const AddDevicePage = () => {
       <Card>
         <Card.Body>
           <Form >
+            <label>Select Device Type</label>
             <Row className={styles.buttonGroup}>
               <Col>
                 <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
-                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
+                <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
                   Add Device
                 </Button>
               </Col>
@@ -304,6 +305,7 @@ const AddDevicePage = () => {
             <br/>
             <h4>Fields</h4>
             <div>
+              <label>Select Building</label>
               <FilledDropDown dropDownText={selectedBuilding.name} items={buildings} selectFunction={changeSelectedBuilding} buttonStyle={buildingDropDownStyle} dropDownId={"typeDropDown"} />
             </div>
             <div>
