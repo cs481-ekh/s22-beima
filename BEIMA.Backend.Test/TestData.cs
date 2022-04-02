@@ -111,7 +111,28 @@ namespace BEIMA.Backend.Test
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
+
+        public const string _testNullLoginRequest = null;
+        public static readonly string _testNullKeysLoginRequest = GenerateNullKeysLoginRequest();
+        public static readonly string _testValidKeysLoginRequest = GenerateValidKeysLoginRequest();
+
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
+        
+        private static string GenerateNullKeysLoginRequest()
+        {
+            var request = new LoginRequest();
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateValidKeysLoginRequest()
+        {
+            var request = new LoginRequest()
+            {
+                Username = "User",
+                Password = "Pass"
+            };
+            return JsonConvert.SerializeObject(request);
+        }
 
         private static string GenerateAddDeviceNoLocation()
         {
