@@ -385,6 +385,17 @@ namespace BEIMA.Backend.FT
             return JsonConvert.DeserializeObject<User>(content);
         }
 
+        /// <summary>
+        /// Sends a user get list request to the BEIMA api.
+        /// </summary>
+        /// <returns>The user list.</returns>
+        public async Task<List<User>> GetUserList()
+        {
+            var response = await SendRequest("api/user-list", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<User>>(content);
+        }
+
         #endregion
 
         /// <summary>
