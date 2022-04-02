@@ -300,7 +300,11 @@ namespace BEIMA.Backend.FT
             var device = new Device
             {
                 DeviceTag = "D-4",
-                DeviceTypeId = "473830495728394823103456",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
                 Location = new DeviceLocation
                 {
                     BuildingId = _buildingId,
