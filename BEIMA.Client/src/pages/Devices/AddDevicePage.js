@@ -193,7 +193,7 @@ const AddDevicePage = () => {
   */
   function createJSON(formFields){
     if (selectedDeviceType.name === 'Select Device Type'){
-      Notifications.error("Device Type not selected", 'A device Type selection is required.');
+      Notifications.error("Device Type not selected", 'A Device Type selection is required.');
       return;
     }
     
