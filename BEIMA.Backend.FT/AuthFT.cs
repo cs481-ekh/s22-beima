@@ -1,5 +1,6 @@
 ﻿using JWT.Builder;
 using NUnit.Framework;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
@@ -76,7 +77,10 @@ namespace BEIMA.Backend.FT
             var claims = new JwtBuilder().Decode<Claims>(token);
             Assert.That(claims.Username, Is.EqualTo(username));
             Assert.That(claims.Role, Is.EqualTo("admin"));
-            Assert.That(claims.Exp, Is.Not.Null);
+
+            // Expiration of token is 7 days after creation. Should be 6 days 23 hours 59min xx seconds greater then datetime now
+            var nowPlus6 = DateTime.Now.AddDays(6).AddHours(23).AddMinutes(59).Ticks;
+            Assert.That(claims.Exp, Is.GreaterThan(nowPlus6));
             Assert.That(claims.Sub, Is.EqualTo("User"));
             Assert.That(claims.Iss, Is.EqualTo("Beima"));
         }
