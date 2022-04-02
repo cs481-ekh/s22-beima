@@ -45,6 +45,10 @@ namespace BEIMA.Backend.UserFunctions
                 return new NotFoundObjectResult(Resources.UserNotFoundMessage);
             }
 
+            // Do not return the password on this endpoint.
+            var passwordBson = new BsonElement("password", "");
+            doc.SetElement(passwordBson);
+
             // Return the user.
             var user = BsonSerializer.Deserialize<User>(doc);
             return new OkObjectResult(user);
