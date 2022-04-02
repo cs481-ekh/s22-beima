@@ -51,7 +51,18 @@ namespace BEIMA.Backend.FT
             // ASSERT
             Assert.That(responseId, Is.Not.Null);
             Assert.That(ObjectId.TryParse(responseId, out _), Is.True);
-            //TODO: add more in depth testing when get endpoint is implemented.
+
+            var getUser = await TestClient.GetUser(responseId);
+            Assert.That(getUser.Username, Is.EqualTo(user.Username));
+            // GET endpoints should not expose password, will always return empty string
+            Assert.That(getUser.Password, Is.EqualTo(string.Empty));
+            Assert.That(getUser.FirstName, Is.EqualTo(user.FirstName));
+            Assert.That(getUser.LastName, Is.EqualTo(user.LastName));
+            Assert.That(getUser.Role, Is.EqualTo(user.Role));
+
+            Assert.That(getUser.LastModified, Is.Not.Null);
+            Assert.That(getUser.LastModified?.Date, Is.Not.Null);
+            Assert.That(getUser.LastModified?.User, Is.EqualTo("Anonymous"));
         }
     }
 }
