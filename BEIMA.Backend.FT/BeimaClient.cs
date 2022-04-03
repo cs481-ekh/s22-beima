@@ -396,6 +396,17 @@ namespace BEIMA.Backend.FT
             return JsonConvert.DeserializeObject<List<User>>(content);
         }
 
+        /// <summary>
+        /// Sends a user delete request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the user to delete.</param>
+        /// <returns>True if the deletion was successful, otherwise false.</returns>
+        public async Task<bool> DeleteUser(string id)
+        {
+            var response = await SendRequest($"api/user/{id}/delete", HttpVerb.POST);
+            return response.IsSuccessStatusCode;
+        }
+
         #endregion
 
         #region Auth Requests
