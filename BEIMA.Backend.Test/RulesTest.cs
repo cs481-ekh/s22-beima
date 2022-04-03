@@ -1,6 +1,7 @@
 ﻿using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
 using NUnit.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -27,7 +28,7 @@ namespace BEIMA.Backend.Test
             // ARRANGE
             var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "Tag", "Manufacturer", "Model", "SerialNumber", yearManufactured, "Notes");
             device.SetLocation(null, "Notes", "0.0", "0.0");
-            device.SetFields(new Dictionary<string, string> { { ObjectId.GenerateNewId().ToString(), "TestValue" } });
+            device.SetFields(new Dictionary<string, string> { { Guid.NewGuid().ToString().ToString(), "TestValue" } });
             var deviceType = new DeviceType(device.DeviceTypeId, "Name", "Description", "Notes.");
             deviceType.AddField(device.Fields.Keys.Single(), "TestField");
             var expectedResult = expectedStatusCode.Equals(HttpStatusCode.OK);
@@ -50,7 +51,7 @@ namespace BEIMA.Backend.Test
             // ARRANGE
             var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "Tag", "Manufacturer", "Model", "SerialNumber", 2022, "Notes");
             device.SetLocation(null, "Notes", lat, lon);
-            device.SetFields(new Dictionary<string, string> { { ObjectId.GenerateNewId().ToString(), "TestValue" } });
+            device.SetFields(new Dictionary<string, string> { { Guid.NewGuid().ToString().ToString(), "TestValue" } });
             var deviceType = new DeviceType(device.DeviceTypeId, "Name", "Description", "Notes.");
             deviceType.AddField(device.Fields.Keys.Single(), "TestField");
 
@@ -74,7 +75,7 @@ namespace BEIMA.Backend.Test
             // ARRANGE
             var device = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), _longString, _longString, _longString, _longString, -1, _longString);
             device.SetLocation(null, _longString, "abc", "9999.0");
-            device.SetFields(new Dictionary<string, string> { { ObjectId.GenerateNewId().ToString(), _longString } });
+            device.SetFields(new Dictionary<string, string> { { Guid.NewGuid().ToString(), _longString } });
             var deviceType = new DeviceType(device.DeviceTypeId, "Name", "Description", "Notes.");
             deviceType.AddField(device.Fields.Keys.Single(), "TestField");
 
@@ -101,6 +102,109 @@ namespace BEIMA.Backend.Test
         }
 
         #endregion Device Rules
+
+        #region Device Type Rules
+
+        [Test]
+        public void DeviceTypeValid_IsDeviceTypeValid_ReturnsTrue()
+        {
+            var deviceType = new DeviceType(ObjectId.GenerateNewId(), "Name", "Description", "Notes.");
+            deviceType.AddField(Guid.NewGuid().ToString(), "TestField");
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsDeviceTypeValid(deviceType, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.True);
+            Assert.That(message, Is.EqualTo(string.Empty));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public void DeviceTypeMatchingFields_IsDeviceTypeValid_ReturnsFalse()
+        {
+            var deviceType = new DeviceType(ObjectId.GenerateNewId(), "Name", "Description", "Notes.");
+            deviceType.AddField(Guid.NewGuid().ToString(), "TestField");
+            deviceType.AddField(Guid.NewGuid().ToString(), "TestField");
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsDeviceTypeValid(deviceType, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.False);
+            Assert.That(message, Is.EqualTo("Cannot have matching field names."));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        [Test]
+        public void DeviceTypeTooManyCharacterField_IsDeviceTypeValid_ReturnsFalse()
+        {
+            var deviceType = new DeviceType(ObjectId.GenerateNewId(), _longString, "Description", "Notes.");
+            deviceType.AddField(Guid.NewGuid().ToString(), "TestField");
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsDeviceTypeValid(deviceType, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.False);
+            Assert.That(message, Is.EqualTo("The max character length on field \"Name\" has been exceeded."));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        [Test]
+        public void DeviceTypeTooManyCharacterCustomField_IsDeviceTypeValid_ReturnsFalse()
+        {
+            var deviceType = new DeviceType(ObjectId.GenerateNewId(), "Name", "Description", "Notes.");
+            deviceType.AddField(Guid.NewGuid().ToString(), _longString);
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsDeviceTypeValid(deviceType, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.False);
+            Assert.That(message, Is.EqualTo($"The max character length on field \"{_longString}\" has been exceeded."));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        [Test]
+        public void DeviceTypeAllFieldsInvalid_IsDeviceTypeValid_ReturnsFalse()
+        {
+            var deviceType = new DeviceType(ObjectId.GenerateNewId(), _longString, _longString, _longString);
+            deviceType.AddField(Guid.NewGuid().ToString(), _longString);
+            deviceType.AddField(Guid.NewGuid().ToString(), _longString);
+
+            string message;
+            HttpStatusCode statusCode;
+
+            var expectedMessage = "Cannot have matching field names.\n" +
+                                  $"The max character length on field \"{_longString}\" has been exceeded.\n" +
+                                  $"The max character length on field \"{_longString}\" has been exceeded.\n" +
+                                  $"The max character length on field \"Name\" has been exceeded.\n" +
+                                  $"The max character length on field \"Description\" has been exceeded.\n" +
+                                  $"The max character length on field \"Notes\" has been exceeded.";
+
+            // ACT
+            var result = Rules.IsDeviceTypeValid(deviceType, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.False);
+            Assert.That(message, Is.EqualTo(expectedMessage));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        #endregion Device Type Rules
 
         #region User Rules
 
