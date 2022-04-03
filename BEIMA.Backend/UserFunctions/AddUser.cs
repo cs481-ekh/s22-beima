@@ -66,7 +66,7 @@ namespace BEIMA.Backend.UserFunctions
             var id = mongo.InsertUser(user.GetBsonDocument());
 
             //InsertUser returned a null result, meaning it failed, so send a 500 error
-            if(id == null)
+            if (id == null)
             {
                 var response = new ObjectResult(Resources.InternalServerErrorMessage);
                 response.StatusCode = StatusCodes.Status500InternalServerError;

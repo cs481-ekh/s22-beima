@@ -148,11 +148,25 @@ namespace BEIMA.Backend
             message = string.Empty;
             httpStatusCode = HttpStatusCode.OK;
 
+            // Check that user is not null
             if (user is null)
             {
-                message = "User is null.";
+                message = Resources.UserNullMessage;
                 httpStatusCode = HttpStatusCode.BadRequest;
-                isValid = false;
+                return false;
+            }
+
+            // Check field lengths
+            foreach (var prop in user.GetType().GetProperties())
+            {
+                if (prop.PropertyType.Equals(typeof(string)) &&
+                    prop.GetValue(user).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                {
+                    message += message.Length > 0 ? '\n' : string.Empty;
+                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                    httpStatusCode = HttpStatusCode.BadRequest;
+                    isValid = false;
+                }
             }
 
             return isValid;

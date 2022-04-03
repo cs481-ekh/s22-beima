@@ -176,5 +176,14 @@ namespace BEIMA.Backend {
                 return ResourceManager.GetString("UserNotFoundMessage", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to User is null..
+        /// </summary>
+        internal static string UserNullMessage {
+            get {
+                return ResourceManager.GetString("UserNullMessage", resourceCulture);
+            }
+        }
     }
 }
