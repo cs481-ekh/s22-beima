@@ -4,6 +4,9 @@ import { IoArrowBack } from "react-icons/io5";
 import { Card, Button, Form, Row, Col } from 'react-bootstrap';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
 import { useEffect, useState } from "react";
+import AddUser from '../../services/AddUser.js';
+import * as Constants from '../../Constants.js';
+import * as Notifications from '../../shared/Notifications/Notification.js';
 
 const AddUserPage = () => {
   const mandatoryUserFields = {
@@ -17,7 +20,6 @@ const AddUserPage = () => {
   
   const [userFields, setUserFields] = useState(mandatoryUserFields);
   const [setPageName] = useOutletContext();
-  const [fullUserJSON, setFullUserJSON] = useState({});
   const [errors, setErrors] = useState({});
   
   useEffect(() => {
@@ -37,27 +39,46 @@ const AddUserPage = () => {
     let passwordErrors = {};
     
     if(userFields["Password"] === '') {
-      passwordErrors["Password"] = 'Pasword cannot be empty';
+      passwordErrors["Password"] = 'Password cannot be empty';
     }
 
     if(userFields["Password Confirmation"] === '') {
-      passwordErrors["Password Confirmation"] = 'Pasword Confirmation cannot be empty';
+      passwordErrors["Password Confirmation"] = 'Password Confirmation cannot be empty';
     }
     
     if((!('Password' in passwordErrors) && !('Password Confirmation' in passwordErrors)) &&
        (userFields["Password"] !== userFields["Password Confirmation"])
       ) {
-         passwordErrors["Password"] = 'Paswords do not match';
-         passwordErrors["Password Confirmation"] = 'Paswords do not match';
+         passwordErrors["Password"] = 'Passwords do not match';
+         passwordErrors["Password Confirmation"] = 'Passwords do not match';
     }
     
     return passwordErrors;
   }
-  
+
+    /*
+  * converts the user friendly field name to the form needed by the database
+  * in cases where the name needed is another key it will retrieve it from stored values
+  * @param the form element's name
+  * @return either the converted string or an object to get the converted string/stored value
+  */
+    function convertToDbFriendly(formName) {
+      let result = {};
+      
+      //make first letter lower case
+      let dbKey = formName[0].toLowerCase() + formName.slice(1);
+      //Number needs to be Num where applicable
+      dbKey = dbKey.replace('Number', 'Num');
+      //remove spaces
+      dbKey = dbKey.replace(/\s+/g, '');
+      result = dbKey;
+      
+      return result;
+    }
+    
   
   // gathers all the input and puts it into JSON
-  function createJSON(addButtonEvent){
-    let formFields = addButtonEvent.target.form.elements;
+  function createJSON(formFields){
     let fieldValues = {};
     
     let newErrors = checkPassword();
@@ -67,37 +88,42 @@ const AddUserPage = () => {
       let fieldNames = Object.keys(userFields);
       
       if(fieldNames.includes(formName)){
+        let jsonKey = convertToDbFriendly(formName);
         if(formFields[i].value === '') {
           newErrors[formName] = `${formName} cannot be blank`;
         }
         
-        let formJSON =  {[formName] : formFields[i].value};
+        let formJSON =  {[jsonKey] : formFields[i].value};
         
         Object.assign(fieldValues, formJSON);
       }
     }
     
-
-    
-    
-    
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
     } else {
-      setFullUserJSON(fieldValues);
-      
-      
-      // TODO replace with user api calls when ready
-      console.log(fullUserJSON);
-      
-      
-      
-      for(let i = 0; i < formFields.length; i++){
-        formFields[i].value = "";
-      }
-      setErrors({});
-      setUserFields(mandatoryUserFields);
+      return fieldValues;
+    }
+  }
+
+  async function saveUserToDb(addButtonEvent){
+    let formFields = addButtonEvent.target.form.elements;
+    let fullJSON = createJSON(formFields);
+    
+    if(fullJSON && Object.keys(errors).length === 0){
+      AddUser(fullJSON).then(response => {
+        if(response.status === Constants.HTTP_SUCCESS){
+          for(let i = 0; i < formFields.length; i++){
+            formFields[i].value = "";
+          }
+          setErrors({});
+          setUserFields(mandatoryUserFields);
+          Notifications.success("Add User Successful", "Adding User completed successfully.");
+        } else {
+          Notifications.error("Unable to Add User", "Adding User failed.");
+        }
+      })
     }
   }
   
@@ -113,7 +139,7 @@ const AddUserPage = () => {
                </Link>
              </Col>
              <Col>
-               <Button variant="primary" type="button" className={styles.addButton} id="addUser" onClick={(event) => createJSON(event)}>
+               <Button variant="primary" type="button" className={styles.addButton} id="addUser" onClick={(event) => saveUserToDb(event)}>
                  Add User
                </Button>
              </Col>
