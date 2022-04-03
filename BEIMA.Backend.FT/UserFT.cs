@@ -11,6 +11,20 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class UserFT : FunctionalTestBase
     {
+        [SetUp]
+        public async Task SetUp()
+        {
+            // Delete all the users in the database
+            var userList = await TestClient.GetUserList();
+            foreach (var user in userList)
+            {
+                if (user?.Id is not null)
+                {
+                    await TestClient.DeleteUser(user.Id);
+                }
+            }
+        }
+
         [TestCase("xxx")]
         [TestCase("1234")]
         [TestCase("1234567890abcdef1234567x")]
@@ -67,7 +81,7 @@ namespace BEIMA.Backend.FT
             Assert.That(getUser.LastModified?.User, Is.EqualTo("Anonymous"));
         }
 
-        [Test, Explicit("Must run on a database with no users. Will need to implement the delete endpoint to run with the others.")]
+        [Test]
         public async Task UsersInDatabase_GetUserList_ReturnsUserList()
         {
             // ARRANGE
@@ -125,6 +139,30 @@ namespace BEIMA.Backend.FT
                 Assert.That(user.LastModified?.Date, Is.Not.Null);
                 Assert.That(user.LastModified?.User, Is.EqualTo("Anonymous"));
             }
+        }
+
+        [Test]
+        public async Task UserInDatabase_DeleteUser_UserDeletedSuccessfully()
+        {
+            // ARRANGE
+            var user = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(user);
+            Assume.That(await TestClient.GetUser(userId), Is.Not.Null);
+
+            // ACT
+            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteUser(userId));
+
+            // ASSERT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetUser(userId));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
     }
 }
