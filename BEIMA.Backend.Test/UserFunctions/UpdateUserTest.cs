@@ -111,5 +111,45 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(userResponse.LastName, Is.EqualTo(user.LastName));
             Assert.That(userResponse.Role, Is.EqualTo(user.Role));
         }
+
+        [Test]
+        public async Task ExistingUser_UpdateUserWithoutPassword_ReturnsOKResponse()
+        {
+            // ARRANGE
+            var testId = "abcdef123456789012345678";
+
+            var user = new User(new ObjectId(testId), "new.username", string.Empty, "Pan", "Quartz", "user");
+            user.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(user.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.UpdateUser(It.IsAny<BsonDocument>()))
+                  .Returns(user.GetBsonDocument())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var body = TestData._testUpdateUserWithoutPassword;
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = await UpdateUser.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateUser(It.IsAny<BsonDocument>()), Times.Once));
+
+            Assert.IsNotNull(response);
+            Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
+            Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
+            var userResponse = (User)((OkObjectResult)response).Value;
+            Assert.That(userResponse.Username, Is.EqualTo(user.Username));
+            Assert.That(userResponse.Password, Is.EqualTo(user.Password));
+            Assert.That(userResponse.FirstName, Is.EqualTo(user.FirstName));
+            Assert.That(userResponse.LastName, Is.EqualTo(user.LastName));
+            Assert.That(userResponse.Role, Is.EqualTo(user.Role));
+        }
     }
 }
