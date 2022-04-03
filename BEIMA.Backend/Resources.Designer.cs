@@ -79,6 +79,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The admin could not be deleted because this is the only remaining admin account remaining. There must be at least one admin account existing at all times..
+        /// </summary>
+        internal static string CannotDeleteAdminMessage {
+            get {
+                return ResourceManager.GetString("CannotDeleteAdminMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The building could not be deleted because at least one device exists in the database with this building..
         /// </summary>
         internal static string CannotDeleteBuildingMessage {
@@ -160,6 +169,14 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid credentials..
+        /// </summary>
+        internal static string UnauthorizedMessage {
+            get {
+                return ResourceManager.GetString("UnauthorizedMessage", resourceCulture);
+            }
+        }
+
         ///   Looks up a localized string similar to Location is invalid..
         /// </summary>
         internal static string InvalidLocationMessage {
