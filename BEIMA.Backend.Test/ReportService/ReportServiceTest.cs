@@ -20,6 +20,16 @@ namespace BEIMA.Backend.Test.ReportServices
         #region Null Device Types
 
         [Test]
+        public void NullDeviceTypeListAndNullDeviceList_GenerateDeviceTypeReport_NullReturned()
+        {
+            // ACT
+            var bytes = ReportWriter.GenerateDeviceTypeReport(null, null);
+
+            // Assert
+            Assert.That(bytes, Is.Null);
+        }
+
+        [Test]
         public void NullDeviceTypeAndNullDeviceList_GenerateReportByDeviceType_NullReturned()
         {
             // ACT
@@ -55,6 +65,26 @@ namespace BEIMA.Backend.Test.ReportServices
         #endregion
 
         #region Valid Device Types Empty/Null Device Lists
+
+        [Test]
+        public void DeviceTypeListAndEmptyDeviceList_GenerateDeviceTypeReport_NullReturned()
+        {
+            // Arrange
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceTypeList = new List<DeviceType>() { deviceTypeOne };
+            var deviceList = new List<Device>();
+
+            // ACT
+            var bytes = ReportWriter.GenerateDeviceTypeReport(deviceTypeList, deviceList);
+
+            // Assert
+            Assert.That(bytes, Is.Null);
+        }
 
         [Test]
         public void DeviceTypeAndNullDeviceList_GenerateReportByDeviceType_FileContainsOnlyHeader()
@@ -134,6 +164,87 @@ namespace BEIMA.Backend.Test.ReportServices
         #endregion
 
         #region Valid Device Types Filled Device List
+
+        [Test]
+        public void DeviceTypeListAndDeviceList_GenerateDeviceTypeReport_FileContainsHeaderAndDeviceTypeData()
+        {
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3");
+
+            var deviceTypeTwo = new DeviceType(ObjectId.GenerateNewId(), "Hvac", "This is a hvac", "Hvac type notes");
+            deviceTypeTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeTwo.AddField("havcf1", "HvacField1");
+            deviceTypeTwo.AddField("hvacf2", "HvacFeild2");
+
+            var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
+            deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceOne.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes1", "1", "1");
+            deviceOne.AddField("boilerf1", "BoilerValue1D1");
+            deviceOne.AddField("boilerf2", "BoilerValue2D1");
+            deviceOne.AddField("boilerf3", "BoilerValue3D1");
+
+            var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
+            deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTwo.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes2", "2", "2");
+            deviceTwo.AddField("boilerf1", "BoilerValue1D2");
+            deviceTwo.AddField("boilerf2", "BoilerValue2D2");
+            deviceTwo.AddField("boilerf3", "BoilerValue3D2");
+
+            var deviceThree = new Device(ObjectId.GenerateNewId(), deviceTypeTwo.Id, "dTag3", "dMan3", "dMod3", "dSer3", 2003, "dNote3");
+            deviceThree.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceThree.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes3", "3", "3");
+            deviceThree.AddField("havcf1", "HvacField1D3");
+            deviceThree.AddField("hvacf2", "HvacFeild2D3");
+
+            var devices = new List<Device>()
+            {
+                deviceOne,
+                deviceTwo,
+                deviceThree
+            };
+
+            var deviceTypes = new List<DeviceType>() {
+                deviceTypeOne,
+                deviceTypeTwo
+            };
+
+            // ACT
+            var bytes = ReportWriter.GenerateDeviceTypeReport(deviceTypes, devices);
+
+            // Assert
+            Assert.That(bytes, Is.Not.Null);
+
+            var content = Encoding.UTF8.GetString(bytes);
+            var contentRows = content.Split(Environment.NewLine);
+            Assert.That(contentRows.Count, Is.EqualTo(3));
+
+            var headers = new List<List<string>>()
+            {
+                new List<string>() { "Id", "Name", "Description", "Notes" },
+                new List<string>() { "Date", "User" },
+                new List<string>() { "DeviceCount"}
+            };
+            var headerString = CombineColumnValues(headers);
+            Assert.That(contentRows[0], Is.EqualTo(headerString));
+
+            var rowOneDeviceList = new List<Device>() { 
+                deviceOne, deviceTwo 
+            };
+            var rowOne = DeviceTypeToColumnValues(deviceTypeOne, rowOneDeviceList);
+            var rowOneString = CombineColumnValues(rowOne);
+            Assert.That(contentRows[1], Is.EqualTo(rowOneString));
+
+            var rowTwoDeviceList = new List<Device>() {
+                deviceThree
+            };
+            var rowTwo = DeviceTypeToColumnValues(deviceTypeTwo, rowTwoDeviceList);
+            var rowTwoString = CombineColumnValues(rowTwo);
+            Assert.That(contentRows[2], Is.EqualTo(rowTwoString));
+        }
+
 
         [Test]
         public void DeviceTypeFilledDeviceList_GenerateReportByDeviceType_FileContainsHeaderAndDeviceData()
@@ -420,12 +531,44 @@ namespace BEIMA.Backend.Test.ReportServices
         }
 
         /// <summary>
+        /// Takes a devicetype and generates a list of lists based off of its properties
+        /// in addition to the count of the passed in devices list.
+        /// Is used in conjunction with the CombineColumnValues in order to test if rows
+        /// created by the ReportWRtier have the correct data in the correct order.
+        /// </summary>
+        /// <param name="deviceType">Devices type whos values are being scraped</param>
+        /// <param name="devices">List of devices associated with the device type</param>
+        /// <returns>List of lists containing devicetype property values</returns>
+        private static List<List<string>> DeviceTypeToColumnValues(DeviceType deviceType, List<Device> devices)
+        {
+            var columns = new List<List<string>>()
+            {
+                new List<string>()
+                {
+                    deviceType.Id.ToString(),
+                    deviceType.Name,
+                    deviceType.Description,
+                    deviceType.Notes
+                },
+                new List<string>()
+                {
+                    deviceType.LastModified["date"].AsBsonDateTime.ToString(),
+                    deviceType.LastModified["user"].AsString
+                },
+                new List<string>(){
+                    devices.Count.ToString(),
+                }
+            };
+            return columns;
+        }
+
+        /// <summary>
         /// Takes a device and generates a list of lists based off of its properties.
         /// Is used in conjunction with CombineColumnValues in order to test if rows
         /// created by the ReportWriter have the correct data in the correct order.
         /// </summary>
-        /// <param name="device"></param>
-        /// <returns></returns>
+        /// <param name="device">Devices whose values are being scraped</param>
+        /// <returns>List of lists containing device propety values</returns>
         private static List<List<string>> DeviceToColumnValues(Device device)
         {
             var columns = new List<List<string>>()
