@@ -105,7 +105,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
             var userResponse = (User)((OkObjectResult)response).Value;
             Assert.That(userResponse.Username, Is.EqualTo(user.Username));
-            Assert.That(userResponse.Password, Is.EqualTo(user.Password));
+            Assert.That(userResponse.Password, Is.EqualTo(string.Empty));
             Assert.That(userResponse.FirstName, Is.EqualTo(user.FirstName));
             Assert.That(userResponse.LastName, Is.EqualTo(user.LastName));
             Assert.That(userResponse.Role, Is.EqualTo(user.Role));
