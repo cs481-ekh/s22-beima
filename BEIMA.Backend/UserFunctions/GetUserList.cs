@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace BEIMA.Backend.UserFunctions
 {
     /// <summary>
-    /// Handles a get request involving multiple buildlings.
+    /// Handles a get request involving multiple users.
     /// </summary>
     public static class GetUserList
     {
