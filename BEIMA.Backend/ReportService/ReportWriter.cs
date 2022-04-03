@@ -16,6 +16,76 @@ namespace BEIMA.Backend.ReportService
     {
         /// <summary>
         /// Generates a byte[] containing a file object. The
+        /// file contains a header based on the the props of the deviceType object
+        /// and then the data of all devicesTypes as well as a count of the number of
+        /// devices that are associated with a device type.
+        /// </summary>
+        /// <param name="deviceTypes">List of all device types in the database</param>
+        /// <param name="devices">List of all devices in the database</param>
+        /// <param name="delimiter">String used to seperate every value in the report</param>
+        /// <returns>Byte[] containing a file filled with devicetype data and the number of devices associated with that devicetype</returns>
+        public static byte[] GenerateDeviceTypeReport(List<DeviceType> deviceTypes, List<Device> devices, string delimiter = ",")
+        {
+            if(deviceTypes == null || deviceTypes.Count == 0)
+            {
+                return null;
+            }
+
+            if(devices == null || devices.Count == 0)
+            {
+                return null;
+            }
+
+            // Create dict to group devices based on device type id
+            var typeToDevices = new Dictionary<ObjectId, List<Device>>();
+            foreach (var deviceType in deviceTypes)
+            {
+                typeToDevices.Add(deviceType.Id, new List<Device>());
+            }
+
+            // Get all devices and add them to the dict based on deviceTypeId            
+            foreach (var device in devices)
+            {
+                // Only add a device if it's deviceType exists in the deviceTypes list. Should always be the case
+                if (typeToDevices.ContainsKey(device.DeviceTypeId))
+                {
+                    typeToDevices[device.DeviceTypeId].Add(device);
+                }
+            }
+
+            byte[] fileBytes;
+            using (var stream = new MemoryStream())
+            using (var csvWriter = new StreamWriter(stream))
+            {
+                // Write headers
+                var headers = GenerateDeviceTypeReportHeaders();
+                var headerString = string.Join(delimiter, headers);
+                csvWriter.WriteLine(headerString);
+
+                // Write all deviceType data                            
+                for (var i = 0; i < deviceTypes.Count; i++)
+                {
+                    var deviceType = deviceTypes[i];
+                    var deviceTypeDevices = typeToDevices[deviceType.Id];
+
+                    // Write device's values
+                    var values = GenerateDeviceTypeReportValues(deviceType, deviceTypeDevices);
+                    var valueString = string.Join(delimiter, values);
+                    if (i != deviceTypes.Count - 1)
+                    {
+                        valueString += Environment.NewLine;
+                    }
+                    csvWriter.Write(valueString);
+                }
+                // Flush writer and copy data to byte[]
+                csvWriter.Flush();
+                fileBytes = stream.ToArray();
+            }
+            return fileBytes;
+        }
+
+        /// <summary>
+        /// Generates a byte[] containing a file object. The
         /// file contains a header based on the paramter deviceType
         /// and then the data of all devices related to the specific deviceTypeId.
         /// </summary>
@@ -147,16 +217,10 @@ namespace BEIMA.Backend.ReportService
                         using (var dataStream = new MemoryStream())                                                // Create memory stream that data can be written into
                         using (var csvWriter = new StreamWriter(dataStream))                                       // Create writer to write device/device type data to memory stream
                         {
-                            
-
                             // Write file headers                            
                             var headers = GenerateDeviceReportHeaders(deviceType);
                             var headerString = string.Join(delimiter, headers);
-                            if (deviceTypeDevices.Count > 0)
-                            {
-                                headerString += Environment.NewLine;
-                            }
-                            csvWriter.Write(headerString);
+                            csvWriter.WriteLine(headerString);
 
                             // Write all device data                            
                             for (var i = 0; i < deviceTypeDevices.Count; i++)
@@ -184,6 +248,68 @@ namespace BEIMA.Backend.ReportService
         }
 
         /// <summary>
+        /// Creates a list of strings filled with all of the property names in the DeviceType object
+        /// excluding the Fields properties. In addition another header is included for the count
+        /// of devices associated with a device type
+        /// </summary>
+        /// <returns>List of headers for a device type object</returns>
+        private static List<string> GenerateDeviceTypeReportHeaders()
+        {
+            var headers = new List<string>();
+
+            // Add all of the general prop names associated with the Device object
+            var generalProps = DeviceTypeReportProps.GeneralProps.Select(p => p.Name);
+            headers.AddRange(generalProps);
+
+            // Add all of the last modified values contained in the deviceType
+            var lastModifiedProps = DeviceTypeReportProps.LastModifiedProps.OrderBy(val => val.Key).Select(val => val.Value);
+            headers.AddRange(lastModifiedProps);
+
+            // Add header for count of all devices associated with the device type
+            headers.Add("DeviceCount");
+
+            return headers;
+        }
+
+        /// <summary>
+        /// Creates a list of strings filled with all of the property values in a DeviceType object. In addition
+        /// another value is added for the count of the number of devices associated with the DeviceType.
+        /// </summary>
+        /// <param name="deviceType">DeviceType that the values should be based on</param>
+        /// <param name="associatedDevices">List of devices associated with the DeviceType</param>
+        /// <returns></returns>
+        private static List<string> GenerateDeviceTypeReportValues(DeviceType deviceType, List<Device> associatedDevices)
+        {
+            var values = new List<string>();
+
+            // Add all of the general prop values contained in the deviceType
+            foreach (var prop in DeviceTypeReportProps.GeneralProps)
+            {
+                var propVal = prop.GetValue(deviceType);
+                string value = propVal != null ? propVal.ToString() : "";
+                values.Add(value);
+            }
+
+            // Add all of the last modified values contained in the deviceType
+            var sortedLastModifiedKeys = DeviceTypeReportProps.LastModifiedProps.OrderBy(val => val.Key).Select(val => val.Key);
+            foreach(var key in sortedLastModifiedKeys)
+            {
+                var val = "";
+                if(deviceType.LastModified != null && deviceType.LastModified.Contains(key))
+                {
+                    val = deviceType.LastModified[key].ToString();
+                }
+                values.Add(val);
+            }
+
+            // Add a count of the number of devices associated with the devices
+            var count = (associatedDevices?.Count ?? 0).ToString();
+            values.Add(count);
+
+            return values;
+        }
+
+        /// <summary>
         /// Creates a list of strings filled with all of the property names in the Device object. The Fields
         /// property is replaced with the field names contained in the parameter deviceType's Fields dictionary
         /// </summary>
@@ -198,7 +324,7 @@ namespace BEIMA.Backend.ReportService
             headers.AddRange(generalProps);
 
             // Create a list of the device types's field values ordered by the field keys
-            var sortedFieldsValues = deviceType.Fields.OrderBy(f => f.Name).Select(f => f.Value.AsString);
+            var sortedFieldsValues = deviceType.Fields.OrderBy(f => f.Name).Select(f => f.Value.ToString());
             headers.AddRange(sortedFieldsValues);
 
             // Add all of the location prop names associated with the DeviceLocation object
