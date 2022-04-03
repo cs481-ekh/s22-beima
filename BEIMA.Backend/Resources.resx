@@ -157,6 +157,10 @@
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>
   </data>
+  <data name="UnauthorizedMessage" xml:space="preserve">
+    <value>Invalid credentials.</value>
+    <comment>Error message for when the credentials that are being used are unauthorized to perform an action.</comment>
+  </data>
   <data name="InvalidLocationMessage" xml:space="preserve">
     <value>Location is invalid.</value>
     <comment>Error message for an invalid location.</comment>

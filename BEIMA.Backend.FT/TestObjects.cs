@@ -175,5 +175,22 @@ namespace BEIMA.Backend.FT
             [JsonProperty(PropertyName = "longitude")]
             public string? Longitude { get; set; }
         }
+
+        public class LoginRequest
+        {
+            [JsonProperty(PropertyName = "username")]
+            public string? Username { get; set; }
+            [JsonProperty(PropertyName = "password")]
+            public string? Password { get; set; }
+        }
+
+        public class Claims
+        {
+            public string? Iss { get; set; }
+            public string? Sub { get; set; }
+            public long? Exp { get; set; }
+            public string? Username { get; set; }
+            public string? Role { get; set; }
+        }
     }
 }

@@ -398,6 +398,21 @@ namespace BEIMA.Backend.FT
 
         #endregion
 
+        #region Auth Requests
+        
+        /// <summary>
+        /// Sends a login post request to the BEIMA api.
+        /// </summary>
+        /// <param name="data">Object containing a user's username and password.</param>
+        /// <returns>Jwt token for the user.</returns>
+        public async Task<string> Login(LoginRequest data)
+        {
+            var response = await SendRequest("api/login", HttpVerb.POST, data);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
+        }
+        #endregion
+
         /// <summary>
         /// Disposes the http client.
         /// </summary>

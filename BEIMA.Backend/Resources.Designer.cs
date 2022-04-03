@@ -151,6 +151,14 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid credentials..
+        /// </summary>
+        internal static string UnauthorizedMessage {
+            get {
+                return ResourceManager.GetString("UnauthorizedMessage", resourceCulture);
+            }
+        }
+
         ///   Looks up a localized string similar to Location is invalid..
         /// </summary>
         internal static string InvalidLocationMessage {
