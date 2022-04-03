@@ -108,6 +108,24 @@ namespace BEIMA.Backend.Test
                 "\"role\": \"user\"" +
             "}";
 
+        public const string _testUpdateUserWithPassword =
+            "{" +
+                "\"username\": \"user.name\"," +
+                "\"password\": \"updatedPassword123!\"," +
+                "\"firstName\": \"Aaron\"," +
+                "\"lastName\": \"Doe\"," +
+                "\"role\": \"user\"" +
+            "}";
+
+        public const string _testUpdateUserWithoutPassword =
+            "{" +
+                "\"username\": \"new.username\"," +
+                "\"password\": \"\"," +
+                "\"firstName\": \"Pan\"," +
+                "\"lastName\": \"Quartz\"," +
+                "\"role\": \"user\"" +
+            "}";
+
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();

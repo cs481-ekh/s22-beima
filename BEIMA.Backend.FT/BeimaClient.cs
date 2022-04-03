@@ -407,6 +407,18 @@ namespace BEIMA.Backend.FT
             return response.IsSuccessStatusCode;
         }
 
+        /// <summary>
+        /// Sends a user update request to the BEIMA api.
+        /// </summary>
+        /// <param name="user">The user to update.</param>
+        /// <returns>The id of the new user.</returns>
+        public async Task<User> UpdateUser(User user)
+        {
+            var response = await SendRequest($"api/user/{user.Id}/update", HttpVerb.POST, user);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<User>(content);
+        }
+
         #endregion
 
         #region Auth Requests
