@@ -8,6 +8,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
+using MongoDB.Driver;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {
@@ -46,8 +47,8 @@ namespace BEIMA.Backend.Test.UserFunctions
             var testId = ObjectId.GenerateNewId().ToString();
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(new List<BsonDocument>())
+            mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns<BsonDocument>(null)
                   .Verifiable();
             mockDb.Setup(mock => mock.DeleteUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(false)
@@ -61,8 +62,8 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = DeleteUser.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteUser(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteUser(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
             Assert.That(((NotFoundObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.NotFound));
@@ -75,12 +76,16 @@ namespace BEIMA.Backend.Test.UserFunctions
             // ARRANGE
             var testId = "1234567890abcdef12345678";
 
-            var device = new Device();
-            device.Location.UserId = new ObjectId(testId);
+            var user = new User();
+            user.Role = "admin";
+
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(new List<BsonDocument> { device.ToBsonDocument() })
+            mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(user.ToBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
+                  .Returns(new List<BsonDocument> { user.ToBsonDocument() })
                   .Verifiable();
             mockDb.Setup(mock => mock.DeleteUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
@@ -94,13 +99,14 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = DeleteUser.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteUser(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
             Assert.That(((ConflictObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Conflict));
             Assert.That(((ConflictObjectResult)response).Value,
-                        Is.EqualTo("The user could not be deleted because at least one device exists in the database with this user."));
+                        Is.EqualTo("The admin could not be deleted because this is the only remaining admin account remaining. There must be at least one admin account existing at all times."));
         }
 
         [Test]
@@ -109,9 +115,11 @@ namespace BEIMA.Backend.Test.UserFunctions
             // ARRANGE
             var testId = "1234567890abcdef12345678";
 
+            var user = new User();
+
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(new List<BsonDocument>())
+            mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(user.ToBsonDocument())
                   .Verifiable();
             mockDb.Setup(mock => mock.DeleteUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
@@ -125,7 +133,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = DeleteUser.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteUser(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkResult)));
