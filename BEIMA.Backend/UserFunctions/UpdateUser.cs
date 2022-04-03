@@ -93,12 +93,20 @@ namespace BEIMA.Backend.UserFunctions
             }
 
             var updatedUserDocument = mongo.UpdateUser(user.GetBsonDocument());
+
+            // UpdateUser returned null, meaning it failed, so send a 500 error.
+            // We already checked to make sure it existed earlier, so this means something is wrong with Mongo.
             if (updatedUserDocument is null)
             {
-                return new NotFoundObjectResult(Resources.UserNotFoundMessage);
+                var response = new ObjectResult(Resources.InternalServerErrorMessage);
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                return response;
             }
 
             var updatedUser = BsonSerializer.Deserialize<User>(updatedUserDocument);
+
+            //Do not expose password.
+            updatedUser.Password = string.Empty;
 
             return new OkObjectResult(updatedUser);
         }
