@@ -137,6 +137,10 @@
     <value>The device type could not be deleted because at least one device exists in the database with this device type.</value>
     <comment>Error message for trying to delete a device type that has at least one associated device in the database.</comment>
   </data>
+  <data name="CannotHaveMatchingFieldNamesMessage" xml:space="preserve">
+    <value>Cannot have matching field names.</value>
+    <comment>Error message for trying to create a device type with matching field names.</comment>
+  </data>
   <data name="CouldNotParseBody" xml:space="preserve">
     <value>Could not parse the request body.</value>
     <comment>Error message for when trying to parse a http request body fails.</comment>
@@ -152,6 +156,10 @@
   <data name="DeviceTypeNotFoundMessage" xml:space="preserve">
     <value>Device type could not be found.</value>
     <comment>Error message for when trying to access a device type that could not be found in the database.</comment>
+  </data>
+  <data name="DeviceTypeNullMessage" xml:space="preserve">
+    <value>Device type is null.</value>
+    <comment>Error message for a null device type.</comment>
   </data>
   <data name="DeviceYearManufacturedInvalidMessage" xml:space="preserve">
     <value>Device year manufactured is invalid.</value>
