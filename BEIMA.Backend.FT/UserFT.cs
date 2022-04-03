@@ -215,8 +215,8 @@ namespace BEIMA.Backend.FT
             var originalToken = await TestClient.Login(originalLoginRequest);
 
             Assume.That(origItem, Is.Not.Null);
-            Assert.That(originalToken, Is.Not.Null);
-            Assert.That(originalToken, Is.Not.EqualTo(string.Empty));
+            Assume.That(originalToken, Is.Not.Null);
+            Assume.That(originalToken, Is.Not.EqualTo(string.Empty));
 
             var updateItem = new User
             {
@@ -278,8 +278,8 @@ namespace BEIMA.Backend.FT
             var originalToken = await TestClient.Login(originalLoginRequest);
             
             Assume.That(origItem, Is.Not.Null);
-            Assert.That(originalToken, Is.Not.Null);
-            Assert.That(originalToken, Is.Not.EqualTo(string.Empty));
+            Assume.That(originalToken, Is.Not.Null);
+            Assume.That(originalToken, Is.Not.EqualTo(string.Empty));
 
             var updateItem = new User
             {
