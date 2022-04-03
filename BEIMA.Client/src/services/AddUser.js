@@ -9,7 +9,7 @@ const API_URL = process.env.REACT_APP_API_URL;
  */
 export default async function addUser(userDetails) {
   //performs the post and returns an error message or the inserted user ID
-  const dbCall = await axios.post(API_URL + "user/", userDetails).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "user", userDetails).catch(function (error) {
       if (error.response) {
         return error.response;
     }
