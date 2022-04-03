@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
 using System.Linq;
 
 namespace BEIMA.Backend.UserFunctions
@@ -37,16 +38,32 @@ namespace BEIMA.Backend.UserFunctions
             var mongo = MongoDefinition.MongoInstance;
             var userId = new ObjectId(id);
 
-            // Do not delete if at least one device exists with this user.
-            // TODO: Use database filter for devices instead of getting the list of all users.
-            if (mongo.GetAllDevices().Where(d => d["location"]["userId"].AsObjectId.Equals(userId)).Any())
-            {
-                return new ConflictObjectResult(Resources.CannotDeleteUserMessage);
-            }
-
-            if (!mongo.DeleteUser(userId))
+            // Do not delete admin if they are the only admin in the system. Prevents admins from deleting all admin accounts.
+            var userDoc = mongo.GetUser(userId);
+            if(userDoc == null)
             {
                 return new NotFoundObjectResult(Resources.UserNotFoundMessage);
+            }
+
+            var userToDelete = BsonSerializer.Deserialize<User>(userDoc);
+            if(userToDelete.Role == "admin")
+            {
+                var adminFilter = MongoFilterGenerator.GetEqualsFilter("role", "admin");
+                var adminResults = mongo.GetFilteredUsers(adminFilter);
+
+                if (adminResults.Count <= 1)
+                {
+                    return new ConflictObjectResult(Resources.CannotDeleteAdminMessage);
+                }
+            }
+
+            // DeleteUser returned false, meaning it failed, so send a 500 error.
+            // We already checked to make sure it existed earlier, so this means something is wrong with Mongo.
+            if (!mongo.DeleteUser(userId))
+            {
+                var response = new ObjectResult(Resources.InternalServerErrorMessage);
+                response.StatusCode = StatusCodes.Status500InternalServerError;
+                return response;
             }
 
             return new OkResult();
