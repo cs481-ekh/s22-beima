@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace BEIMA.Backend.BuildingFunctions
 {
     /// <summary>
-    /// Handles a get request involving multiple buildlings.
+    /// Handles a get request involving multiple buildings.
     /// </summary>
     public static class GetBuildingList
     {
