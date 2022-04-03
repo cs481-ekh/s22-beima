@@ -70,6 +70,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Building is null..
+        /// </summary>
+        internal static string BuildingNullMessage {
+            get {
+                return ResourceManager.GetString("BuildingNullMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The admin could not be deleted because this is the only remaining admin account remaining. There must be at least one admin account existing at all times..
         /// </summary>
         internal static string CannotDeleteAdminMessage {
