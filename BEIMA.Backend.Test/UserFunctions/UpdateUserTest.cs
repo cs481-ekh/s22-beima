@@ -157,6 +157,7 @@ namespace BEIMA.Backend.Test.UserFunctions
         [TestCase("abcdefg1!")]
         [TestCase("Abcdefg!")]
         [TestCase("Abcdefg1")]
+        [TestCase("ABCDEFG1!")]
         public async Task ExistingUser_UpdateUserWithBadPassword_ReturnsBadRequestResponse(string badPassword)
         {
             // ARRANGE

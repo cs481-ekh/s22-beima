@@ -44,6 +44,7 @@ namespace BEIMA.Backend.Test.UserFunctions
         [TestCase("abcdefg1!")]
         [TestCase("Abcdefg!")]
         [TestCase("Abcdefg1")]
+        [TestCase("ABCDEFG1!")]
         public async Task NoUser_AddUserInvalidPassword_ReturnsErrorMessage(string badPassword)
         {
             // ARRANGE

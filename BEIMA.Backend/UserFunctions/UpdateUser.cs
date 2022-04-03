@@ -14,6 +14,7 @@ using BEIMA.Backend.Models;
 using System.Net;
 using BCryptNet = BCrypt.Net.BCrypt;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -61,7 +62,7 @@ namespace BEIMA.Backend.UserFunctions
                 }
 
                 // If the password sent in is null or empty string, then do not update the password.
-                if (updatedUserRecord.Password == null || updatedUserRecord.Password == string.Empty)
+                if (string.IsNullOrEmpty(updatedUserRecord.Password))
                 {
                     var originalUserRecord = BsonSerializer.Deserialize<User>(originalUserDoc);
                     updatedUserRecord.Password = originalUserRecord.Password;
@@ -69,11 +70,7 @@ namespace BEIMA.Backend.UserFunctions
                 else
                 {
                     // Verify password meets all requirements
-                    if (string.IsNullOrEmpty(updatedUserRecord.Password) ||
-                       updatedUserRecord.Password.Length < 8 ||
-                       !updatedUserRecord.Password.Any(c => char.IsDigit(c)) ||
-                       !updatedUserRecord.Password.Any(c => char.IsUpper(c)) ||
-                       !updatedUserRecord.Password.Any(c => !char.IsLetterOrDigit(c)))
+                    if (!Regex.Match(updatedUserRecord.Password, Constants.PASSWORD_REGEX).Success)
                     {
                         return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
                     }

@@ -13,6 +13,7 @@ using BEIMA.Backend.Models;
 using System.Net;
 using BCryptNet = BCrypt.Net.BCrypt;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -41,11 +42,7 @@ namespace BEIMA.Backend.UserFunctions
                 var data = JsonConvert.DeserializeObject<UserRequest>(requestBody);
 
                 // Verify password meets all requirements
-                if (string.IsNullOrEmpty(data.Password) ||
-                   data.Password.Length < 8 ||
-                   !data.Password.Any(c => char.IsDigit(c)) ||
-                   !data.Password.Any(c => char.IsUpper(c)) ||
-                   !data.Password.Any(c => !char.IsLetterOrDigit(c)))
+                if (string.IsNullOrEmpty(data.Password) || !Regex.Match(data.Password, Constants.PASSWORD_REGEX).Success)
                 {
                     return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
                 }
