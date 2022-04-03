@@ -13,6 +13,7 @@ using MongoDB.Bson.Serialization;
 using BEIMA.Backend.Models;
 using System.Net;
 using BCryptNet = BCrypt.Net.BCrypt;
+using System.Linq;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -67,12 +68,20 @@ namespace BEIMA.Backend.UserFunctions
                 }
                 else
                 {
-                    // TODO: Add validation for password length and special characters
+                    // Verify password meets all requirements
+                    if (string.IsNullOrEmpty(updatedUserRecord.Password) ||
+                       updatedUserRecord.Password.Length < 8 ||
+                       !updatedUserRecord.Password.Any(c => char.IsDigit(c)) ||
+                       !updatedUserRecord.Password.Any(c => char.IsUpper(c)) ||
+                       !updatedUserRecord.Password.Any(c => !char.IsLetterOrDigit(c)))
+                    {
+                        return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
+                    }
                     updatedUserRecord.Password = BCryptNet.HashPassword(updatedUserRecord.Password);
                 }
 
                 // Set user properties to new values
-                user = new User(new ObjectId(id), updatedUserRecord.Username, updatedUserRecord.Password, 
+                user = new User(new ObjectId(id), updatedUserRecord.Username, updatedUserRecord.Password,
                     updatedUserRecord.FirstName, updatedUserRecord.LastName, updatedUserRecord.Role);
             }
             catch (Exception)

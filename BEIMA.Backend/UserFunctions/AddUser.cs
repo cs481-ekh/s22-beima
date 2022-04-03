@@ -12,6 +12,7 @@ using MongoDB.Bson;
 using BEIMA.Backend.Models;
 using System.Net;
 using BCryptNet = BCrypt.Net.BCrypt;
+using System.Linq;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -38,6 +39,17 @@ namespace BEIMA.Backend.UserFunctions
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<UserRequest>(requestBody);
+
+                // Verify password meets all requirements
+                if (string.IsNullOrEmpty(data.Password) ||
+                   data.Password.Length < 8 ||
+                   !data.Password.Any(c => char.IsDigit(c)) ||
+                   !data.Password.Any(c => char.IsUpper(c)) ||
+                   !data.Password.Any(c => !char.IsLetterOrDigit(c)))
+                {
+                    return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
+                }
+
                 var passwordHash = BCryptNet.HashPassword(data.Password);
                 user = new User(ObjectId.GenerateNewId(),
                                         data.Username,
@@ -66,7 +78,7 @@ namespace BEIMA.Backend.UserFunctions
             var id = mongo.InsertUser(user.GetBsonDocument());
 
             //InsertUser returned a null result, meaning it failed, so send a 500 error
-            if(id == null)
+            if (id == null)
             {
                 var response = new ObjectResult(Resources.InternalServerErrorMessage);
                 response.StatusCode = StatusCodes.Status500InternalServerError;

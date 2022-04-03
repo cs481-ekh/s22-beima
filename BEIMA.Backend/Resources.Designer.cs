@@ -178,14 +178,6 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Invalid credentials..
-        /// </summary>
-        internal static string UnauthorizedMessage {
-            get {
-                return ResourceManager.GetString("UnauthorizedMessage", resourceCulture);
-            }
-        }
-
         ///   Looks up a localized string similar to Location is invalid..
         /// </summary>
         internal static string InvalidLocationMessage {
@@ -195,11 +187,29 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Password is invalid. Password must be at least 8 characters and contain at least an uppercase letter, a number, and a special character..
+        /// </summary>
+        internal static string InvalidPasswordMessage {
+            get {
+                return ResourceManager.GetString("InvalidPasswordMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The max character length on field &quot;{0}&quot; has been exceeded..
         /// </summary>
         internal static string MaxCharacterLengthExceededMessage {
             get {
                 return ResourceManager.GetString("MaxCharacterLengthExceededMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid credentials..
+        /// </summary>
+        internal static string UnauthorizedMessage {
+            get {
+                return ResourceManager.GetString("UnauthorizedMessage", resourceCulture);
             }
         }
         

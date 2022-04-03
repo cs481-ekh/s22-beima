@@ -185,4 +185,8 @@
     <value>User could not be found.</value>
     <comment>Error message for when trying to access a user that could not be found in the database.</comment>
   </data>
+  <data name="InvalidPasswordMessage" xml:space="preserve">
+    <value>Password is invalid. Password must be at least 8 characters and contain at least an uppercase letter, a number, and a special character.</value>
+    <comment>Error message for trying to use a password that does not meet the requirements.</comment>
+  </data>
 </root>
