@@ -16,7 +16,7 @@ const ListUsersPage = () => {
     setPageName('List Users')
     const loadData = async () => {
       setLoading(true)
-      let users = await GetUserList();
+      let users = (await GetUserList()).response;
       setLoading(false)
       setUserList(users)
     }

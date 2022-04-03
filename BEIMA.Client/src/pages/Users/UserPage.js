@@ -14,18 +14,18 @@ const UserPage = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   
-  const { userId } = useParams();
+  const { id } = useParams();
   
   useEffect(() => {
     setPageName('View User');
     const loadData = async () => {
-      const user = await GetUser(userId);
+      const user = (await GetUser(id)).response;
       setUser(user);
       setLoading(false);
     }
    loadData();
 
-  },[userId, setPageName])
+  },[id, setPageName])
   
    /**
    * Renders an card styled input that lets a user change a field's input
@@ -59,7 +59,7 @@ const UserPage = () => {
   const RenderItem = ({user}) => {
     const [editable, setEditable] = useState(false);
 
-    const [userId] = useState(user.id);
+    const [userId] = useState(user._id);
     const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
@@ -68,7 +68,7 @@ const UserPage = () => {
 
     const updateUserCall = async () => {
       const newUser = {
-        _id:userId,
+        _id: userId,
         username: username,
         firstName: firstName,
         lastName : lastName,
@@ -89,9 +89,11 @@ const UserPage = () => {
       let deleteNotif = await Notifications.warning("Warning: User Deletion", [`Are you sure you want to delete User ${username}?`]);
       if(deleteNotif.isConfirmed){
         let deleteResult = await DeleteUser(userId);
-        if(deleteResult.status === 200){
+        if(deleteResult.status === Constants.HTTP_SUCCESS){
           Notifications.success("User Deletion Successful", `User ${username} successfully deleted.`);
           navigate('/users');
+        } else if (deleteResult.status === Constants.HTTP_CONFLICT_RESULT){
+          Notifications.error("Unable to Delete User", `${deleteResult.response}`);
         } else {
           Notifications.error("Unable to Delete User", `Deletion of User ${username} failed.`);
         }
@@ -156,7 +158,7 @@ const UserPage = () => {
   return (
     <div className={styles.item} id="userPageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${user.name}`}
+        title={loading ? 'Loading' : `${user.firstName} ${user.lastName}`}
         RenderItem={<RenderItem user={user}/>} 
         loading={loading}
         route="/users"

@@ -3,6 +3,7 @@ import { useOutletContext, Link } from 'react-router-dom';
 import { IoArrowBack } from "react-icons/io5";
 import { Card, Button, Form, Row, Col } from 'react-bootstrap';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
+import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import { useEffect, useState } from "react";
 import AddUser from '../../services/AddUser.js';
 import * as Constants from '../../Constants.js';
@@ -14,11 +15,15 @@ const AddUserPage = () => {
     "Password" : "",
     "Password Confirmation" : "",
     "First Name" : "",
-    "Last Name" : "",
-    "Role" : ""
+    "Last Name" : ""
   }
+
+  const availableRoles = [{name: "admin", id: "admin"}, {name: "user", id: "user"}];
+  const noRoleObj = { name : 'Select Role' };
   
   const [userFields, setUserFields] = useState(mandatoryUserFields);
+  const [selectedRole, setSelectedRole] = useState(noRoleObj);
+  const [roleDropDownStyle, setRoleDropDownStyle] = useState(styles.button);
   const [setPageName] = useOutletContext();
   const [errors, setErrors] = useState({});
   
@@ -103,6 +108,7 @@ const AddUserPage = () => {
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
     } else {
+      fieldValues.role = selectedRole.name;
       return fieldValues;
     }
   }
@@ -119,12 +125,24 @@ const AddUserPage = () => {
           }
           setErrors({});
           setUserFields(mandatoryUserFields);
+          setSelectedRole(noRoleObj);
           Notifications.success("Add User Successful", "Adding User completed successfully.");
         } else {
           Notifications.error("Unable to Add User", "Adding User failed.");
         }
       })
     }
+  }
+
+  /*
+  * sets the state for the selected building from the dropdown
+  */
+  function changeSelectedRole(roleId) {
+    let role = availableRoles.find(role => {
+      return role.id === roleId;
+    })
+    setSelectedRole(role);
+    setRoleDropDownStyle(styles.dropDownSelected);
   }
   
   return (
@@ -148,6 +166,8 @@ const AddUserPage = () => {
             <h4>User Fields</h4>
             <div>
               <FormListWithErrorFeedback fields={Object.keys(userFields)} errors={errors} changeHandler={updateFieldState}/>
+              <label>Role</label>
+              <FilledDropDown dropDownText={selectedRole.name} items={availableRoles} selectFunction={changeSelectedRole} buttonStyle={roleDropDownStyle} dropDownId={"typeDropDown"} />
             </div>
          </Form>
         </Card.Body>
