@@ -97,6 +97,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cannot have matching field names..
+        /// </summary>
+        internal static string CannotHaveMatchingFieldNamesMessage {
+            get {
+                return ResourceManager.GetString("CannotHaveMatchingFieldNamesMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Could not parse the request body..
         /// </summary>
         internal static string CouldNotParseBody {
@@ -129,6 +138,15 @@ namespace BEIMA.Backend {
         internal static string DeviceTypeNotFoundMessage {
             get {
                 return ResourceManager.GetString("DeviceTypeNotFoundMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device type is null..
+        /// </summary>
+        internal static string DeviceTypeNullMessage {
+            get {
+                return ResourceManager.GetString("DeviceTypeNullMessage", resourceCulture);
             }
         }
         
