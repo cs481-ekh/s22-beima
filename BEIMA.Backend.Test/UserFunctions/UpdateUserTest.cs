@@ -9,7 +9,6 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
-using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {
