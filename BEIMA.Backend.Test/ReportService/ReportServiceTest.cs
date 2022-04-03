@@ -86,6 +86,21 @@ namespace BEIMA.Backend.Test.ReportServices
             Assert.That(bytes, Is.Null);
         }
 
+
+        [Test]
+        public void EmptyDeviceTypeListAndEmptyDeviceList_GenerateDeviceTypeReport_NullReturned()
+        {
+            // Arrange
+            var deviceTypeList = new List<DeviceType>(); ;
+            var deviceList = new List<Device>();
+
+            // ACT
+            var bytes = ReportWriter.GenerateDeviceTypeReport(deviceTypeList, deviceList);
+
+            // Assert
+            Assert.That(bytes, Is.Null);
+        }
+
         [Test]
         public void DeviceTypeAndNullDeviceList_GenerateReportByDeviceType_FileContainsOnlyHeader()
         {
