@@ -44,7 +44,7 @@ namespace BEIMA.Backend.Test
             Assert.That(statusCode, Is.EqualTo(expectedStatusCode));
         }
 
-        [TestCaseSource(nameof(DeviceLocationTestCaseFactory))]
+        [TestCaseSource(nameof(DeviceAndBuildingLocationTestCaseFactory))]
         public void DeviceWithLocation_IsDeviceValid_ReturnsCorrectValue(string lat, string lon, string expectedMessage, HttpStatusCode expectedStatusCode)
         {
             // ARRANGE
@@ -102,11 +102,79 @@ namespace BEIMA.Backend.Test
 
         #endregion Device Rules
 
+        #region Building Rules
+
+        [Test]
+        public void BuildingAllFieldsValid_IsBuildingValid_ReturnsTrue()
+        {
+            // ARRANGE
+            var building = new Building(ObjectId.GenerateNewId(), "Name", "Number", "Notes.");
+            building.SetLocation("12.345", "67.891");
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsBuildingValid(building, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.True);
+            Assert.That(message, Is.EqualTo(string.Empty));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [TestCaseSource(nameof(DeviceAndBuildingLocationTestCaseFactory))]
+        public void BuildingWithLocation_IsBuildingValid_ReturnsCorrectValue(string lat, string lon, string expectedMessage, HttpStatusCode expectedStatusCode)
+        {
+            // ARRANGE
+            var building = new Building(ObjectId.GenerateNewId(), "Name", "Number", "Notes.");
+            building.SetLocation(lat, lon);
+
+            var expectedResult = expectedStatusCode.Equals(HttpStatusCode.OK);
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsBuildingValid(building, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.EqualTo(expectedResult));
+            Assert.That(message, Is.EqualTo(expectedMessage));
+            Assert.That(statusCode, Is.EqualTo(expectedStatusCode));
+        }
+
+        [Test]
+        public void BuildingAllFieldsInvalid_IsBuildingValid_ReturnsFalse()
+        {
+            // ARRANGE
+            var building = new Building(ObjectId.GenerateNewId(), _longString, _longString, _longString);
+            building.SetLocation("123.456", "abc");
+
+            string message;
+            HttpStatusCode statusCode;
+
+            var expectedMessage = "Location is invalid.\n" +
+                                  "The max character length on field \"Name\" has been exceeded.\n" +
+                                  "The max character length on field \"Number\" has been exceeded.\n" +
+                                  "The max character length on field \"Notes\" has been exceeded.";
+
+            // ACT
+            var result = Rules.IsBuildingValid(building, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.False);
+            Assert.That(message, Is.EqualTo(expectedMessage));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        #endregion Building Rules
+
         /// <summary>
-        /// Generates a set of test case parameters relating to the device location.
+        /// Generates a set of test case parameters relating to the device or building location.
         /// </summary>
-        /// <returns>A set of test case parameters relating to the device location.</returns>
-        private static IEnumerable<object[]?> DeviceLocationTestCaseFactory()
+        /// <returns>A set of test case parameters relating to the device or building location.</returns>
+        private static IEnumerable<object[]?> DeviceAndBuildingLocationTestCaseFactory()
         {
             var lats = new List<string> { "-90.1", "90.1", "abc", "-90.0", "12.345", "90.0", "" };
             var longs = new List<string> { "-180.1", "180.1", "abc", "-180.0", "12.345", "180.0", "" };
@@ -114,7 +182,6 @@ namespace BEIMA.Backend.Test
 
             for (var i = 0; i < lats.Count; i++)
             {
-
                 for (var j = 0; j < longs.Count; j++)
                 {
                     if (!(i >= validStartIndex && j >= validStartIndex))
