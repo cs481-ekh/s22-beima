@@ -191,7 +191,7 @@ namespace BEIMA.Backend.FT
         }
 
         [Test]
-        public async Task UserInDatabase_UpdateUserWithPassword_ReturnsUpdatedUser()
+        public async Task UserInDatabase_UpdateUserWithPasswordAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin()
         {
             // ARRANGE
             var origUser = new User
@@ -219,6 +219,14 @@ namespace BEIMA.Backend.FT
 
             // ACT
             var updatedUser = await TestClient.UpdateUser(updateItem);
+            
+            // Verify the password has been updated successfully.
+            var loginRequest = new LoginRequest
+            {
+                Username = updateItem.Username,
+                Password = updateItem.Password
+            };
+            var token = await TestClient.Login(loginRequest);
 
             // ASSERT
             Assert.That(updatedUser, Is.Not.Null);
@@ -229,7 +237,110 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
             Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
 
-            Assert.That(BCryptNet.Verify(updateItem.Password, updatedUser.Password), Is.True);
+            Assert.That(token, Is.Not.Null);
+            Assert.That(token, Is.Not.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public async Task UserInDatabase_UpdateUserWithPasswordAsEmptyStringAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin()
+        {
+            // ARRANGE
+            var origUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(origUser);
+            var origItem = await TestClient.GetUser(userId);
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new User
+            {
+                Id = userId,
+                Username = "user.name",
+                Password = "",
+                FirstName = "Alexis",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var updatedUser = await TestClient.UpdateUser(updateItem);
+
+            // Verify the password was not updated.
+            var loginRequest = new LoginRequest
+            {
+                Username = updateItem.Username,
+                Password = origUser.Password
+            };
+            var token = await TestClient.Login(loginRequest);
+
+            // ASSERT
+            Assert.That(updatedUser, Is.Not.Null);
+            Assert.That(updatedUser.FirstName, Is.Not.EqualTo(origUser.FirstName));
+
+            Assert.That(updatedUser.Id, Is.EqualTo(updateItem.Id));
+            Assert.That(updatedUser.Username, Is.EqualTo(updateItem.Username));
+            Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
+            Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
+
+            Assert.That(token, Is.Not.Null);
+            Assert.That(token, Is.Not.EqualTo(string.Empty));
+        }
+
+        [Test]
+        public async Task UserInDatabase_UpdateUserWithPasswordAsNullAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin()
+        {
+            // ARRANGE
+            var origUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(origUser);
+            var origItem = await TestClient.GetUser(userId);
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new User
+            {
+                Id = userId,
+                Username = "user.name",
+                Password = null,
+                FirstName = "Alexis",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var updatedUser = await TestClient.UpdateUser(updateItem);
+
+            // Verify the password was not updated.
+            var loginRequest = new LoginRequest
+            {
+                Username = updateItem.Username,
+                Password = origUser.Password
+            };
+            var token = await TestClient.Login(loginRequest);
+
+            // ASSERT
+            Assert.That(updatedUser, Is.Not.Null);
+            Assert.That(updatedUser.FirstName, Is.Not.EqualTo(origUser.FirstName));
+
+            Assert.That(updatedUser.Id, Is.EqualTo(updateItem.Id));
+            Assert.That(updatedUser.Username, Is.EqualTo(updateItem.Username));
+            Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
+            Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
+
+            Assert.That(token, Is.Not.Null);
+            Assert.That(token, Is.Not.EqualTo(string.Empty));
         }
     }
 }
