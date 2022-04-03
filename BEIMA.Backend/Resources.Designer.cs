@@ -133,6 +133,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device type is null..
+        /// </summary>
+        internal static string DeviceTypeNullMessage {
+            get {
+                return ResourceManager.GetString("DeviceTypeNullMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Device year manufactured is invalid..
         /// </summary>
         internal static string DeviceYearManufacturedInvalidMessage {

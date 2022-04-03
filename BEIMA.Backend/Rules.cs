@@ -103,6 +103,14 @@ namespace BEIMA.Backend
             message = string.Empty;
             httpStatusCode = HttpStatusCode.OK;
 
+            // Check that device is not null
+            if (deviceType is null)
+            {
+                message = Resources.DeviceTypeNullMessage;
+                httpStatusCode = HttpStatusCode.BadRequest;
+                return false;
+            }
+
             // Check that fields don't have matching names
             var fields = deviceType.Fields.ToDictionary();
             if (fields.Values.Distinct().Count() != fields.Count)
