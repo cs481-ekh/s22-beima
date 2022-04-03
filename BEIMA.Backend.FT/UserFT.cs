@@ -241,8 +241,9 @@ namespace BEIMA.Backend.FT
             Assert.That(token, Is.Not.EqualTo(string.Empty));
         }
 
-        [Test]
-        public async Task UserInDatabase_UpdateUserWithPasswordAsEmptyStringAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin()
+        [TestCase(null)]
+        [TestCase("")]
+        public async Task UserInDatabase_UpdateUserWithBlankPasswordAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin(string pw)
         {
             // ARRANGE
             var origUser = new User
@@ -262,58 +263,7 @@ namespace BEIMA.Backend.FT
             {
                 Id = userId,
                 Username = "user.name",
-                Password = "",
-                FirstName = "Alexis",
-                LastName = "Smith",
-                Role = "user"
-            };
-
-            // ACT
-            var updatedUser = await TestClient.UpdateUser(updateItem);
-
-            // Verify the password was not updated.
-            var loginRequest = new LoginRequest
-            {
-                Username = updateItem.Username,
-                Password = origUser.Password
-            };
-            var token = await TestClient.Login(loginRequest);
-
-            // ASSERT
-            Assert.That(updatedUser, Is.Not.Null);
-            Assert.That(updatedUser.FirstName, Is.Not.EqualTo(origUser.FirstName));
-
-            Assert.That(updatedUser.Id, Is.EqualTo(updateItem.Id));
-            Assert.That(updatedUser.Username, Is.EqualTo(updateItem.Username));
-            Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
-            Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
-
-            Assert.That(token, Is.Not.Null);
-            Assert.That(token, Is.Not.EqualTo(string.Empty));
-        }
-
-        [Test]
-        public async Task UserInDatabase_UpdateUserWithPasswordAsNullAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin()
-        {
-            // ARRANGE
-            var origUser = new User
-            {
-                Username = "user.name",
-                Password = "Abcdefg12345!",
-                FirstName = "Alex",
-                LastName = "Smith",
-                Role = "user"
-            };
-
-            var userId = await TestClient.AddUser(origUser);
-            var origItem = await TestClient.GetUser(userId);
-            Assume.That(origItem, Is.Not.Null);
-
-            var updateItem = new User
-            {
-                Id = userId,
-                Username = "user.name",
-                Password = null,
+                Password = pw,
                 FirstName = "Alexis",
                 LastName = "Smith",
                 Role = "user"
