@@ -106,7 +106,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var testId = "abcdef123456789012345678";
             var device = new Device(new ObjectId(testId), new ObjectId("12341234abcdabcd43214321"), "A-3", "Generic Inc.", "1234", "abcd1234", 2004, "Some notes.");
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
-            device.SetLocation(new ObjectId("622cf00109137c26f913b281"), "Some notes.", "123.456", "101.101");
+            device.SetLocation(new ObjectId("622cf00109137c26f913b281"), "Some notes.", "12.345", "10.101");
 
             var building = new Building(new ObjectId("622cf00109137c26f913b281"), null, null, null);
             building.SetLastModified(DateTime.UtcNow, "Anonymous");
@@ -175,7 +175,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var testId = "abcdef123456789012345678";
             var device = new Device(new ObjectId(testId), new ObjectId("12341234abcdabcd43214321"), "A-3", "Generic Inc.", "1234", "abcd1234", 2004, "Some notes.");
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
-            device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "123.456", "101.101");
+            device.SetLocation(new ObjectId("111111111111111111111111"), "Some notes.", "12.345", "10.101");
 
             var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
             deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");

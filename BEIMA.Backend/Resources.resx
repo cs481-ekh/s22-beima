@@ -137,9 +137,17 @@
     <value>Device could not be found.</value>
     <comment>Error message for when trying to access a device that could not found in the database.</comment>
   </data>
+  <data name="DeviceNullMessage" xml:space="preserve">
+    <value>Device is null.</value>
+    <comment>Error message for a null device.</comment>
+  </data>
   <data name="DeviceTypeNotFoundMessage" xml:space="preserve">
     <value>Device type could not be found.</value>
     <comment>Error message for when trying to access a device type that could not be found in the database.</comment>
+  </data>
+  <data name="DeviceYearManufacturedInvalidMessage" xml:space="preserve">
+    <value>Device year manufactured is invalid.</value>
+    <comment>Error message for an invalid device year manufactured.</comment>
   </data>
   <data name="InternalServerErrorMessage" xml:space="preserve">
     <value>An internal server error has occurred.</value>
@@ -152,6 +160,14 @@
   <data name="UnauthorizedMessage" xml:space="preserve">
     <value>Invalid credentials.</value>
     <comment>Error message for when the credentials that are being used are unauthorized to perform an action.</comment>
+  </data>
+  <data name="InvalidLocationMessage" xml:space="preserve">
+    <value>Location is invalid.</value>
+    <comment>Error message for an invalid location.</comment>
+  </data>
+  <data name="MaxCharacterLengthExceededMessage" xml:space="preserve">
+    <value>The max character length on field "{0}" has been exceeded.</value>
+    <comment>Error message for when the max character length on a field has been exceeded.</comment>
   </data>
   <data name="UserNotFoundMessage" xml:space="preserve">
     <value>User could not be found.</value>
