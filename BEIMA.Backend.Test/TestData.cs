@@ -108,6 +108,15 @@ namespace BEIMA.Backend.Test
                 "\"role\": \"user\"" +
             "}";
 
+        public const string _testUserBadPassword =
+            "{" +
+                "\"username\": \"user.name\"," +
+                "\"password\": \"---\"," +
+                "\"firstName\": \"Alex\"," +
+                "\"lastName\": \"Smith\"," +
+                "\"role\": \"user\"" +
+            "}";
+
         public const string _testUpdateUserWithPassword =
             "{" +
                 "\"username\": \"user.name\"," +
@@ -135,7 +144,7 @@ namespace BEIMA.Backend.Test
         public static readonly string _testValidKeysLoginRequest = GenerateValidKeysLoginRequest();
 
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
-        
+
         private static string GenerateNullKeysLoginRequest()
         {
             var request = new LoginRequest();

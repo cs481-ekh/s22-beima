@@ -150,5 +150,43 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(userResponse.LastName, Is.EqualTo(user.LastName));
             Assert.That(userResponse.Role, Is.EqualTo(user.Role));
         }
+
+        [TestCase("a")]
+        [TestCase("Abc1!")]
+        [TestCase("abcdefgh")]
+        [TestCase("abcdefg1!")]
+        [TestCase("Abcdefg!")]
+        [TestCase("Abcdefg1")]
+        public async Task ExistingUser_UpdateUserWithBadPassword_ReturnsBadRequestResponse(string badPassword)
+        {
+            // ARRANGE
+            var testId = "abcdef123456789012345678";
+
+            var user = new User(new ObjectId(testId), "user.name", "oldPassword1!", "Aaron", "Doe", "user");
+            user.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(user.GetBsonDocument())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var body = TestData._testUserBadPassword.Replace("---", badPassword);
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = await UpdateUser.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateUser(It.IsAny<BsonDocument>()), Times.Never));
+
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
+            Assert.That(((BadRequestObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
+            Assert.That(((BadRequestObjectResult)response).Value?.ToString(),
+                        Is.EqualTo("Password is invalid. Password must be at least 8 characters and contain at least an uppercase letter, a number, and a special character."));
+        }
     }
 }
