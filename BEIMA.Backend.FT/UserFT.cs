@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
-using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.FT
 {
@@ -39,7 +38,8 @@ namespace BEIMA.Backend.FT
             {
                 if (user?.Id is not null && user?.Username != "first.admin")
                 {
-                    await TestClient.DeleteUser(user.Id);
+                    var id = user?.Id ?? string.Empty;
+                    await TestClient.DeleteUser(id);
                 }
             }
         }
@@ -205,7 +205,18 @@ namespace BEIMA.Backend.FT
 
             var userId = await TestClient.AddUser(origUser);
             var origItem = await TestClient.GetUser(userId);
+
+            // Verify login works with current password.
+            var originalLoginRequest = new LoginRequest
+            {
+                Username = origUser.Username,
+                Password = origUser.Password
+            };
+            var originalToken = await TestClient.Login(originalLoginRequest);
+
             Assume.That(origItem, Is.Not.Null);
+            Assert.That(originalToken, Is.Not.Null);
+            Assert.That(originalToken, Is.Not.EqualTo(string.Empty));
 
             var updateItem = new User
             {
@@ -219,14 +230,14 @@ namespace BEIMA.Backend.FT
 
             // ACT
             var updatedUser = await TestClient.UpdateUser(updateItem);
-            
+
             // Verify the password has been updated successfully.
-            var loginRequest = new LoginRequest
+            var newLoginRequest = new LoginRequest
             {
                 Username = updateItem.Username,
                 Password = updateItem.Password
             };
-            var token = await TestClient.Login(loginRequest);
+            var newToken = await TestClient.Login(newLoginRequest);
 
             // ASSERT
             Assert.That(updatedUser, Is.Not.Null);
@@ -237,8 +248,8 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
             Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
 
-            Assert.That(token, Is.Not.Null);
-            Assert.That(token, Is.Not.EqualTo(string.Empty));
+            Assert.That(newToken, Is.Not.Null);
+            Assert.That(newToken, Is.Not.EqualTo(string.Empty));
         }
 
         [TestCase(null)]
@@ -257,7 +268,18 @@ namespace BEIMA.Backend.FT
 
             var userId = await TestClient.AddUser(origUser);
             var origItem = await TestClient.GetUser(userId);
+
+            // Verify login works with current password.
+            var originalLoginRequest = new LoginRequest
+            {
+                Username = origUser.Username,
+                Password = origUser.Password
+            };
+            var originalToken = await TestClient.Login(originalLoginRequest);
+            
             Assume.That(origItem, Is.Not.Null);
+            Assert.That(originalToken, Is.Not.Null);
+            Assert.That(originalToken, Is.Not.EqualTo(string.Empty));
 
             var updateItem = new User
             {
@@ -273,12 +295,12 @@ namespace BEIMA.Backend.FT
             var updatedUser = await TestClient.UpdateUser(updateItem);
 
             // Verify the password was not updated.
-            var loginRequest = new LoginRequest
+            var newLoginRequest = new LoginRequest
             {
                 Username = updateItem.Username,
                 Password = origUser.Password
             };
-            var token = await TestClient.Login(loginRequest);
+            var newToken = await TestClient.Login(newLoginRequest);
 
             // ASSERT
             Assert.That(updatedUser, Is.Not.Null);
@@ -289,8 +311,8 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
             Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
 
-            Assert.That(token, Is.Not.Null);
-            Assert.That(token, Is.Not.EqualTo(string.Empty));
+            Assert.That(newToken, Is.Not.Null);
+            Assert.That(newToken, Is.Not.EqualTo(string.Empty));
         }
     }
 }
