@@ -70,6 +70,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Building is null..
+        /// </summary>
+        internal static string BuildingNullMessage {
+            get {
+                return ResourceManager.GetString("BuildingNullMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The building could not be deleted because at least one device exists in the database with this building..
         /// </summary>
         internal static string CannotDeleteBuildingMessage {

@@ -116,7 +116,7 @@ namespace BEIMA.Backend
         /// <summary>
         /// Verifies that a given building has valid properties.
         /// </summary>
-        /// <param name="device">Building to verify.</param>
+        /// <param name="building">Building to verify.</param>
         /// <param name="message">The error message for a failed validation.</param>
         /// <param name="httpStatusCode">The status code for a failed validation.</param>
         /// <returns>True if the building is valid, otherwise false.</returns>
@@ -126,16 +126,40 @@ namespace BEIMA.Backend
             message = string.Empty;
             httpStatusCode = HttpStatusCode.OK;
 
+            // Check that building is not null
             if (building is null)
             {
-                message = "Building is null.";
+                message = Resources.BuildingNullMessage;
                 httpStatusCode = HttpStatusCode.BadRequest;
                 return false;
+            }
+
+            // Check location
+            if ((!string.IsNullOrEmpty(building.Location.Latitude) && !ValidateLatitude(building.Location.Latitude)) ||
+                (!string.IsNullOrEmpty(building.Location.Longitude) && !ValidateLongitude(building.Location.Longitude)))
+            {
+                message += Resources.InvalidLocationMessage;
+                httpStatusCode = HttpStatusCode.BadRequest;
+                isValid = false;
+            }
+
+            // Check field lengths
+            foreach (var prop in building.GetType().GetProperties())
+            {
+                if (prop.PropertyType.Equals(typeof(string)) &&
+                    prop.GetValue(building).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                {
+                    message += message.Length > 0 ? '\n' : string.Empty;
+                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                    httpStatusCode = HttpStatusCode.BadRequest;
+                    isValid = false;
+                }
             }
 
             return isValid;
         }
 
+        /// <summary>
         /// Verifies that a given user has valid properties.
         /// </summary>
         /// <param name="user">User to verify.</param>
