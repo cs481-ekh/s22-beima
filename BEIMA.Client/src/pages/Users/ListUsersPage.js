@@ -3,6 +3,7 @@ import { Button, Row, Col } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './ListUsersPage.module.css';
 import ItemList from "../../shared/ItemList/ItemList";
+import GetUserList from '../../services/GetUserList.js';
 
 const ListUsersPage = () => {
   const [userList, setUserList] = useState([]);
@@ -13,49 +14,14 @@ const ListUsersPage = () => {
   
   useEffect(() => {
     setPageName('List Users')
-  }, [setPageName])
-  
-  useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      let users = await mockCall()
+      let users = await GetUserList();
       setLoading(false)
       setUserList(users)
     }
    loadData()
-  },[])
-  
-  const mockCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(1000)
-    let data = []
-    for(let i = 0; i < 5; i++){
-      data.push({
-        id: 74+i,        
-        username: `UserName${i}`,
-        role: `User${i}'s assigned role`,
-        firstName: `TestFirst`,
-        lastName: `TestLast ${i}`,
-        lastModified: {
-          date: new Date().getDate() + {i},
-          user: `UserName #${i - 1}`
-        }
-      })
-    }
-    // Map data into format supported by list
-    let mapped = data.map(({id, username, role, firstName, lastName, lastModified}) => {
-      return {
-        id: id,
-        name: `${firstName} ${lastName}`,
-        username: username,
-        role: role,
-        firstName: firstName,
-        lastName : lastName,
-        lastModified : lastModified
-      }
-    })
-    return mapped
-  }
+  },[setPageName])
   
   /**
    * Renders a custom description of the item's fields
@@ -70,7 +36,6 @@ const ListUsersPage = () => {
       </div>
     )
   }
-  
   
   return (
     <div className={styles.fieldform} id="userListContent">
