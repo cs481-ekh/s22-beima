@@ -121,6 +121,10 @@
     <value>Building could not be found.</value>
     <comment>Error message for when trying to access a building that could not be found in the database.</comment>
   </data>
+  <data name="BuildingNullMessage" xml:space="preserve">
+    <value>Building is null.</value>
+    <comment>Error message for a null building.</comment>
+  </data>
   <data name="CannotDeleteAdminMessage" xml:space="preserve">
     <value>The admin could not be deleted because this is the only remaining admin account remaining. There must be at least one admin account existing at all times.</value>
     <comment>Error message for trying to delete the only admin account in the system.</comment>
