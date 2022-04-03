@@ -1,5 +1,4 @@
 import axios from 'axios';
-import ItemList from '../shared/ItemList/ItemList';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**

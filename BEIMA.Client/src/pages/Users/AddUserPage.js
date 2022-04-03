@@ -42,13 +42,18 @@ const AddUserPage = () => {
   
   function checkPassword(){
     let passwordErrors = {};
+    let requirements = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[-+_!@#$%^&*.,?]).+$");
     
     if(userFields["Password"] === '') {
       passwordErrors["Password"] = 'Password cannot be empty';
+    } else if (!(requirements.test(userFields["Password"])) || userFields["Password"].length < 8){
+      passwordErrors["Password"] = 'Password does not meet requirements. See Help page for more information.';
     }
 
     if(userFields["Password Confirmation"] === '') {
       passwordErrors["Password Confirmation"] = 'Password Confirmation cannot be empty';
+    } else if (!(requirements.test(userFields["Password Confirmation"]))){
+      passwordErrors["Password Confirmation"] = 'Password does not meet requirements. See Help page for more information.';
     }
     
     if((!('Password' in passwordErrors) && !('Password Confirmation' in passwordErrors)) &&
@@ -109,6 +114,7 @@ const AddUserPage = () => {
       setErrors(newErrors);
     } else {
       fieldValues.role = selectedRole.name;
+      setErrors({});
       return fieldValues;
     }
   }
@@ -123,7 +129,6 @@ const AddUserPage = () => {
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
-          setErrors({});
           setUserFields(mandatoryUserFields);
           setSelectedRole(noRoleObj);
           Notifications.success("Add User Successful", "Adding User completed successfully.");
