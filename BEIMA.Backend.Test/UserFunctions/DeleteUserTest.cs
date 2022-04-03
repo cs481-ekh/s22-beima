@@ -32,7 +32,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = DeleteUser.Run(request, id, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.Is<ObjectId>(_ => true)), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteUser(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
