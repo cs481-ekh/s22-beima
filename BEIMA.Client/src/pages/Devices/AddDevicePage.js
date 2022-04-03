@@ -9,7 +9,8 @@ import * as Notifications from '../../shared/Notifications/Notification.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
 import GetDeviceType from '../../services/GetDeviceType.js';
 import AddDevice from '../../services/AddDevice.js';
-import { HTTP_SUCCESS, MAX_LATITUDE, MAX_LONGITUDE } from '../../Constants.js';
+import * as Constants from '../../Constants.js';
+import GetBuildingList from '../../services/GetBuildingList.js';
 
 /*
 * Creates the page and houses the data manipulation fucntions
@@ -17,7 +18,6 @@ import { HTTP_SUCCESS, MAX_LATITUDE, MAX_LONGITUDE } from '../../Constants.js';
 const AddDevicePage = () => {
   // this will be appended to with custom fields from the API call when selecting the device type
   const mandatoryDeviceFields = {
-    "Building": "",
     "Longitude": "",
     "Latitude": "",
     "Device Tag": "",
@@ -29,23 +29,46 @@ const AddDevicePage = () => {
   }
   
   const noDeviceTypeObj = { name: 'Select Device Type'};
+  const noBuildingObj = { name : 'Select Building' };
   const [deviceFields, setDeviceFields] = useState(mandatoryDeviceFields);
   const [errors, setErrors] = useState({});
   const [setPageName] = useOutletContext();
   const [deviceImage, setDeviceImage] = useState(null);
   const [deviceAdditionalDocs, setAdditionalDocs] = useState([]);
   const [deviceTypes, setDeviceTypes] = useState([]);
+  const [buildings, setBuildings] = useState([]);
   const [selectedDeviceType, setSelectedDeviceType] = useState(noDeviceTypeObj);
-  const [dropDownStyle, setDropDownStyle] = useState(styles.button);
+  const [selectedBuilding, setSelectedBuilding] = useState(noBuildingObj);
+  const [deviceTypeDropDownStyle, setDeviceTypeDropDownStyle] = useState(styles.button);
+  const [buildingDropDownStyle, setBuildingDropDownStyle] = useState(styles.button);
   
   useEffect(() => {
     setPageName('Add Device')
     const loadData = async () => {
       let types = await getDeviceTypes();
+      let buildings = await getBuildingList();
       setDeviceTypes(types);
+      setBuildings(buildings);
     }
    loadData()
   },[setPageName])
+  
+  /*
+  * gets the list of buildings from the database
+  * @return the object containing building list
+  */
+  const getBuildingList = async () => {
+    const buildingList = await GetBuildingList();
+    
+    if(!(buildingList.status === Constants.HTTP_SUCCESS)){
+      Notifications.error("Unable to get building list for dropdown", `Contact support.`);
+      return;
+    }
+    
+    let data = buildingList.response.map((item) => { return { name: item.name, id : item.id} });
+    
+    return data;
+  }
   
   /*
   * gets the list of device types from the database
@@ -54,9 +77,8 @@ const AddDevicePage = () => {
   const getDeviceTypes = async () => {
     const deviceTypeData = await GetDeviceTypeList();
     
-    /*TODO push error to display*/
-    if(!(deviceTypeData.status === HTTP_SUCCESS)){
-      alert('API responded with: ' + deviceTypeData.status + ' ' + deviceTypeData.response);
+    if(!(deviceTypeData.status === Constants.HTTP_SUCCESS)){
+      Notifications.error("Unable to get device type list for dropdown", `Contact support.`);
       return;
     }
     
@@ -74,7 +96,7 @@ const AddDevicePage = () => {
     
     //change the dropdown text and store the fields for their keys
     setSelectedDeviceType(deviceTypeFields.response);
-    setDropDownStyle(styles.dropDownSelected);
+    setDeviceTypeDropDownStyle(styles.dropDownSelected);
     
     //retireve the values from teh response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
@@ -87,6 +109,17 @@ const AddDevicePage = () => {
     //add them to the forms errors lists
     setDeviceFields(deviceFields);
     setErrors({});
+  }
+  
+  /*
+  * sets the state for the selected building from the dropdown
+  */
+  function changeSelectedBuilding(buildingId) {
+    let building = buildings.find(buildings => {
+      return buildings.id === buildingId;
+    })
+    setSelectedBuilding(building);
+    setBuildingDropDownStyle(styles.dropDownSelected);
   }
   
   /*
@@ -130,16 +163,23 @@ const AddDevicePage = () => {
   * gathers data from the form and saves the device to the DB
   * @param the Add Device button click event
   */
-  function saveDeviceToDb(addButtonEvent) {
+  async function saveDeviceToDb(addButtonEvent) {
+    if (selectedDeviceType.name === 'Select Device Type'){
+      Notifications.error("Device Type not selected", 'A Device Type selection is required.');
+      return;
+    }
+    
     const formFields = addButtonEvent.target.form.elements;
-    const dbJson = createJSON(formFields);
+    const dbJson = await createJSON(formFields);
     if(dbJson){
       AddDevice(dbJson, deviceImage, deviceAdditionalDocs).then(response => {
         //reset the form or show a message regarding insertion failure
-        if(response.status === HTTP_SUCCESS){
+        if(response.status === Constants.HTTP_SUCCESS){
           setErrors({});
           setSelectedDeviceType(noDeviceTypeObj);
-          setDropDownStyle(styles.button);
+          setDeviceTypeDropDownStyle(styles.button);
+          setSelectedBuilding(noBuildingObj);
+          setBuildingDropDownStyle(styles.button);
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
@@ -156,16 +196,11 @@ const AddDevicePage = () => {
   * @param the fields on the form from the button click event
   * @return the compiled JSON
   */
-  function createJSON(formFields){
-    //TODO temporary until we have error signaling figured out
-    if (selectedDeviceType.name === 'Select Device Type'){
-      alert ('No device type selected');
-      return;
-    }
-    
+  async function createJSON(formFields){
     //sets up base db object/clears errors
     let dbJson = {fields: {}, location: { 'notes' : ""}};
     let newErrors = {};
+    let warnings = [];
     
     //loops through visible fields on the form
     for(let i = 0; i < formFields.length; i++){
@@ -174,7 +209,7 @@ const AddDevicePage = () => {
       
       //lat lon validation
       if (formName === 'Latitude' || formName === 'Longitude') {
-        const coordMax = formName === 'Latitude' ? MAX_LATITUDE : MAX_LONGITUDE;
+        const coordMax = formName === 'Latitude' ? Constants.MAX_LATITUDE : Constants.MAX_LONGITUDE;
         if(!(isFinite(deviceFields[formName]) && Math.abs(deviceFields[formName]) <= coordMax)) {
           newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
         }
@@ -194,6 +229,10 @@ const AddDevicePage = () => {
         let formJSON = '';
         let jsonKey = convertToDbFriendly(formName);
         
+        if(formFields[i].value.length === 0){
+          warnings.push(`"${formName}" field is empty<br/>`);
+        }
+        
         //straight append when it's not part of a nested element
         //otherwise it attaches it to the nested element
         if(!(typeof jsonKey == 'object')){
@@ -211,14 +250,19 @@ const AddDevicePage = () => {
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
     
+    let isConfirmed = true;
+    
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
       return false;
-    } else {
-      /*TODO Need ability to get a building ID, probably a DD on the page*/
-
+    } else if (warnings.length > 0) {
+      isConfirmed = (await Notifications.warning('Warning', warnings)).isConfirmed;
+    }
+    
+    if(isConfirmed) {
       dbJson.deviceTypeId = selectedDeviceType._id;
+      dbJson.location.buildingId = selectedBuilding.id;
       
       return dbJson;
     }
@@ -241,12 +285,13 @@ const AddDevicePage = () => {
       <Card>
         <Card.Body>
           <Form >
+            <label>Select Device Type</label>
             <Row className={styles.buttonGroup}>
               <Col>
-                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={dropDownStyle} dropDownId={"typeDropDown"} />
+                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
               </Col>
               <Col>
-                  <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
+                <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
                   Add Device
                 </Button>
               </Col>
@@ -259,6 +304,10 @@ const AddDevicePage = () => {
             <ImageFileUpload type="Additional Documents" multiple={true} onChange={setDocuments}/>
             <br/>
             <h4>Fields</h4>
+            <div>
+              <label>Select Building</label>
+              <FilledDropDown dropDownText={selectedBuilding.name} items={buildings} selectFunction={changeSelectedBuilding} buttonStyle={buildingDropDownStyle} dropDownId={"typeDropDown"} />
+            </div>
             <div>
               <FormListWithErrorFeedback fields={Object.keys(deviceFields)} errors={errors} changeHandler={updateFieldState}/>
             </div>

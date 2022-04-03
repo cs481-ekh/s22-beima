@@ -8,7 +8,6 @@ using NUnit.Framework;
 using System;
 using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
-using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {

@@ -70,6 +70,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The admin could not be deleted because this is the only remaining admin account remaining. There must be at least one admin account existing at all times..
+        /// </summary>
+        internal static string CannotDeleteAdminMessage {
+            get {
+                return ResourceManager.GetString("CannotDeleteAdminMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The building could not be deleted because at least one device exists in the database with this building..
         /// </summary>
         internal static string CannotDeleteBuildingMessage {
@@ -84,6 +93,15 @@ namespace BEIMA.Backend {
         internal static string CannotDeleteDeviceTypeMessage {
             get {
                 return ResourceManager.GetString("CannotDeleteDeviceTypeMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cannot have matching field names..
+        /// </summary>
+        internal static string CannotHaveMatchingFieldNamesMessage {
+            get {
+                return ResourceManager.GetString("CannotHaveMatchingFieldNamesMessage", resourceCulture);
             }
         }
         
@@ -106,11 +124,38 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Device is null..
+        /// </summary>
+        internal static string DeviceNullMessage {
+            get {
+                return ResourceManager.GetString("DeviceNullMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Device type could not be found..
         /// </summary>
         internal static string DeviceTypeNotFoundMessage {
             get {
                 return ResourceManager.GetString("DeviceTypeNotFoundMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device type is null..
+        /// </summary>
+        internal static string DeviceTypeNullMessage {
+            get {
+                return ResourceManager.GetString("DeviceTypeNullMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Device year manufactured is invalid..
+        /// </summary>
+        internal static string DeviceYearManufacturedInvalidMessage {
+            get {
+                return ResourceManager.GetString("DeviceYearManufacturedInvalidMessage", resourceCulture);
             }
         }
         
@@ -129,6 +174,32 @@ namespace BEIMA.Backend {
         internal static string InvalidIdMessage {
             get {
                 return ResourceManager.GetString("InvalidIdMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Invalid credentials..
+        /// </summary>
+        internal static string UnauthorizedMessage {
+            get {
+                return ResourceManager.GetString("UnauthorizedMessage", resourceCulture);
+            }
+        }
+
+        ///   Looks up a localized string similar to Location is invalid..
+        /// </summary>
+        internal static string InvalidLocationMessage {
+            get {
+                return ResourceManager.GetString("InvalidLocationMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The max character length on field &quot;{0}&quot; has been exceeded..
+        /// </summary>
+        internal static string MaxCharacterLengthExceededMessage {
+            get {
+                return ResourceManager.GetString("MaxCharacterLengthExceededMessage", resourceCulture);
             }
         }
         
