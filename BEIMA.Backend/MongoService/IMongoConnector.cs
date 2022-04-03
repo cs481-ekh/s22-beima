@@ -146,5 +146,12 @@ namespace BEIMA.Backend.MongoService
         /// <param name="filter">The filter to be applied.</param>
         /// <returns>List of BsonDocuments</returns>
         public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
+
+        /// <summary>
+        /// Deletes from the "users" collection, given the objectID.
+        /// </summary>
+        /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
+        /// <returns>true if successful, false if not successful</returns>
+        public bool DeleteUser(ObjectId objectId);
     }
 }
