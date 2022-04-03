@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.FT
 {
@@ -187,6 +188,48 @@ namespace BEIMA.Backend.FT
             // ASSERT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetUser(userId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task UserInDatabase_UpdateUserWithPassword_ReturnsUpdatedUser()
+        {
+            // ARRANGE
+            var origUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(origUser);
+            var origItem = await TestClient.GetUser(userId);
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new User
+            {
+                Id = userId,
+                Username = "user.name",
+                Password = "NewPassword123!",
+                FirstName = "Alexis",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var updatedUser = await TestClient.UpdateUser(updateItem);
+
+            // ASSERT
+            Assert.That(updatedUser, Is.Not.Null);
+            Assert.That(updatedUser.FirstName, Is.Not.EqualTo(origUser.FirstName));
+            
+            Assert.That(updatedUser.Id, Is.EqualTo(updateItem.Id));
+            Assert.That(updatedUser.Username, Is.EqualTo(updateItem.Username));
+            Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
+            Assert.That(updatedUser.Role, Is.EqualTo(updateItem.Role));
+
+            Assert.That(BCryptNet.Verify(updateItem.Password, updatedUser.Password), Is.True);
         }
     }
 }
