@@ -39,7 +39,7 @@ namespace BEIMA.Backend.AuthService
         /// <summary>
         /// Creates a JWT token from a passed in user
         /// </summary>
-        /// <param name="user"></param>
+        /// <param name="user">User that you want to encode into a token</param>
         /// <returns>string encoding of a JWT token</returns>
         public string CreateToken(User user)
         {
@@ -56,7 +56,7 @@ namespace BEIMA.Backend.AuthService
         /// Parses the headers of an HttpRequest for
         /// a JWT and returnes the claims found inside of it
         /// </summary>
-        /// <param name="req"></param>
+        /// <param name="req">Http request that has been sent to the backend</param>
         /// <returns>JWT claims</returns>
         public Claims ParseToken(HttpRequest req)
         {

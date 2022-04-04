@@ -121,6 +121,14 @@
     <value>Building could not be found.</value>
     <comment>Error message for when trying to access a building that could not be found in the database.</comment>
   </data>
+  <data name="BuildingNullMessage" xml:space="preserve">
+    <value>Building is null.</value>
+    <comment>Error message for a null building.</comment>
+  </data>
+  <data name="CannotDeleteAdminMessage" xml:space="preserve">
+    <value>The admin could not be deleted because this is the only remaining admin account remaining. There must be at least one admin account existing at all times.</value>
+    <comment>Error message for trying to delete the only admin account in the system.</comment>
+  </data>
   <data name="CannotDeleteBuildingMessage" xml:space="preserve">
     <value>The building could not be deleted because at least one device exists in the database with this building.</value>
     <comment>Error message for trying to delete a building that has at least one associated device in the database.</comment>
@@ -128,6 +136,10 @@
   <data name="CannotDeleteDeviceTypeMessage" xml:space="preserve">
     <value>The device type could not be deleted because at least one device exists in the database with this device type.</value>
     <comment>Error message for trying to delete a device type that has at least one associated device in the database.</comment>
+  </data>
+  <data name="CannotHaveMatchingFieldNamesMessage" xml:space="preserve">
+    <value>Cannot have matching field names.</value>
+    <comment>Error message for trying to create a device type with matching field names.</comment>
   </data>
   <data name="CouldNotParseBody" xml:space="preserve">
     <value>Could not parse the request body.</value>
@@ -145,6 +157,10 @@
     <value>Device type could not be found.</value>
     <comment>Error message for when trying to access a device type that could not be found in the database.</comment>
   </data>
+  <data name="DeviceTypeNullMessage" xml:space="preserve">
+    <value>Device type is null.</value>
+    <comment>Error message for a null device type.</comment>
+  </data>
   <data name="DeviceYearManufacturedInvalidMessage" xml:space="preserve">
     <value>Device year manufactured is invalid.</value>
     <comment>Error message for an invalid device year manufactured.</comment>
@@ -156,6 +172,10 @@
   <data name="InvalidIdMessage" xml:space="preserve">
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>
+  </data>
+  <data name="UnauthorizedMessage" xml:space="preserve">
+    <value>Invalid credentials.</value>
+    <comment>Error message for when the credentials that are being used are unauthorized to perform an action.</comment>
   </data>
   <data name="InvalidLocationMessage" xml:space="preserve">
     <value>Location is invalid.</value>

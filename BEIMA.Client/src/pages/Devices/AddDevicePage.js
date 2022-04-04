@@ -163,9 +163,14 @@ const AddDevicePage = () => {
   * gathers data from the form and saves the device to the DB
   * @param the Add Device button click event
   */
-  function saveDeviceToDb(addButtonEvent) {
+  async function saveDeviceToDb(addButtonEvent) {
+    if (selectedDeviceType.name === 'Select Device Type'){
+      Notifications.error("Device Type not selected", 'A Device Type selection is required.');
+      return;
+    }
+    
     const formFields = addButtonEvent.target.form.elements;
-    const dbJson = createJSON(formFields);
+    const dbJson = await createJSON(formFields);
     if(dbJson){
       AddDevice(dbJson, deviceImage, deviceAdditionalDocs).then(response => {
         //reset the form or show a message regarding insertion failure
@@ -191,15 +196,11 @@ const AddDevicePage = () => {
   * @param the fields on the form from the button click event
   * @return the compiled JSON
   */
-  function createJSON(formFields){
-    if (selectedDeviceType.name === 'Select Device Type'){
-      Notifications.error("Device Type not selected", 'A Device Type selection is required.');
-      return;
-    }
-    
+  async function createJSON(formFields){
     //sets up base db object/clears errors
     let dbJson = {fields: {}, location: { 'notes' : ""}};
     let newErrors = {};
+    let warnings = [];
     
     //loops through visible fields on the form
     for(let i = 0; i < formFields.length; i++){
@@ -228,6 +229,10 @@ const AddDevicePage = () => {
         let formJSON = '';
         let jsonKey = convertToDbFriendly(formName);
         
+        if(formFields[i].value.length === 0){
+          warnings.push(`"${formName}" field is empty<br/>`);
+        }
+        
         //straight append when it's not part of a nested element
         //otherwise it attaches it to the nested element
         if(!(typeof jsonKey == 'object')){
@@ -245,12 +250,17 @@ const AddDevicePage = () => {
     console.log(deviceImage);
     console.log(deviceAdditionalDocs);
     
+    let isConfirmed = true;
+    
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
       return false;
-    } else {
+    } else if (warnings.length > 0) {
+      isConfirmed = (await Notifications.warning('Warning', warnings)).isConfirmed;
+    }
     
+    if(isConfirmed) {
       dbJson.deviceTypeId = selectedDeviceType._id;
       dbJson.location.buildingId = selectedBuilding.id;
       

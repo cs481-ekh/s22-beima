@@ -385,6 +385,55 @@ namespace BEIMA.Backend.FT
             return JsonConvert.DeserializeObject<User>(content);
         }
 
+        /// <summary>
+        /// Sends a user get list request to the BEIMA api.
+        /// </summary>
+        /// <returns>The user list.</returns>
+        public async Task<List<User>> GetUserList()
+        {
+            var response = await SendRequest("api/user-list", HttpVerb.GET);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<List<User>>(content);
+        }
+
+        /// <summary>
+        /// Sends a user delete request to the BEIMA api.
+        /// </summary>
+        /// <param name="id">The id of the user to delete.</param>
+        /// <returns>True if the deletion was successful, otherwise false.</returns>
+        public async Task<bool> DeleteUser(string id)
+        {
+            var response = await SendRequest($"api/user/{id}/delete", HttpVerb.POST);
+            return response.IsSuccessStatusCode;
+        }
+
+        /// <summary>
+        /// Sends a user update request to the BEIMA api.
+        /// </summary>
+        /// <param name="user">The user to update.</param>
+        /// <returns>The id of the new user.</returns>
+        public async Task<User> UpdateUser(User user)
+        {
+            var response = await SendRequest($"api/user/{user.Id}/update", HttpVerb.POST, user);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<User>(content);
+        }
+
+        #endregion
+
+        #region Auth Requests
+        
+        /// <summary>
+        /// Sends a login post request to the BEIMA api.
+        /// </summary>
+        /// <param name="data">Object containing a user's username and password.</param>
+        /// <returns>Jwt token for the user.</returns>
+        public async Task<string> Login(LoginRequest data)
+        {
+            var response = await SendRequest("api/login", HttpVerb.POST, data);
+            var content = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<string>(content);
+        }
         #endregion
 
         /// <summary>
