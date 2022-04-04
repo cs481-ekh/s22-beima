@@ -83,7 +83,24 @@ namespace BEIMA.Backend.Test.ReportServices
             var bytes = ReportWriter.GenerateDeviceTypeReport(deviceTypeList, deviceList);
 
             // Assert
-            Assert.That(bytes, Is.Null);
+            Assert.That(bytes, Is.Not.Null);
+            var content = Encoding.UTF8.GetString(bytes);
+            var contentRows = content.Split(Environment.NewLine);
+            Assert.That(contentRows.Count, Is.EqualTo(2));
+
+            var headers = new List<List<string>>()
+            {
+                new List<string>() { "Id", "Name", "Description", "Notes" },
+                new List<string>() { "Date", "User" },
+                new List<string>() { "DeviceCount"}
+            };
+            var headerString = CombineColumnValues(headers);
+            Assert.That(contentRows[0], Is.EqualTo(headerString));
+
+            var rowOneDeviceList = new List<Device>();
+            var rowOne = DeviceTypeToColumnValues(deviceTypeOne, rowOneDeviceList);
+            var rowOneString = CombineColumnValues(rowOne);
+            Assert.That(contentRows[1], Is.EqualTo(rowOneString));
         }
 
 

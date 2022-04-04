@@ -31,11 +31,6 @@ namespace BEIMA.Backend.ReportService
                 return null;
             }
 
-            if(devices == null || devices.Count == 0)
-            {
-                return null;
-            }
-
             // Create dict to group devices based on device type id
             var typeToDevices = new Dictionary<ObjectId, List<Device>>();
             foreach (var deviceType in deviceTypes)
@@ -43,15 +38,18 @@ namespace BEIMA.Backend.ReportService
                 typeToDevices.Add(deviceType.Id, new List<Device>());
             }
 
-            // Get all devices and add them to the dict based on deviceTypeId            
-            foreach (var device in devices)
+            // Get all devices and add them to the dict based on deviceTypeId
+            if(devices != null)
             {
-                // Only add a device if it's deviceType exists in the deviceTypes list. Should always be the case
-                if (typeToDevices.ContainsKey(device.DeviceTypeId))
+                foreach (var device in devices)
                 {
-                    typeToDevices[device.DeviceTypeId].Add(device);
+                    // Only add a device if it's deviceType exists in the deviceTypes list. Should always be the case
+                    if (typeToDevices.ContainsKey(device.DeviceTypeId))
+                    {
+                        typeToDevices[device.DeviceTypeId].Add(device);
+                    }
                 }
-            }
+            }            
 
             byte[] fileBytes;
             using (var stream = new MemoryStream())
