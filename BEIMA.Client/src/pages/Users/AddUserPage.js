@@ -42,7 +42,7 @@ const AddUserPage = () => {
   
   function checkPassword(){
     let passwordErrors = {};
-    let requirements = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[-+_!@#$%^&*.,?]).+$");
+    let requirements = new RegExp(Constants.PASSWORD_REGEX);
     
     if(userFields["Password"] === '') {
       passwordErrors["Password"] = 'Password cannot be empty';
