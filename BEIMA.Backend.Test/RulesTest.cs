@@ -274,6 +274,53 @@ namespace BEIMA.Backend.Test
 
         #endregion Building Rules
 
+        #region User Rules
+
+        [Test]
+        public void UserAllFieldsValid_IsUserValid_ReturnsTrue()
+        {
+            // ARRANGE
+            var password = BCrypt.Net.BCrypt.HashPassword("Abcd123!");
+            var user = new User(ObjectId.GenerateNewId(), "UserName", password, "John", "Doe", "admin");
+
+            string message;
+            HttpStatusCode statusCode;
+
+            // ACT
+            var result = Rules.IsUserValid(user, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.True);
+            Assert.That(message, Is.EqualTo(string.Empty));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.OK));
+        }
+
+        [Test]
+        public void UserAllFieldsInvalid_IsUserValid_ReturnsFalse()
+        {
+            // ARRANGE
+            var user = new User(ObjectId.GenerateNewId(), _longString, _longString, _longString, _longString, _longString);
+
+            string message;
+            HttpStatusCode statusCode;
+
+            var expectedMessage = "The max character length on field \"Username\" has been exceeded.\n" +
+                                  "The max character length on field \"Password\" has been exceeded.\n" +
+                                  "The max character length on field \"FirstName\" has been exceeded.\n" +
+                                  "The max character length on field \"LastName\" has been exceeded.\n" +
+                                  "The max character length on field \"Role\" has been exceeded.";
+
+            // ACT
+            var result = Rules.IsUserValid(user, out message, out statusCode);
+
+            // ASSERT
+            Assert.That(result, Is.False);
+            Assert.That(message, Is.EqualTo(expectedMessage));
+            Assert.That(statusCode, Is.EqualTo(HttpStatusCode.BadRequest));
+        }
+
+        #endregion User Rules
+
         /// <summary>
         /// Generates a set of test case parameters relating to the device or building location.
         /// </summary>
