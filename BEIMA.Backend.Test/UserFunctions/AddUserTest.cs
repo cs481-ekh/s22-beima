@@ -25,6 +25,9 @@ namespace BEIMA.Backend.Test.UserFunctions
             mockDb.Setup(mock => mock.InsertUser(It.IsAny<BsonDocument>()))
                   .Returns(ObjectId.GenerateNewId())
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
+                  .Returns(new List<BsonDocument>())
+                  .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             // Create request
