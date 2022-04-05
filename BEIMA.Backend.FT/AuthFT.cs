@@ -1,6 +1,7 @@
 ﻿using JWT.Builder;
 using NUnit.Framework;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
@@ -11,9 +12,36 @@ namespace BEIMA.Backend.FT
     public class AuthFT : FunctionalTestBase
     {
         [SetUp]
-        public void SetUp()
+        public async Task SetUpAsync()
         {
-            // Add in deleting all the users in the database once functionality implemented
+            // Have at least one admin user in the DB at all times
+            // since DeleteUser prevents deletion when there is not at least one admin user.
+            var initialUserList = await TestClient.GetUserList();
+            if (!initialUserList.Any(user => user.Username == "first.admin"))
+            {
+                var adminUser = new User
+                {
+                    Username = "first.admin",
+                    Password = "Abcdefg12345!",
+                    FirstName = "First",
+                    LastName = "Last",
+                    Role = "admin"
+                };
+                await TestClient.AddUser(adminUser);
+            }
+
+            // Delete all the users in the database
+
+            // Grab a new list
+            var userList = await TestClient.GetUserList();
+            foreach (var user in userList)
+            {
+                if (user?.Id is not null && user?.Username != "first.admin")
+                {
+                    var id = user?.Id ?? string.Empty;
+                    await TestClient.DeleteUser(id);
+                }
+            }
         }
 
         [TestCase(null, null)]
@@ -51,8 +79,8 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
-        [TestCase("valid", "valid")]
-        [TestCase("valid2", "valid2")]
+        [TestCase("valid", "Valid01!")]
+        [TestCase("valid2", "Valid02!")]
         public async Task ValidParametersWithUsers_Login_ReturnsJwtToken(string username, string password)
         {
             var user = new User()

@@ -173,6 +173,10 @@
     <value>Invalid Id.</value>
     <comment>Error message for an invalid id.</comment>
   </data>
+  <data name="InvalidPasswordMessage" xml:space="preserve">
+    <value>Password is invalid. Password must be at least 8 characters and contain at least an uppercase letter, a number, and a special character.</value>
+    <comment>Error message for trying to use a password that does not meet the requirements.</comment>
+  </data>
   <data name="UnauthorizedMessage" xml:space="preserve">
     <value>Invalid credentials.</value>
     <comment>Error message for when the credentials that are being used are unauthorized to perform an action.</comment>

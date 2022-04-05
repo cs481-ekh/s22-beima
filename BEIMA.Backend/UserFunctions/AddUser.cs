@@ -12,6 +12,8 @@ using MongoDB.Bson;
 using BEIMA.Backend.Models;
 using System.Net;
 using BCryptNet = BCrypt.Net.BCrypt;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -38,6 +40,13 @@ namespace BEIMA.Backend.UserFunctions
             {
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<UserRequest>(requestBody);
+
+                // Verify password meets all requirements
+                if (string.IsNullOrEmpty(data.Password) || !Regex.Match(data.Password, Constants.PASSWORD_REGEX).Success)
+                {
+                    return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
+                }
+
                 var passwordHash = BCryptNet.HashPassword(data.Password);
                 user = new User(ObjectId.GenerateNewId(),
                                         data.Username,

@@ -13,6 +13,8 @@ using MongoDB.Bson.Serialization;
 using BEIMA.Backend.Models;
 using System.Net;
 using BCryptNet = BCrypt.Net.BCrypt;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -60,19 +62,23 @@ namespace BEIMA.Backend.UserFunctions
                 }
 
                 // If the password sent in is null or empty string, then do not update the password.
-                if (updatedUserRecord.Password == null || updatedUserRecord.Password == string.Empty)
+                if (string.IsNullOrEmpty(updatedUserRecord.Password))
                 {
                     var originalUserRecord = BsonSerializer.Deserialize<User>(originalUserDoc);
                     updatedUserRecord.Password = originalUserRecord.Password;
                 }
                 else
                 {
-                    // TODO: Add validation for password length and special characters
+                    // Verify password meets all requirements
+                    if (!Regex.Match(updatedUserRecord.Password, Constants.PASSWORD_REGEX).Success)
+                    {
+                        return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
+                    }
                     updatedUserRecord.Password = BCryptNet.HashPassword(updatedUserRecord.Password);
                 }
 
                 // Set user properties to new values
-                user = new User(new ObjectId(id), updatedUserRecord.Username, updatedUserRecord.Password, 
+                user = new User(new ObjectId(id), updatedUserRecord.Username, updatedUserRecord.Password,
                     updatedUserRecord.FirstName, updatedUserRecord.LastName, updatedUserRecord.Role);
             }
             catch (Exception)
