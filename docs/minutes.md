@@ -1,3 +1,31 @@
+## Minutes: 2022-04-05
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 3 Retro
+What went well?
+ * We got A LOT of work done (74 tasks)
+ * We got a good flow going for this sprint, was able to work kinks out easier
+ * We were able to work together for getting blocked tasks done
+ * PRs had good feedback
+ * We learned new things from others' PR comments
+
+What didn't go well?
+ * Some blocking tasks, but not as bad as previously
+ * Some PRs were sitting there in the queue for longer than normal
+
+Action items
+ * If PRs are not getting feedback, ping the chat
+
+Next roles
+ * Kenny is scrum master
+ * Tom is product owner
+ * Keelan is scribe
+
 ## Minutes: 2022-03-31
 ### scribe: Ashlyn
 ### Attendees:
