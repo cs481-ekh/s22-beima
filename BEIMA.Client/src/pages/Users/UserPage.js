@@ -1,47 +1,31 @@
 import { useEffect, useState } from "react";
-import { useOutletContext, useParams} from 'react-router-dom';
+import { useOutletContext, useParams, useNavigate} from 'react-router-dom';
 import { Form, Card, Button, FormControl } from "react-bootstrap";
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './UserPage.module.css'
 import * as Constants from '../../Constants';
+import GetUser from '../../services/GetUser.js';
+import UpdateUser from '../../services/UpdateUser.js';
+import DeleteUser from '../../services/DeleteUser.js';
+import * as Notifications from '../../shared/Notifications/Notification.js';
 
 const UserPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   
+  const { id } = useParams();
+  
   useEffect(() => {
     setPageName('View User');
-  }, [setPageName])
-  
-  const { userId } = useParams();
-  
-  const mockCall = async(userId) => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-    await sleep(500);
-    const userData = {
-      id: "0",
-      role: "User's assigned role",
-      firstName: "firstName",
-      lastName: "lastName",
-      username: "userName",
-    }
-    
-    //combine first and last for full name
-    userData["name"] = `${userData.firstName} ${userData.lastName}`;
-    
-    return userData;
-  }
-  
-  useEffect(() => {
     const loadData = async () => {
-      const user = await mockCall(userId);
+      const user = (await GetUser(id)).response;
       setUser(user);
       setLoading(false);
     }
    loadData();
 
-  },[userId])
+  },[id, setPageName])
   
    /**
    * Renders an card styled input that lets a user change a field's input
@@ -75,15 +59,16 @@ const UserPage = () => {
   const RenderItem = ({user}) => {
     const [editable, setEditable] = useState(false);
 
-    const [userId] = useState(user.id);
+    const [userId] = useState(user._id);
     const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
     const [role, setRole] = useState(user.role);
+    const navigate = useNavigate();
 
-    const updateUserCall = () => {
+    const updateUserCall = async () => {
       const newUser = {
-        _id:userId,
+        _id: userId,
         username: username,
         firstName: firstName,
         lastName : lastName,
@@ -91,13 +76,28 @@ const UserPage = () => {
       }
 
       // Call Update User
-      console.log(newUser);
-      setEditable(false)
+      let updateResult = await UpdateUser(newUser);
+      if(updateResult.status === Constants.HTTP_SUCCESS){
+        Notifications.success("Update User Successful", `User ${username} updated successfully.`);
+        setEditable(false);
+      } else {
+        Notifications.error("Unable to Update User", `Update of User ${username} failed.`);
+      }
     }
     
-    const deleteUserCall = () => {
-      //TODO integrate with styled error/confirm message
-      alert("you sure?");
+    const deleteUserCall = async () => {
+      let deleteNotif = await Notifications.warning("Warning: User Deletion", [`Are you sure you want to delete User ${username}?`]);
+      if(deleteNotif.isConfirmed){
+        let deleteResult = await DeleteUser(userId);
+        if(deleteResult.status === Constants.HTTP_SUCCESS){
+          Notifications.success("User Deletion Successful", `User ${username} successfully deleted.`);
+          navigate('/users');
+        } else if (deleteResult.status === Constants.HTTP_CONFLICT_RESULT){
+          Notifications.error("Unable to Delete User", `${deleteResult.response}`);
+        } else {
+          Notifications.error("Unable to Delete User", `Deletion of User ${username} failed.`);
+        }
+      }
     }
 
     const cancel = () => {      
@@ -158,7 +158,7 @@ const UserPage = () => {
   return (
     <div className={styles.item} id="userPageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${user.name}`}
+        title={loading ? 'Loading' : `${user.firstName} ${user.lastName}`}
         RenderItem={<RenderItem user={user}/>} 
         loading={loading}
         route="/users"

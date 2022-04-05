@@ -22,3 +22,9 @@
     border-radius: 5px;
     padding: 5px 15px;
 }
+
+.dropDownSelected {
+  background-color: #FFFFFF !important;
+  border-color: #D64309 !important;
+  color: #D64309 !important;
+}

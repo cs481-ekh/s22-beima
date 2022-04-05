@@ -13,9 +13,19 @@ export default async function getUserList() {
   }
 });
 
+let combinedFields = userListCall.data.map(user => {
+  return {
+    id: user._id,
+    name : `${user.firstName} ${user.lastName}`,
+    username : user.username,
+    role : user.role,
+    lastModified: user.lastModified
+  }
+})
+
 const response = {
   status: userListCall.status,
-  response: userListCall.data
+  response: combinedFields
 }
 
 return response;
