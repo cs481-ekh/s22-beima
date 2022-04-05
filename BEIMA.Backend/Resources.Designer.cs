@@ -223,6 +223,15 @@ namespace BEIMA.Backend {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Username already exists..
+        /// </summary>
+        internal static string UsernameAlreadyExistsMessage {
+            get {
+                return ResourceManager.GetString("UsernameAlreadyExistsMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to User could not be found..
         /// </summary>
         internal static string UserNotFoundMessage {
