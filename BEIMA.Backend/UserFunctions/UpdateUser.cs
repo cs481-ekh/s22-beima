@@ -60,11 +60,21 @@ namespace BEIMA.Backend.UserFunctions
                 {
                     return new NotFoundObjectResult(Resources.UserNotFoundMessage);
                 }
+                var originalUserRecord = BsonSerializer.Deserialize<User>(originalUserDoc);
+
+                // Check for username uniqueness
+                if (originalUserRecord.Username != updatedUserRecord.Username)
+                {
+                    var filter = MongoFilterGenerator.GetEqualsFilter("username", updatedUserRecord.Username);
+                    if (mongo.GetFilteredUsers(filter).Count > 0)
+                    {
+                        return new ConflictObjectResult(Resources.UsernameAlreadyExistsMessage);
+                    }
+                }
 
                 // If the password sent in is null or empty string, then do not update the password.
                 if (string.IsNullOrEmpty(updatedUserRecord.Password))
                 {
-                    var originalUserRecord = BsonSerializer.Deserialize<User>(originalUserDoc);
                     updatedUserRecord.Password = originalUserRecord.Password;
                 }
                 else

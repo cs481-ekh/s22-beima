@@ -108,6 +108,15 @@ namespace BEIMA.Backend.Test
                 "\"role\": \"user\"" +
             "}";
 
+        public const string _testUserDuplicateUsername =
+            "{" +
+                "\"username\": \"---\"," +
+                "\"password\": \"ThisIsAPassword1!\"," +
+                "\"firstName\": \"Alex\"," +
+                "\"lastName\": \"Smith\"," +
+                "\"role\": \"user\"" +
+            "}";
+
         public const string _testUserBadPassword =
             "{" +
                 "\"username\": \"user.name\"," +

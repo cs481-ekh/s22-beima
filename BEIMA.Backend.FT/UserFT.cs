@@ -314,5 +314,79 @@ namespace BEIMA.Backend.FT
             Assert.That(newToken, Is.Not.Null);
             Assert.That(newToken, Is.Not.EqualTo(string.Empty));
         }
+
+        [Test]
+        public async Task UserInDatabase_AddUserWithDuplicateUsername_ConflictObjectResultReturned()
+        {
+            // ARRANGE
+            var user = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+            await TestClient.AddUser(user);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.AddUser(user)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        }
+
+        [Test]
+        public async Task TwoUsersInDatabase_UpdateUserWithDuplicateUsername_ConflictObjectResultReturned()
+        {
+            // ARRANGE
+            var existingUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+            var existingUserId = await TestClient.AddUser(existingUser);
+            Assume.That(existingUserId, Is.Not.Null);
+            Assume.That(existingUserId, Is.Not.EqualTo(string.Empty));
+
+            var updateUser = new User
+            {
+                Username = "someOtherUsername",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(updateUser);
+            var origItem = await TestClient.GetUser(userId);
+
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new User
+            {
+                Id = userId,
+                Username = "user.name",
+                Password = "",
+                FirstName = "Alexis",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.UpdateUser(updateItem)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        }
     }
 }

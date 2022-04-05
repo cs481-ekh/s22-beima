@@ -35,6 +35,8 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user post request.");
 
+            var mongo = MongoDefinition.MongoInstance;
+
             User user;
             try
             {
@@ -45,6 +47,13 @@ namespace BEIMA.Backend.UserFunctions
                 if (string.IsNullOrEmpty(data.Password) || !Regex.Match(data.Password, Constants.PASSWORD_REGEX).Success)
                 {
                     return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
+                }
+
+                // Check for username uniqueness
+                var filter = MongoFilterGenerator.GetEqualsFilter("username", data.Username);
+                if(mongo.GetFilteredUsers(filter).Count > 0)
+                {
+                    return new ConflictObjectResult(Resources.UsernameAlreadyExistsMessage);
                 }
 
                 var passwordHash = BCryptNet.HashPassword(data.Password);
@@ -71,7 +80,6 @@ namespace BEIMA.Backend.UserFunctions
                 return response;
             }
 
-            var mongo = MongoDefinition.MongoInstance;
             var id = mongo.InsertUser(user.GetBsonDocument());
 
             //InsertUser returned a null result, meaning it failed, so send a 500 error

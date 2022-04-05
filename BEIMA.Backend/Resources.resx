@@ -197,4 +197,8 @@
     <value>User is null.</value>
     <comment>Error message for a null user.</comment>
   </data>
+  <data name="UsernameAlreadyExistsMessage" xml:space="preserve">
+    <value>Username already exists.</value>
+    <comment>Error message for when a username has already been taken. Another username must be chosen.</comment>
+  </data>
 </root>
