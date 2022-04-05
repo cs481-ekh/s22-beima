@@ -1,4 +1,36 @@
 ## Minutes: 2022-04-05
+### scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 4 Pre-Planning Session
+Discussed what we should focus on during Sprint 4:
+* Filtering - urgent (do query string on back end first)
+* Searching for device by tag?
+* Authentication (on all endpoints and login pages)
+* Reporting (.csv stuff)
+* Building endpoint integration
+* Documentation - meeting next Tuesday?
+* Make GitHub IO page
+* Docker deployment
+* UI and endpoint cleanup
+* Mock map
+* Add download functionality for files/photos for front end
+* Graphics for showcase
+* Change base URL for SDP server
+* Add favicon and tab title
+* Add SDP sticker
+
+Make documentation lower priority
+
+Action Items:
+* Sprint planning session tomorrow at 6pm
+
+
+## Minutes: 2022-04-05
 ### scribe: Ashlyn
 ### Attendees:
 	Joseph Moore
