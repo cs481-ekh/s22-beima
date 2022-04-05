@@ -76,7 +76,7 @@ namespace BEIMA.Backend.Test.UserFunctions
                         Is.EqualTo("Password is invalid. Password must be at least 8 characters and contain at least an uppercase letter, a number, and a special character."));
         }
 
-        //[TestCase("user.name")]
+        [TestCase("user.name")]
         [TestCase("testUser")]
         [TestCase("12345")]
         [TestCase("true")]
@@ -86,14 +86,14 @@ namespace BEIMA.Backend.Test.UserFunctions
             // ARRANGE
             // Setup mock database client
 
-            var user1 = new User(ObjectId.GenerateNewId(), username, "ThisIsAPassword1!", "Alex", "Smith", "user");
+            var user = new User(ObjectId.GenerateNewId(), username, "ThisIsAPassword1!", "Alex", "Smith", "user");
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.InsertUser(It.IsAny<BsonDocument>()))
                   .Returns(ObjectId.GenerateNewId())
                   .Verifiable();
             mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
-                  .Returns(new List<BsonDocument> { user1.ToBsonDocument() })
+                  .Returns(new List<BsonDocument> { user.ToBsonDocument() })
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
