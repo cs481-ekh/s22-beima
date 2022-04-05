@@ -8,6 +8,8 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using static BEIMA.Backend.Test.RequestFactory;
 using System.Net;
+using MongoDB.Driver;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {
@@ -69,6 +71,42 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
             Assert.That(response.Value?.ToString(),
                         Is.EqualTo("Password is invalid. Password must be at least 8 characters and contain at least an uppercase letter, a number, and a special character."));
+        }
+
+        //[TestCase("user.name")]
+        [TestCase("testUser")]
+        [TestCase("12345")]
+        [TestCase("true")]
+        [TestCase("a")]
+        public async Task OneUser_AddUserWithDuplicateUsername_ReturnsErrorMessage(string username)
+        {
+            // ARRANGE
+            // Setup mock database client
+
+            var user1 = new User(ObjectId.GenerateNewId(), username, "ThisIsAPassword1!", "Alex", "Smith", "user");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.InsertUser(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
+                  .Returns(new List<BsonDocument> { user1.ToBsonDocument() })
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Create request
+            var body = TestData._testUserDuplicateUsername.Replace("---", username);
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = ((ObjectResult)await AddUser.Run(request, logger));
+
+            // ASSERT
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Conflict));
+            Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
+            Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
         }
     }
 }
