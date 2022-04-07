@@ -9,6 +9,7 @@ import updateDevice from "../../services/UpdateDevice.js";
 import deleteDevice from "../../services/DeleteDevice.js";
 import getDevice from "../../services/GetDevice.js";
 import GetDeviceType from '../../services/GetDeviceType';
+import GetBuilding from '../../services/GetBuilding.js';
 import * as Constants from '../../Constants';
 
 const DevicePage = () => {
@@ -18,6 +19,7 @@ const DevicePage = () => {
   const [image, setImage] = useState(null)
   const [documents, setDocuments] = useState([])
   const [deviceType, setDeviceType] = useState(null)
+  const [building, setBuilding] = useState(null)
 
   useEffect(() => {
     setPageName('View Device')
@@ -30,11 +32,18 @@ const DevicePage = () => {
       let deviceCall = await getDevice(id);
       const device = deviceCall.response;
       const deviceType = (await GetDeviceType(device.deviceTypeId)).response;
-  
+      let building;
+      if(device.location.buildingId !== null){
+        building = (await GetBuilding(device.location.buildingId)).response;
+      } else {
+        building = {name: 'No Assigned Building'};
+      }
+
       setDevice(device)
       setImage(device.photo)
       setDocuments(device.files)
       setDeviceType(deviceType)
+      setBuilding(building)
       setLoading(false)
     }
    loadData();
@@ -421,7 +430,7 @@ const DevicePage = () => {
   return (
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
-        title={loading ? 'Loading' : `${device.deviceTag} - ${deviceType.name} - <Building Name>`}
+        title={loading ? 'Loading' : `${device.deviceTag} - ${deviceType.name} - ${building.name}`}
         RenderItem={<RenderItem device={device} deviceType={deviceType} image={image} documents={documents}/>} 
         loading={loading}
         route="/devices"
