@@ -1,44 +1,30 @@
-import { useOutletContext, useParams } from 'react-router-dom';
-import { useEffect, useState } from "react"
+import { useOutletContext, useParams, useNavigate} from 'react-router-dom';
+import { useEffect, useState  } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import styles from './BuildingPage.module.css'
 import { Form, Card, Button, FormControl } from "react-bootstrap";
 import * as Constants from '../../Constants';
+import GetBuilding from '../../services/GetBuilding.js';
+import UpdateBuilding from '../../services/UpdateBuilding';
+import DeleteBuilding from '../../services/DeleteBuilding';
+import * as Notifications from '../../shared/Notifications/Notification.js';
 
 const BuildingPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [building, setBuilding] = useState(null);
 
-  useEffect(() => {
-    setPageName('View Building')
-  },[setPageName])
-
   const { id } = useParams();
 
-  const mockBuildingCall = async(id) => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(500)
-    const building = {
-      id: "5",
-      name: `Test Building #5`,
-      number: "2987",
-      latitude: "23.352",
-      longitude: "95.2973",
-      notes: 'Somewhere on campus'
-    }
-    return building
-  }
-  
   useEffect(() => {
     const loadData = async() => {
-      const building = await mockBuildingCall(id)
-  
+      const building = (await GetBuilding(id)).response;
       setBuilding(building)
       setLoading(false)
     }
    loadData();
-  },[id]) 
+    setPageName('View Building')
+  },[setPageName, id])
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -97,26 +83,49 @@ const BuildingPage = () => {
   const RenderItem = ({building}) => {
     const [editable, setEditable] = useState(false)
 
-    const [buildingId] = useState(building.id)
+    const [buildingId] = useState(building._id)
     const [name, setName] = useState(building.name)
     const [number, setNumber] = useState(building.number)
-    const [lat, setLat] = useState(building.latitude)
-    const [long, setLong] = useState(building.longitude)
+    const [lat, setLat] = useState(building.location.latitude)
+    const [long, setLong] = useState(building.location.longitude)
     const [notes, setNotes] = useState(building.notes)
+    const navigate = useNavigate();
 
-    const updateBuildingCall = () => {
+    const updateBuildingCall = async () => {
       const newBuilding = {
         _id:buildingId,
         name:name,
         number:number,
         notes:notes,
-        latitude:lat,
-        longitude:long
+        location: {
+          latitude:lat,
+          longitude:long
+        }
       }
 
-      // Hit endpoints here
-      console.log(newBuilding)
-      setEditable(false)
+      // Call Update Building
+      let updateResult = await UpdateBuilding(newBuilding);
+      if(updateResult.status === Constants.HTTP_SUCCESS){
+        Notifications.success("Update Building Successful", `Building ${name} updated successfully.`);
+        setEditable(false);
+      } else {
+        Notifications.error("Unable to Update Building", `Update of Building ${name} failed.`);
+      }
+    }
+
+    const deleteBuildingCall = async () => {
+      let deleteNotif = await Notifications.warning("Warning: User Deletion", [`Are you sure you want to delete User ${name}?`]);
+      if(deleteNotif.isConfirmed){
+        let deleteResult = await DeleteBuilding(buildingId);
+        if(deleteResult.status === Constants.HTTP_SUCCESS){
+          Notifications.success("Building Deletion Successful", `Building ${name} successfully deleted.`);
+          navigate('/buildings');
+        } else if (deleteResult.status === Constants.HTTP_CONFLICT_RESULT){
+          Notifications.error("Unable to Delete Building", `${deleteResult.response}`);
+        } else {
+          Notifications.error("Unable to Delete Building", `Deletion of Building ${name} failed.`);
+        }
+      }
     }
 
     const cancel = () => {      
@@ -146,7 +155,7 @@ const BuildingPage = () => {
     return (
       <Form className={styles.form}>
         <Form.Group className="mb-3">
-          <Button variant="danger" id="deletebtn" className={styles.deleteButton}>
+          <Button variant="danger" id="deletebtn" className={styles.deleteButton} onClick={() => deleteBuildingCall()}>
               Delete Building
           </Button>
           {editable ? 
