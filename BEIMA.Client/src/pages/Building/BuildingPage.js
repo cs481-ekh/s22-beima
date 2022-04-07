@@ -114,7 +114,7 @@ const BuildingPage = () => {
     }
 
     const deleteBuildingCall = async () => {
-      let deleteNotif = await Notifications.warning("Warning: User Deletion", [`Are you sure you want to delete User ${name}?`]);
+      let deleteNotif = await Notifications.warning("Warning: Building Deletion", [`Are you sure you want to delete Building ${name}?`]);
       if(deleteNotif.isConfirmed){
         let deleteResult = await DeleteBuilding(buildingId);
         if(deleteResult.status === Constants.HTTP_SUCCESS){
