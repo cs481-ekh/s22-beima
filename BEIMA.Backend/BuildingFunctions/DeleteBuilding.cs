@@ -38,8 +38,8 @@ namespace BEIMA.Backend.BuildingFunctions
             var buildingId = new ObjectId(id);
 
             // Do not delete if at least one device exists with this building.
-            // TODO: Use database filter for devices instead of getting the list of all buildings.
-            if (mongo.GetAllDevices().Where(d => d["location"]["buildingId"].AsObjectId.Equals(buildingId)).Any())
+            var filter = MongoFilterGenerator.GetEqualsFilter("location.buildingId", buildingId);
+            if (mongo.GetFilteredDevices(filter).Count > 0)
             {
                 return new ConflictObjectResult(Resources.CannotDeleteBuildingMessage);
             }

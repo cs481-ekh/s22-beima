@@ -4,8 +4,9 @@ import { Card, Button, Form, Row, Col } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddBuildingPage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
-import { MAX_LATITUDE, MAX_LONGITUDE } from '../../Constants.js';
-
+import * as Constants from '../../Constants.js';
+import AddBuilding from '../../services/AddBuilding.js';
+import * as Notifications from '../../shared/Notifications/Notification.js';
 
 const AddBuildingPage = () => {
   // this will be replaced with API call based on selected device type to get the fields
@@ -18,17 +19,16 @@ const AddBuildingPage = () => {
   }
 
   const [buildingFields] = useState(allBuildingFields);
-  const [errors, setErrors] = useState(allBuildingFields);
+  const [errors, setErrors] = useState({});
   const [setPageName] = useOutletContext();
-  const [fullBuildingJSON, setFullBuildingJSON] = useState({});
+  const [location, setLocation] = useState({});
   
   useEffect(() => {
     setPageName('Add Building')
   }, [setPageName])
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
-  function createJSON(addButtonEvent){
-    let formFields = addButtonEvent.target.form.elements;
+  function createJSON(formFields){
     let fieldValues = {};
     let newErrors = {};
 
@@ -37,36 +37,51 @@ const AddBuildingPage = () => {
       let fieldNames = Object.keys(buildingFields);
       
       if(fieldNames.includes(formName)){
-        let formJSON =  {[formName] : formFields[i].value};
+        let formJSON;
         
         //lat lon validation
         if (formName === 'Latitude' || formName === 'Longitude') {
-          const coordMax = formName === 'Latitude' ? MAX_LATITUDE : MAX_LONGITUDE;
+          const coordMax = formName === 'Latitude' ? Constants.MAX_LATITUDE : Constants.MAX_LONGITUDE;
           if(!(isFinite(formFields[i].value) && Math.abs(formFields[i].value) <= coordMax)) {
             newErrors[formName] = `${formName} value is invalid. Must be a decimal between -${coordMax} and ${coordMax}.`;
+          } else {
+            let newLocation = Object.assign(location, {[formName] : formFields[i].value});
+            setLocation(newLocation);
           }
+        } else {
+          formJSON =  {[formName] : formFields[i].value};
         }
-        
         Object.assign(fieldValues, formJSON);
       }
     }
-
-    setFullBuildingJSON(fieldValues);
-    
-    // replace with building api calls when ready
-    console.log(fullBuildingJSON);
+    fieldValues["Location"] = location;
 
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
     } else {
       setErrors({});
-      for(let i = 0; i < formFields.length; i++){
-        formFields[i].value = "";
-      }
-      
+      return fieldValues;
     }
   }
+    
+  async function saveBuildingToDB(addButtonEvent){
+    let formFields = addButtonEvent.target.form.elements;
+    let fullJSON = createJSON(formFields);
   
+    if(fullJSON && Object.keys(errors).length === 0){
+      AddBuilding(fullJSON).then(response => {
+        if(response.status === Constants.HTTP_SUCCESS){
+          for(let i = 0; i < formFields.length; i++){
+            formFields[i].value = "";
+          }
+          Notifications.success("Add Building Successful", "Adding Building completed successfully.");
+        } else {
+          Notifications.error("Unable to Add Building", "Adding Building failed.");
+        }
+      })
+    } 
+  }
+     
   return (
     <div className={styles.fieldform}>
       <Card>
@@ -79,8 +94,8 @@ const AddBuildingPage = () => {
                 </Link>
               </Col>
               <Col>
-                <Button variant="primary" type="button" className={styles.addButton} id="addBuilding" onClick={(event) => createJSON(event)}>
-                    Add Building
+                <Button variant="primary" type="button" className={styles.addButton} id="addBuilding" onClick={(event) => saveBuildingToDB(event)}>
+                  Add Building
                 </Button>
               </Col>
             </Row>
