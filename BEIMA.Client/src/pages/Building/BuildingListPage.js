@@ -3,6 +3,7 @@ import { Button, Row, Col} from 'react-bootstrap';
 import styles from  "./BuildingList.module.css"
 import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import GetBuildingList from '../../services/GetBuildingList.js';
 
 const BuildingListPage = () => {
   const [buildings, setBuildings] = useState([]);
@@ -11,42 +12,16 @@ const BuildingListPage = () => {
   let navigate = useNavigate();
 
   useEffect(() => {
-    setPageName('Buildings')
-  },[setPageName])
-  
-  const mockCall = async () => {
-    const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-    await sleep(1000)
-    let data = []
-    for(let i = 0; i < 5; i++){
-      data.push({
-        _id: i,
-        name: `Test Building #${i}`,
-        number: "2987",
-        notes: 'Somewhere on campus',
-      })
-    }
-    // Map data into format supported by list
-    let mapped = data.map(item => {
-      return {
-        id: item._id,
-        name: item.name,
-        number: item.number,
-        notes: item.notes,
-      }
-    })
-    return mapped
-  }
-
-  useEffect(() => {
     const loadData = async () => {
       setLoading(true)
-      let buildings = await mockCall()
+      let buildings = (await GetBuildingList()).response;
       setLoading(false)
       setBuildings(buildings)
     }
     loadData()
-  },[])
+    setPageName('Buildings')
+  },[setPageName])
+  
 
   /**
    * Renders a custom description of the item's fields
