@@ -1,3 +1,27 @@
+## Minutes: 2022-04-06
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 4 Planning Session
+
+Sprint Goal:
+Wrap up major pieces (authentication, filtering, building integration), write Docker file, and write documentation. We also want to clean up the UI and backend, leaving it in a state where we feel comfortable handing it off to another team.
+
+What we did:
+* Discussed goals for this upcoming sprint, prioritized different items
+* Went through all existing tasks and assigned them priorities
+* Created new tasks based on sprint goal
+* Assigned all planned tasks to team members
+
+Action Items:
+* Send Dr. Henderson email saying we cannot bring a monitor to showcase (Kenny)
+* Documentation writing meeting on Tuesday
+* Ask Brian about whether we should enforce device tag uniqueness across device and building? Also need to ask if we are certain that device tag will be unique in each building. Also ask if there could be the same device tag across different device types.
+
 ## Minutes: 2022-04-05
 ### scribe: Keelan
 ### Attendees:
