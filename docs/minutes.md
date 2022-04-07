@@ -1,3 +1,25 @@
+## Minutes: 2022-04-07
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## 4/7 Scrum
+
+What everyone is working on:
+* Keelan - working on username case insensitivity task
+* Ashlyn - building integration
+* Tom - Docker integration
+* Joe - working on bug concerning amount of time tests take 
+* Kenny -  device endpoints authentication
+
+For the demo, we should just go over all the functionality and show Brian it is all working. Focus on the fact that it is using dynamic data now.
+
+Action items:
+* Meeting on Tuesday for documentation
+
 ## Minutes: 2022-04-06
 ### Scribe: Keelan
 ### Attendees:
