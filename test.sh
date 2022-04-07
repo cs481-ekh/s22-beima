@@ -9,8 +9,11 @@ cd ../
 cd ./BEIMA.Backend
 # Start up the backend API locally
 func start BEIMA.Backend.csproj --csharp &
-# Give enough time for local API to finish starting up
-sleep 20
+# Keep looping until process has started.
+while ! lsof -Pi :7071 -sTCP:LISTEN -t >/dev/null
+do
+sleep 1
+done
 # Run all backend tests
 dotnet test || { echo "Backend tests failed"; exit 1; }
 # Frontend Cypress tests are not ran here due to them causing too many inconsistent and hard to solve failures
