@@ -9,7 +9,7 @@ cd ../
 cd ./BEIMA.Backend
 # Start up the backend API locally
 func start BEIMA.Backend.csproj --csharp &
-while lsof -Pi :7071 -sTCP:LISTEN -t >/dev/null
+while ! lsof -Pi :7071 -sTCP:LISTEN -t >/dev/null
 do
 # Keep looping until process has started.
 sleep 1
