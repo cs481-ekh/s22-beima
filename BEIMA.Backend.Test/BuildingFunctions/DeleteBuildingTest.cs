@@ -3,6 +3,7 @@ using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using System.Collections.Generic;
@@ -52,6 +53,9 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(false)
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(new List<BsonDocument> {})
+                  .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             var request = CreateHttpRequest(RequestMethod.POST);
@@ -61,7 +65,7 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var response = DeleteBuilding.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteBuilding(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
@@ -85,6 +89,9 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(new List<BsonDocument> { device.ToBsonDocument() })
+                  .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
@@ -94,7 +101,7 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var response = DeleteBuilding.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteBuilding(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
@@ -116,6 +123,9 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(new List<BsonDocument> {})
+                  .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
@@ -125,7 +135,7 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var response = DeleteBuilding.Run(request, testId, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteBuilding(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkResult)));
