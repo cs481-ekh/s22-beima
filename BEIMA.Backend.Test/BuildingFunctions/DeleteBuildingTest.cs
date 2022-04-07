@@ -47,9 +47,6 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var testId = ObjectId.GenerateNewId().ToString();
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(new List<BsonDocument>())
-                  .Verifiable();
             mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(false)
                   .Verifiable();
@@ -83,9 +80,6 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             device.Location.BuildingId = new ObjectId(testId);
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(new List<BsonDocument> { device.ToBsonDocument() })
-                  .Verifiable();
             mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
                   .Verifiable();
@@ -117,9 +111,6 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var testId = "1234567890abcdef12345678";
 
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
-                  .Returns(new List<BsonDocument>())
-                  .Verifiable();
             mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(true)
                   .Verifiable();
