@@ -1,0 +1,54 @@
+# containers created as "beima_database_1", "beima_api_1", "beima_web_1", "beima_minio_1"
+# they should be able to communicate by referencing the container name, i.e. calling the api should be as easy as:
+# http://beima_api_1/api/<endpoint>
+# get container address sudo docker inspect beima_api_1 | grep \"IPAddress\"
+# this will need additional cleanup and configuration added
+version: '2.0'
+services:
+  web:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./BEIMA.Client/Dockerfile
+    ports:
+      - "3000"
+    networks:
+     - internal
+    #configs:
+    #  - httpd-config
+    #secrets:
+    #  - server-certificate
+
+  database:
+    image: mongo
+    ports:
+      - "27017"
+    #volumes:
+    #  - db-data:/data
+    networks:
+      - internal
+
+  api:
+    restart: always
+    build:
+      context: .
+      dockerfile: ./BEIMA.Backend/Dockerfile
+    ports:
+    #port 80 on the outside is mapped to port 7071 on the inside, requests to the API need to rout to JUST beima_api_1
+      - "7071:80"
+    #volumes:
+    #  - db-data:/data
+    networks:
+      - internal
+
+  minio:
+    restart: always
+    image: minio/minio
+    command: server /data
+    #ports:
+    networks:
+      - internal
+
+networks:
+  # The presence of these objects is sufficient to define them
+  internal: {}
