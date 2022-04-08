@@ -1,3 +1,26 @@
+## Minutes: 2022-04-08
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	Brian Emtman
+## Milestone 4 Demo
+
+Likes:
+* BEIMA does automatic data checking to prevent bad user input
+* UI is clean and easy to use
+
+Potential improvements:
+* Being able to change device type of a current device (low priority)
+* Mapping would be appreciated but not absolutely necessary (time constraints are understood)
+
+Notes:
+* Allow duplicate device tags
+* If there is a duplicate device tag, then pop up a warning showing that there is a duplicate. Also show a warning that if they proceed, add a suffix to the device tag, and add some extra notes to help discern which one is which.
+
 ## Minutes: 2022-04-07
 ### Scribe: Keelan
 ### Attendees:
