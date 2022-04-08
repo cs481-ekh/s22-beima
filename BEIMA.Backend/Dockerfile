@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS installer-env
 EXPOSE 7071
-# Build requires 3.1 SDK
-COPY --from=mcr.microsoft.com/dotnet/core/sdk:3.1 /usr/share/dotnet /usr/share/dotnet
 # Copy in source
 COPY ./BEIMA.Backend/ /src/dotnet-function-app
 # set up for publish
