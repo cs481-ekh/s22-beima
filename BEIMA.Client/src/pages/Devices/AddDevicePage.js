@@ -279,7 +279,7 @@ const AddDevicePage = () => {
       setAdditionalDocs(event.target.files)
     }
   }
-  
+
   return (
     <div className={styles.fieldform}>
       <Card>
