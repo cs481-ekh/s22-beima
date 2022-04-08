@@ -67,6 +67,7 @@ export async function warning(title, message){
         title: title,
         text: message,
         icon: 'warning',
+        showCancelButton: true,
         confirmButtonText: 'Proceed',
         cancelButtonText: 'Cancel'
   })
