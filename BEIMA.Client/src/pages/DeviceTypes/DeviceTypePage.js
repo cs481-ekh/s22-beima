@@ -211,6 +211,12 @@ const DeviceTypePage = () => {
             <Field field="modId" value="Model Number" editable={false}/>
             <Field field="serId" value="Serial Number" editable={false}/>
             <Field field="yearId" value="Year Manufactured" editable={false}/>
+            <Field field="buildingId" value="Building" editable={false}/>
+            <Field field="longId" value="Longitude" editable={false}/>
+            <Field field="latId" value="Latitude" editable={false}/>
+            <Field field="locationNotes" value="Location Notes" editable={false}/>
+            <Field field="deviceTag" value="Device Tag" editable={false}/>
+            <Field field="deviceNotes" value="Device Notes" editable={false}/>
           </div>
         </Form.Group>
         

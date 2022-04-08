@@ -18,8 +18,8 @@ namespace BEIMA.Backend.Test
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes\"," +
-                    "\"latitude\": \"123.456\"," +
-                    "\"longitude\": \"101.101\"" +
+                    "\"latitude\": \"12.435\"," +
+                    "\"longitude\": \"10.101\"" +
                 "}," +
                 "\"manufacturer\": \"Generic Inc.\"," +
                 "\"modelNum\": \"1234\"," +
@@ -40,8 +40,8 @@ namespace BEIMA.Backend.Test
                 "\"location\": {" +
                     "\"buildingId\": \"111111111111111111111111\"," +
                     "\"notes\": \"Some notes.\"," +
-                    "\"latitude\": \"123.456\"," +
-                    "\"longitude\": \"101.101\"" +
+                    "\"latitude\": \"12.345\"," +
+                    "\"longitude\": \"10.101\"" +
                 "}," +
                 "\"manufacturer\": \"Generic Inc.\"," +
                 "\"modelNum\": \"1234\"," +
@@ -99,10 +99,76 @@ namespace BEIMA.Backend.Test
                 "}" +
             "}";
 
+        public const string _testUser =
+            "{" +
+                "\"username\": \"user.name\"," +
+                "\"password\": \"Abcdefg12345!\"," +
+                "\"firstName\": \"Alex\"," +
+                "\"lastName\": \"Smith\"," +
+                "\"role\": \"user\"" +
+            "}";
+
+        public const string _testUserDuplicateUsername =
+            "{" +
+                "\"username\": \"---\"," +
+                "\"password\": \"ThisIsAPassword1!\"," +
+                "\"firstName\": \"Alex\"," +
+                "\"lastName\": \"Smith\"," +
+                "\"role\": \"user\"" +
+            "}";
+
+        public const string _testUserBadPassword =
+            "{" +
+                "\"username\": \"user.name\"," +
+                "\"password\": \"---\"," +
+                "\"firstName\": \"Alex\"," +
+                "\"lastName\": \"Smith\"," +
+                "\"role\": \"user\"" +
+            "}";
+
+        public const string _testUpdateUserWithPassword =
+            "{" +
+                "\"username\": \"user.name\"," +
+                "\"password\": \"updatedPassword123!\"," +
+                "\"firstName\": \"Aaron\"," +
+                "\"lastName\": \"Doe\"," +
+                "\"role\": \"user\"" +
+            "}";
+
+        public const string _testUpdateUserWithoutPassword =
+            "{" +
+                "\"username\": \"new.username\"," +
+                "\"password\": \"\"," +
+                "\"firstName\": \"Pan\"," +
+                "\"lastName\": \"Quartz\"," +
+                "\"role\": \"user\"" +
+            "}";
+
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
         public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
+
+        public const string _testNullLoginRequest = null;
+        public static readonly string _testNullKeysLoginRequest = GenerateNullKeysLoginRequest();
+        public static readonly string _testValidKeysLoginRequest = GenerateValidKeysLoginRequest();
+
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
+
+        private static string GenerateNullKeysLoginRequest()
+        {
+            var request = new LoginRequest();
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateValidKeysLoginRequest()
+        {
+            var request = new LoginRequest()
+            {
+                Username = "User",
+                Password = "Pass"
+            };
+            return JsonConvert.SerializeObject(request);
+        }
 
         private static string GenerateAddDeviceNoLocation()
         {
@@ -143,8 +209,8 @@ namespace BEIMA.Backend.Test
                 {
                     BuildingId = "622cf00109137c26f913b281",
                     Notes = "notes",
-                    Latitude = "1231232",
-                    Longitude = "123213213"
+                    Latitude = "12",
+                    Longitude = "123"
                 },
                 YearManufactured = 1880,
                 DeletedFiles = new List<string>(),

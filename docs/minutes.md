@@ -1,3 +1,132 @@
+## Minutes: 2022-04-08
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+	Brian Emtman
+## Milestone 4 Demo
+
+Likes:
+* BEIMA does automatic data checking to prevent bad user input
+* UI is clean and easy to use
+
+Potential improvements:
+* Being able to change device type of a current device (low priority)
+* Mapping would be appreciated but not absolutely necessary (time constraints are understood)
+
+Notes:
+* Allow duplicate device tags
+* If there is a duplicate device tag, then pop up a warning showing that there is a duplicate. Also show a warning that if they proceed, add a suffix to the device tag, and add some extra notes to help discern which one is which.
+
+## Minutes: 2022-04-07
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## 4/7 Scrum
+
+What everyone is working on:
+* Keelan - working on username case insensitivity task
+* Ashlyn - building integration
+* Tom - Docker integration
+* Joe - working on bug concerning amount of time tests take 
+* Kenny -  device endpoints authentication
+
+For the demo, we should just go over all the functionality and show Brian it is all working. Focus on the fact that it is using dynamic data now.
+
+Action items:
+* Meeting on Tuesday for documentation
+
+## Minutes: 2022-04-06
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 4 Planning Session
+
+Sprint Goal:
+Wrap up major pieces (authentication, filtering, building integration), write Docker file, and write documentation. We also want to clean up the UI and backend, leaving it in a state where we feel comfortable handing it off to another team.
+
+What we did:
+* Discussed goals for this upcoming sprint, prioritized different items
+* Went through all existing tasks and assigned them priorities
+* Created new tasks based on sprint goal
+* Assigned all planned tasks to team members
+
+Action Items:
+* Send Dr. Henderson email saying we cannot bring a monitor to showcase (Kenny)
+* Documentation writing meeting on Tuesday
+* Ask Brian about whether we should enforce device tag uniqueness across device and building? Also need to ask if we are certain that device tag will be unique in each building. Also ask if there could be the same device tag across different device types.
+
+## Minutes: 2022-04-05
+### scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 4 Pre-Planning Session
+Discussed what we should focus on during Sprint 4:
+* Filtering - urgent (do query string on back end first)
+* Searching for device by tag?
+* Authentication (on all endpoints and login pages)
+* Reporting (.csv stuff)
+* Building endpoint integration
+* Documentation - meeting next Tuesday?
+* Make GitHub IO page
+* Docker deployment
+* UI and endpoint cleanup
+* Mock map
+* Add download functionality for files/photos for front end
+* Graphics for showcase
+* Change base URL for SDP server
+* Add favicon and tab title
+* Add SDP sticker
+
+Make documentation lower priority
+
+Action Items:
+* Sprint planning session tomorrow at 6pm
+
+
+## Minutes: 2022-04-05
+### scribe: Ashlyn
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Sprint 3 Retro
+What went well?
+ * We got A LOT of work done (74 tasks)
+ * We got a good flow going for this sprint, was able to work kinks out easier
+ * We were able to work together for getting blocked tasks done
+ * PRs had good feedback
+ * We learned new things from others' PR comments
+
+What didn't go well?
+ * Some blocking tasks, but not as bad as previously
+ * Some PRs were sitting there in the queue for longer than normal
+
+Action items
+ * If PRs are not getting feedback, ping the chat
+
+Next roles
+ * Kenny is scrum master
+ * Tom is product owner
+ * Keelan is scribe
+
 ## Minutes: 2022-03-31
 ### scribe: Ashlyn
 ### Attendees:

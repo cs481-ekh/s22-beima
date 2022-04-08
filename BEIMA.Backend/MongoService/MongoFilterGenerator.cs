@@ -33,9 +33,19 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <param name="filters">A variable number of filters.</param>
         /// <returns>One filter that has the AND operation applied to all passed in filters.</returns>
-        public static FilterDefinition<BsonDocument> CombineFilters(params FilterDefinition<BsonDocument>[] filters)
+        public static FilterDefinition<BsonDocument> AndFilters(params FilterDefinition<BsonDocument>[] filters)
         {
             return Builders<BsonDocument>.Filter.And(filters);
+        }
+
+        /// <summary>
+        /// Combines multiple passed in filters using OR operation. Will return one filter with the OR operation applied between all of the passed in filters.
+        /// </summary>
+        /// <param name="filters">A variable number of filters.</param>
+        /// <returns>One filter that has the OR operation applied to all passed in filters.</returns>
+        public static FilterDefinition<BsonDocument> OrFilters(params FilterDefinition<BsonDocument>[] filters)
+        {
+            return Builders<BsonDocument>.Filter.Or(filters);
         }
     }
 }

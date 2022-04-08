@@ -5,6 +5,7 @@ using MongoDB.Driver;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BEIMA.Backend.Test.MongoService
 {
@@ -50,12 +51,12 @@ namespace BEIMA.Backend.Test.MongoService
 
         [TestCase("key1", "value1", "key2", "value2")]
         [TestCase("aaa", true, "abcdef", 123)]
-        public void TwoFiltersGenerated_CombineFilters_FiltersCombined(string key1, dynamic value1, string key2, dynamic value2)
+        public void TwoFiltersGenerated_AndFilters_FiltersCombined(string key1, dynamic value1, string key2, dynamic value2)
         {
             //Create filters
             var f1 = MongoFilterGenerator.GetEqualsFilter(key1, value1);
             var f2 = MongoFilterGenerator.GetEqualsFilter(key2, value2);
-            var combinedFilter = MongoFilterGenerator.CombineFilters(f1, f2);
+            var combinedFilter = MongoFilterGenerator.AndFilters(f1, f2);
 
             //Render the filter as a BsonDocument so we can run tests to make sure the filter is correct
             var serializerRegistry = BsonSerializer.SerializerRegistry;
@@ -67,6 +68,40 @@ namespace BEIMA.Backend.Test.MongoService
             Assert.That(combinedFilter, Is.InstanceOf(typeof(FilterDefinition<BsonDocument>)));
             Assert.That(doc.GetElement(key1).Value?.ToString()?.ToLower(), Is.EqualTo(value1.ToString().ToLower()));
             Assert.That(doc.GetElement(key2).Value?.ToString()?.ToLower(), Is.EqualTo(value2.ToString().ToLower()));
+        }
+
+        [TestCase("key1", "value1", "key2", "value2")]
+        [TestCase("aaa", true, "abcdef", 123)]
+        public void TwoFiltersGenerated_OrFilters_FiltersCombined(string key1, dynamic value1, string key2, dynamic value2)
+        {
+            //Create filters
+            var f1 = MongoFilterGenerator.GetEqualsFilter(key1, value1);
+            var f2 = MongoFilterGenerator.GetEqualsFilter(key2, value2);
+            var combinedFilter = MongoFilterGenerator.OrFilters(f1, f2);
+
+            //Render the filter as a BsonDocument so we can run tests to make sure the filter is correct
+            var serializerRegistry = BsonSerializer.SerializerRegistry;
+            var documentSerializer = serializerRegistry.GetSerializer<BsonDocument>();
+            var doc = combinedFilter.Render(documentSerializer, serializerRegistry);
+
+            //Add each item in the filter to a list for easier testing
+            var orArray = (BsonArray)doc["$or"];
+            var filterList = new List<BsonDocument>();
+
+            foreach (var filterElement in orArray)
+            {
+                var filter = (BsonDocument)filterElement;
+                filterList.Add(filter);
+            }
+
+            Console.WriteLine(doc);
+
+            //Ensure filter is correct
+            Assert.That(combinedFilter, Is.Not.Null);
+            Assert.That(combinedFilter, Is.InstanceOf(typeof(FilterDefinition<BsonDocument>)));
+
+            Assert.That(filterList.Single(filter => filter.Contains(key1)).GetElement(key1).Value?.ToString()?.ToLower(), Is.EqualTo(value1.ToString().ToLower()));
+            Assert.That(filterList.Single(filter => filter.Contains(key2)).GetElement(key2).Value?.ToString()?.ToLower(), Is.EqualTo(value2.ToString().ToLower()));
         }
     }
 }
