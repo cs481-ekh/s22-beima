@@ -1,13 +1,3 @@
-# TODO - Github page
-
-Project abstract
-Start with your project statement
-Sould be concise (~200 words)
-Descriptive enough for someone outside to understand Project Description
-Describe what you actually built
-How it works
-Screenshots
-
 # Boise State Energy Infrustructure Management Application (BEIMA)
 
 
@@ -30,5 +20,7 @@ BEIMA satisfies this need by allowing university employees to take a location-ta
 Lists can be filtered to show results that are relevant to the current need and exported on demand for reporting purposes.
 
 
-## Technological Components
+## How it works
 
+
+## How it looks
