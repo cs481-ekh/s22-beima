@@ -1,4 +1,4 @@
-# Boise State Energy Infrustructure Management Application (BEIMA)
+# Boise State Energy Infrustructure Mapping Application (BEIMA)
 
 
 
