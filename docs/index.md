@@ -22,6 +22,7 @@ BEIMA satisfies this need by allowing university employees to take a location-ta
 Lists can be filtered to show results that are relevant to the current need and exported on demand for reporting purposes.
 
 # How it works
+
 |||
 |---|---|
 |![dotnetLogo](https://user-images.githubusercontent.com/46760776/162549617-e8db237b-ddc7-4d74-9401-cec7192fd476.jpg)|A REST API was created using Mucrosoft's cross platform .NET framework to consume user requests, query the database, and return results to the client web application.
