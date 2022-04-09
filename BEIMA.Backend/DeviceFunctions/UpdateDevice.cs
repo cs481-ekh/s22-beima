@@ -15,6 +15,7 @@ using MongoDB.Bson.Serialization;
 using System.Linq;
 using BEIMA.Backend.StorageService;
 using System.Collections.Generic;
+using BEIMA.Backend.AuthService;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
@@ -37,6 +38,14 @@ namespace BEIMA.Backend.DeviceFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
+
+            var authService = AuthenticationDefinition.AuthticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
+            }
 
             if (!ObjectId.TryParse(id, out _))
             {
@@ -149,7 +158,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 }
             }
 
-            device.SetLastModified(DateTime.UtcNow, "Anonymous");
+            device.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;
