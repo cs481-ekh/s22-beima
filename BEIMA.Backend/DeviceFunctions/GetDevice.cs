@@ -1,3 +1,4 @@
+using BEIMA.Backend.AuthService;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Http;
@@ -32,49 +33,49 @@ namespace BEIMA.Backend
         {
             log.LogInformation("C# HTTP trigger function processed a device get request.");
 
-            // Process as device GET request for retrieving device information.
-            if (string.Equals(req.Method, "get", StringComparison.OrdinalIgnoreCase))
+            var authService = AuthenticationDefinition.AuthticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
             {
-                // Check if the id is valid.
-                if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
-                {
-                    return new BadRequestObjectResult(Resources.InvalidIdMessage);
-                }
-
-                // Retrieve the device from the database.
-                var mongo = MongoDefinition.MongoInstance;
-                ObjectId oid = new ObjectId(id);
-                BsonDocument deviceDocument = mongo.GetDevice(oid);
-
-                // Check that the device returned is not null.
-                if (deviceDocument is null)
-                {
-                    return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
-                }
-
-                // Return the device.
-                var device = BsonSerializer.Deserialize<Device>(deviceDocument);
-
-                var _storage = StorageDefinition.StorageInstance;
-                if (device.Photo.FileUid != null)
-                {
-                    var presignedUrl = await _storage.GetPresignedURL(device.Photo.FileUid);
-                    device.Photo.FileUrl = presignedUrl;
-                }                
-
-                // Add url to every file
-                foreach (var file in device.Files)
-                {
-                    var url = await _storage.GetPresignedURL(file.FileUid);
-                    file.FileUrl = url;
-                }
-
-                return new OkObjectResult(device);
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }
-            else
+
+            // Check if the id is valid.
+            if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))
             {
-                return new BadRequestObjectResult("Expected a GET request.");
+                return new BadRequestObjectResult(Resources.InvalidIdMessage);
             }
+
+            // Retrieve the device from the database.
+            var mongo = MongoDefinition.MongoInstance;
+            ObjectId oid = new ObjectId(id);
+            BsonDocument deviceDocument = mongo.GetDevice(oid);
+
+            // Check that the device returned is not null.
+            if (deviceDocument is null)
+            {
+                return new NotFoundObjectResult(Resources.DeviceNotFoundMessage);
+            }
+
+            // Return the device.
+            var device = BsonSerializer.Deserialize<Device>(deviceDocument);
+
+            var _storage = StorageDefinition.StorageInstance;
+            if (device.Photo.FileUid != null)
+            {
+                var presignedUrl = await _storage.GetPresignedURL(device.Photo.FileUid);
+                device.Photo.FileUrl = presignedUrl;
+            }                
+
+            // Add url to every file
+            foreach (var file in device.Files)
+            {
+                var url = await _storage.GetPresignedURL(file.FileUid);
+                file.FileUrl = url;
+            }
+
+            return new OkObjectResult(device);
         }
     }
 }
