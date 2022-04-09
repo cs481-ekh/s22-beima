@@ -25,6 +25,6 @@ Lists can be filtered to show results that are relevant to the current need and 
 |||
 |---|---|
 |![dotnetLogo](https://user-images.githubusercontent.com/46760776/162549617-e8db237b-ddc7-4d74-9401-cec7192fd476.jpg)|A REST API was created using Mucrosoft's cross platform .NET framework to consume user requests, query the database, and return results to the client web application.
-|![mongodbLogo](https://user-images.githubusercontent.com/46760776/162550192-6e8db356-5ed7-4797-9e87-0a4176ccf55f.png)|MongoDB allows for the flexibility needed to accomodate customized data fields to be attached to types of equipment|
+|![mongodbLogo](https://user-images.githubusercontent.com/46760776/162550192-6e8db356-5ed7-4797-9e87-0a4176ccf55f.png)|MongoDB allows for the flexibility needed to accomodate customized data fields to be added equipment categories/types.|
 
 # How it looks
