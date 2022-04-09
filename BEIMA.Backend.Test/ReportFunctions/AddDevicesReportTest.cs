@@ -18,7 +18,7 @@ namespace BEIMA.Backend.Test.ReportFunctions
     public class AddDevicesReportTest : UnitTestBase
     {
         [Test]
-        public void Test()
+        public void DeviceAndDeviceTypeInDb_AllDevicesReport_ReturnsValidZipFileByteArray()
         {
             // ARRANGE
             var deviceType = new DeviceType(ObjectId.GenerateNewId(), "Generic", "This is a generic type.", "Some notes.");
