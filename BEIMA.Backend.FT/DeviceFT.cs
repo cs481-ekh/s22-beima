@@ -16,17 +16,25 @@ namespace BEIMA.Backend.FT
         private string? _deviceTypeId;
         private string? _deviceTypeFieldUuid;
         private string? _buildingId;
+        private string? _authToken;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
+            var loginRequest = new LoginRequest()
+            {
+                Username = TestUsername,
+                Password = TestPassword,
+            };
+            _authToken = await TestClient.Login(loginRequest);
+
             // Delete all the devices in the database
-            var deviceList = await TestClient.GetDeviceList();
+            var deviceList = await TestClient.GetDeviceList(_authToken);
             foreach (var device in deviceList)
             {
                 if (device?.Id is not null)
                 {
-                    await TestClient.DeleteDevice(device.Id);
+                    await TestClient.DeleteDevice(device.Id, _authToken);
                 }
             }
             // Delete all the device types in the database
@@ -82,12 +90,12 @@ namespace BEIMA.Backend.FT
         public async Task SetUp()
         {
             // Delete all the devices in the database
-            var deviceList = await TestClient.GetDeviceList();
+            var deviceList = await TestClient.GetDeviceList(_authToken);
             foreach (var device in deviceList)
             {
                 if (device?.Id is not null)
                 {
-                    await TestClient.DeleteDevice(device.Id);
+                    await TestClient.DeleteDevice(device.Id, _authToken);
                 }
             }
         }
@@ -95,10 +103,23 @@ namespace BEIMA.Backend.FT
         [TestCase("xxx")]
         [TestCase("1234")]
         [TestCase("1234567890abcdef1234567x")]
-        public void InvalidId_DeviceGet_ReturnsInvalidId(string id)
+        public void InvalidId_NotAuthorized_DeviceGet_ReturnsUnauthorized(string id)
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
                 await TestClient.GetDevice(id)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+
+        [TestCase("xxx")]
+        [TestCase("1234")]
+        [TestCase("1234567890abcdef1234567x")]
+        public void InvalidId_DeviceGet_ReturnsInvalidId(string id)
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.GetDevice(id, _authToken)
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
@@ -109,7 +130,7 @@ namespace BEIMA.Backend.FT
         public void NoDevicesInDatabase_DeviceGet_ReturnsNotFound(string id)
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await TestClient.GetDevice(id)
+                await TestClient.GetDevice(id, _authToken)
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -152,12 +173,12 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
                 // ACT
-                responseId = await TestClient.AddDevice(device, files);
+                responseId = await TestClient.AddDevice(device, files, token: _authToken);
             }
 
             // ASSERT
             Assert.That(responseId, Is.Not.Null);
-            var getDevice = await TestClient.GetDevice(responseId);
+            var getDevice = await TestClient.GetDevice(responseId, _authToken);
             Assert.That(getDevice, Is.Not.Null);
             Assert.That(getDevice.DeviceTag, Is.EqualTo(device.DeviceTag));
             Assert.That(getDevice.DeviceTypeId, Is.EqualTo(device.DeviceTypeId));
@@ -174,7 +195,7 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Photo?.FileUid, Is.Not.Null);
 
             Assert.That(getDevice.LastModified?.Date, Is.Not.Null);
-            Assert.That(getDevice.LastModified?.User, Is.EqualTo("Anonymous"));
+            Assert.That(getDevice.LastModified?.User, Is.EqualTo(TestUsername));
 
             Assert.That(getDevice.Location?.BuildingId, Is.EqualTo(device.Location.BuildingId));
             Assert.That(getDevice.Location?.Notes, Is.EqualTo(device.Location.Notes));
@@ -258,11 +279,11 @@ namespace BEIMA.Backend.FT
 
             foreach (var device in deviceList)
             {
-                await TestClient.AddDevice(device);
+                await TestClient.AddDevice(device, token: _authToken);
             }
 
             // ACT
-            var actualDevices = await TestClient.GetDeviceList();
+            var actualDevices = await TestClient.GetDeviceList(_authToken);
 
             // ASSERT
             Assert.That(actualDevices.Count, Is.EqualTo(3));
@@ -286,7 +307,7 @@ namespace BEIMA.Backend.FT
 
                 Assert.That(device.LastModified, Is.Not.Null);
                 Assert.That(device.LastModified?.Date, Is.Not.Null);
-                Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
+                Assert.That(device.LastModified?.User, Is.EqualTo(TestUsername));
 
                 Assert.That(device.Fields?.Single().Key, Is.EqualTo(expectedDevice.Fields?.Single().Key));
                 Assert.That(device.Fields?.Single().Value, Is.EqualTo(expectedDevice.Fields?.Single().Value));
@@ -331,10 +352,10 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
                 // ACT
-                deviceId = await TestClient.AddDevice(device, files);
+                deviceId = await TestClient.AddDevice(device, files, token: _authToken);
             }
 
-            var response = await TestClient.GetDevice(deviceId);
+            var response = await TestClient.GetDevice(deviceId, _authToken);
             Assert.That(response, Is.Not.Null);
 
             var photoUid = response.Photo?.FileUid;
@@ -344,10 +365,10 @@ namespace BEIMA.Backend.FT
             Assert.That(fileUid, Is.Not.Null);
 
             // ACT
-            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId));
+            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId, _authToken));
 
             // ASSERT
-            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId, _authToken));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
@@ -388,8 +409,8 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
-                var deviceId = await TestClient.AddDevice(origDevice, files);
-                var deviceItem = await TestClient.GetDevice(deviceId);
+                var deviceId = await TestClient.AddDevice(origDevice, files, token: _authToken);
+                var deviceItem = await TestClient.GetDevice(deviceId, _authToken);
                 updateItem = new DeviceUpdate()
                 {
                     Id = deviceItem.Id,
@@ -417,7 +438,7 @@ namespace BEIMA.Backend.FT
 
 
                 // Act
-                updatedDevice = await TestClient.UpdateDevice(updateItem);
+                updatedDevice = await TestClient.UpdateDevice(updateItem, token: _authToken);
             }
 
             // ASSERT
@@ -425,7 +446,7 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedDevice.Notes, Is.Not.EqualTo(origDevice.Notes));
 
             Assert.That(updatedDevice.LastModified?.Date, Is.Not.EqualTo(updateItem.LastModified?.Date));
-            Assert.That(updatedDevice.LastModified?.User, Is.EqualTo(updateItem.LastModified?.User));
+            Assert.That(updatedDevice.LastModified?.User, Is.EqualTo(TestUsername));
 
             Assert.That(updatedDevice.DeviceTag, Is.EqualTo(updateItem.DeviceTag));
             Assert.That(updatedDevice.DeviceTypeId, Is.EqualTo(updateItem.DeviceTypeId));

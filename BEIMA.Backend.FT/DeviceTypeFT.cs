@@ -12,16 +12,30 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class DeviceTypeFT : FunctionalTestBase
     {
+        private string? _authToken;
+
+        [OneTimeSetUp]
+        public async Task OneTimeSetUp()
+        {
+            var loginRequest = new LoginRequest()
+            {
+                Username = TestUsername,
+                Password = TestPassword,
+            };
+            _authToken = await TestClient.Login(loginRequest);
+        }
+
         [SetUp]
         public async Task SetUp()
         {
+
             // Delete all the devices in the database.
-            var deviceList = await TestClient.GetDeviceList();
+            var deviceList = await TestClient.GetDeviceList(_authToken);
             foreach (var device in deviceList)
             {
                 if (device?.Id is not null)
                 {
-                    await TestClient.DeleteDevice(device.Id);
+                    await TestClient.DeleteDevice(device.Id, _authToken);
                 }
             }
             // Delete all the device types in the database
@@ -341,7 +355,7 @@ namespace BEIMA.Backend.FT
                 }
             }
 
-            var deviceId = await TestClient.AddDevice(origDevice);
+            var deviceId = await TestClient.AddDevice(origDevice, token: _authToken);
 
             var updateItem = new DeviceTypeUpdate
             {
@@ -380,7 +394,7 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedDeviceType.Fields?.Where(kv => kv.Value.Equals("Type")), Is.Empty);
             Assert.That(Guid.TryParse(updatedDeviceType.Fields?.Single(kv => kv.Value.Equals("Capacity")).Key, out _), Is.True);
 
-            var device = await TestClient.GetDevice(deviceId);
+            var device = await TestClient.GetDevice(deviceId, _authToken);
             foreach (var key in device.Fields?.Keys.ToList() ?? new List<string>())
             {
                 Assert.That(updatedDeviceType.Fields, Contains.Key(key));

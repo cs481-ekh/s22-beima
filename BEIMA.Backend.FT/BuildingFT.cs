@@ -11,16 +11,29 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class BuildingFT : FunctionalTestBase
     {
+        private string? _authToken;
+
+        [OneTimeSetUp]
+        public async Task OneTimeSetUp()
+        {
+            var loginRequest = new LoginRequest()
+            {
+                Username = TestUsername,
+                Password = TestPassword,
+            };
+            _authToken = await TestClient.Login(loginRequest);
+        }
+
         [SetUp]
         public async Task SetUp()
         {
             // Delete all the devices in the database.
-            var deviceList = await TestClient.GetDeviceList();
+            var deviceList = await TestClient.GetDeviceList(_authToken);
             foreach (var device in deviceList)
             {
                 if (device?.Id is not null)
                 {
-                    await TestClient.DeleteDevice(device.Id);
+                    await TestClient.DeleteDevice(device.Id, _authToken);
                 }
             }
             // Delete all the device types in the database
