@@ -1,6 +1,5 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
-import { useOutletContext } from 'react-router-dom';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -12,8 +11,6 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return Error message
  */
 export default async function login(credentials) {
-  const [setCurrentUser] = useOutletContext();
-
   const login = await axios.post(API_URL + "login", credentials).catch(function (error){
     if(error.response){
       return error.response;
@@ -37,8 +34,7 @@ export default async function login(credentials) {
         sessionStorage.setItem("currentUser", login.response);
       }
 
-      setCurrentUser(user);
-      return;
+      return user;
     });
   
     return login.response;
@@ -49,15 +45,13 @@ export default async function login(credentials) {
  * @param {*} remember boolean
  */
 export default function logout(remember){
-  const [setCurrentUser] = useOutletContext();
-
   if(remember){
     localStorage.removeItem("currentUser");
   } else {
     sessionStorage.removeItem("currentUser");
   }
   
-  setCurrentUser({});
+  return {};
 }
 
 /**
@@ -67,8 +61,6 @@ export default function logout(remember){
  * 
  */
 export default function checkAndSetCurrentUser(){
-  const [setCurrentUser] = useOutletContext();
-
   let token = localStorage.getItem("currentUser");
 
   if(token) {
@@ -83,7 +75,7 @@ export default function checkAndSetCurrentUser(){
         remember : credentials.remember
       };
 
-      setCurrentUser(user);
+      return user;
     });
   }
 }
