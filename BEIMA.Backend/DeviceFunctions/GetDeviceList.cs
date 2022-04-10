@@ -29,7 +29,7 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device list request.");
 
-            var authService = AuthenticationDefinition.AuthticationInstance;
+            var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
 
             if (claims == null)
