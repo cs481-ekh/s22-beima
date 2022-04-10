@@ -7,9 +7,9 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The user details to add to the DB
  * @return Error message or the inserted building ID
  */
-export default async function addBuilding(buildingDetails) {
+export default async function addBuilding(buildingDetails, token) {
   //performs the post and returns an error message or the inserted building ID
-  const dbCall = await axios.post(API_URL + "building", buildingDetails).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "building", buildingDetails, {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

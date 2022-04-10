@@ -6,8 +6,8 @@ const API_URL = process.env.REACT_APP_API_URL;
  *
  * @return JSON with list of all devices or error message on failure
  */
-const GetDeviceTypeList = async() => {
-  const deviceTypeListCall = await axios.get(API_URL + "device-type-list").catch(function (error) {
+const GetDeviceTypeList = async(token) => {
+  const deviceTypeListCall = await axios.get(API_URL + "device-type-list", {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

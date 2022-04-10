@@ -6,8 +6,8 @@ const API_URL = process.env.REACT_APP_API_URL;
  *
  * @return JSON with list of all buildings or error message on failure
  */
-const GetBuildingList = async() => {
-  const buildingListCall = await axios.get(API_URL + "building-list").catch(function (error) {
+const GetBuildingList = async(token) => {
+  const buildingListCall = await axios.get(API_URL + "building-list", {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

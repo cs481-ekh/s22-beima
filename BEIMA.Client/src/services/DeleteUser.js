@@ -7,9 +7,9 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The ID of the user to delete
  * @return Error message or a success indicator
  */
-export default async function deleteUser(userId) {
+export default async function deleteUser(userId, token) {
   //performs the post and returns an error message or a success indicator
-  const dbCall = await axios.post(API_URL + "user/" + userId + "/delete").catch(function (error) {
+  const dbCall = await axios.post(API_URL + "user/" + userId + "/delete", {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

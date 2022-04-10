@@ -7,7 +7,7 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The device details to add to the DB
  * @return Error message or the inserted device ID
  */
-export default async function addDevice(deviceDetails, photo, files) {
+export default async function addDevice(deviceDetails, photo, files, token) {
   // setup the multiform request data
   let formData = new FormData();
   formData.append("data", JSON.stringify(deviceDetails));
@@ -23,7 +23,7 @@ export default async function addDevice(deviceDetails, photo, files) {
   }
 
   //performs the post and returns an error message or the inserted device ID
-  const dbCall = await axios.post(API_URL + "device/", formData).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "device/", formData, {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

@@ -7,9 +7,9 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The ID of the device to delete
  * @return Error message or a succes indicator
  */
-export default async function deleteDevice(deviceId) {
+export default async function deleteDevice(deviceId, token) {
   //performs the post and returns an error message or a succes indicator
-  const dbCall = await axios.post(API_URL + "device/" + deviceId + "/delete").catch(function (error) {
+  const dbCall = await axios.post(API_URL + "device/" + deviceId + "/delete", {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

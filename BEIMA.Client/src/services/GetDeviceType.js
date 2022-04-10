@@ -7,9 +7,9 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The device type id in the database to retrieve
  * @return JSON document from the DB wrapped in a JSON object with the HTTP response code
  */
-const GetDeviceType = async(deviceTypeId) => {
+const GetDeviceType = async(deviceTypeId, token) => {
   //performs the get and returns the data or error
-  const deviceTypeCall = await axios.get(API_URL + "device-type/" + deviceTypeId).catch(function (error) {
+  const deviceTypeCall = await axios.get(API_URL + "device-type/" + deviceTypeId, {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
