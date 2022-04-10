@@ -45,7 +45,7 @@ export default async function login(credentials) {
 }
 
 /**
- * Removed the token from the browser storage
+ * Remove the token from the browser storage
  * @param {*} remember boolean
  */
 export default function logout(remember){
