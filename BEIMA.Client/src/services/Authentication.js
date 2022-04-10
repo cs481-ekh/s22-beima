@@ -66,7 +66,7 @@ export default function logout(remember){
  * before the timeout occurs
  * 
  */
-export default function checkCurrentUser(){
+export default function checkAndSetCurrentUser(){
   const [setCurrentUser] = useOutletContext();
 
   let token = localStorage.getItem("currentUser");
