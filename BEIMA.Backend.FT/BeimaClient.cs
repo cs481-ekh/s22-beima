@@ -437,6 +437,21 @@ namespace BEIMA.Backend.FT
         }
         #endregion
 
+        #region Report Requests
+
+        /// <summary>
+        /// Sends an all devices report request to the BEIMA api.
+        /// </summary>
+        /// <returns>The zip file byte contents containing the device reports.</returns>
+        public async Task<byte[]> AllDevicesReport()
+        {
+            var response = await SendRequest($"api/report/devices", HttpVerb.GET);
+            var content = await response.Content.ReadAsByteArrayAsync();
+            return content;
+        }
+
+        #endregion Report Requests
+
         /// <summary>
         /// Disposes the http client.
         /// </summary>
