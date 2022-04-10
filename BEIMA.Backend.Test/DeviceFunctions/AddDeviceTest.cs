@@ -1,4 +1,6 @@
-﻿using BEIMA.Backend.DeviceFunctions;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.DeviceFunctions;
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
 using Microsoft.AspNetCore.Http;
@@ -21,7 +23,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
     public class AddDeviceTest : UnitTestBase
     {
         [Test]
-        public async Task NoDevice_AddDevice_ReturnsValidId()
+        public async Task NoDevice_NotAuthenticated_AddDevice_ReturnsValidId()
         {
             // ARRANGE
             var building = new Building(new ObjectId("111111111111111111111111"), null, null, null);
@@ -52,6 +54,89 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             StorageDefinition.StorageInstance = mockStorage.Object;
 
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
+
+            // Create request
+            var data = TestData._testDevice;
+            var fileCollection = new FormFileCollection();
+
+            object response;
+            using (var fileStream = new ByteArrayContent(TestData._fileBytes).ReadAsStream())
+            {
+                fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
+
+                var request = CreateMultiPartHttpRequest(data, fileCollection);
+                var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+
+                // ACT
+                response = await AddDevice.Run(request, logger);
+            }
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetBuilding(It.IsAny<ObjectId>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Never));
+
+            Assert.IsNotNull(response);
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Never));
+            Assert.That(response, Is.TypeOf(typeof(ObjectResult)));
+            Assert.That(((ObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            var retVal = ((ObjectResult)response).Value;
+
+            Assert.That(retVal, Is.EqualTo("Invalid credentials."));
+        }
+
+        [Test]
+        public async Task NoDevice_IsAuthenticated_AddDevice_ReturnsValidId()
+        {
+            // ARRANGE
+            var building = new Building(new ObjectId("111111111111111111111111"), null, null, null);
+            building.SetLastModified(DateTime.UtcNow, "Anonymous");
+            building.SetLocation(null, null);
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
+            var claims = new Claims()
+            {
+                Username = "Test"
+            };
+
+            // Setup mock database client.
+           
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetBuilding(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("111111111111111111111111")))))
+                  .Returns(building.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.PutFile(It.IsAny<IFormFile>()))
+                .Returns(Task.FromResult(Guid.NewGuid().ToString() + ".txt"))
+                .Verifiable();
+
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(claims)
+                .Verifiable();
+            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
+
             // Create request
             var data = TestData._testDevice;
             var fileCollection = new FormFileCollection();
@@ -70,6 +155,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             }
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetBuilding(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
@@ -89,6 +175,11 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
             deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
 
+            var claims = new Claims()
+            {
+                Username = "Test"
+            };
+
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
@@ -105,6 +196,12 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                 .Verifiable();
 
             StorageDefinition.StorageInstance = mockStorage.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(claims)
+                .Verifiable();
+            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
 
             // Create request
             var data = TestData._testAddDeviceNoLocation;
@@ -124,6 +221,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             }
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
 
@@ -137,6 +235,10 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         public async Task NoBuilding_AddDevice_ReturnsBuildingNotFound()
         {
             // ARRANGE
+            var claims = new Claims()
+            {
+                Username = "Test"
+            };
 
             // Setup mock database client.
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
@@ -148,6 +250,12 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             // Setup mock storage client.
             Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
             StorageDefinition.StorageInstance = mockStorage.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(claims)
+                .Verifiable();
+            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
 
             // Create request
             var data = TestData._testDevice;
@@ -167,6 +275,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             }
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetBuilding(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Never));
