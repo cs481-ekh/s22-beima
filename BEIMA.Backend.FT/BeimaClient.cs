@@ -65,6 +65,16 @@ namespace BEIMA.Backend.FT
         }
 
         /// <summary>
+        /// Sets the authentication header of the http client to 'Bearer token'
+        /// for all outgoing http requests
+        /// </summary>
+        /// <param name="token">Jwt Token</param>
+        public void SetAuthenticationHeader(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        }
+
+        /// <summary>
         /// Sends an http request to the backend server and returns the http response.
         /// </summary>
         /// <param name="route">The url route excluding the base address.</param>
@@ -72,7 +82,7 @@ namespace BEIMA.Backend.FT
         /// <param name="body">The object to send with the request.</param>
         /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<HttpResponseMessage> SendRequest(string route, HttpVerb verb, object? body = null, string queryString = "", string? token = null)
+        public async Task<HttpResponseMessage> SendRequest(string route, HttpVerb verb, object? body = null, string queryString = "")
         {
             StringContent? jsonString = null;
             HttpResponseMessage response;
@@ -98,21 +108,10 @@ namespace BEIMA.Backend.FT
             switch (verb)
             {
                 case HttpVerb.GET:
-                    var getRequest = new HttpRequestMessage(HttpMethod.Get, route);
-                    if(token != null)
-                    {
-                        getRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    }
-                    response = await _httpClient.SendAsync(getRequest);
+                    response = await _httpClient.GetAsync(route);
                     break;
                 case HttpVerb.POST:
-                    var postRequest = new HttpRequestMessage(HttpMethod.Post, route);
-                    if (token != null)
-                    {
-                        postRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                    }
-                    postRequest.Content = jsonString;
-                    response = await _httpClient.SendAsync(postRequest);
+                    response = await _httpClient.PostAsync(route, jsonString);
                     break;
                 default:
                     throw new HttpRequestException($"Invalid request verb: {verb}.");
@@ -139,7 +138,7 @@ namespace BEIMA.Backend.FT
         /// <param name="files">List of files to send with the request</param>
         /// <returns>The http response message of the request.</returns>
         /// <exception cref="HttpRequestException"></exception>
-        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string? queryString = "", string? token = null)
+        public async Task<HttpResponseMessage> SendMultiPartRequest(string route, Object data, FormFileCollection? files = null, string? queryString = "")
         {
             StringContent json;
             HttpResponseMessage response;
@@ -171,13 +170,7 @@ namespace BEIMA.Backend.FT
             }
 
 
-            var postRequest = new HttpRequestMessage(HttpMethod.Post, route);
-            if (token != null)
-            {
-                postRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
-            }
-            postRequest.Content = form;
-            response = await _httpClient.SendAsync(postRequest);
+            response = await _httpClient.PostAsync(route, form);
 
             try
             {
@@ -199,9 +192,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="id">The id of the device.</param>
         /// <returns>The device with the given id.</returns>
-        public async Task<Device> GetDevice(string id, string? token = null)
+        public async Task<Device> GetDevice(string id)
         {
-            var response = await SendRequest($"api/device/{id}", HttpVerb.GET, token: token);
+            var response = await SendRequest($"api/device/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
         }
@@ -210,9 +203,9 @@ namespace BEIMA.Backend.FT
         /// Sends a device get list request to the BEIMA api.
         /// </summary>
         /// <returns>The device list.</returns>
-        public async Task<List<Device>> GetDeviceList(string? token = null)
+        public async Task<List<Device>> GetDeviceList()
         {
-            var response = await SendRequest("api/device-list", HttpVerb.GET, token: token);
+            var response = await SendRequest("api/device-list", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Device>>(content);
         }
@@ -222,9 +215,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to add.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<string> AddDevice(Device device, FormFileCollection? files = null, string? queryString = "", string? token = null)
+        public async Task<string> AddDevice(Device device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendMultiPartRequest("api/device", device, files, queryString, token);
+            var response = await SendMultiPartRequest("api/device", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -234,9 +227,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="id">The id of the device to delete.</param>
         /// <returns>True if the deletion was successful, otherwise false.</returns>
-        public async Task<bool> DeleteDevice(string id, string? token = null)
+        public async Task<bool> DeleteDevice(string id)
         {
-            var response = await SendRequest($"api/device/{id}/delete", HttpVerb.POST, token: token);
+            var response = await SendRequest($"api/device/{id}/delete", HttpVerb.POST);
             return response.IsSuccessStatusCode;
         }
 
@@ -245,9 +238,9 @@ namespace BEIMA.Backend.FT
         /// </summary>
         /// <param name="device">The device to update.</param>
         /// <returns>The id of the new device.</returns>
-        public async Task<Device> UpdateDevice(DeviceUpdate device, FormFileCollection? files = null, string? queryString = "", string? token = null)
+        public async Task<Device> UpdateDevice(DeviceUpdate device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendMultiPartRequest($"api/device/{device.Id}/update", device, files, queryString, token);
+            var response = await SendMultiPartRequest($"api/device/{device.Id}/update", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
         }
