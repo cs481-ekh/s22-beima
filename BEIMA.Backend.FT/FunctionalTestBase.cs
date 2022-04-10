@@ -13,6 +13,7 @@ namespace BEIMA.Backend.FT
     public class FunctionalTestBase
     {
         public BeimaClient TestClient = new BeimaClient("http://localhost:7071");
+        public BeimaClient UnauthorizedTestClient = new BeimaClient("http://localhost:7071");
         public readonly string TestUsername = "first.admin";
         public readonly string TestPassword = "Abcdefg12345!";
 
@@ -49,6 +50,8 @@ namespace BEIMA.Backend.FT
                 };
                 await TestClient.AddUser(adminUser);
             }
+            var token = await TestClient.Login(new LoginRequest() { Username = TestUsername, Password = TestPassword });
+            TestClient.SetAuthenticationHeader(token);
         }
 
         [OneTimeTearDown]
