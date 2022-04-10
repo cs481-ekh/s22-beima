@@ -16,25 +16,17 @@ namespace BEIMA.Backend.FT
         private string? _deviceTypeId;
         private string? _deviceTypeFieldUuid;
         private string? _buildingId;
-        private string? _authToken;
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
         {
-            var loginRequest = new LoginRequest()
-            {
-                Username = TestUsername,
-                Password = TestPassword,
-            };
-            _authToken = await TestClient.Login(loginRequest);
-
             // Delete all the devices in the database
-            var deviceList = await TestClient.GetDeviceList(_authToken);
+            var deviceList = await TestClient.GetDeviceList();
             foreach (var device in deviceList)
             {
                 if (device?.Id is not null)
                 {
-                    await TestClient.DeleteDevice(device.Id, _authToken);
+                    await TestClient.DeleteDevice(device.Id);
                 }
             }
             // Delete all the device types in the database
@@ -90,14 +82,26 @@ namespace BEIMA.Backend.FT
         public async Task SetUp()
         {
             // Delete all the devices in the database
-            var deviceList = await TestClient.GetDeviceList(_authToken);
+            var deviceList = await TestClient.GetDeviceList();
             foreach (var device in deviceList)
             {
                 if (device?.Id is not null)
                 {
-                    await TestClient.DeleteDevice(device.Id, _authToken);
+                    await TestClient.DeleteDevice(device.Id);
                 }
             }
+        }
+
+        [TestCase("xxx")]
+        [TestCase("1234")]
+        [TestCase("1234567890abcdef1234567x")]
+        public void InvalidId_DeviceGet_ReturnsInvalidId(string id)
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.GetDevice(id)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [TestCase("xxx")]
@@ -106,23 +110,11 @@ namespace BEIMA.Backend.FT
         public void InvalidId_NotAuthorized_DeviceGet_ReturnsUnauthorized(string id)
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await TestClient.GetDevice(id)
+                await UnauthorizedTestClient.GetDevice(id)
             );
             Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
-        }
-
-
-        [TestCase("xxx")]
-        [TestCase("1234")]
-        [TestCase("1234567890abcdef1234567x")]
-        public void InvalidId_DeviceGet_ReturnsInvalidId(string id)
-        {
-            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await TestClient.GetDevice(id, _authToken)
-            );
-            Assert.IsNotNull(ex);
-            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
         [TestCase("")]
@@ -130,7 +122,28 @@ namespace BEIMA.Backend.FT
         public void NoDevicesInDatabase_DeviceGet_ReturnsNotFound(string id)
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await TestClient.GetDevice(id, _authToken)
+                await TestClient.GetDevice(id)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public void NoDevicesInDatabase_NotAuthorized_DeviceGet_ValidId_ReturnsUnauthorized()
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetDevice("1234567890abcdef12345678")
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        [Test]
+        public void NoDevicesInDatabase_NotAuthorized_DeviceGet_EmptyId_ReturnsNotFound()
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetDevice("")
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
@@ -173,12 +186,12 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
                 // ACT
-                responseId = await TestClient.AddDevice(device, files, token: _authToken);
+                responseId = await TestClient.AddDevice(device, files);
             }
 
             // ASSERT
             Assert.That(responseId, Is.Not.Null);
-            var getDevice = await TestClient.GetDevice(responseId, _authToken);
+            var getDevice = await TestClient.GetDevice(responseId);
             Assert.That(getDevice, Is.Not.Null);
             Assert.That(getDevice.DeviceTag, Is.EqualTo(device.DeviceTag));
             Assert.That(getDevice.DeviceTypeId, Is.EqualTo(device.DeviceTypeId));
@@ -204,6 +217,51 @@ namespace BEIMA.Backend.FT
 
             Assert.That(getDevice.Fields?.Single().Key, Is.EqualTo(device.Fields.Single().Key));
             Assert.That(getDevice.Fields?.Single().Value, Is.EqualTo(device.Fields.Single().Value));
+        }
+
+        [Test]
+        public void DeviceNotInDatabase_NotAuthorized_AddDevice_ReturnsUnauthorized()
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+            {
+                var device = new Device
+                {
+                    DeviceTag = "A-2",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId,
+                        Notes = "Some building notes.",
+                        Longitude = "12.301",
+                        Latitude = "10.321",
+                    },
+                    Manufacturer = "Generic Inc.",
+                    ModelNum = "26",
+                    Notes = "Some device notes.",
+                    SerialNum = "xb76",
+                    YearManufactured = 2020,
+                };
+                FormFileCollection files = new FormFileCollection();
+                var fileName = "file.txt";
+                var photoName = "photo.txt";
+
+                using (var fileStream = new MemoryStream(TestObjects._fileBytes))
+                using (var photoStream = new MemoryStream(TestObjects._fileBytes))
+                {
+                    files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
+                    files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
+
+                    // ACT
+                    await UnauthorizedTestClient.AddDevice(device, files);
+                }
+            });
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -279,11 +337,11 @@ namespace BEIMA.Backend.FT
 
             foreach (var device in deviceList)
             {
-                await TestClient.AddDevice(device, token: _authToken);
+                await TestClient.AddDevice(device);
             }
 
             // ACT
-            var actualDevices = await TestClient.GetDeviceList(_authToken);
+            var actualDevices = await TestClient.GetDeviceList();
 
             // ASSERT
             Assert.That(actualDevices.Count, Is.EqualTo(3));
@@ -312,6 +370,91 @@ namespace BEIMA.Backend.FT
                 Assert.That(device.Fields?.Single().Key, Is.EqualTo(expectedDevice.Fields?.Single().Key));
                 Assert.That(device.Fields?.Single().Value, Is.EqualTo(expectedDevice.Fields?.Single().Value));
             }
+        }
+
+        [Test]
+        public async Task DevicesInDatabase_NotAuthorized_GetDeviceList_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var deviceList = new List<Device>
+            {
+                new Device
+                {
+                    DeviceTag = "A-2",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId,
+                        Latitude = "10.101",
+                        Longitude = "6.234",
+                        Notes = "Outside",
+                    },
+                    Manufacturer = "Generic Inc.",
+                    ModelNum = "44tsec",
+                    Notes = "Giberish",
+                    SerialNum = "tt4s",
+                    YearManufactured = 2010,
+                },
+                new Device
+                {
+                    DeviceTag = "B-1",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId,
+                        Latitude = "74.003",
+                        Longitude = "138.123",
+                        Notes = "Inside",
+                    },
+                    Manufacturer = "Generic Labs",
+                    ModelNum = "dbbr6f",
+                    Notes = "Blah Blah",
+                    SerialNum = "c4ta",
+                    YearManufactured = 2011,
+                },
+                new Device
+                {
+                    DeviceTag = "C-3",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId,
+                        Latitude = "11.989",
+                        Longitude = "25.004",
+                        Notes = "Above",
+                    },
+                    Manufacturer = "Generic Company",
+                    ModelNum = "y5eyf",
+                    Notes = "qwerty",
+                    SerialNum = "t4vw",
+                    YearManufactured = 2012,
+                },
+            };
+
+            foreach (var device in deviceList)
+            {
+                await TestClient.AddDevice(device);
+            }
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetDeviceList()
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -352,10 +495,10 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
                 // ACT
-                deviceId = await TestClient.AddDevice(device, files, token: _authToken);
+                deviceId = await TestClient.AddDevice(device, files);
             }
 
-            var response = await TestClient.GetDevice(deviceId, _authToken);
+            var response = await TestClient.GetDevice(deviceId);
             Assert.That(response, Is.Not.Null);
 
             var photoUid = response.Photo?.FileUid;
@@ -365,11 +508,70 @@ namespace BEIMA.Backend.FT
             Assert.That(fileUid, Is.Not.Null);
 
             // ACT
-            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId, _authToken));
+            Assert.DoesNotThrowAsync(async () => await TestClient.DeleteDevice(deviceId));
 
             // ASSERT
-            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId, _authToken));
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task DeviceInDatabase_NotAuthorized_DeleteDevice_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var device = new Device
+            {
+                DeviceTag = "D-4",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
+                Location = new DeviceLocation
+                {
+                    BuildingId = _buildingId,
+                    Latitude = "11.001",
+                    Longitude = "8.242",
+                    Notes = "Outside",
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "44tsec",
+                Notes = "Giberish",
+                SerialNum = "dvsd",
+                YearManufactured = 2000,
+            };
+
+            FormFileCollection files = new FormFileCollection();
+            var fileName = "file.txt";
+            var photoName = "photo.txt";
+
+            string deviceId;
+            using (var fileStream = new MemoryStream(TestObjects._fileBytes))
+            using (var photoStream = new MemoryStream(TestObjects._fileBytes))
+            {
+                files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
+                files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
+
+                // ACT
+                deviceId = await TestClient.AddDevice(device, files);
+            }
+
+            var response = await TestClient.GetDevice(deviceId);
+            Assert.That(response, Is.Not.Null);
+
+            var photoUid = response.Photo?.FileUid;
+            var fileUid = response.Files?[0].FileUid;
+
+            Assert.That(photoUid, Is.Not.Null);
+            Assert.That(fileUid, Is.Not.Null);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.DeleteDevice(deviceId)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -409,8 +611,8 @@ namespace BEIMA.Backend.FT
                 files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
                 files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
 
-                var deviceId = await TestClient.AddDevice(origDevice, files, token: _authToken);
-                var deviceItem = await TestClient.GetDevice(deviceId, _authToken);
+                var deviceId = await TestClient.AddDevice(origDevice, files);
+                var deviceItem = await TestClient.GetDevice(deviceId);
                 updateItem = new DeviceUpdate()
                 {
                     Id = deviceItem.Id,
@@ -438,7 +640,7 @@ namespace BEIMA.Backend.FT
 
 
                 // Act
-                updatedDevice = await TestClient.UpdateDevice(updateItem, token: _authToken);
+                updatedDevice = await TestClient.UpdateDevice(updateItem);
             }
 
             // ASSERT
@@ -469,6 +671,82 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedDevice.Photo?.FileUrl, Is.Not.Null);
 
             Assert.That(updatedDevice.Files?.Count, Is.EqualTo(0));
+        }
+
+        [Test]
+        public async Task DeviceInDatabase_NotAuthorized_UpdateDevice_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var origDevice = new Device
+            {
+                DeviceTag = "E-6",
+                DeviceTypeId = _deviceTypeId,
+                Fields = new Dictionary<string, string>
+                {
+                    { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                },
+                Location = new DeviceLocation
+                {
+                    BuildingId = _buildingId,
+                    Latitude = "11.001",
+                    Longitude = "61.234",
+                    Notes = "Near",
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "avv3ar",
+                Notes = "Giberish",
+                SerialNum = "3dvs",
+                YearManufactured = 2012,
+            };
+            FormFileCollection files = new FormFileCollection();
+            var fileName = "file.txt";
+            var photoName = "photo.txt";
+
+            DeviceUpdate updateItem;
+            using (var fileStream = new MemoryStream(TestObjects._fileBytes))
+            using (var photoStream = new MemoryStream(TestObjects._fileBytes))
+            {
+                files.Add(new FormFile(fileStream, 0, fileStream.Length, "files", fileName));
+                files.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", photoName));
+
+                var deviceId = await TestClient.AddDevice(origDevice, files);
+                var deviceItem = await TestClient.GetDevice(deviceId);
+                updateItem = new DeviceUpdate()
+                {
+                    Id = deviceItem.Id,
+                    Manufacturer = deviceItem.Manufacturer,
+                    ModelNum = deviceItem.ModelNum,
+                    DeviceTag = deviceItem.DeviceTag,
+                    DeviceTypeId = deviceItem.DeviceTypeId,
+                    Fields = deviceItem.Fields,
+                    LastModified = deviceItem.LastModified,
+                    Location = deviceItem.Location,
+                    SerialNum = deviceItem.SerialNum,
+                    Photo = deviceItem.Photo,
+                    YearManufactured = deviceItem.YearManufactured,
+                    Notes = "Updated Notes.",
+                    Files = deviceItem.Files
+                };
+
+                updateItem.DeletedFiles = new List<string>();
+
+                var fileUid = updateItem.Files?[0].FileUid;
+                if (fileUid != null)
+                {
+                    updateItem.DeletedFiles.Add(fileUid);
+                }
+
+
+                // Act
+                var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                    await UnauthorizedTestClient.UpdateDevice(updateItem)
+                );
+
+                // Assert
+                Assert.IsNotNull(ex);
+                Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+                Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+            }
         }
     }
 }
