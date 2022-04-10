@@ -58,7 +58,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
                 .Returns<Claims>(null)
                 .Verifiable();
-            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
 
             // Create request
             var data = TestData._testDevice;
@@ -135,7 +135,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
                 .Returns(claims)
                 .Verifiable();
-            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
 
             // Create request
             var data = TestData._testDevice;
@@ -201,7 +201,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
                 .Returns(claims)
                 .Verifiable();
-            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
 
             // Create request
             var data = TestData._testAddDeviceNoLocation;
@@ -255,7 +255,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
                 .Returns(claims)
                 .Verifiable();
-            AuthenticationDefinition.AuthticationInstance = mockAuth.Object;
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
 
             // Create request
             var data = TestData._testDevice;
