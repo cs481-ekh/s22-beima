@@ -49,11 +49,15 @@ export default async function login(credentials) {
  * @param {*} remember boolean
  */
 export default function logout(remember){
+  const [setCurrentUser] = useOutletContext();
+
   if(remember){
     localStorage.removeItem("currentUser");
   } else {
     sessionStorage.removeItem("currentUser");
   }
+  
+  setCurrentUser({});
 }
 
 /**
