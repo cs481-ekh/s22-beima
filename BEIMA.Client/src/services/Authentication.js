@@ -2,6 +2,15 @@ import axios from 'axios';
 import jwt_decode from 'jwt-decode';
 const API_URL = process.env.REACT_APP_API_URL;
 
+const defaultUser = {
+  id : '',
+  token : '',
+  username : '',
+  firstName : '',
+  lastName : '',
+  role : ''
+};
+
 /**
  * POSTs a JSON object with user credentials to the login endpoint
  * If the login was successful, then the jwt is saved in the browser storage
@@ -10,7 +19,7 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param credentials user details to login
  * @return Error message
  */
-export default async function login(credentials) {
+export async function login(credentials) {
   const login = await axios.post(API_URL + "login", credentials).catch(function (error){
     if(error.response){
       return error.response;
@@ -44,7 +53,7 @@ export default async function login(credentials) {
  * Remove the token from the browser storage
  * @param {*} remember boolean
  */
-export default function logout(remember){
+export function logout(remember){
   if(remember){
     localStorage.removeItem("currentUser");
   } else {
@@ -59,8 +68,10 @@ export default function logout(remember){
  * associated with the JWT token
  * 
  */
-export default function getCurrentUser(){
+export function getCurrentUser(){
   let token;
+  let user = defaultUser;
+
   if(localStorage.getItem("currentUser")){
     token = localStorage.getItem("currentUser");
   } else if(sessionStorage.getItem("currentUser")){
@@ -69,17 +80,15 @@ export default function getCurrentUser(){
 
   if(token) {
     jwt_decode(token).then(decoded => {
-      const user = {
+      user = {
         id : decoded._id,
-        token : login.response,
+        token : token,
         username : decoded.username,
         firstName : decoded.firstName,
         lastName : decoded.lastName,
-        role : decoded.role,
-        remember : credentials.remember
+        role : decoded.role
       };
-
-      return user;
     });
   }
+  return user;
 }

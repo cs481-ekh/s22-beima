@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getCurrentUser} from './Authentication.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -7,9 +8,11 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The JSON of the building to be updated
  * @return Error message or a success indicator
  */
-export default async function updateBuilding(buildingDetails, token) {
+export default async function updateBuilding(buildingDetails) {
+  let user = getCurrentUser();
+
   //performs the post and returns an error message or a success indicator
-  const dbCall = await axios.post(API_URL + "building/" + buildingDetails._id + "/update", buildingDetails, {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "building/" + buildingDetails._id + "/update", buildingDetails, {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

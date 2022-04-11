@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getCurrentUser} from './Authentication.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -7,9 +8,11 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @param The user details to add to the DB
  * @return Error message or the inserted user ID
  */
-export default async function addUser(userDetails, token) {
+export default async function addUser(userDetails) {
+  let user = getCurrentUser();
+
   //performs the post and returns an error message or the inserted user ID
-  const dbCall = await axios.post(API_URL + "user", userDetails, {headers : {Authorization : `Bearer ${token}`}}).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "user", userDetails, {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
