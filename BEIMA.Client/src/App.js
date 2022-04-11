@@ -54,12 +54,13 @@ const App = () => {
 
 const AppLayout = () => {
   const [pageName, setPageName] = useState('')
+  const [currentUser, setCurrentUser] = useState({});
   return (
     <div className="page">
       <NavBar />
       <div className="content">
         <PageTitle pageName={pageName} />
-        <Outlet context={[setPageName]}/>
+        <Outlet context={[setPageName, currentUser, setCurrentUser]}/>
       </div>
     </div>
   )
