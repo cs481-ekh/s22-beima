@@ -10,6 +10,7 @@ import deleteDevice from "../../services/DeleteDevice.js";
 import getDevice from "../../services/GetDevice.js";
 import GetDeviceType from '../../services/GetDeviceType';
 import GetBuilding from '../../services/GetBuilding.js';
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import * as Constants from '../../Constants';
 
 const DevicePage = () => {
@@ -60,12 +61,47 @@ const DevicePage = () => {
    * @returns 
    */
   const FormCard = ({editable, id, label, value, onChange }) => {
+    const [expanded, setExpanded] = useState(false);
+    const textareaRef = useRef(null);
+
+    useEffect(() => {
+      if(textareaRef != null && textareaRef.current != null){
+        textareaRef.current.style.height = "0px";
+        const scrollHeight = textareaRef.current.scrollHeight;
+        textareaRef.current.style.height = scrollHeight + "px";
+      }
+    }, [value, expanded]);
+
     return (
-      <Card>
+      <Card className={expanded ? styles.expandedCard : ''}>
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
-            <Form.Label>{label}</Form.Label>
-            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
+            <div className={styles.row}>
+              <Form.Label>{label}</Form.Label>
+              <div>{expanded ? <IoChevronBack className={styles.hover} size={15} onClick={() => setExpanded(false)}/> : <IoChevronForward className={styles.hover} size={15} onClick={() => setExpanded(true)}/>}</div>
+            </div>
+            {expanded ? 
+              <FormControl 
+                required
+                ref={textareaRef}
+                as="textarea"
+                className={styles.expandedInput} 
+                disabled={!editable} size="sm" 
+                value={value ?? ""} 
+                onChange={onChange} 
+                maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}
+              />
+              :
+              <FormControl 
+                required 
+                type="text"
+                className={styles.unexpandedInput} 
+                disabled={!editable} size="sm" 
+                value={value ?? ""} 
+                onChange={onChange} 
+                maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}
+              />
+            }            
           </Form.Group>                
         </Card.Body>
       </Card>
