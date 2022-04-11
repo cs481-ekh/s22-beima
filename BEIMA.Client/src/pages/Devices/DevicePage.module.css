@@ -13,6 +13,28 @@
   gap:10px;
 }
 
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 5px;
+}
+
+.expandedCard{
+  width:100%;
+}
+
+.expandedInput{
+  overflow: hidden;
+}
+
+.unexpandedInput{
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden; 
+}
+
 .deleteButton {
   float: right;
 }
@@ -23,6 +45,13 @@
   justify-content: flex-start;
   flex-wrap: wrap;
   gap:10px;
+}
+
+.hover:hover  {
+  background: #ebedf7;
+  box-shadow: 0 0 0px 5px #ebedf7;
+  cursor:pointer;
+  user-select: none;
 }
 
 .image {
