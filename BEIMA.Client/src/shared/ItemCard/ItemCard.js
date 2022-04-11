@@ -32,7 +32,7 @@ const LoadingContent = () => {
  */
 export const ItemCard = ({title, RenderItem, loading, route}) => {
   return (
-    <Card id="itemCard">
+    <Card id="itemCard" className={styles.itemCard}>
       <Card.Body>
         <Card.Title className={styles.cardtitle}>
           <Link to={route} className={styles.back}>
