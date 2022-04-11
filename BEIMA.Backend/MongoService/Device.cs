@@ -159,7 +159,6 @@ namespace BEIMA.Backend.MongoService
             CheckNullArgument(Manufacturer, nameof(Manufacturer));
             CheckNullArgument(ModelNum, nameof(ModelNum));
             CheckNullArgument(SerialNum, nameof(SerialNum));
-            CheckNullArgument(YearManufactured, nameof(YearManufactured));
             CheckNullArgument(Notes, nameof(Notes));
             CheckNullArgument(Location.Notes, nameof(Location.Notes));
             CheckNullArgument(Location.Latitude, nameof(Location.Latitude));
