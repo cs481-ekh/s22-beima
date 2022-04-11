@@ -55,13 +55,17 @@ export default function logout(remember){
 }
 
 /**
- * Checks if the token is in localStorage and sets the currentUser constant
- * This is used for if a user selects remember me, but closes their browser
- * before the timeout occurs
+ * Gets the JWT from the browser storage and returns the user JSON object
+ * associated with the JWT token
  * 
  */
-export default function checkAndSetCurrentUser(){
-  let token = localStorage.getItem("currentUser");
+export default function getCurrentUser(){
+  let token;
+  if(localStorage.getItem("currentUser")){
+    token = localStorage.getItem("currentUser");
+  } else if(sessionStorage.getItem("currentUser")){
+    token = sessionStorage.getItem("currentUser");
+  }
 
   if(token) {
     jwt_decode(token).then(decoded => {
