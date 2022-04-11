@@ -29,15 +29,12 @@ services:
       - internal
 
   api:
-    restart: always
     build:
       context: .
       dockerfile: ./BEIMA.Backend/Dockerfile
     ports:
-    #port 80 on the outside is mapped to port 7071 on the inside, requests to the API need to rout to JUST beima_api_1
-      - "7071:80"
-    #volumes:
-    #  - db-data:/data
+    #port 7071 on the host is mapped to port 7071 on the container. Requests get sent to "localhost:7071", or the host machines 7071, which is then routed to the container's 7071 port and the request is completed
+      - "7071:7071"
     networks:
       - internal
 
