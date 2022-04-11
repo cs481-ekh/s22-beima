@@ -28,9 +28,11 @@ RUN rm packages-microsoft-prod.deb
 RUN apt update
 # Install Azure Functions Tools
 RUN apt install azure-functions-core-tools-4
+# Install dotnet 6 SDK to allow building
+RUN apt-get install -y dotnet-sdk-6.0
 # Set work directory 
 WORKDIR /beima/BEIMA.Backend
 # Set Environment Variable to ignore globalization
 RUN export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 # Start the API
-CMD ["func", "start", "BEIMA.Backend.csproj"]
+ENTRYPOINT ["func", "start", "BEIMA.Backend.csproj"]
