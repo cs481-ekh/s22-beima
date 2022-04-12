@@ -72,7 +72,6 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetBuilding(It.IsAny<ObjectId>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
 
             Assert.IsNotNull(deviceId);
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
@@ -131,7 +130,6 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
 
             Assert.IsNotNull(deviceId);
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
@@ -184,7 +182,6 @@ namespace BEIMA.Backend.Test.DeviceFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
 
             Assert.IsNotNull(deviceId);
             Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.IsAny<IFormFile>()), Times.Once));
