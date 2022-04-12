@@ -1,5 +1,6 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
+import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 const defaultUser = {
@@ -26,8 +27,9 @@ export async function login(credentials) {
     }
   });
 
-    jwt_decode(login.response).then(decoded => {
-      const user = {
+  if(login.status === Constants.HTTP_SUCCESS){
+    let user = jwt_decode(login.data);
+      /**const user = {
         id : decoded._id,
         token : login.response,
         username : decoded.username,
@@ -35,18 +37,17 @@ export async function login(credentials) {
         lastName : decoded.lastName,
         role : decoded.role,
         remember : credentials.remember
-      };
+      };*/
 
       if(credentials.remember){
-        localStorage.setItem("currentUser", login.response);
+        localStorage.setItem("currentUser", login.data);
       } else {
-        sessionStorage.setItem("currentUser", login.response);
+        sessionStorage.setItem("currentUser", login.data);
       }
 
       return user;
-    });
-  
-    return login.response;
+  }
+  return login.response;
 }
 
 /**
@@ -79,16 +80,7 @@ export function getCurrentUser(){
   }
 
   if(token) {
-    jwt_decode(token).then(decoded => {
-      user = {
-        id : decoded._id,
-        token : token,
-        username : decoded.username,
-        firstName : decoded.firstName,
-        lastName : decoded.lastName,
-        role : decoded.role
-      };
-    });
+    user = jwt_decode(token);
   }
   return user;
 }
