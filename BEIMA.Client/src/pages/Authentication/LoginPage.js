@@ -1,5 +1,5 @@
 import { Card, Form, Button, Spinner } from "react-bootstrap";
-import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { login } from "../../services/Authentication";
 import styles from './LoginPage.module.css'
@@ -13,7 +13,6 @@ const LoginPage = () => {
   const [remember, setRemember] = useState(false)
   const [touched, setTouched] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const navigate = useNavigate();
 
   useEffect(() => {
     setPageName('BEIMA Login')
@@ -73,8 +72,7 @@ const LoginPage = () => {
       remember: remember
     }
 
-    let loggedUser = await login(user);
-    console.log(loggedUser)
+    await login(user);
     setSubmitting(false)
     window.location.reload(false);
   }

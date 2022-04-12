@@ -4,12 +4,10 @@ import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 const defaultUser = {
-  id : '',
-  token : '',
-  username : '',
-  firstName : '',
-  lastName : '',
-  role : ''
+  Id : '',
+  Token : '',
+  Username : '',
+  Role : ''
 };
 
 /**
@@ -29,23 +27,14 @@ export async function login(credentials) {
 
   if(login.status === Constants.HTTP_SUCCESS){
     let user = jwt_decode(login.data);
-      /**const user = {
-        id : decoded._id,
-        token : login.response,
-        username : decoded.username,
-        firstName : decoded.firstName,
-        lastName : decoded.lastName,
-        role : decoded.role,
-        remember : credentials.remember
-      };*/
 
-      if(credentials.remember){
-        localStorage.setItem("currentUser", login.data);
-      } else {
-        sessionStorage.setItem("currentUser", login.data);
-      }
+    if(credentials.remember){
+      localStorage.setItem("currentUser", login.data);
+    } else {
+      sessionStorage.setItem("currentUser", login.data);
+    }
 
-      return user;
+    return user;
   }
   return login.response;
 }
@@ -81,6 +70,9 @@ export function getCurrentUser(){
 
   if(token) {
     user = jwt_decode(token);
+    user.token = token;
   }
+
+  console.log(user);
   return user;
 }

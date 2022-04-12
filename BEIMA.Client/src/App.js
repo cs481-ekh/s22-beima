@@ -33,7 +33,7 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<AppLayout />}>
-          {currentUser.token !== '' ?
+          {currentUser.Token !== '' ?
           <>
           <Route index element={<Navigate to="/devices" />}/>
           <Route path="addDevice" element={<AddDevicePage/>}/>
@@ -44,10 +44,14 @@ const App = () => {
           <Route path="deviceTypes/:typeId" element={<DeviceTypePage/>}/>
           <Route path="buildings/:id" element={<BuildingPage/>}/>
           <Route path="buildings" element={<BuildingListPage/>}/>
-          <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/>  
+          <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/> 
+          {currentUser.Role === 'admin' ?
+          <>
           <Route path="users" element={<ListUsersPage/>}/>
           <Route path="users/addUser" element={<AddUserPage/>}/>
           <Route path="users/:id" element={<UserPage/>}/>
+          </>
+          :<></>} 
           <Route path="Help" element={<HelpPage />} />
           <Route path="*" element={<Navigate to="/devices" />} />
           </>
@@ -68,7 +72,7 @@ const AppLayout = () => {
 
   return (
     <div className="page">
-      {currentUser.token === '' ?
+      {currentUser.Token === '' ?
       <></>
       : <NavBar />}
       <div className="content">
