@@ -5,7 +5,7 @@ const API_URL = process.env.REACT_APP_API_URL;
 
 const defaultUser = {
   Id : '',
-  Token : '',
+  token : '',
   Username : '',
   Role : ''
 };
@@ -33,7 +33,7 @@ export async function login(credentials) {
     } else {
       sessionStorage.setItem("currentUser", login.data);
     }
-
+    user.token = login.data;
     return user;
   }
   return login.response;
@@ -43,14 +43,10 @@ export async function login(credentials) {
  * Remove the token from the browser storage
  * @param {*} remember boolean
  */
-export function logout(remember){
-  if(remember){
-    localStorage.removeItem("currentUser");
-  } else {
-    sessionStorage.removeItem("currentUser");
-  }
-  
-  return {};
+export function logout(){
+  localStorage.removeItem("currentUser");
+  sessionStorage.removeItem("currentUser");
+  window.location.reload(false);
 }
 
 /**
@@ -73,6 +69,5 @@ export function getCurrentUser(){
     user.token = token;
   }
 
-  console.log(user);
   return user;
 }
