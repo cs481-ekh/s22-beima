@@ -1,5 +1,5 @@
 import logo from './BSU-logo.png';
-import { Row, Col, Container, Button } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import { useState } from "react";
 import { getCurrentUser } from '../services/Authentication';
 import './shared.css';
