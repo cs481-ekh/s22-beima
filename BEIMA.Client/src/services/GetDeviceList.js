@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getCurrentUser} from './Authentication.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -7,7 +8,9 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return JSON with list of all devices or error message on failure
  */
 const GetDeviceList = async() => {
-  const deviceListCall = await axios.get(API_URL + "device-list").catch(function (error) {
+  let user = getCurrentUser();
+
+  const deviceListCall = await axios.get(API_URL + "device-list", {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
