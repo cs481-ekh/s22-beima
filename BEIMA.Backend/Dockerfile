@@ -2,7 +2,7 @@
 FROM ubuntu:20.04
 # Set non interactive to avoid having to make keyboard/timezone selection
 ENV DEBIAN_FRONTEND noninteractive
-# Allow connections on port 3000
+# Allow connections on port 7071
 EXPOSE 7071
 # Create directory for front end
 RUN mkdir /beima
