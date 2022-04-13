@@ -15,6 +15,7 @@ namespace BEIMA.Backend.FT
         [SetUp]
         public async Task SetUp()
         {
+
             // Delete all the devices in the database.
             var deviceList = await TestClient.GetDeviceList();
             foreach (var device in deviceList)

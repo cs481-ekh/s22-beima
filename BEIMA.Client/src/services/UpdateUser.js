@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getCurrentUser} from './Authentication.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -8,8 +9,10 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return Error message or a success indicator
  */
 export default async function updateUser(userDetails) {
+  let user = getCurrentUser();
+
   //performs the post and returns an error message or a success indicator
-  const dbCall = await axios.post(API_URL + "user/" + userDetails._id + "/update", userDetails).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "user/" + userDetails._id + "/update", userDetails, {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }

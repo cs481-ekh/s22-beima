@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getCurrentUser} from './Authentication.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -7,7 +8,9 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return Error message or a success indicator
  */
 export default async function getUserList() {
-  const userListCall = await axios.get(API_URL + "user-list").catch(function (error) {
+  let user = getCurrentUser();
+
+  const userListCall = await axios.get(API_URL + "user-list", {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
     if (error.response) {
       return error.response;
   }

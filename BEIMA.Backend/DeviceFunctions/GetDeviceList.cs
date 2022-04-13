@@ -1,3 +1,4 @@
+using BEIMA.Backend.AuthService;
 using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,14 @@ namespace BEIMA.Backend.DeviceFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device list request.");
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
+            }
 
             var mongo = MongoDefinition.MongoInstance;
             var filter = Builders<BsonDocument>.Filter.Empty;
