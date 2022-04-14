@@ -101,6 +101,39 @@ namespace BEIMA.Backend.FT
         }
 
         [Test]
+        public async Task UserNotInDatabase_AddUserWithUsernameCapitalization_CreatesNewUserWithLowerCaseUsername()
+        {
+            // ARRANGE
+            var user = new User
+            {
+                Username = "useR.NaMe",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var responseId = await TestClient.AddUser(user);
+
+            // ASSERT
+            Assert.That(responseId, Is.Not.Null);
+            Assert.That(ObjectId.TryParse(responseId, out _), Is.True);
+
+            var getUser = await TestClient.GetUser(responseId);
+            Assert.That(getUser.Username?.ToLower(), Is.EqualTo(user.Username.ToLower()));
+            // GET endpoints should not expose password, will always return empty string
+            Assert.That(getUser.Password, Is.EqualTo(string.Empty));
+            Assert.That(getUser.FirstName, Is.EqualTo(user.FirstName));
+            Assert.That(getUser.LastName, Is.EqualTo(user.LastName));
+            Assert.That(getUser.Role, Is.EqualTo(user.Role));
+
+            Assert.That(getUser.LastModified, Is.Not.Null);
+            Assert.That(getUser.LastModified?.Date, Is.Not.Null);
+            Assert.That(getUser.LastModified?.User, Is.EqualTo("Anonymous"));
+        }
+
+        [Test]
         public async Task UsersInDatabase_GetUserList_ReturnsUserList()
         {
             // ARRANGE
@@ -417,6 +450,56 @@ namespace BEIMA.Backend.FT
             };
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
                 await TestClient.AddUser(newUser)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        }
+
+        [Test]
+        public async Task TwoUsersInDatabase_UpdateUserWithDuplicateUsernameWithCapitalization_ConflictObjectResultReturned()
+        {
+            // ARRANGE
+            var existingUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+            var existingUserId = await TestClient.AddUser(existingUser);
+            Assume.That(existingUserId, Is.Not.Null);
+            Assume.That(existingUserId, Is.Not.EqualTo(string.Empty));
+
+            var updateUser = new User
+            {
+                Username = "someOtherUsername",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(updateUser);
+            var origItem = await TestClient.GetUser(userId);
+
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new User
+            {
+                Id = userId,
+                Username = "user.NAME",
+                Password = "",
+                FirstName = "Alexis",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.UpdateUser(updateItem)
             );
 
             // ASSERT
