@@ -123,7 +123,7 @@ namespace BEIMA.Backend.FT
 
             Assert.That(getUser.LastModified, Is.Not.Null);
             Assert.That(getUser.LastModified?.Date, Is.Not.Null);
-            Assert.That(getUser.LastModified?.User, Is.EqualTo("Anonymous"));
+            Assert.That(getUser.LastModified?.User, Is.EqualTo(TestUsername));
         }
 
         [Test]
@@ -240,7 +240,7 @@ namespace BEIMA.Backend.FT
 
                     Assert.That(user.LastModified, Is.Not.Null);
                     Assert.That(user.LastModified?.Date, Is.Not.Null);
-                    Assert.That(user.LastModified?.User, Is.EqualTo("Anonymous"));
+                    Assert.That(user.LastModified?.User, Is.EqualTo(TestUsername));
                 }
             }
         }
