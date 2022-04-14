@@ -13,9 +13,16 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class DeviceFT : FunctionalTestBase
     {
-        private string? _deviceTypeId;
-        private string? _deviceTypeFieldUuid;
-        private string? _buildingId;
+        private static string? _deviceTypeId;
+        private static string? _deviceTypeId2;
+
+        private static string? _deviceTypeFieldUuid;
+        private static string? _deviceTypeFieldUuid2;
+
+        private static string? _buildingId;
+        private static string? _buildingId2;
+
+        #region SetUp and TearDown
 
         [OneTimeSetUp]
         public async Task OneTimeSetUp()
@@ -49,7 +56,7 @@ namespace BEIMA.Backend.FT
                 }
             }
 
-            // Add back in a test device type
+            // Add back in a couple test device types to test with
             _deviceTypeId = await TestClient.AddDeviceType(
                 new DeviceTypeAdd
                 {
@@ -62,8 +69,20 @@ namespace BEIMA.Backend.FT
                     },
                 });
             _deviceTypeFieldUuid = (await TestClient.GetDeviceType(_deviceTypeId)).Fields?.Keys.Single();
+            _deviceTypeId2 = await TestClient.AddDeviceType(
+                new DeviceTypeAdd
+                {
+                    Description = "Boiler device type.",
+                    Name = "Boiler",
+                    Notes = "Device type for boiler devices.",
+                    Fields = new List<string>
+                    {
+                        "BoilerField",
+                    },
+                });
+            _deviceTypeFieldUuid2 = (await TestClient.GetDeviceType(_deviceTypeId2)).Fields?.Keys.Single();
 
-            // Add back in a test building
+            // Add back in a couple test buildings to test with
             _buildingId = await TestClient.AddBuilding(
                 new Building
                 {
@@ -74,6 +93,18 @@ namespace BEIMA.Backend.FT
                     {
                         Latitude = "0.123",
                         Longitude = "4.567",
+                    },
+                });
+            _buildingId2 = await TestClient.AddBuilding(
+                new Building
+                {
+                    Name = "Albertsons Library",
+                    Number = "4321",
+                    Notes = "Some building notes.",
+                    Location = new Location
+                    {
+                        Latitude = "1.001",
+                        Longitude = "2.002",
                     },
                 });
         }
@@ -91,6 +122,10 @@ namespace BEIMA.Backend.FT
                 }
             }
         }
+
+        #endregion SetUp and TearDown
+
+        #region Device GET Tests
 
         [TestCase("xxx")]
         [TestCase("1234")]
@@ -114,6 +149,10 @@ namespace BEIMA.Backend.FT
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        #endregion Device GET Tests
+
+        #region Device Add Tests
 
         [Test]
         public async Task DeviceNotInDatabase_AddDevice_CreatesNewDevice()
@@ -184,6 +223,10 @@ namespace BEIMA.Backend.FT
             Assert.That(getDevice.Fields?.Single().Key, Is.EqualTo(device.Fields.Single().Key));
             Assert.That(getDevice.Fields?.Single().Value, Is.EqualTo(device.Fields.Single().Value));
         }
+
+        #endregion Device Add Tests
+
+        #region Device List Tests
 
         [Test]
         public async Task DevicesInDatabase_GetDeviceList_ReturnsDeviceList()
@@ -293,6 +336,161 @@ namespace BEIMA.Backend.FT
             }
         }
 
+        [TestCase("deviceType=DT_1", new int[] { 0, 2 })]
+        [TestCase("building=B_1", new int[] { 0, 1 })]
+        [TestCase("deviceType=DT_1&building=B_1", new int[] { 0 })]
+        [TestCase("deviceType=DT_1&deviceType=DT_2&building=B_1", new int[] { 0, 1 })]
+        [TestCase("deviceType=DT_1&building=B_1&building=B_2", new int[] { 0, 2 })]
+        [TestCase("deviceType=DT_1&deviceType=DT_2&building=B_1&building=B_2", new int[] { 0, 1, 2, 3 })]
+        [TestCase("unusedQueryKey=000000000000000000000000", new int[] { 0, 1, 2, 3 })]
+        [TestCase("deviceType=badId", new int[] { 0, 1, 2, 3 })]
+        [TestCase("deviceType=000000000000000000000000", new int[] { })]
+        public async Task DevicesInDatabase_GetDeviceList_WithFilters_ReturnsDeviceList(string queryString, params int[] expectedDeviceIndicies)
+        {
+            // ARRANGE
+            var deviceList = new List<Device>
+            {
+                new Device
+                {
+                    DeviceTag = "A-2",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId,
+                        Latitude = "10.101",
+                        Longitude = "6.234",
+                        Notes = "Outside",
+                    },
+                    Manufacturer = "Generic Inc.",
+                    ModelNum = "44tsec",
+                    Notes = "Giberish",
+                    SerialNum = "tt4s",
+                    YearManufactured = 2010,
+                },
+                new Device
+                {
+                    DeviceTag = "B-1",
+                    DeviceTypeId = _deviceTypeId2,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid2 ?? "UuidRetrievalFailed", "BoilerValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId,
+                        Latitude = "74.003",
+                        Longitude = "138.123",
+                        Notes = "Inside",
+                    },
+                    Manufacturer = "Generic Labs",
+                    ModelNum = "dbbr6f",
+                    Notes = "Blah Blah",
+                    SerialNum = "c4ta",
+                    YearManufactured = 2011,
+                },
+                new Device
+                {
+                    DeviceTag = "C-3",
+                    DeviceTypeId = _deviceTypeId,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId2,
+                        Latitude = "11.989",
+                        Longitude = "25.004",
+                        Notes = "Above",
+                    },
+                    Manufacturer = "Generic Company",
+                    ModelNum = "y5eyf",
+                    Notes = "qwerty",
+                    SerialNum = "t4vw",
+                    YearManufactured = 2012,
+                },
+                new Device
+                {
+                    DeviceTag = "D-4",
+                    DeviceTypeId = _deviceTypeId2,
+                    Fields = new Dictionary<string, string>
+                    {
+                        { _deviceTypeFieldUuid2 ?? "UuidRetrievalFailed", "GenericValue" },
+                    },
+                    Location = new DeviceLocation
+                    {
+                        BuildingId = _buildingId2,
+                        Latitude = "45.285",
+                        Longitude = "39.102",
+                        Notes = "Above",
+                    },
+                    Manufacturer = "Generic Company",
+                    ModelNum = "ev4ve",
+                    Notes = "fdsat",
+                    SerialNum = "vtwv",
+                    YearManufactured = 2013,
+                },
+            };
+
+            foreach (var device in deviceList)
+            {
+                await TestClient.AddDevice(device);
+            }
+
+            // Fill in query string ids with actual device type and building ids
+            queryString = queryString.Replace("DT_1", _deviceTypeId)
+                                     .Replace("DT_2", _deviceTypeId2)
+                                     .Replace("B_1", _buildingId)
+                                     .Replace("B_2", _buildingId2);
+
+            // ACT
+            var actualDevices = await TestClient.GetDeviceList(queryString);
+
+            // ASSERT
+            Assert.That(actualDevices.Count, Is.EqualTo(expectedDeviceIndicies.Count()));
+
+            // Create the expected list of devices
+            var expectedDevices = new List<Device>();
+            foreach (var index in expectedDeviceIndicies)
+            {
+                expectedDevices.Add(deviceList[index]);
+            }
+
+            // Assert on the devices
+            foreach (var device in actualDevices)
+            {
+                Assert.That(device, Is.Not.Null);
+                var expectedDevice = expectedDevices.Single(d => d.DeviceTag?.Equals(device.DeviceTag) ?? false);
+
+                Assert.That(device.DeviceTypeId, Is.EqualTo(expectedDevice.DeviceTypeId));
+                Assert.That(device.Manufacturer, Is.EqualTo(expectedDevice.Manufacturer));
+                Assert.That(device.ModelNum, Is.EqualTo(expectedDevice.ModelNum));
+                Assert.That(device.Notes, Is.EqualTo(expectedDevice.Notes));
+                Assert.That(device.SerialNum, Is.EqualTo(expectedDevice.SerialNum));
+                Assert.That(device.YearManufactured, Is.EqualTo(expectedDevice.YearManufactured));
+
+                Assert.That(device.Location?.BuildingId, Is.EqualTo(expectedDevice.Location?.BuildingId));
+                Assert.That(device.Location?.Notes, Is.EqualTo(expectedDevice.Location?.Notes));
+                Assert.That(device.Location?.Longitude, Is.EqualTo(expectedDevice.Location?.Longitude));
+                Assert.That(device.Location?.Latitude, Is.EqualTo(expectedDevice.Location?.Latitude));
+
+                Assert.That(device.LastModified, Is.Not.Null);
+                Assert.That(device.LastModified?.Date, Is.Not.Null);
+                Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
+
+                Assert.That(device.Fields?.Single().Key, Is.EqualTo(expectedDevice.Fields?.Single().Key));
+                Assert.That(device.Fields?.Single().Value, Is.EqualTo(expectedDevice.Fields?.Single().Value));
+            }
+        }
+
+        #endregion Device List Tests
+
+        #region Device Delete Tests
+
         [Test]
         public async Task DeviceInDatabase_DeleteDevice_DeviceDeletedSuccessfully()
         {
@@ -350,6 +548,10 @@ namespace BEIMA.Backend.FT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDevice(deviceId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        #endregion Device Delete Tests
+
+        #region Device Update Tests
 
         [Test]
         public async Task DeviceInDatabase_UpdateDevice_ReturnsUpdatedDevice()
@@ -449,5 +651,7 @@ namespace BEIMA.Backend.FT
 
             Assert.That(updatedDevice.Files?.Count, Is.EqualTo(0));
         }
+
+        #endregion Device Update Tests
     }
 }

@@ -257,7 +257,7 @@ const AddDevicePage = () => {
       setErrors(newErrors);
       return false;
     } else if (warnings.length > 0) {
-      isConfirmed = (await Notifications.warning('Warning', warnings)).isConfirmed;
+      isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
     }
     
     if(isConfirmed) {
@@ -279,7 +279,7 @@ const AddDevicePage = () => {
       setAdditionalDocs(event.target.files)
     }
   }
-  
+
   return (
     <div className={styles.fieldform}>
       <Card>

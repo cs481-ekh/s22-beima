@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {ItemCard} from "../../shared/ItemCard/ItemCard"
 import * as Notifications from '../../shared/Notifications/Notification.js'
 import styles from './DeviceTypePage.module.css'
 import { useOutletContext, useParams, useNavigate } from 'react-router-dom';
 import { Form, Card, Button, FormControl} from "react-bootstrap";
 import { IoAdd } from "react-icons/io5";
+import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import { v4 as uuidv4 } from 'uuid';
 import GetDeviceType from '../../services/GetDeviceType';
 import updateDeviceType from '../../services/UpdateDeviceType';
@@ -43,11 +44,27 @@ const DeviceTypePage = () => {
    * @returns 
    */
   const Field = ({field, value, editable, fieldChange, deleteField}) => {
+    const [expanded, setExpanded] = useState(false);
+    const textareaRef = useRef(null);
+
+    useEffect(() => {
+      if(textareaRef != null && textareaRef.current != null){
+        textareaRef.current.style.height = "0px";
+        const scrollHeight = textareaRef.current.scrollHeight;
+        textareaRef.current.style.height = scrollHeight + "px";
+      }
+    }, [value, expanded]);
+
     return (
-      <Card>
+      <Card className={expanded ? styles.expandedCard : ''}>
         <Card.Body >
-            <Form.Group className="mb-3" controlId={field}>
-              <FormControl required type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}  maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/>
+            <Form.Group className={[styles.row, "mb-3"].join(' ')} controlId={field}>
+              {expanded ? 
+                <FormControl required ref={textareaRef} className={styles.expandedInput}  as="textarea" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}  maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/> 
+                :
+                <FormControl required ref={textareaRef} className={styles.unexpandedInput}  type="text" disabled={!editable} size="sm" placeholder="Field Name" value={value} onChange={fieldChange}  maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/> 
+              }
+              <div>{expanded ? <IoChevronBack className={styles.hover} size={15} onClick={() => setExpanded(false)}/> : <IoChevronForward className={styles.hover} size={15} onClick={() => setExpanded(true)}/>}</div>
             </Form.Group>                
           { editable ? 
            <div className={styles.deleteButton}>
@@ -83,6 +100,8 @@ const DeviceTypePage = () => {
       // we keep track of the added fields as an object, but the endpoint takes in an array
       // so we grab the values from the addFields object and send it to the endpoint
       let newFields = Object.values(addedFields);
+      let warnings = [];
+      let isConfirmed = true;
 
       const result = {
         id: typeId,
@@ -93,13 +112,27 @@ const DeviceTypePage = () => {
         newFields: newFields,
         deletedFields: deletedFields
       }
-      //call endpoint
-      let updateResult = await updateDeviceType(result);
-      if(updateResult.status === Constants.HTTP_SUCCESS){
-        Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
-        setEditable(false)
-      } else {
-        Notifications.error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
+      
+      Object.entries(result).forEach(entry => {
+        const [key, value] = entry;
+        if(value === ""){
+          warnings.push(`"${key}" field is empty<br/>`);
+        }
+      });
+      
+      if( warnings.length > 0 ){
+        isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
+      }
+      
+      if ( isConfirmed ) {
+        //call endpoint
+        let updateResult = await updateDeviceType(result);
+        if(updateResult.status === Constants.HTTP_SUCCESS){
+          Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
+          setEditable(false)
+        } else {
+          Notifications.error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
+        }
       }
     }
 

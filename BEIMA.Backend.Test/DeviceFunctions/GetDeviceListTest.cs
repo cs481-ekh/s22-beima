@@ -2,11 +2,14 @@
 using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test.DeviceFunctions
@@ -17,6 +20,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         [Test]
         public void PopulatedDatabase_GetDeviceList_ReturnsListOfDevices()
         {
+            // ARRANGE
             var device1 = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "A-1", "Generic Inc.", "43", "x46b", 2005, "Comment");
             var device2 = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "B-2", "Generic Co.", "425", "w43s", 2007, "Giberish");
             var device3 = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "C-1", "Device Inc.", "26", "jd5r", 2013, "Device stuff.");
@@ -36,14 +40,20 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                 device3.GetBsonDocument(),
             };
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
-            mockDb.Setup(mock => mock.GetAllDevices())
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
                   .Returns(deviceList)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
             var response = (OkObjectResult)GetDeviceList.Run(request, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
+
             var getList = (List<Device>)response.Value;
             Assert.IsNotNull(getList);
             for (int i = 0; i < deviceList.Count; i++)
@@ -71,6 +81,65 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                 Assert.That(lastMod.Date.ToString(), Is.EqualTo(expectedLastMod["date"].ToUniversalTime().ToString()));
                 Assert.That(lastMod.User.ToString(), Is.EqualTo(expectedLastMod["user"].AsString));
             }
+        }
+
+        [TestCase("deviceType", "deviceTypeId")]
+        [TestCase("building", "location.buildingId")]
+        public void FilteredQueryString_GetDeviceList_ReturnsListOfDevices(string queryProp, string filterProp)
+        {
+            // ARRANGE
+            var device1 = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "A-1", "Generic Inc.", "43", "x46b", 2005, "Comment");
+            device1.SetLocation(ObjectId.GenerateNewId(), "some notes", "98.345", "106.211");
+            device1.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            var deviceList = new List<BsonDocument>
+            {
+                device1.GetBsonDocument()
+            };
+
+            var filterPropValue = filterProp.Equals("deviceTypeId") ? device1.DeviceTypeId : device1.Location.BuildingId;
+            var expectedFilter = MongoFilterGenerator.GetEqualsFilter(filterProp, filterPropValue).ToString();
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.Is<FilterDefinition<BsonDocument>>(fd => string.Equals(fd.ToString(), expectedFilter))))
+                  .Returns(deviceList)
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET, query: new Dictionary<string, StringValues> { { queryProp, new StringValues(filterPropValue.ToString()) } });
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = (OkObjectResult)GetDeviceList.Run(request, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
+
+            var getList = (List<Device>)response.Value;
+            Assert.IsNotNull(getList);
+            Assert.That(getList.Count, Is.EqualTo(1));
+            var device = getList.Single();
+            var expectedDevice = deviceList.Single();
+            Assert.That(device.Id.ToString(), Is.EqualTo(expectedDevice["_id"].AsObjectId.ToString()));
+            Assert.That(device.DeviceTypeId.ToString(), Is.EqualTo(expectedDevice["deviceTypeId"].AsObjectId.ToString()));
+            Assert.That(device.DeviceTag, Is.EqualTo(expectedDevice["deviceTag"].AsString));
+            Assert.That(device.Notes, Is.EqualTo(expectedDevice["notes"].AsString));
+            Assert.That(device.Manufacturer, Is.EqualTo(expectedDevice["manufacturer"].AsString));
+            Assert.That(device.ModelNum, Is.EqualTo(expectedDevice["modelNum"].AsString));
+            Assert.That(device.SerialNum, Is.EqualTo(expectedDevice["serialNum"].AsString));
+            Assert.That(device.YearManufactured, Is.EqualTo(expectedDevice["yearManufactured"].AsInt32));
+
+            var location = device.Location;
+            var expectedLocation = expectedDevice["location"];
+            Assert.That(location.BuildingId.ToString(), Is.EqualTo(expectedLocation["buildingId"].AsObjectId.ToString()));
+            Assert.That(location.Notes, Is.EqualTo(expectedLocation["notes"].AsString));
+            Assert.That(location.Longitude, Is.EqualTo(expectedLocation["longitude"].AsString));
+            Assert.That(location.Latitude, Is.EqualTo(expectedLocation["latitude"].AsString));
+
+            var lastMod = device.LastModified;
+            var expectedLastMod = expectedDevice["lastModified"];
+            Assert.That(lastMod.Date.ToString(), Is.EqualTo(expectedLastMod["date"].ToUniversalTime().ToString()));
+            Assert.That(lastMod.User.ToString(), Is.EqualTo(expectedLastMod["user"].AsString));
         }
     }
 }
