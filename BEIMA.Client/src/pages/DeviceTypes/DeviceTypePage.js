@@ -100,6 +100,8 @@ const DeviceTypePage = () => {
       // we keep track of the added fields as an object, but the endpoint takes in an array
       // so we grab the values from the addFields object and send it to the endpoint
       let newFields = Object.values(addedFields);
+      let warnings = [];
+      let isConfirmed = true;
 
       const result = {
         id: typeId,
@@ -110,13 +112,27 @@ const DeviceTypePage = () => {
         newFields: newFields,
         deletedFields: deletedFields
       }
-      //call endpoint
-      let updateResult = await updateDeviceType(result);
-      if(updateResult.status === Constants.HTTP_SUCCESS){
-        Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
-        setEditable(false)
-      } else {
-        Notifications.error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
+      
+      Object.entries(result).forEach(entry => {
+        const [key, value] = entry;
+        if(value === ""){
+          warnings.push(`"${key}" field is empty<br/>`);
+        }
+      });
+      
+      if( warnings.length > 0 ){
+        isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
+      }
+      
+      if ( isConfirmed ) {
+        //call endpoint
+        let updateResult = await updateDeviceType(result);
+        if(updateResult.status === Constants.HTTP_SUCCESS){
+          Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
+          setEditable(false)
+        } else {
+          Notifications.error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
+        }
       }
     }
 
