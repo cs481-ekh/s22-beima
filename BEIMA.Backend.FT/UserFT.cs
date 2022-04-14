@@ -121,7 +121,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ObjectId.TryParse(responseId, out _), Is.True);
 
             var getUser = await TestClient.GetUser(responseId);
-            Assert.That(getUser.Username?.ToLower(), Is.EqualTo(user.Username.ToLower()));
+            Assert.That(getUser.Username, Is.EqualTo(user.Username.ToLower()));
             // GET endpoints should not expose password, will always return empty string
             Assert.That(getUser.Password, Is.EqualTo(string.Empty));
             Assert.That(getUser.FirstName, Is.EqualTo(user.FirstName));
