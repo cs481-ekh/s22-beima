@@ -46,7 +46,7 @@ services:
     volumes:
       - './data/minio:/data'
     entrypoint: sh
-    command: -c 'mkdir -p /data/files && minio server /data'
+    command: -c 'mkdir -p /data/files && minio server --address ":9000" --console-address ":9001" /data'
 
 networks:
   # The presence of these objects is sufficient to define them
