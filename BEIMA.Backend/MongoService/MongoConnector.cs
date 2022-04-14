@@ -3,6 +3,7 @@ using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.MongoService
 {
@@ -45,6 +46,24 @@ namespace BEIMA.Backend.MongoService
                 credentials = Environment.GetEnvironmentVariable("AzureCosmosConnection");
             }
             client = new MongoClient(credentials);
+
+            // Create default admin user on startup if no admin user exists.
+            //
+            // The credentials for this default admin user are:
+            // Username = first.admin
+            // Password = Abcdefg12345!
+            //
+            // !!!!!!!!! IMPORTANT, PLEASE READ !!!!!!!!!
+            // It is highly encouraged that a new, more secure admin user is set up in place of this default admin user
+            // once the application has been successfully set up. The purpose of this user is to provide a means to create
+            // users when the application is launched for the first time. This default user is also used for testing.
+            if (!(GetFilteredUsers(MongoFilterGenerator.GetEqualsFilter("role", Constants.ADMIN_ROLE)).Count > 0))
+            {
+                var passwordHash = BCryptNet.HashPassword("Abcdefg12345!");
+                var defaultUser = new User(ObjectId.GenerateNewId(), "first.admin", passwordHash, "DEFAULT", "USER", Constants.ADMIN_ROLE);
+                defaultUser.SetLastModified(DateTime.UtcNow, defaultUser.Username);
+                InsertUser(defaultUser.GetBsonDocument());
+            }
         }
 
         /// <summary>

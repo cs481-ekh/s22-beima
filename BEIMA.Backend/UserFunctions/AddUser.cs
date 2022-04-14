@@ -1,19 +1,19 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.Models;
+using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
-using BEIMA.Backend.Models;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Net;
-using BCryptNet = BCrypt.Net.BCrypt;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -35,6 +35,14 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user post request.");
 
+            // Verify JWT token
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+            if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+
             var mongo = MongoDefinition.MongoInstance;
 
             User user;
@@ -51,7 +59,7 @@ namespace BEIMA.Backend.UserFunctions
 
                 // Check for username uniqueness
                 var filter = MongoFilterGenerator.GetEqualsFilter("username", data.Username);
-                if(mongo.GetFilteredUsers(filter).Count > 0)
+                if (mongo.GetFilteredUsers(filter).Count > 0)
                 {
                     return new ConflictObjectResult(Resources.UsernameAlreadyExistsMessage);
                 }
@@ -68,8 +76,8 @@ namespace BEIMA.Backend.UserFunctions
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
-            // TODO: Use actual user.
-            user.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            user.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;
