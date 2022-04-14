@@ -115,5 +115,42 @@ namespace BEIMA.Backend.FT
             Assert.That(claims.Sub, Is.EqualTo("User"));
             Assert.That(claims.Iss, Is.EqualTo("Beima"));
         }
+
+        [TestCase("valid", "ValId", "Valid01!")]
+        [TestCase("valid2", "vaLID2", "Valid02!")]
+        public async Task ValidParametersWithUsersWithCapitalizedUsername_Login_ReturnsJwtToken(string username, string capUsername, string password)
+        {
+            var user = new User()
+            {
+                Username = username,
+                Password = password,
+                Role = "admin"
+            };
+
+            var addResponse = await TestClient.AddUser(user);
+            Assume.That(addResponse, Is.Not.Null);
+
+            var loginRequest = new LoginRequest()
+            {
+                Username = capUsername,
+                Password = password
+            };
+
+            var token = await TestClient.Login(loginRequest);
+            Assert.That(token, Is.Not.Null);
+
+            var claims = new JwtBuilder().Decode<Claims>(token);
+            Assert.That(claims.Username, Is.EqualTo(username));
+            Assert.That(claims.Role, Is.EqualTo("admin"));
+
+            // Expiration of token is 7 days after creation. Should be 6 days 23 hours 59min xx seconds greater then datetime now
+            var nowPlus6 = DateTime.Now.AddDays(6).AddHours(23).AddMinutes(59).Ticks;
+            var nowPlus7 = DateTime.Now.AddDays(7).Ticks;
+
+            Assert.That(claims.Exp, Is.GreaterThan(nowPlus6));
+            Assert.That(claims.Exp, Is.LessThan(nowPlus7));
+            Assert.That(claims.Sub, Is.EqualTo("User"));
+            Assert.That(claims.Iss, Is.EqualTo("Beima"));
+        }
     }
 }

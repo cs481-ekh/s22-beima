@@ -233,5 +233,47 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Conflict));
             Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
         }
+
+        [TestCase("user.name", "User.Name")]
+        [TestCase("testUser", "Testuser")]
+        [TestCase("12345", "12345")]
+        [TestCase("true", "tRue")]
+        [TestCase("a", "A")]
+        public async Task ExistingUser_UpdateUserWithDuplicateUsernameCapitalized_ReturnsConflictObjectResult(string username, string capUsername)
+        {
+            // ARRANGE
+            var testId = "abcdef123456789012345678";
+
+            var existingUser = new User(ObjectId.GenerateNewId(), username, "ThisIsAPassword1!", "Alex", "Smith", "user");
+            var updateUser = new User(new ObjectId(testId), "someOtherUsernameNotInUse", "ThisIsAPassword1!", "Alex", "Smith", "user");
+            existingUser.SetLastModified(DateTime.UtcNow, "Anonymous");
+            updateUser.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetUser(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(updateUser.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
+                  .Returns(new List<BsonDocument> { existingUser.GetBsonDocument() })
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var body = TestData._testUserDuplicateUsername.Replace("---", capUsername);
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = (ObjectResult)await UpdateUser.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateUser(It.IsAny<BsonDocument>()), Times.Never));
+
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Conflict));
+            Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
+        }
     }
 }

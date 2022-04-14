@@ -173,5 +173,60 @@ namespace BEIMA.Backend.Test.AuthFunctions
             Assert.That(claims.Iss, Is.EqualTo("Beima"));
         }
 
+        [Test]
+        public async Task ValidParametersMatchingUserWithCapitalizedUsername_Login_ReturnsToken()
+        {
+            var hashed = BCryptNet.HashPassword("Pass");
+            User user = new User()
+            {
+                Id = ObjectId.GenerateNewId(),
+                Username = "user",
+                Password = hashed,
+                Role = "Admin",
+                FirstName = "First",
+                LastName = "Last",
+                LastModified = new UserLastModified()
+                {
+                    Date = DateTime.Now,
+                    User = "anon"
+                }
+            };
+
+            var filteredUsers = new List<BsonDocument>()
+            {
+                user.ToBsonDocument()
+            };
+
+            // ARRANGE
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(filteredUsers)
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            var body = TestData._testValidKeysLoginRequest;
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var token = ((ObjectResult)await Login.Run(request, logger)).Value?.ToString();
+
+            // ASSERT
+            Assert.IsNotNull(token);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
+            var claims = new JwtBuilder().Decode<Claims>(token);
+            Assert.That(claims.Username, Is.EqualTo(user.Username.ToLower()));
+            Assert.That(claims.Role, Is.EqualTo(user.Role));
+
+            // Expiration of token is 7 days after creation. Should be 6 days 23 hours 59min xx seconds greater then datetime now
+            var nowPlus6 = DateTime.Now.AddDays(6).AddHours(23).AddMinutes(59).Ticks;
+            var nowPlus7 = DateTime.Now.AddDays(7).Ticks;
+
+            Assert.That(claims.Exp, Is.GreaterThan(nowPlus6));
+            Assert.That(claims.Exp, Is.LessThan(nowPlus7));
+            Assert.That(claims.Sub, Is.EqualTo("User"));
+            Assert.That(claims.Iss, Is.EqualTo("Beima"));
+        }
+
     }
 }
