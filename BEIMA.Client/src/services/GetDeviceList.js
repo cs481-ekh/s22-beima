@@ -1,5 +1,6 @@
 import axios from 'axios';
-import {getCurrentUser} from './Authentication.js';
+import {getCurrentUser, logout} from './Authentication.js';
+import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -15,6 +16,11 @@ const GetDeviceList = async() => {
         return error.response;
     }
   });
+
+  if(deviceListCall.status === Constants.HTTP_UNAUTH_RESULT){
+    logout();
+    return;
+  }
 
   let filteredFields = deviceListCall.data.map((item) => {
     return {
