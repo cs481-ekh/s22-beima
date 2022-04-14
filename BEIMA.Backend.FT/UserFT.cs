@@ -388,5 +388,40 @@ namespace BEIMA.Backend.FT
             Assert.That(ex, Is.Not.Null);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
         }
+
+        [Test]
+        public async Task UserInDatabase_AddUserWithSameUsernameDifferentCapitalization_ConflictObjectResultReturned()
+        {
+            // ARRANGE
+            var existingUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+            var existingUserId = await TestClient.AddUser(existingUser);
+            Assume.That(existingUserId, Is.Not.Null);
+            Assume.That(existingUserId, Is.Not.EqualTo(string.Empty));
+            Assume.That(ObjectId.TryParse(existingUserId, out _), Is.True);
+
+            // ACT
+            var newUser = new User
+            {
+                Username = "User.Name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex2",
+                LastName = "SmithDuplicate",
+                Role = "user"
+            };
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.AddUser(newUser)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        }
     }
 }
