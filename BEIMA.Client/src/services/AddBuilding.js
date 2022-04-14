@@ -1,5 +1,6 @@
 import axios from 'axios';
-import {getCurrentUser} from './Authentication.js';
+import {getCurrentUser, logout} from './Authentication.js';
+import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -18,6 +19,11 @@ export default async function addBuilding(buildingDetails) {
     }
   });
 
+  if(dbCall.status === Constants.HTTP_UNAUTH_RESULT){
+    logout();
+    return;
+  }
+  
   const response = {
     status: dbCall.status,
     response: dbCall.data

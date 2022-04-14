@@ -12,8 +12,9 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
+using System.Linq;
+
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test.DeviceFunctions
@@ -89,8 +90,8 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = (OkObjectResult)GetDeviceList.Run(request, logger);
 
             // ASSERT
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
 
             var getList = (List<Device>)response.Value;
             Assert.IsNotNull(getList);

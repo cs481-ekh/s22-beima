@@ -162,6 +162,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
             var claims = new JwtBuilder().Decode<Claims>(token);
             Assert.That(claims.Username, Is.EqualTo(user.Username));
             Assert.That(claims.Role, Is.EqualTo(user.Role));
+            Assert.That(claims.Id.Contains(user.Id.ToString()));
 
             // Expiration of token is 7 days after creation. Should be 6 days 23 hours 59min xx seconds greater then datetime now
             var nowPlus6 = DateTime.Now.AddDays(6).AddHours(23).AddMinutes(59).Ticks;

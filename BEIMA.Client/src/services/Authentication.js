@@ -1,14 +1,13 @@
 import axios from 'axios';
 import jwt_decode from 'jwt-decode';
+import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 const defaultUser = {
-  id : '',
+  Id : '',
   token : '',
-  username : '',
-  firstName : '',
-  lastName : '',
-  role : ''
+  Username : '',
+  Role : ''
 };
 
 /**
@@ -26,41 +25,28 @@ export async function login(credentials) {
     }
   });
 
-    jwt_decode(login.response).then(decoded => {
-      const user = {
-        id : decoded._id,
-        token : login.response,
-        username : decoded.username,
-        firstName : decoded.firstName,
-        lastName : decoded.lastName,
-        role : decoded.role,
-        remember : credentials.remember
-      };
+  if(login.status === Constants.HTTP_SUCCESS){
+    let user = jwt_decode(login.data);
 
-      if(credentials.remember){
-        localStorage.setItem("currentUser", login.response);
-      } else {
-        sessionStorage.setItem("currentUser", login.response);
-      }
-
-      return user;
-    });
-  
-    return login.response;
+    if(credentials.remember){
+      localStorage.setItem("currentUser", login.data);
+    } else {
+      sessionStorage.setItem("currentUser", login.data);
+    }
+    user.token = login.data;
+    return user;
+  }
+  return login.response;
 }
 
 /**
  * Remove the token from the browser storage
  * @param {*} remember boolean
  */
-export function logout(remember){
-  if(remember){
-    localStorage.removeItem("currentUser");
-  } else {
-    sessionStorage.removeItem("currentUser");
-  }
-  
-  return {};
+export function logout(){
+  localStorage.removeItem("currentUser");
+  sessionStorage.removeItem("currentUser");
+  window.location.reload(false);
 }
 
 /**
@@ -79,16 +65,9 @@ export function getCurrentUser(){
   }
 
   if(token) {
-    jwt_decode(token).then(decoded => {
-      user = {
-        id : decoded._id,
-        token : token,
-        username : decoded.username,
-        firstName : decoded.firstName,
-        lastName : decoded.lastName,
-        role : decoded.role
-      };
-    });
+    user = jwt_decode(token);
+    user.token = token;
   }
+
   return user;
 }
