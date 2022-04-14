@@ -1,7 +1,7 @@
 import { Card, Form, Button, Spinner } from "react-bootstrap";
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
+import { login } from "../../services/Authentication";
 import styles from './LoginPage.module.css'
 
 const LoginPage = () => {
@@ -15,7 +15,7 @@ const LoginPage = () => {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    setPageName('Login')
+    setPageName('BEIMA Login')
   }, [setPageName])
 
 
@@ -66,17 +66,15 @@ const LoginPage = () => {
       return
     }
 
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    await delay(1000)
-
-    const json = {
+    const user = {
       username: username,
       password: password,
       remember: remember
     }
 
+    await login(user);
     setSubmitting(false)
-    console.log(json)
+    window.location.reload(false);
   }
 
   return (
