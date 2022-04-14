@@ -180,7 +180,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
             User user = new User()
             {
                 Id = ObjectId.GenerateNewId(),
-                Username = "useR",
+                Username = "user",
                 Password = hashed,
                 Role = "Admin",
                 FirstName = "First",
@@ -215,7 +215,7 @@ namespace BEIMA.Backend.Test.AuthFunctions
             Assert.IsNotNull(token);
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             var claims = new JwtBuilder().Decode<Claims>(token);
-            Assert.That(claims.Username.ToLower(), Is.EqualTo(user.Username.ToLower()));
+            Assert.That(claims.Username, Is.EqualTo(user.Username.ToLower()));
             Assert.That(claims.Role, Is.EqualTo(user.Role));
 
             // Expiration of token is 7 days after creation. Should be 6 days 23 hours 59min xx seconds greater then datetime now
