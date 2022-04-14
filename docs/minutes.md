@@ -1,3 +1,26 @@
+## Minutes: 2022-04-12
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## 4/12 Scrum
+
+What everyone is working on right now:
+* Joe - working on devicetype auth and then will move on to building auth. doesn't have anything left to do after that, has a light task load, needs some more tasks.
+* Keelan - busy weekend, still working on username case insensitivity, will put up PR soon after writing another test, also has light task load, needs more tasks
+* Tom - Working through Docker networking issues (MinIO, Mongo)
+* Ashlyn - Wrapping up authentication, has authentication working on front end
+* Kenny - finishing up device filtering on front end and will start working on adding authentication on user endpoints
+
+Keelan will assign backend tasks to Joe, and will take some of Ashlyn's front end tasks instead. Joe was assigned devicetype auth from Keelan, and then will work on adding default user upon first start.
+
+Possible backend tasks:
+* Create a default user on first start
+* Add more MongoFilterGenerator filters
+
 ## Minutes: 2022-04-08
 ### Scribe: Keelan
 ### Attendees:

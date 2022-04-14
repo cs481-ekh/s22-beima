@@ -145,6 +145,7 @@ namespace BEIMA.Backend.Test
             "}";
 
         public static readonly string _testAddDeviceNoLocation = GenerateAddDeviceNoLocation();
+        public static readonly string _testAddDeviceNullYearManufactured = GenerateAddDeviceNullYearManufactured();
         public static readonly string _testUpdateDeviceDeleteFiles = GenerateUpdateDeviceRequest();
         public static readonly string _testUpdateDeviceNoLocation = GenerateUpdateDeviceNoLocationRequest();
 
@@ -186,6 +187,25 @@ namespace BEIMA.Backend.Test
                 YearManufactured = 1880,
                 Notes = "notes",
 
+            };
+            return JsonConvert.SerializeObject(request);
+        }
+
+        private static string GenerateAddDeviceNullYearManufactured()
+        {
+            var request = new AddDeviceRequest()
+            {
+                DeviceTag = "tag",
+                DeviceTypeId = "12341234abcdabcd43214321",
+                Fields = new Dictionary<string, string>
+                {
+                    { "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestValue1"},
+                    { "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestValue2"}
+                },
+                Manufacturer = "man",
+                SerialNum = "serial",
+                YearManufactured = null,
+                Notes = "notes",
             };
             return JsonConvert.SerializeObject(request);
         }

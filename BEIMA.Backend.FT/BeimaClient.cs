@@ -202,10 +202,11 @@ namespace BEIMA.Backend.FT
         /// <summary>
         /// Sends a device get list request to the BEIMA api.
         /// </summary>
+        /// <param name="query">The query string to filter devices with.</param>
         /// <returns>The device list.</returns>
-        public async Task<List<Device>> GetDeviceList()
+        public async Task<List<Device>> GetDeviceList(string query = "")
         {
-            var response = await SendRequest("api/device-list", HttpVerb.GET);
+            var response = await SendRequest("api/device-list", HttpVerb.GET, queryString: query);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Device>>(content);
         }
@@ -434,7 +435,7 @@ namespace BEIMA.Backend.FT
         #endregion
 
         #region Auth Requests
-        
+
         /// <summary>
         /// Sends a login post request to the BEIMA api.
         /// </summary>
@@ -447,6 +448,21 @@ namespace BEIMA.Backend.FT
             return JsonConvert.DeserializeObject<string>(content);
         }
         #endregion
+
+        #region Report Requests
+
+        /// <summary>
+        /// Sends an all devices report request to the BEIMA api.
+        /// </summary>
+        /// <returns>The zip file byte contents containing the device reports.</returns>
+        public async Task<byte[]> AllDevicesReport()
+        {
+            var response = await SendRequest($"api/report/devices", HttpVerb.GET);
+            var content = await response.Content.ReadAsByteArrayAsync();
+            return content;
+        }
+
+        #endregion Report Requests
 
         /// <summary>
         /// Disposes the http client.
