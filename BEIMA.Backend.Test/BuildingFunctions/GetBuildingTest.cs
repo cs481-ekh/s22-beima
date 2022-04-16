@@ -138,6 +138,48 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             Assert.That(building.Location.Longitude, Is.EqualTo("5.678"));
         }
 
+        [Test]
+        public void IdIsValid_Unauthorized_GetBuilding_ReturnsUnauthorized()
+        {
+            // ARRANGE
+
+            var testId = "1234567890abcdef12345678";
+
+            var dbBuilding = new Building(new ObjectId(testId), "Student Union", "1234", "Some Notes.");
+            dbBuilding.SetLastModified(DateTime.UtcNow, "Anonymous");
+            dbBuilding.SetLocation("1.234", "5.678");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(dbBuilding.GetBsonDocument())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Setup mock authentication service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = GetBuilding.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetBuilding(It.IsAny<ObjectId>()), Times.Never));
+
+            Assert.IsNotNull(response);
+            Assert.That(response, Is.TypeOf(typeof(ObjectResult)));
+            Assert.That(((ObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            var retVal = ((ObjectResult)response).Value;
+
+            Assert.That(retVal, Is.EqualTo("Invalid credentials."));
+        }
+
         #endregion SuccessTests
 
     }
