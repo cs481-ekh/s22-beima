@@ -5,6 +5,8 @@ import { useOutletContext } from 'react-router-dom';
 import GetDeviceList from "../../services/GetDeviceList";
 import GetDeviceType from '../../services/GetDeviceType';
 import GetBuilding from "../../services/GetBuilding";
+import GetAllDeviceDevicesReport from "../../services/AllDevicesReport";
+import { Card, Button, Row, Col, Form } from 'react-bootstrap';
 
 const DevicesPage = () => {
   const [devices, setDevices] = useState([]);
@@ -61,6 +63,7 @@ const DevicesPage = () => {
   return (
     <div className={styles.list} id="devicesPageContent">
       <ItemList list={devices} RenderItem={RenderItem} loading={loading} isDeviceList={true}/>
+      <Button onClick={() => GetAllDeviceDevicesReport()}></Button>
     </div>
   )
 }
