@@ -25,8 +25,6 @@ const GetAllDeviceDevicesReport = async() => {
   link.download = "All Devices"
   document.body.appendChild(link);
   link.click()
-
-  console.log("end of report service function")
 }
 
 export default GetAllDeviceDevicesReport
