@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
 
@@ -122,6 +123,21 @@ namespace BEIMA.Backend.FT
                     Assert.That(line1, Is.EqualTo("Id,DeviceTypeId,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,GenericField,BuildingId,Notes,Latitude,Longitude,Date,User"));
                 }
             }
+        }
+
+        [Test]
+        public void InvalidCredentials_AllDevicesReport_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.AllDevicesReport()
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
     }
 }
