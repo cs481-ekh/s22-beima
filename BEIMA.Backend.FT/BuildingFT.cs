@@ -79,7 +79,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
-        public void NoBuildingsInDatabase_Unauthorized_BuildingGet_ReturnsUnauthorized(string id)
+        public void NoBuildingsInDatabase_Unauthorized_BuildingGet_ReturnsUnauthorized()
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
                 await UnauthorizedTestClient.GetBuilding("1234567890abcdef12345678")
