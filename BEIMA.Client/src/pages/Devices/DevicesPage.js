@@ -116,12 +116,12 @@ const DeviceFilter = ({loading, filterCallback}) => {
               ref={buildingSelect}
             />
           </div>
+          <Button id="submitFilterButton" 
+            disabled={loading} 
+            onClick={() => filterCallback(mapSelectedFilters(deviceTypeSelect), mapSelectedFilters(buildingSelect))}
+          >Apply Filters</Button>
           <Button id="clearFilterButton" onClick={() => {clearFilters(); filterCallback([],[])}}>Clear Filters</Button>
-        </div>
-        <Button id="submitFilterButton" 
-          disabled={loading} 
-          onClick={() => filterCallback(mapSelectedFilters(deviceTypeSelect), mapSelectedFilters(buildingSelect))}
-        >Filter Items</Button>   
+        </div>           
     </div>
   )
 }
