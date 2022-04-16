@@ -85,6 +85,7 @@ namespace BEIMA.Backend.FT
             Assert.That(getDeviceType.Name, Is.EqualTo(device.Name));
             Assert.That(getDeviceType.Notes, Is.EqualTo(device.Notes));
             Assert.That(getDeviceType.Description, Is.EqualTo(device.Description));
+            Assert.That(getDeviceType.Count, Is.EqualTo(0));
             Assert.That(getDeviceType.Fields, Is.Not.Null.And.Not.Empty);
             Assert.That(getDeviceType.Fields?.Count, Is.EqualTo(device.Fields.Count));
             if (getDeviceType.Fields != null)
