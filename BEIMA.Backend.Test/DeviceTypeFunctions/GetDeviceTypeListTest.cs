@@ -1,5 +1,8 @@
-﻿using BEIMA.Backend.DeviceTypeFunctions;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.DeviceTypeFunctions;
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -7,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test.DeviceTypeFunctions
@@ -50,6 +54,12 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -57,6 +67,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             var response = (OkObjectResult)GetDeviceTypeList.Run(request, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Once));
 
             var getList = (List<object>)response.Value;
@@ -83,6 +94,34 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
                 Assert.That(lastMod["date"].ToString(), Is.EqualTo(expectedLastMod["date"].ToUniversalTime().ToString()));
                 Assert.That(lastMod["user"].ToString(), Is.EqualTo(expectedLastMod["user"].AsString));
             }
+        }
+
+        [Test]
+        public void InvalidCredentials_GetDeviceTypeList_ReturnsUnauthenticated()
+        {
+            // ARRANGE
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = (ObjectResult)GetDeviceTypeList.Run(request, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Never));
+
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            Assert.That(response.Value, Is.EqualTo("Invalid credentials."));
         }
     }
 }
