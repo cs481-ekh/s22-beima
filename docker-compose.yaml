@@ -23,7 +23,7 @@ services:
     networks:
       internal:
         ipv4_address: 192.168.0.2
-      
+
   api:
     build:
       context: .
