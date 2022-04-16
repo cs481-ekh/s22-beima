@@ -130,5 +130,47 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             Assert.That(buildingResponse.Location.Latitude, Is.EqualTo(building.Location.Latitude));
             Assert.That(buildingResponse.Location.Longitude, Is.EqualTo(building.Location.Longitude));
         }
+
+        [Test]
+        public async Task ExistingBuilding_Unauthorized_UpdateBuilding_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var testId = "abcdef123456789012345678";
+
+            var building = new Building(new ObjectId(testId), "Student Union Building", "1234", "Some new building notes.");
+            building.SetLocation("-12.345", "-10.101");
+            building.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.UpdateBuilding(It.IsAny<BsonDocument>()))
+                  .Returns(building.GetBsonDocument())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Setup mock authentication service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var body = TestData._testUpdateBuilding;
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = await UpdateBuilding.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateBuilding(It.IsAny<BsonDocument>()), Times.Never));
+
+            Assert.IsNotNull(response);
+            Assert.That(response, Is.TypeOf(typeof(ObjectResult)));
+            Assert.That(((ObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            var retVal = ((ObjectResult)response).Value;
+
+            Assert.That(retVal, Is.EqualTo("Invalid credentials."));
+        }
     }
 }

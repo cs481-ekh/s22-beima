@@ -167,5 +167,46 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             Assert.That(response, Is.TypeOf(typeof(OkResult)));
             Assert.That(((OkResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
         }
+
+        [Test]
+        public void IdIsValid_Unauthorized_DeleteBuilding_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var testId = "1234567890abcdef12345678";
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.DeleteBuilding(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
+                  .Returns(true)
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(new List<BsonDocument> { })
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Setup mock authentication service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = DeleteBuilding.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.DeleteBuilding(It.IsAny<ObjectId>()), Times.Never));
+
+            Assert.IsNotNull(response);
+            Assert.That(response, Is.TypeOf(typeof(ObjectResult)));
+            Assert.That(((ObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            var retVal = ((ObjectResult)response).Value;
+
+            Assert.That(retVal, Is.EqualTo("Invalid credentials."));
+        }
     }
 }
