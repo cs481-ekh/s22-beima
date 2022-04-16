@@ -55,6 +55,19 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.BadRequest));
         }
 
+        [TestCase("xxx")]
+        [TestCase("1234")]
+        [TestCase("1234567890abcdef1234567x")]
+        public void InvalidId_Unauthorized_BuildingGet_ReturnsUnauthorized(string id)
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetBuilding(id)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
         [TestCase("")]
         [TestCase("1234567890abcdef12345678")]
         public void NoBuildingsInDatabase_BuildingGet_ReturnsNotFound(string id)
@@ -64,6 +77,18 @@ namespace BEIMA.Backend.FT
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [TestCase("")]
+        [TestCase("1234567890abcdef12345678")]
+        public void NoBuildingsInDatabase_Unauthorized__BuildingGet_ReturnsUnauthorized(string id)
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetBuilding(id)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -101,6 +126,33 @@ namespace BEIMA.Backend.FT
             Assert.That(getBuilding.Location, Is.Not.Null);
             Assert.That(getBuilding.Location?.Latitude, Is.EqualTo(building.Location?.Latitude));
             Assert.That(getBuilding.Location?.Longitude, Is.EqualTo(building.Location?.Longitude));
+        }
+
+        [Test]
+        public void BuildingNotInDatabase_Unauthorized_AddBuilding_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var building = new Building
+            {
+                Name = "Student Union",
+                Number = "1234",
+                Notes = "Some notes.",
+                Location = new Location
+                {
+                    Longitude = "12.001",
+                    Latitude = "24.321",
+                },
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.AddBuilding(building)
+            );
+
+            // ASSERT
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -175,6 +227,63 @@ namespace BEIMA.Backend.FT
         }
 
         [Test]
+        public async Task BuildingsInDatabase_Unauthorized_GetBuildingList_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var buildingList = new List<Building>
+            {
+                new Building
+                {
+                    Name = "Student Union",
+                    Number = "1234",
+                    Notes = "Some SUB notes.",
+                    Location = new Location
+                    {
+                        Latitude = "0.123",
+                        Longitude = "4.567",
+                    }
+                },
+                new Building
+                {
+                    Name = "Interactive Learning Center",
+                    Number = "4321",
+                    Notes = "Some ILC notes.",
+                    Location = new Location
+                    {
+                        Latitude = "-0.123",
+                        Longitude = "-4.567",
+                    }
+                },
+                new Building
+                {
+                    Name = "Albertons Library",
+                    Number = "2468",
+                    Notes = "Some Library notes.",
+                    Location = new Location
+                    {
+                        Latitude = "0.123",
+                        Longitude = "-4.567",
+                    }
+                },
+            };
+
+            foreach (var building in buildingList)
+            {
+                building.Id = await TestClient.AddBuilding(building);
+            }
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                 await UnauthorizedTestClient.GetBuildingList()
+            );
+
+            // ASSERT
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        [Test]
         public async Task BuildingInDatabase_DeleteBuilding_BuildingDeletedSuccessfully()
         {
             // ARRANGE
@@ -199,6 +308,36 @@ namespace BEIMA.Backend.FT
             // ASSERT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetBuilding(buildingId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        }
+
+        [Test]
+        public async Task BuildingInDatabase_Unauthorized_DeleteBuilding_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var building = new Building
+            {
+                Name = "Student Union",
+                Number = "1234",
+                Notes = "Some notes.",
+                Location = new Location
+                {
+                    Latitude = "1.234",
+                    Longitude = "2.345",
+                },
+            };
+
+            var buildingId = await TestClient.AddBuilding(building);
+            Assume.That(await TestClient.GetBuilding(buildingId), Is.Not.Null);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                 await UnauthorizedTestClient.DeleteBuilding(buildingId)
+            );
+
+            // ASSERT
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -251,6 +390,49 @@ namespace BEIMA.Backend.FT
 
             Assert.That(updatedBuilding.Location?.Latitude, Is.EqualTo(updateItem.Location?.Latitude));
             Assert.That(updatedBuilding.Location?.Longitude, Is.EqualTo(updateItem.Location?.Longitude));
+        }
+
+        [Test]
+        public async Task BuildingInDatabase_Unauthorized_UpdateBuilding_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var origBuilding = new Building
+            {
+                Name = "Student Union",
+                Number = "1234",
+                Notes = "Some building notes.",
+                Location = new Location
+                {
+                    Latitude = "12.345",
+                    Longitude = "10.101",
+                },
+            };
+
+            var buildingId = await TestClient.AddBuilding(origBuilding);
+            var origItem = await TestClient.GetBuilding(buildingId);
+            Assume.That(origItem, Is.Not.Null);
+
+            var updateItem = new Building
+            {
+                Id = origItem.Id,
+                Name = origItem.Name + " Building",
+                Number = origItem.Number,
+                Notes = "Some new building notes.",
+                Location = new Location
+                {
+                    Latitude = "-12.345",
+                    Longitude = "-10.101",
+                }
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                 await UnauthorizedTestClient.UpdateBuilding(updateItem)
+            );
+
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
     }
 }
