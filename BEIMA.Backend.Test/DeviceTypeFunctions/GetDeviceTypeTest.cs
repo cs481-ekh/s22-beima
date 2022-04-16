@@ -106,6 +106,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
