@@ -8,7 +8,7 @@ cd ../
 # Change directory to BEIMA.Backend.Test
 cd ./BEIMA.Backend
 # Start up the backend API locally
-func start BEIMA.Backend.csproj --csharp &
+func start BEIMA.Backend.csproj --csharp >/dev/null &
 # Keep looping until process has started.
 while ! lsof -Pi :7071 -sTCP:LISTEN -t >/dev/null
 do
