@@ -115,7 +115,6 @@ const DeviceTypePage = () => {
       
       Object.entries(result).forEach(entry => {
         const [key, value] = entry;
-        console.log([key, value]);
         if(value === ""){
           let capitalize = key.split(/(?=[A-Z])/);
           
