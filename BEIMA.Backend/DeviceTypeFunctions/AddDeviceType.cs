@@ -12,6 +12,7 @@ using MongoDB.Bson;
 using System.Collections.Generic;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using BEIMA.Backend.AuthService;
 
 namespace BEIMA.Backend.DeviceTypeFunctions
 {
@@ -32,6 +33,14 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a device type POST request.");
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
 
             DeviceType deviceType;
             try
@@ -54,8 +63,8 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
-            // TODO: Use actual user.
-            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            deviceType.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;
