@@ -32,7 +32,7 @@ namespace BEIMA.Backend.StorageService
             }
             else
             {
-                minioHost = Environment.GetEnvironmentVariable("MinioDevHost");
+                minioHost = "localhost";
             }
 
             // Will need to have endpoint changed and .WithSSL() added based off of vm configurations
