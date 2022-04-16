@@ -49,6 +49,9 @@ namespace BEIMA.Backend.UserFunctions
                     return new BadRequestObjectResult(Resources.InvalidPasswordMessage);
                 }
 
+                // Enforce username case insensitivity
+                data.Username = data.Username.ToLower();
+
                 // Check for username uniqueness
                 var filter = MongoFilterGenerator.GetEqualsFilter("username", data.Username);
                 if(mongo.GetFilteredUsers(filter).Count > 0)

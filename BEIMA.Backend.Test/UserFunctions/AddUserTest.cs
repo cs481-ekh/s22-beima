@@ -111,5 +111,41 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
             Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
         }
+
+        [TestCase("user.name", "user.Name")]
+        [TestCase("testUser", "Testuser")]
+        [TestCase("12345", "12345")]
+        [TestCase("true", "trUe")]
+        [TestCase("a", "A")]
+        public async Task OneUser_AddUserWithDuplicateUsernameCapitalized_ReturnsErrorMessage(string username, string capitalizedUsername)
+        {
+            // ARRANGE
+            // Setup mock database client
+
+            var user = new User(ObjectId.GenerateNewId(), username, "ThisIsAPassword1!", "Alex", "Smith", "user");
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.InsertUser(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
+                  .Returns(new List<BsonDocument> { user.ToBsonDocument() })
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Create request
+            var body = TestData._testUserDuplicateUsername.Replace("---", capitalizedUsername);
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = ((ObjectResult)await AddUser.Run(request, logger));
+
+            // ASSERT
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Conflict));
+            Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
+            Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
+        }
     }
 }
