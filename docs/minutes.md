@@ -1,3 +1,24 @@
+## Minutes: 2022-04-14
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## 4/14 Scrum
+
+Discussion about trying to get Docker working on Ashlyn and Keelan's machines. Mainly just need to build the docker images again
+
+What everyone is working on right now:
+* Tom - Still struggling with Docker, almost there but there is a connection time out issue with MinIO.
+* Ashlyn - Got most of the auth stuff merged in, made a few more tasks, need to pop up a message to notify their credentials are wrong on login, ability to edit password in edit user view
+* Kenny - just put up filter PR, adding authentication to Building endpoints
+* Joe - latest PR will insert a default admin user when the MongoConnector is instantiated, will be moving on to devicetype authentication, then do some backend clean up
+* Keelan - Finished case insensitivity for username, move on to front end tasks
+
+Note: Sprint 4 ends on Thursday next week instead of Tuesday. (Ashlyn)
+
 ## Minutes: 2022-04-12
 ### Scribe: Keelan
 ### Attendees:

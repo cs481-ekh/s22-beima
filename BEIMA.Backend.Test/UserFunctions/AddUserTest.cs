@@ -148,6 +148,52 @@ namespace BEIMA.Backend.Test.UserFunctions
             Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
         }
 
+        [TestCase("user.name", "user.Name")]
+        [TestCase("testUser", "Testuser")]
+        [TestCase("12345", "12345")]
+        [TestCase("true", "trUe")]
+        [TestCase("a", "A")]
+        public async Task OneUser_AddUserWithDuplicateUsernameCapitalized_ReturnsErrorMessage(string username, string capitalizedUsername)
+        {
+            // ARRANGE
+            var user = new User(ObjectId.GenerateNewId(), username, "ThisIsAPassword1!", "Alex", "Smith", "user");
+
+            // Setup mock database client
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.InsertUser(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredUsers(It.Is<FilterDefinition<BsonDocument>>(filter => filter != null)))
+                  .Returns(new List<BsonDocument> { user.ToBsonDocument() })
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Setup mock authentication service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            // Create request
+            var body = TestData._testUserDuplicateUsername.Replace("---", capitalizedUsername);
+            var request = CreateHttpRequest(RequestMethod.POST, body: body);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = ((ObjectResult)await AddUser.Run(request, logger));
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertUser(It.IsAny<BsonDocument>()), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
+
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Conflict));
+            Assert.That(response, Is.TypeOf(typeof(ConflictObjectResult)));
+            Assert.That(response.Value?.ToString(), Is.EqualTo("Username already exists."));
+        }
+
         [TestCaseSource(nameof(ClaimsFactory))]
         public async Task InvalidCredentials_AddUser_ReturnsUnauthorized(Claims claim)
         {
@@ -171,7 +217,6 @@ namespace BEIMA.Backend.Test.UserFunctions
             // ACT
             var response = ((ObjectResult)await AddUser.Run(request, logger));
 
-            // ASSERT
             Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertUser(It.IsAny<BsonDocument>()), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredUsers(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Never));

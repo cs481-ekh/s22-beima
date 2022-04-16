@@ -70,6 +70,10 @@ namespace BEIMA.Backend.UserFunctions
                 }
                 var originalUserRecord = BsonSerializer.Deserialize<User>(originalUserDoc);
 
+                // Enforce username case insensitivity
+                originalUserRecord.Username = originalUserRecord.Username.ToLower();
+                updatedUserRecord.Username = updatedUserRecord.Username.ToLower();
+
                 // Check for username uniqueness
                 if (originalUserRecord.Username != updatedUserRecord.Username)
                 {

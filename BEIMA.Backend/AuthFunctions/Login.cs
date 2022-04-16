@@ -50,7 +50,7 @@ namespace BEIMA.Backend.AuthFunctions
 
                 // Get all users with request's username
                 var dbServce = MongoDefinition.MongoInstance;
-                var usernameFilter = MongoFilterGenerator.GetEqualsFilter("username", data.Username);
+                var usernameFilter = MongoFilterGenerator.GetEqualsFilter("username", data.Username.ToLower());
                 userDocs = dbServce.GetFilteredUsers(usernameFilter);
             } catch (Exception)
             {
