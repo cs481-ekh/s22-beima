@@ -79,16 +79,23 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
-        [TestCase("")]
-        [TestCase("1234567890abcdef12345678")]
-        public void NoBuildingsInDatabase_Unauthorized__BuildingGet_ReturnsUnauthorized(string id)
+        public void NoBuildingsInDatabase_Unauthorized_BuildingGet_ReturnsUnauthorized(string id)
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await UnauthorizedTestClient.GetBuilding(id)
+                await UnauthorizedTestClient.GetBuilding("1234567890abcdef12345678")
             );
             Assert.IsNotNull(ex);
             Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        public void NoBuildingsInDatabase_Unauthorized_BuildingGet_EmptyId_ReturnsNotFound()
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetBuilding("")
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
         [Test]
@@ -121,7 +128,7 @@ namespace BEIMA.Backend.FT
 
             Assert.That(getBuilding.LastModified, Is.Not.Null);
             Assert.That(getBuilding.LastModified?.Date, Is.Not.Null);
-            Assert.That(getBuilding.LastModified?.User, Is.EqualTo("Anonymous"));
+            Assert.That(getBuilding.LastModified?.User, Is.EqualTo(TestUsername));
 
             Assert.That(getBuilding.Location, Is.Not.Null);
             Assert.That(getBuilding.Location?.Latitude, Is.EqualTo(building.Location?.Latitude));
@@ -218,7 +225,7 @@ namespace BEIMA.Backend.FT
 
                 Assert.That(building.LastModified, Is.Not.Null);
                 Assert.That(building.LastModified?.Date, Is.Not.Null);
-                Assert.That(building.LastModified?.User, Is.EqualTo("Anonymous"));
+                Assert.That(building.LastModified?.User, Is.EqualTo(TestUsername));
 
                 Assert.That(building.Location, Is.Not.Null);
                 Assert.That(building.Location?.Latitude, Is.EqualTo(expectedBuilding.Location?.Latitude));
@@ -381,7 +388,7 @@ namespace BEIMA.Backend.FT
             Assert.That(updatedBuilding.Notes, Is.Not.EqualTo(origBuilding.Notes));
 
             Assert.That(updatedBuilding.LastModified?.Date, Is.Not.EqualTo(origItem.LastModified?.Date));
-            Assert.That(updatedBuilding.LastModified?.User, Is.EqualTo(origItem.LastModified?.User));
+            Assert.That(updatedBuilding.LastModified?.User, Is.EqualTo(TestUsername));
 
             Assert.That(updatedBuilding.Id, Is.EqualTo(updateItem.Id));
             Assert.That(updatedBuilding.Name, Is.EqualTo(updateItem.Name));
