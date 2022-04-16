@@ -244,7 +244,7 @@ namespace BEIMA.Backend.FT
 
                 Assert.That(deviceType.LastModified, Is.Not.Null);
                 Assert.That(deviceType.LastModified?.Date, Is.Not.Null);
-                Assert.That(deviceType.LastModified?.User, Is.EqualTo("Anonymous"));
+                Assert.That(deviceType.LastModified?.User, Is.EqualTo(TestUsername));
             }
         }
 
