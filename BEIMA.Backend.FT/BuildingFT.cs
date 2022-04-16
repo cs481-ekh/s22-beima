@@ -79,6 +79,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
 
+        [Test]
         public void NoBuildingsInDatabase_Unauthorized_BuildingGet_ReturnsUnauthorized()
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
@@ -89,6 +90,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
+        [Test]
         public void NoBuildingsInDatabase_Unauthorized_BuildingGet_EmptyId_ReturnsNotFound()
         {
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
