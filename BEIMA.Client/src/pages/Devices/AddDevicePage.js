@@ -246,10 +246,6 @@ const AddDevicePage = () => {
       }
     }
     
-    //won't deploy to azure without these until they're used elsewhere
-    console.log(deviceImage);
-    console.log(deviceAdditionalDocs);
-    
     let isConfirmed = true;
     
     //display errors when present or attempt insert when valid data is present
