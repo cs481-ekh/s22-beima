@@ -8,7 +8,7 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return the report in the form of bytes
  */
 const GetAllDeviceDevicesReport = async() => {
-  const deviceReportCall = await axios.get(API_URL + "report/devices").catch(function (error) {
+  const deviceReportCall = await axios.get(API_URL + "report/devices", {responseType: 'blob'}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
@@ -18,11 +18,13 @@ const GetAllDeviceDevicesReport = async() => {
     return deviceReportCall.status;
   }
 
-  var blob = new Blob([deviceReportCall.response]);
-  var link = document.createElement('a');
-  link.href = window.URL.createObjectURL(blob);
-  link.download = "All devices";
-  link.click();
+  const blob = new Blob([deviceReportCall.data], {type: 'application/zip'})
+  const url = window.URL.createObjectURL(blob)
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = "All Devices"
+  document.body.appendChild(link);
+  link.click()
 
   console.log("end of report service function")
 }
