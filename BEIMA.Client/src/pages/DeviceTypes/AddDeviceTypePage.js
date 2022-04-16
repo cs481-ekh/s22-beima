@@ -69,19 +69,40 @@ const AddDeviceTypePage = () => {
   async function saveDeviceTypeToDb(addButtonEvent){
     let formFields = addButtonEvent.target.form.elements;
     let finalJson = createJSON(formFields);
+    let warnings = [];
+    let isConfirmed = true;
 
     if(finalJson){
-      AddDeviceType(finalJson).then(response => {
-        if(response.status === Constants.HTTP_SUCCESS){
-          Notifications.success("Add Device Type Successful", "Adding Device Type completed successfully.");
-          setCustomDeviceFields([]);
-          for(let i = 0; i < formFields.length; i++){
-            formFields[i].value = "";
+      Object.entries(finalJson).forEach(entry => {
+        const [key, value] = entry;
+        if(value === ""){
+          let capitalize = key.split(/(?=[A-Z])/);
+          
+          for(let i = 0; i < capitalize.length; i++) {
+            capitalize[i] = (capitalize[i][0].toUpperCase() + capitalize[i].slice(1)).replace('Num', 'Number');
           }
-        } else {
-          Notifications.error("Unable to Add Device Type", `Adding Device Type failed.`);
+          
+          warnings.push(`"${(capitalize).join(" ")}" field is empty<br/>`);
         }
       })
+      
+      if( warnings.length > 0 ){
+        isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
+      }
+      
+      if ( isConfirmed ) {
+        AddDeviceType(finalJson).then(response => {
+          if(response.status === Constants.HTTP_SUCCESS){
+            Notifications.success("Add Device Type Successful", "Adding Device Type completed successfully.");
+            setCustomDeviceFields([]);
+            for(let i = 0; i < formFields.length; i++){
+              formFields[i].value = "";
+            }
+          } else {
+            Notifications.error("Unable to Add Device Type", `Adding Device Type failed.`);
+          }
+        })
+      }
     }
   }
 
