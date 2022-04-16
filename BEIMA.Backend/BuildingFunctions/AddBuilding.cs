@@ -11,6 +11,7 @@ using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
 using BEIMA.Backend.Models;
 using System.Net;
+using BEIMA.Backend.AuthService;
 
 namespace BEIMA.Backend.BuildingFunctions
 {
@@ -32,6 +33,14 @@ namespace BEIMA.Backend.BuildingFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a building post request.");
 
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
+            }
+
             Building building;
             try
             {
@@ -48,7 +57,7 @@ namespace BEIMA.Backend.BuildingFunctions
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
             // TODO: Use actual user.
-            building.SetLastModified(DateTime.UtcNow, "Anonymous");
+            building.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;
