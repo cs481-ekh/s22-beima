@@ -98,7 +98,7 @@ const AddDevicePage = () => {
     setSelectedDeviceType(deviceTypeFields.response);
     setDeviceTypeDropDownStyle(styles.dropDownSelected);
     
-    //retrieve the values from teh response to label the form elements
+    //retrieve the values from the response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
     let allFields = mandatoryDeviceFields;
     
