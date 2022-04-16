@@ -559,7 +559,7 @@ namespace BEIMA.Backend.FT
 
                 Assert.That(device.LastModified, Is.Not.Null);
                 Assert.That(device.LastModified?.Date, Is.Not.Null);
-                Assert.That(device.LastModified?.User, Is.EqualTo("Anonymous"));
+                Assert.That(device.LastModified?.User, Is.EqualTo(TestUsername));
 
                 Assert.That(device.Fields?.Single().Key, Is.EqualTo(expectedDevice.Fields?.Single().Key));
                 Assert.That(device.Fields?.Single().Value, Is.EqualTo(expectedDevice.Fields?.Single().Value));

@@ -11,13 +11,15 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class UserFT : FunctionalTestBase
     {
+        #region SetUp and TearDown
+
         [SetUp]
         public async Task SetUp()
         {
             // Have at least one admin user in the DB at all times
             // since DeleteUser prevents deletion when there is not at least one admin user.
             var initialUserList = await TestClient.GetUserList();
-            if(!initialUserList.Any(user => user.Username == "first.admin"))
+            if (!initialUserList.Any(user => user.Username == "first.admin"))
             {
                 var adminUser = new User
                 {
@@ -44,6 +46,10 @@ namespace BEIMA.Backend.FT
             }
         }
 
+        #endregion SetUp and TearDown
+
+        #region User GET Tests
+
         [TestCase("xxx")]
         [TestCase("1234")]
         [TestCase("1234567890abcdef1234567x")]
@@ -66,6 +72,26 @@ namespace BEIMA.Backend.FT
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        [TestCase("1234", true)]
+        [TestCase("1234", false)]
+        [TestCase("1234567890abcdef1234567x", true)]
+        [TestCase("1234567890abcdef1234567x", false)]
+        [TestCase("1234567890abcdef12345678", true)]
+        [TestCase("1234567890abcdef12345678", false)]
+        public void NotAuthorized_UserGet_ReturnsUnauthorized(string id, bool isNonAdmin)
+        {
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await (isNonAdmin ? NonAdminTestClient : UnauthorizedTestClient).GetUser(id)
+            );
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion User GET Tests
+
+        #region User Add Tests
 
         [Test]
         public async Task UserNotInDatabase_AddUser_CreatesNewUser()
@@ -97,8 +123,96 @@ namespace BEIMA.Backend.FT
 
             Assert.That(getUser.LastModified, Is.Not.Null);
             Assert.That(getUser.LastModified?.Date, Is.Not.Null);
-            Assert.That(getUser.LastModified?.User, Is.EqualTo("Anonymous"));
+            Assert.That(getUser.LastModified?.User, Is.EqualTo(TestUsername));
         }
+
+        [Test]
+        public async Task UserInDatabase_AddUserWithDuplicateUsername_ConflictObjectResultReturned()
+        {
+            // ARRANGE
+            var user = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+            await TestClient.AddUser(user);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.AddUser(user)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        }
+
+        [Test]
+        public async Task UserInDatabase_AddUserWithSameUsernameDifferentCapitalization_ConflictObjectResultReturned()
+        {
+            // ARRANGE
+            var existingUser = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+            var existingUserId = await TestClient.AddUser(existingUser);
+            Assume.That(existingUserId, Is.Not.Null);
+            Assume.That(existingUserId, Is.Not.EqualTo(string.Empty));
+            Assume.That(ObjectId.TryParse(existingUserId, out _), Is.True);
+
+            // ACT
+            var newUser = new User
+            {
+                Username = "User.Name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex2",
+                LastName = "SmithDuplicate",
+                Role = "user"
+            };
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await TestClient.AddUser(newUser)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+        }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public void UnauthorizedUser_AddUser_ReturnsUnauthorized(bool isNonAdmin)
+        {
+            // ARRANGE
+            var user = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await (isNonAdmin ? NonAdminTestClient : UnauthorizedTestClient).AddUser(user)
+            );
+
+            // ASSERT
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion User Add Tests
+
+        #region User List Tests
 
         [Test]
         public async Task UserNotInDatabase_AddUserWithUsernameCapitalization_CreatesNewUserWithLowerCaseUsername()
@@ -130,7 +244,7 @@ namespace BEIMA.Backend.FT
 
             Assert.That(getUser.LastModified, Is.Not.Null);
             Assert.That(getUser.LastModified?.Date, Is.Not.Null);
-            Assert.That(getUser.LastModified?.User, Is.EqualTo("Anonymous"));
+            Assert.That(getUser.LastModified?.User, Is.EqualTo(TestUsername));
         }
 
         [Test]
@@ -181,7 +295,7 @@ namespace BEIMA.Backend.FT
             foreach (var user in actualUsers)
             {
                 // Skip the "first.admin" user since we assume it will always be in there.
-                if(user.Username != "first.admin")
+                if (user.Username != "first.admin")
                 {
                     Assert.That(user, Is.Not.Null);
                     var expectedUser = userList.Single(b => b.Id?.Equals(user.Id) ?? false);
@@ -194,10 +308,63 @@ namespace BEIMA.Backend.FT
 
                     Assert.That(user.LastModified, Is.Not.Null);
                     Assert.That(user.LastModified?.Date, Is.Not.Null);
-                    Assert.That(user.LastModified?.User, Is.EqualTo("Anonymous"));
+                    Assert.That(user.LastModified?.User, Is.EqualTo(TestUsername));
                 }
             }
         }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task UnauthorizedUser_GetUserList_ReturnsAnauthorized(bool isNonAdmin)
+        {
+            // ARRANGE
+            var userList = new List<User>
+            {
+                new User
+                {
+                    Username = "user.name1",
+                    Password = "Abcdefg12345!1",
+                    FirstName = "Alex",
+                    LastName = "Smith",
+                    Role = "user"
+                },
+                new User
+                {
+                    Username = "user.name2",
+                    Password = "Abcdefg12345!2",
+                    FirstName = "Ali",
+                    LastName = "Glenn",
+                    Role = "user"
+                },
+                new User
+                {
+                    Username = "user.name3",
+                    Password = "Abcdefg12345!3",
+                    FirstName = "Aaron",
+                    LastName = "Bart",
+                    Role = "user"
+                }
+            };
+
+            foreach (var user in userList)
+            {
+                user.Id = await TestClient.AddUser(user);
+            }
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await (isNonAdmin ? NonAdminTestClient : UnauthorizedTestClient).GetUserList()
+            );
+
+            // ASSERT
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion User List Tests
+
+        #region User Delete Tests
 
         [Test]
         public async Task UserInDatabase_DeleteUser_UserDeletedSuccessfully()
@@ -222,6 +389,40 @@ namespace BEIMA.Backend.FT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetUser(userId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task UnauthorizedUser_DeleteUser_ReturnsUnauthorized(bool isNonAdmin)
+        {
+            // ARRANGE
+            var user = new User
+            {
+                Username = "user.name",
+                Password = "Abcdefg12345!",
+                FirstName = "Alex",
+                LastName = "Smith",
+                Role = "user"
+            };
+
+            var userId = await TestClient.AddUser(user);
+            Assume.That(await TestClient.GetUser(userId), Is.Not.Null);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await (isNonAdmin ? NonAdminTestClient : UnauthorizedTestClient).DeleteUser(userId)
+            );
+
+            // ASSERT
+            Assert.DoesNotThrowAsync(async () => await TestClient.GetUser(userId));
+
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion User Delete Tests
+
+        #region User Update Tests
 
         [Test]
         public async Task UserInDatabase_UpdateUserWithPasswordAndTryLogin_ReturnsUpdatedUserAndSuccessfulLogin()
@@ -275,7 +476,7 @@ namespace BEIMA.Backend.FT
             // ASSERT
             Assert.That(updatedUser, Is.Not.Null);
             Assert.That(updatedUser.FirstName, Is.Not.EqualTo(origUser.FirstName));
-            
+
             Assert.That(updatedUser.Id, Is.EqualTo(updateItem.Id));
             Assert.That(updatedUser.Username, Is.EqualTo(updateItem.Username));
             Assert.That(updatedUser.LastName, Is.EqualTo(updateItem.LastName));
@@ -309,7 +510,7 @@ namespace BEIMA.Backend.FT
                 Password = origUser.Password
             };
             var originalToken = await TestClient.Login(originalLoginRequest);
-            
+
             Assume.That(origItem, Is.Not.Null);
             Assume.That(originalToken, Is.Not.Null);
             Assume.That(originalToken, Is.Not.EqualTo(string.Empty));
@@ -346,30 +547,6 @@ namespace BEIMA.Backend.FT
 
             Assert.That(newToken, Is.Not.Null);
             Assert.That(newToken, Is.Not.EqualTo(string.Empty));
-        }
-
-        [Test]
-        public async Task UserInDatabase_AddUserWithDuplicateUsername_ConflictObjectResultReturned()
-        {
-            // ARRANGE
-            var user = new User
-            {
-                Username = "user.name",
-                Password = "Abcdefg12345!",
-                FirstName = "Alex",
-                LastName = "Smith",
-                Role = "user"
-            };
-            await TestClient.AddUser(user);
-
-            // ACT
-            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await TestClient.AddUser(user)
-            );
-
-            // ASSERT
-            Assert.That(ex, Is.Not.Null);
-            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
         }
 
         [Test]
@@ -422,11 +599,12 @@ namespace BEIMA.Backend.FT
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
         }
 
-        [Test]
-        public async Task UserInDatabase_AddUserWithSameUsernameDifferentCapitalization_ConflictObjectResultReturned()
+        [TestCase(true)]
+        [TestCase(false)]
+        public async Task UnauthorizedUser_UpdateUserWithPassword_ReturnsUnauthorized(bool isNonAdmin)
         {
             // ARRANGE
-            var existingUser = new User
+            var origUser = new User
             {
                 Username = "user.name",
                 Password = "Abcdefg12345!",
@@ -434,27 +612,41 @@ namespace BEIMA.Backend.FT
                 LastName = "Smith",
                 Role = "user"
             };
-            var existingUserId = await TestClient.AddUser(existingUser);
-            Assume.That(existingUserId, Is.Not.Null);
-            Assume.That(existingUserId, Is.Not.EqualTo(string.Empty));
-            Assume.That(ObjectId.TryParse(existingUserId, out _), Is.True);
 
-            // ACT
-            var newUser = new User
+            var userId = await TestClient.AddUser(origUser);
+            var origItem = await TestClient.GetUser(userId);
+
+            // Verify login works with current password.
+            var originalLoginRequest = new LoginRequest
             {
-                Username = "User.Name",
-                Password = "Abcdefg12345!",
-                FirstName = "Alex2",
-                LastName = "SmithDuplicate",
+                Username = origUser.Username,
+                Password = origUser.Password
+            };
+            var originalToken = await TestClient.Login(originalLoginRequest);
+
+            Assume.That(origItem, Is.Not.Null);
+            Assume.That(originalToken, Is.Not.Null);
+            Assume.That(originalToken, Is.Not.EqualTo(string.Empty));
+
+            var updateItem = new User
+            {
+                Id = userId,
+                Username = "user.name",
+                Password = "NewPassword123!",
+                FirstName = "Alexis",
+                LastName = "Smith",
                 Role = "user"
             };
+
+            // ACT
             var ex = Assert.ThrowsAsync<BeimaException>(async () =>
-                await TestClient.AddUser(newUser)
+                await (isNonAdmin ? NonAdminTestClient : UnauthorizedTestClient).UpdateUser(updateItem)
             );
 
             // ASSERT
-            Assert.That(ex, Is.Not.Null);
-            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+            Assert.IsNotNull(ex);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
 
         [Test]
@@ -506,5 +698,7 @@ namespace BEIMA.Backend.FT
             Assert.That(ex, Is.Not.Null);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
         }
+
+        #endregion User Update Tests
     }
 }

@@ -38,7 +38,7 @@ namespace BEIMA.Backend.DeviceFunctions
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
 
-            if(claims == null)
+            if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }
@@ -103,7 +103,7 @@ namespace BEIMA.Backend.DeviceFunctions
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
-            // TODO: Use actual user.
+
             device.SetLastModified(DateTime.UtcNow, claims.Username);
 
             // Store attached files and add file uid to device
