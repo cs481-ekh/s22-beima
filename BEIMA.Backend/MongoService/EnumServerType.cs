@@ -10,7 +10,8 @@ namespace BEIMA.Backend.MongoService
     public enum ServerType
     {
         Local,
-        Cloud
+        Cloud,
+        Deploy
     }
 
 }
