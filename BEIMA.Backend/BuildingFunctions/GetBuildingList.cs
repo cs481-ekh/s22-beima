@@ -1,3 +1,4 @@
+using BEIMA.Backend.AuthService;
 using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,6 +27,14 @@ namespace BEIMA.Backend.BuildingFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a building list request.");
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
+            }
 
             var mongo = MongoDefinition.MongoInstance;
             var buildings = mongo.GetAllBuildings();
