@@ -1,3 +1,4 @@
+using BEIMA.Backend.AuthService;
 using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -29,6 +30,14 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device type delete request.");
 
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+
             if (!ObjectId.TryParse(id, out _))
             {
                 return new BadRequestObjectResult(Resources.InvalidIdMessage);
@@ -38,8 +47,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             var deviceTypeId = new ObjectId(id);
 
             // Do not delete if at least one device exists with this device type.
-            // TODO: Use database filter for devices instead of getting the list of all devices.
-            if (mongo.GetAllDevices().Where(d => d["deviceTypeId"].AsObjectId.Equals(deviceTypeId)).Any())
+            if (mongo.GetFilteredDevices(MongoFilterGenerator.GetEqualsFilter("deviceTypeId", deviceTypeId)).Count > 0)
             {
                 return new ConflictObjectResult(Resources.CannotDeleteDeviceTypeMessage);
             }

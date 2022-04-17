@@ -12,6 +12,8 @@ namespace BEIMA.Backend.FT
     [TestFixture]
     public class DeviceTypeFT : FunctionalTestBase
     {
+        #region SetUp and Teardown
+
         [SetUp]
         public async Task SetUp()
         {
@@ -36,6 +38,10 @@ namespace BEIMA.Backend.FT
             }
         }
 
+        #endregion SetUp and Teardown
+
+        #region Device Type GET Tests
+
         [TestCase("xxx")]
         [TestCase("1234")]
         [TestCase("1234567890abcdef1234567x")]
@@ -58,6 +64,28 @@ namespace BEIMA.Backend.FT
             Assert.IsNotNull(ex);
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        [TestCase("xxx")]
+        [TestCase("1234")]
+        [TestCase("1234567890abcdef1234567x")]
+        [TestCase("1234567890abcdef12345678")]
+        public void InvalidCredentials_DeviceTypeGet_ReturnsUnauthenticated(string id)
+        {
+            // ARRANGE
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetDeviceType(id)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion Device Type GET Tests
+
+        #region Device Type Add Tests
 
         [Test]
         public async Task NoDeviceTypesInDb_AddDeviceType_DeviceTypeAddedSuccessfullyAsync()
@@ -99,6 +127,38 @@ namespace BEIMA.Backend.FT
             Assert.That(getDeviceType.Fields, Contains.Value(device.Fields[1]));
             Assert.That(getDeviceType.Fields, Contains.Value(device.Fields[2]));
         }
+
+        [Test]
+        public void InvalidCredentials_AddDeviceType_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var device = new DeviceTypeAdd
+            {
+                Description = "This is a boiler type.",
+                Name = "Boiler",
+                Notes = "Some type notes.",
+                Fields = new List<string>()
+                {
+                    "MaxTemperature",
+                    "MinTemperature",
+                    "Capacity"
+                }
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.AddDeviceType(device)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion Device Type Add Tests
+
+        #region Device Type List Tests
 
         [Test]
         public async Task DeviceTypesInDatabase_GetDeviceTypeList_ReturnsDeviceTypeList()
@@ -184,9 +244,73 @@ namespace BEIMA.Backend.FT
 
                 Assert.That(deviceType.LastModified, Is.Not.Null);
                 Assert.That(deviceType.LastModified?.Date, Is.Not.Null);
-                Assert.That(deviceType.LastModified?.User, Is.EqualTo("Anonymous"));
+                Assert.That(deviceType.LastModified?.User, Is.EqualTo(TestUsername));
             }
         }
+
+        [Test]
+        public async Task InvalidCredentials_GetDeviceTypeList_ReturnsUnauthenticated()
+        {
+            // ARRANGE
+            var deviceTypeList = new List<DeviceTypeAdd>
+            {
+                new DeviceTypeAdd
+                {
+                    Description = "Boiler description.",
+                    Name = "Boiler",
+                    Notes = "Some boiler notes.",
+                    Fields = new List<string>
+                    {
+                        "Type",
+                        "Fuel Input Rate",
+                        "Output",
+                    },
+                },
+                new DeviceTypeAdd
+                {
+                    Description = "Meters description",
+                    Name = "Electric Meters",
+                    Notes = "Some meter notes.",
+                    Fields = new List<string>
+                    {
+                        "Account Number",
+                        "Service ID",
+                        "Voltage",
+                    },
+                },
+                new DeviceTypeAdd
+                {
+                    Description = "Cooling tower description",
+                    Name = "Cooling Tower",
+                    Notes = "Some cooling tower notes.",
+                    Fields = new List<string>
+                    {
+                        "Type",
+                        "Chiller(s) Served",
+                        "Capacity",
+                    },
+                },
+            };
+
+            foreach (var deviceType in deviceTypeList)
+            {
+                await TestClient.AddDeviceType(deviceType);
+            }
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.GetDeviceTypeList()
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion Device Type List Tests
+
+        #region Device Type Delete Tests
 
         [Test]
         public async Task DeviceTypeInDatabase_DeleteDeviceType_DeviceTypeDeletedSuccessfully()
@@ -215,6 +339,96 @@ namespace BEIMA.Backend.FT
             var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.GetDeviceType(deviceTypeId));
             Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
         }
+
+        [Test]
+        public async Task DeviceTypeWithDeviceInDatabase_DeleteDeviceType_DeletetionStopped()
+        {
+            // ARRANGE
+            var deviceType = new DeviceTypeAdd
+            {
+                Description = "Boiler description.",
+                Name = "Boiler",
+                Notes = "Some other boiler notes.",
+                Fields = new List<string>
+                    {
+                        "Type",
+                        "Fuel Input Rate",
+                        "Output",
+                    },
+            };
+
+            var deviceTypeId = await TestClient.AddDeviceType(deviceType);
+            var addedDeviceType = await TestClient.GetDeviceType(deviceTypeId);
+
+            var device = new Device()
+            {
+                DeviceTag = "B-34",
+                DeviceTypeId = deviceTypeId,
+                Fields = new Dictionary<string, string> {
+                    { addedDeviceType.Fields?.Keys?.ToList()[0] ?? "Bad Fields", "Tall boiler." },
+                    { addedDeviceType.Fields?.Keys?.ToList()[1] ?? "Bad Fields", "23" },
+                    { addedDeviceType.Fields?.Keys?.ToList()[2] ?? "Bad Fields", "38" },
+                },
+                Location = new DeviceLocation()
+                {
+                    BuildingId = null,
+                    Latitude = "78.6",
+                    Longitude = "43.2",
+                    Notes = "Some notes."
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "1234",
+                Notes = "Some notes.",
+                SerialNum = "4321",
+                YearManufactured = 2001,
+            };
+
+            var deviceId = await TestClient.AddDevice(device);
+            Assume.That(deviceId, Is.Not.Null.And.Not.Empty);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () => await TestClient.DeleteDeviceType(deviceTypeId));
+
+            // ASSERT
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Conflict));
+            Assert.That(ex?.Message,
+                        Contains.Substring("The device type could not be deleted because at least one device exists in the database with this device type."));
+        }
+
+        [Test]
+        public async Task InvalidCredentials_DeleteDeviceType_ReturnsUnauthenticated()
+        {
+            // ARRANGE
+            var deviceType = new DeviceTypeAdd
+            {
+                Description = "Boiler description.",
+                Name = "Boiler",
+                Notes = "Some other boiler notes.",
+                Fields = new List<string>
+                    {
+                        "Type",
+                        "Fuel Input Rate",
+                        "Output",
+                    },
+            };
+
+            var deviceTypeId = await TestClient.AddDeviceType(deviceType);
+            Assume.That(await TestClient.GetDeviceType(deviceTypeId), Is.Not.Null);
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.DeleteDeviceType(deviceTypeId)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion Device Type Delete Tests
+
+        #region Device Type Update Tests
 
         [Test]
         public async Task DeviceTypeInDatabase_UpdateDeviceType_ReturnsUpdatedDeviceType()
@@ -387,5 +601,64 @@ namespace BEIMA.Backend.FT
                 Assert.That(updatedDeviceType.Fields, Contains.Key(key));
             }
         }
+
+        [Test]
+        public async Task InvalidCredentials_UpdateDeviceType_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var origDeviceType = new DeviceTypeAdd
+            {
+                Description = "Boiler description.",
+                Name = "Boiler",
+                Notes = "Some boiler notes.",
+                Fields = new List<string>
+                {
+                    "Type",
+                    "Fuel Input Rate",
+                    "Output",
+                },
+            };
+
+            var deviceTypeId = await TestClient.AddDeviceType(origDeviceType);
+            var origItem = await TestClient.GetDeviceType(deviceTypeId);
+
+            var updateDictionary = new Dictionary<string, string>();
+            if (origItem.Fields != null)
+            {
+                foreach (var item in origItem.Fields)
+                {
+                    updateDictionary.Add(item.Key, item.Value);
+                    if (item.Value.Equals("Type"))
+                    {
+                        updateDictionary[item.Key] = "Boiler Type";
+                    }
+                }
+            }
+
+            var updateItem = new DeviceTypeUpdate
+            {
+                Id = origItem.Id,
+                Description = origItem.Description,
+                Name = origItem.Name,
+                Notes = "Some other boiler notes.",
+                Fields = updateDictionary,
+                NewFields = new List<string>
+                {
+                    "Capacity",
+                },
+            };
+
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.UpdateDeviceType(updateItem)
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
+        }
+
+        #endregion Device Type Update Tests
     }
 }
