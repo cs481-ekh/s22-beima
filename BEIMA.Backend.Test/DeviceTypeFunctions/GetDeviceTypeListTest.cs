@@ -3,6 +3,7 @@ using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -48,6 +49,9 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             mockDb.Setup(mock => mock.GetAllDeviceTypes())
                   .Returns(deviceTypeList)
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(new List<BsonDocument>())
+                  .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
@@ -58,6 +62,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDeviceTypes(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Exactly(deviceTypeList.Count)));
 
             var getList = (List<object>)response.Value;
             Assert.IsNotNull(getList);
@@ -69,6 +74,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
                 Assert.That(deviceType["name"].ToString(), Is.EqualTo(expectedDevice["name"].AsString));
                 Assert.That(deviceType["description"].ToString(), Is.EqualTo(expectedDevice["description"].AsString));
                 Assert.That(deviceType["notes"].ToString(), Is.EqualTo(expectedDevice["notes"].AsString));
+                Assert.That(deviceType["count"], Is.EqualTo(0));
 
                 var fields = (Dictionary<string, object>)deviceType["fields"];
                 var expectedFields = expectedDevice["fields"].AsBsonDocument;
