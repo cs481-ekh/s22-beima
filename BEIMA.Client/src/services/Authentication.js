@@ -34,9 +34,9 @@ export async function login(credentials) {
       sessionStorage.setItem("currentUser", login.data);
     }
     user.token = login.data;
-    return user;
+    return {user :user, status : login.status};
   }
-  return login.response;
+  return {response: login.data, status : login.status};
 }
 
 /**
