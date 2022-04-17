@@ -429,7 +429,7 @@ const DevicePage = () => {
                 <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteImage()}/>
               : null}  
               { imagePreviewUrl !== '' && imagePreviewUrl !== null?
-              <Image src={imagePreviewUrl} fluid/>
+              <a target="_blank" href={imagePreviewUrl}><Image src={imagePreviewUrl} fluid/></a>
               : "No image for device"}
             </Card.Body>
           </Card>
