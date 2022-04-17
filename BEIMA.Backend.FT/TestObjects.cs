@@ -91,6 +91,9 @@ namespace BEIMA.Backend.FT
 
             [JsonProperty(PropertyName = "notes")]
             public string? Notes { get; set; }
+
+            [JsonProperty(PropertyName = "count")]
+            public int? Count { get; set; }
         }
 
         public class DeviceUpdate : Device

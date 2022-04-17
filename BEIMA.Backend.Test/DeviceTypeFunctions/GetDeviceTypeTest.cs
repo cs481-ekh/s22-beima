@@ -3,6 +3,7 @@ using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -92,6 +93,9 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid == new ObjectId(testId))))
                   .Returns(dbDeviceType.GetBsonDocument())
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
+                  .Returns(new List<BsonDocument>())
+                  .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
@@ -102,6 +106,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
 
             // ASSERT
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
             Assert.That(((OkObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.OK));
@@ -109,6 +114,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             Assert.That(device["name"], Is.EqualTo("Boiler"));
             Assert.That(device["description"], Is.EqualTo("Describes a boiler."));
             Assert.That(device["notes"], Is.EqualTo("Some notes."));
+            Assert.That(device["count"], Is.EqualTo(0));
         }
 
         #endregion SuccessTests
