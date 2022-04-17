@@ -98,16 +98,17 @@ const AddDevicePage = () => {
     setSelectedDeviceType(deviceTypeFields.response);
     setDeviceTypeDropDownStyle(styles.dropDownSelected);
     
-    //retireve the values from teh response to label the form elements
+    //retrieve the values from the response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
+    let allFields = mandatoryDeviceFields;
     
     //append the custom labels to the form generation object
     for(let i = 0; i < fieldLabels.length; i++) {
-      deviceFields[fieldLabels[i]] = "";
+      allFields[fieldLabels[i]] = "";
     }
 
     //add them to the forms errors lists
-    setDeviceFields(deviceFields);
+    setDeviceFields(allFields);
     setErrors({});
   }
   
@@ -183,6 +184,7 @@ const AddDevicePage = () => {
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
+          setDeviceFields(mandatoryDeviceFields);
           Notifications.success("Add Device Successful", "Adding Device completed successfully.");
         } else {
           Notifications.error("Unable to Add Device", `Adding Device failed.`);
