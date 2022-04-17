@@ -20,6 +20,7 @@ const AddDevicePage = () => {
   const mandatoryDeviceFields = {
     "Longitude": "",
     "Latitude": "",
+    "Location Notes": "",
     "Device Tag": "",
     "Manufacturer": "",
     "Model Number": "",
@@ -135,9 +136,13 @@ const AddDevicePage = () => {
     if(Object.values(selectedDeviceType.fields).includes(formName)){
       let dbId = Object.keys(selectedDeviceType.fields).find(key => selectedDeviceType.fields[key] === formName);
       result = {'fieldDbId': dbId};
-    } else if (formName === 'Latitude' || formName === 'Longitude') {
+    } else if (formName === 'Latitude' || formName === 'Longitude' || formName === 'Location Notes') {
       //put location values in their nested place
-      result = {'location': {'type' : formName.toLowerCase(formName)}};
+      if(formName === 'Location Notes'){
+        result = {'location': {'type' : formName[9].toLowerCase() + formName.slice(10)}};
+      } else {
+        result = {'location': {'type' : formName.toLowerCase(formName)}};
+      }
     } else {
       //make first letter lower case
       let dbKey = formName[0].toLowerCase() + formName.slice(1);
@@ -147,7 +152,6 @@ const AddDevicePage = () => {
       dbKey = dbKey.replace(/\s+/g, '');
       result = dbKey;
     }
-    
     return result;
   }
   
