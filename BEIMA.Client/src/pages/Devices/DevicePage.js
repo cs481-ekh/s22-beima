@@ -172,11 +172,11 @@ const DevicePage = () => {
    * @param deleteDocument: function to delete document in higher level RenderItem
    * @returns html
    */
-  const DocumentCard = ({editable, document, deleteDocument}) => {
+  const DocumentCard = ({editable, document, fileUrl, deleteDocument}) => {
     return (
       <Card>
         <Card.Body className={styles.documentCard}>
-          {document}
+          <a href={fileUrl}>{document}</a>
           { editable ? 
             <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteDocument(document)}/>
           : null}            
@@ -447,7 +447,7 @@ const DevicePage = () => {
           "No documents for device"
           : <></>}
           {docCopy.length > 0 ?
-          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
+          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} fileUrl={doc.fileUrl} deleteDocument={deleteDocument}/> )
           : <></>}
           {addedDocs.length > 0 ?
           Array.from(addedDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
