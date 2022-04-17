@@ -152,7 +152,6 @@ const AddDevicePage = () => {
       dbKey = dbKey.replace(/\s+/g, '');
       result = dbKey;
     }
-    console.log(result);
     return result;
   }
   
