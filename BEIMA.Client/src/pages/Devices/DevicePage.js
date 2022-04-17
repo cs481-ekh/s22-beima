@@ -21,6 +21,7 @@ const DevicePage = () => {
   const [documents, setDocuments] = useState([])
   const [deviceType, setDeviceType] = useState(null)
   const [building, setBuilding] = useState(null)
+  const [deviceChanged, setDeviceChanged] = useState(false);
 
   useEffect(() => {
     setPageName('View Device')
@@ -46,9 +47,10 @@ const DevicePage = () => {
       setDeviceType(deviceType)
       setBuilding(building)
       setLoading(false)
+      setDeviceChanged(false)
     }
    loadData();
-  },[id]) 
+  },[id, deviceChanged]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -271,6 +273,7 @@ const DevicePage = () => {
         if(updateResult.status === Constants.HTTP_SUCCESS){
           Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
           setEditable(false)
+          setDeviceChanged(true);
         } else {
           Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
         }
