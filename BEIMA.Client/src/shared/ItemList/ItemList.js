@@ -46,7 +46,7 @@ const Item = ({item, RenderItem, isDeviceList}) => {
   let navigate = useNavigate();
 
   return (
-    <div className={styles.item}>
+    <div className={styles.item} data-cy="listItem">
       <div className={styles.row}> 
         {isDeviceList ? <div className={styles.itemName}>{item.deviceTag} - {item.deviceTypeName} - {item.buildingName}</div> : <div className={styles.itemName}>{item.name}</div>}
         <div><MdMoreHoriz color='#f44336' className={styles.hover} size={30} onClick={() => navigate(`${item.id}`)}/></div>
@@ -93,10 +93,11 @@ const List = ({list, RenderItem, isDeviceList}) => {
  * @param renderItem : details render object
  * @param loading: loading status
  */
-const ItemList = ({list, RenderItem, loading, isDeviceList}) => {
+const ItemList = ({list, RenderItem, loading, isDeviceList, filter}) => {
   return (
-    <Card className={styles.card} id="itemList">
+    <Card id="itemList">
       <Card.Body>
+        {filter}
         {loading ? <LoadingItemList/>: <List list={list} RenderItem={RenderItem} isDeviceList={isDeviceList}/>}
       </Card.Body>
     </Card>

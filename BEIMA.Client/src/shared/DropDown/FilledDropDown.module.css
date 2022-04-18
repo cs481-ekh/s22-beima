@@ -1,0 +1,11 @@
+.dropdownItem{
+  max-width:450px !important;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.dropdownButton{
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 350px;
+}

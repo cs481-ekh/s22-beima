@@ -20,6 +20,7 @@ const AddDevicePage = () => {
   const mandatoryDeviceFields = {
     "Longitude": "",
     "Latitude": "",
+    "Location Notes": "",
     "Device Tag": "",
     "Manufacturer": "",
     "Model Number": "",
@@ -98,16 +99,17 @@ const AddDevicePage = () => {
     setSelectedDeviceType(deviceTypeFields.response);
     setDeviceTypeDropDownStyle(styles.dropDownSelected);
     
-    //retireve the values from teh response to label the form elements
+    //retrieve the values from the response to label the form elements
     let fieldLabels = Object.values(deviceTypeFields.response.fields);
+    let allFields = mandatoryDeviceFields;
     
     //append the custom labels to the form generation object
     for(let i = 0; i < fieldLabels.length; i++) {
-      deviceFields[fieldLabels[i]] = "";
+      allFields[fieldLabels[i]] = "";
     }
 
     //add them to the forms errors lists
-    setDeviceFields(deviceFields);
+    setDeviceFields(allFields);
     setErrors({});
   }
   
@@ -134,9 +136,13 @@ const AddDevicePage = () => {
     if(Object.values(selectedDeviceType.fields).includes(formName)){
       let dbId = Object.keys(selectedDeviceType.fields).find(key => selectedDeviceType.fields[key] === formName);
       result = {'fieldDbId': dbId};
-    } else if (formName === 'Latitude' || formName === 'Longitude') {
+    } else if (formName === 'Latitude' || formName === 'Longitude' || formName === 'Location Notes') {
       //put location values in their nested place
-      result = {'location': {'type' : formName.toLowerCase(formName)}};
+      if(formName === 'Location Notes'){
+        result = {'location': {'type' : formName[9].toLowerCase() + formName.slice(10)}};
+      } else {
+        result = {'location': {'type' : formName.toLowerCase(formName)}};
+      }
     } else {
       //make first letter lower case
       let dbKey = formName[0].toLowerCase() + formName.slice(1);
@@ -146,7 +152,6 @@ const AddDevicePage = () => {
       dbKey = dbKey.replace(/\s+/g, '');
       result = dbKey;
     }
-    
     return result;
   }
   
@@ -183,6 +188,7 @@ const AddDevicePage = () => {
           for(let i = 0; i < formFields.length; i++){
             formFields[i].value = "";
           }
+          setDeviceFields(mandatoryDeviceFields);
           Notifications.success("Add Device Successful", "Adding Device completed successfully.");
         } else {
           Notifications.error("Unable to Add Device", `Adding Device failed.`);
@@ -245,10 +251,6 @@ const AddDevicePage = () => {
         }
       }
     }
-    
-    //won't deploy to azure without these until they're used elsewhere
-    console.log(deviceImage);
-    console.log(deviceAdditionalDocs);
     
     let isConfirmed = true;
     
