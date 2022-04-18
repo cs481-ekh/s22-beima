@@ -1,0 +1,57 @@
+# containers created as "beima_database_1", "beima_api_1", "beima_web_1", "beima_minio_1"
+# they should be able to communicate by referencing the container name, i.e. calling the db should be as easy
+# local.settings.json local mongo needs to be mongdb://beima_database_1:27017
+# get container address sudo docker inspect beima_api_1 | grep \"IPAddress\"
+version: '3.0'
+services:
+  web:
+    build:
+      context: .
+      dockerfile: ./BEIMA.Client/Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      internal:
+        ipv4_address: 192.168.0.5
+
+  database:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - './data/mongo:/data/db'
+    networks:
+      internal:
+        ipv4_address: 192.168.0.2
+
+  api:
+    build:
+      context: .
+      dockerfile: ./BEIMA.Backend/Dockerfile
+    ports:
+      - "7071:7071"
+    networks:
+      internal:
+        ipv4_address: 192.168.0.3
+
+  minio:
+    image: minio/minio:latest
+    command: server /data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      internal:
+        ipv4_address: 192.168.0.4
+    volumes:
+      - './data/minio:/data'
+    entrypoint: sh
+    command: -c 'mkdir -p /data/files && minio server --address ":9000" --console-address ":9001" /data'
+
+networks:
+  # The presence of these objects is sufficient to define them
+  internal: 
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
