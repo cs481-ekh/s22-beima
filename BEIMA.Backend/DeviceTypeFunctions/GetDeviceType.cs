@@ -45,13 +45,19 @@ namespace BEIMA.Backend.DeviceTypeFunctions
 
             // Retrieve the device type from the database.
             ObjectId oid = new ObjectId(id);
-            BsonDocument doc = MongoDefinition.MongoInstance.GetDeviceType(oid);
+            var mongo = MongoDefinition.MongoInstance;
+            BsonDocument doc = mongo.GetDeviceType(oid);
 
             // Check that the device type returned is not null.
             if (doc is null)
             {
                 return new NotFoundObjectResult(Resources.DeviceTypeNotFoundMessage);
             }
+
+            // Find the total number of devices that are match this deviceType, and return the count of devices in the return object.
+            var filter = MongoFilterGenerator.GetEqualsFilter("deviceTypeId", doc.GetValue("_id"));
+            var deviceCount = mongo.GetFilteredDevices(filter).Count;
+            doc.Add("count", deviceCount);
 
             // Return the device type.
             var dotNetObj = BsonTypeMapper.MapToDotNetValue(doc);

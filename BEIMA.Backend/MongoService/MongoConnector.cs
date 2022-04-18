@@ -40,11 +40,17 @@ namespace BEIMA.Backend.MongoService
                 CurrentServerType = ServerType.Local;
                 credentials = Environment.GetEnvironmentVariable("LocalMongoConnection");
             }
-            else
+            else if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-cloud")
             {
                 CurrentServerType = ServerType.Cloud;
                 credentials = Environment.GetEnvironmentVariable("AzureCosmosConnection");
             }
+            else
+            {
+                CurrentServerType = ServerType.Deploy;
+                credentials = Environment.GetEnvironmentVariable("DeployMongoConnection");
+            }
+
             client = new MongoClient(credentials);
 
             // Create default admin user on startup if no admin user exists.

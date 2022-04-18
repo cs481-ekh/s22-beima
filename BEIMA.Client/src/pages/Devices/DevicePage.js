@@ -226,6 +226,9 @@ const DevicePage = () => {
     const navigate = useNavigate();
 
     const updateDeviceCall = async () => {
+      let warnings = [];
+      let isConfirmed = true;
+      
       const newDevice = {
         _id:deviceID,
         deviceTypeId:deviceTypeID,
@@ -244,15 +247,36 @@ const DevicePage = () => {
         },
         deletedFiles: removedDocs
       }
-
-      // Hit endpoints here
-      let updateResult = await updateDevice(newDevice, newImage, addedDocs);
-      if(updateResult.status === Constants.HTTP_SUCCESS){
-        Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
-        setEditable(false)
-      } else {
-        Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
+      
+       Object.entries(newDevice).forEach(entry => {
+        const [key, value] = entry;
+        if(value === ""){
+          let capitalize = key.split(/(?=[A-Z])/);
+          
+          for(let i = 0; i < capitalize.length; i++) {
+            capitalize[i] = (capitalize[i][0].toUpperCase() + capitalize[i].slice(1)).replace('Num', 'Number');
+          }
+          
+          warnings.push(`"${(capitalize).join(" ")}" field is empty<br/>`);
+        }
+      });
+      
+      if( warnings.length > 0 ){
+        isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
       }
+      
+      if ( isConfirmed ) {
+        // Hit endpoints here
+        let updateResult = await updateDevice(newDevice, newImage, addedDocs);
+        if(updateResult.status === Constants.HTTP_SUCCESS){
+          Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
+          setEditable(false)
+        } else {
+          Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
+        }
+      }
+      
+
     }
 
     const deleteDeviceCall = async (id) => {

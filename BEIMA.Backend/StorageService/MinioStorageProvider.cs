@@ -20,12 +20,23 @@ namespace BEIMA.Backend.StorageService
         /// </summary>
         public MinioStorageProvider()
         {
+            string minioHost;
+            var environment = Environment.GetEnvironmentVariable("CurrentEnv");
             var accessKey = Environment.GetEnvironmentVariable("MinioAccessKey");
             var secretKey = Environment.GetEnvironmentVariable("MinioSecretKey");
             bucket = Environment.GetEnvironmentVariable("MinioBucket");
 
+            if (environment == "deploy")
+            {
+                minioHost = Environment.GetEnvironmentVariable("MinioDeployHost");
+            }
+            else
+            {
+                minioHost = "localhost";
+            }
+
             // Will need to have endpoint changed and .WithSSL() added based off of vm configurations
-            client = new MinioClient().WithCredentials(accessKey, secretKey).WithEndpoint("localhost",9000);
+            client = new MinioClient().WithCredentials(accessKey, secretKey).WithEndpoint(minioHost, 9000);
         }
 
         /// <summary>

@@ -1,8 +1,29 @@
-.list {
-  margin: 10px 5% 0px 5%;
+.filter{
+  margin-bottom: 15px;
+  white-space:nowrap;
 }
 
+.pageContent {
+  margin: 10px 5% 0px 5%;
+}
 
 .details{
   font-size: small;
 }
+
+.filterLabel{
+  font-weight: bold;
+}
+
+.row{
+  display: flex;
+  gap:15px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.list, .container{
+  flex-grow: 1;
+}
+

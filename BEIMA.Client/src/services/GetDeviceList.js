@@ -8,10 +8,19 @@ const API_URL = process.env.REACT_APP_API_URL;
  *
  * @return JSON with list of all devices or error message on failure
  */
-const GetDeviceList = async() => {
+const GetDeviceList = async(deviceTypeParams = [], buildingParams = []) => {
   let user = getCurrentUser();
+  
+  let queryString = "?"
+  deviceTypeParams.forEach(val => {
+    queryString += `deviceType=${val}&`
+  })
 
-  const deviceListCall = await axios.get(API_URL + "device-list", {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
+  buildingParams.forEach(val => {
+    queryString += `building=${val}&`
+  })
+
+  const deviceListCall = await axios.get(API_URL + "device-list" + queryString, {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
