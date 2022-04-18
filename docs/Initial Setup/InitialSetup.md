@@ -9,8 +9,9 @@ Install Minio
 
 Clone project into chosen location
 
-Place environment variable file ".env" in ./BEIMA.Client/.env
-Place the "local.settings.json" file in ./BEIMA.Backend/local.settings.json
+Place environment variable file ".env" at ./BEIMA.Client/.env
+Place the "local.settings.json" file at ./BEIMA.Backend/local.settings.json
+Valid CurrentEnv settings for local.settings.json are dev-cloud, dev-local, deploy
 
 Enter ./BEIMA.Client/ directory
 
