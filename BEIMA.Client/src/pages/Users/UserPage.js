@@ -136,7 +136,7 @@ const UserPage = () => {
       setLastName(user.firstName);
       setRole(user.role);
       changeSelectedRole(user.role);
-      setRoleDropDownStyle(styles.button)
+      setRoleDropDownStyle(user.role !== "" && user.role !== "Select Role" ? styles.dropDownSelected : styles.button)
       setEditable(false);
     }
 
@@ -153,8 +153,8 @@ const UserPage = () => {
     }
 
     /*
-* sets the state for the selected building from the dropdown
-*/
+    * sets the state for the selected building from the dropdown
+    */
     function changeSelectedRole(roleId) {
       let role = availableRoles.find(role => {
         return role.id === roleId;
