@@ -39,3 +39,4 @@ jobs:
         app_artifact_location: ${{ env.APP_ARTIFACT_LOCATION }}
       env:
         REACT_APP_API_URL: ${{ env.BACKEND_API }}
+        REACT_APP_MAPBOX_TOKEN: "pk.eyJ1Ijoiam9lbW9vciIsImEiOiJjbDIzbmM4bDYxN2Z5M2NueHJ1ZDBuejR5In0.cJmcLf6OgSmM8Tk_atv4-A"
