@@ -1,4 +1,5 @@
 import axios from 'axios';
+import {getCurrentUser, logout} from './Authentication.js';
 import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
@@ -8,12 +9,19 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return the report in the form of bytes
  */
 const GetAllDeviceDevicesReport = async() => {
-  const deviceReportCall = await axios.get(API_URL + "report/devices", {responseType: 'blob'}).catch(function (error) {
+  let user = getCurrentUser();
+
+  const deviceReportCall = await axios.get(API_URL + "report/devices", {headers : {Authorization : `Bearer ${user.token}`}, responseType: 'blob'}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
   });
 
+  if(deviceReportCall.status === Constants.HTTP_UNAUTH_RESULT){
+    logout();
+    return;
+  }
+  
   if (deviceReportCall.status !== Constants.HTTP_SUCCESS){
     return deviceReportCall.status;
   }
