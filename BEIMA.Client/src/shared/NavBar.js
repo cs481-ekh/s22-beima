@@ -32,6 +32,9 @@ const NavBar = () => {
               <Row className="pageLink">
                 <Link to="/buildings" className="sharedText">Buildings</Link>
               </Row>
+              <Row className="pageLink">
+                <Link to="/map" className="sharedText">Map</Link>
+              </Row>
               {currentUser.Role === 'admin' ?
               <Row className="pageLink">
                 <Link to="/users" className="sharedText">Users</Link>
