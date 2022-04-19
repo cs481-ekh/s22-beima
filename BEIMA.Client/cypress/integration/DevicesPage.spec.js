@@ -13,7 +13,7 @@ describe('Devices Page', () => {
       cy.get('[id=deviceTypeFilter]').should('exist')
       cy.get('[id=clearFilterButton]').should('exist')
       cy.get('[id=submitFilterButton]').should('exist')
-      cy.get('#generateReportButton').should('exist')
+      cy.get('[id=generateReportButton]').should('exist')
   })
 
   it('Can interact with device type filter', () => {
