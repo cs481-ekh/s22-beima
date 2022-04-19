@@ -12,10 +12,6 @@ WORKDIR /beima
 RUN apt update
 # Set time zone env variable and install tzdata package using it
 RUN TZ=Etc/UTC apt-get -y install tzdata
-# Move all required folders into the container, must have all projects or it won't buildsince the others are referenced in the Backend csproj
-COPY ./BEIMA.Backend/ /beima/BEIMA.Backend/
-COPY ./BEIMA.Backend.Test/ /beima/BEIMA.Backend.Test
-COPY ./BEIMA.Backend.FT/ /beima/BEIMA.Backend.FT
 #i Install tools
 RUN apt install -y wget
 # Get MS installer package
@@ -34,5 +30,11 @@ RUN apt-get install -y dotnet-sdk-6.0
 WORKDIR /beima/BEIMA.Backend
 # Set Environment Variable to ignore globalization
 RUN export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
+# Turn off MS Telemetry data
+RUN export DOTNET_CLI_TELEMETRY_OPTOUT=1
+# Move all required folders into the container, must have all projects or it won't buildsince the others are referenced in the Backend csproj
+COPY ./BEIMA.Backend/ /beima/BEIMA.Backend/
+COPY ./BEIMA.Backend.Test/ /beima/BEIMA.Backend.Test
+COPY ./BEIMA.Backend.FT/ /beima/BEIMA.Backend.FT
 # Start the API
 ENTRYPOINT ["func", "start", "BEIMA.Backend.csproj"]

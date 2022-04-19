@@ -12,8 +12,6 @@ WORKDIR /beima
 RUN apt update
 # Set time zone env variable and install tzdata package using it
 RUN TZ=Etc/UTC apt-get -y install tzdata
-# Move all required folders into the container
-COPY ./BEIMA.Client/ /beima/BEIMA.Client/
 # Install build utilities
 RUN apt install -y curl
 # Get the latest (ver 16) node server PPA
@@ -22,11 +20,16 @@ RUN curl -fsSL https://deb.nodesource.com/setup_16.x | bash
 RUN apt install -y nodejs
 # Move work directory to client
 WORKDIR /beima/BEIMA.Client
+# Import package lists
+COPY ./BEIMA.Client/package.json /beima/BEIMA.Client/
+COPY ./BEIMA.Client/package-lock.json /beima/BEIMA.Client/
 # Install Node dependencies
 RUN npm i
-# Build client in production mode
-RUN npm run build
 # Install web server
 RUN npm install -g serve
+# Move all required folders into the container
+COPY ./BEIMA.Client/ /beima/BEIMA.Client/
+# Build client in production mode
+RUN npm run build
 # Run the front end
 CMD ["serve", "-s", "build"]
