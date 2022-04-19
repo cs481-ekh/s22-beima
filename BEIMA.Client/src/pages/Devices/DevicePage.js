@@ -376,8 +376,6 @@ const DevicePage = () => {
         setLat(value)
       } else if (target === 'deviceLongitude'){
         setLong(value)
-      } else if (target === 'deviceBuildingId'){
-        setBuildingId(value)
       }
     }
 
