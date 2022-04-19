@@ -16,9 +16,6 @@ const PageTitle = (props) => {
             <h3 className="toolbarTitle">{name}</h3>
         </div>
     )
-    
-    
-    
 }
 
 export default PageTitle;
