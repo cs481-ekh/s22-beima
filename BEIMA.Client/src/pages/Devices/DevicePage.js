@@ -21,6 +21,7 @@ const DevicePage = () => {
   const [documents, setDocuments] = useState([])
   const [deviceType, setDeviceType] = useState(null)
   const [building, setBuilding] = useState(null)
+  const [deviceChanged, setDeviceChanged] = useState(false);
 
   useEffect(() => {
     setPageName('View Device')
@@ -46,9 +47,10 @@ const DevicePage = () => {
       setDeviceType(deviceType)
       setBuilding(building)
       setLoading(false)
+      setDeviceChanged(false)
     }
    loadData();
-  },[id]) 
+  },[id, deviceChanged]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -172,11 +174,11 @@ const DevicePage = () => {
    * @param deleteDocument: function to delete document in higher level RenderItem
    * @returns html
    */
-  const DocumentCard = ({editable, document, deleteDocument}) => {
+  const DocumentCard = ({editable, document, fileUrl, deleteDocument}) => {
     return (
       <Card>
         <Card.Body className={styles.documentCard}>
-          {document}
+          <a href={fileUrl}>{document}</a>
           { editable ? 
             <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteDocument(document)}/>
           : null}            
@@ -271,6 +273,7 @@ const DevicePage = () => {
         if(updateResult.status === Constants.HTTP_SUCCESS){
           Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
           setEditable(false)
+          setDeviceChanged(true);
         } else {
           Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
         }
@@ -429,7 +432,7 @@ const DevicePage = () => {
                 <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteImage()}/>
               : null}  
               { imagePreviewUrl !== '' && imagePreviewUrl !== null?
-              <Image src={imagePreviewUrl} fluid/>
+              <a target="_blank" rel="noopener noreferrer" href={imagePreviewUrl}><Image src={imagePreviewUrl} fluid/></a>
               : "No image for device"}
             </Card.Body>
           </Card>
@@ -447,7 +450,7 @@ const DevicePage = () => {
           "No documents for device"
           : <></>}
           {docCopy.length > 0 ?
-          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
+          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} fileUrl={doc.fileUrl} deleteDocument={deleteDocument}/> )
           : <></>}
           {addedDocs.length > 0 ?
           Array.from(addedDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
