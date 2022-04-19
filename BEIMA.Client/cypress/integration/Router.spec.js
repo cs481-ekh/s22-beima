@@ -6,7 +6,7 @@ describe("Router Doesn't Redirect On Valid Pages", () =>{
     cy.get('[id=username]').scrollIntoView().clear().type("testuser")
 
     // REPLACE PASSWORD WITH VALID PASSWORD FROM TEST USER IN DATABASE
-    cy.get('[id=password]').scrollIntoView().clear().type("testUser1!")
+    cy.get('[id=password]').scrollIntoView().clear().type("")
     cy.get('[id=submitBtn]').click()
 
     cy.wait(700);
