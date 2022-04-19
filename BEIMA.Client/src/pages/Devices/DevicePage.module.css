@@ -74,3 +74,15 @@
   cursor:pointer;
   user-select: none;
 }
+
+.addButton, .button{
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+
+}
+
+.dropDownSelected {
+  background-color: #FFFFFF !important;
+  border-color: #D64309 !important;
+  color: #D64309 !important;
+}
