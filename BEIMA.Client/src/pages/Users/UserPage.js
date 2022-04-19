@@ -63,18 +63,20 @@ const UserPage = () => {
    * @param editable: can this input be used
    * @param id: id that should be set on the input
    * @param label: label of the input
-   * @param value: value of the input
+   * @param dropDownText: text of the currently selected item
+   * @param items: json containing objects with "id" and "name" key-value pairs
    * @param onChange: function to update value of the field in higher level <RenderItem>
-   * @returns 
+   * @param buttonStyle: a CSS style to apply to the FilledDropDown
+   * @returns a FormCard that has a FilledDropDown in it
    */
-   const FormCardDropdown = ({editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
+  const FormCardDropdown = ({ editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
     return (
       <Card>
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
             <FilledDropDown editable={editable} dropDownText={dropDownText} items={items} selectFunction={onChange} buttonStyle={buttonStyle} dropDownId={"typeDropDown"} />
-          </Form.Group>                
+          </Form.Group>
         </Card.Body>
       </Card>
     )
@@ -162,8 +164,9 @@ const UserPage = () => {
       }
     }
 
-    /*
+    /**
     * sets the state for the selected building from the dropdown
+    * @param roleId: the roleId
     */
     function changeSelectedRole(roleId) {
       let role = availableRoles.find(role => {
