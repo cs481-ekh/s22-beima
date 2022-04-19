@@ -17,6 +17,7 @@ const UserPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [userChanged, setUserChanged] = useState(false);
 
   const { id } = useParams();
   
@@ -26,10 +27,11 @@ const UserPage = () => {
       const user = (await GetUser(id)).response;
       setUser(user);
       setLoading(false);
+      setUserChanged(false);
     }
    loadData();
 
-  },[id, setPageName])
+  },[id, userChanged, setPageName])
   
    /**
    * Renders an card styled input that lets a user change a field's input
@@ -110,6 +112,8 @@ const UserPage = () => {
       if(updateResult.status === Constants.HTTP_SUCCESS){
         Notifications.success("Update User Successful", `User ${username} updated successfully.`);
         setEditable(false);
+        setLoading(true);
+        setUserChanged(true);
       } else {
         Notifications.error("Unable to Update User", `Update of User ${username} failed.`);
       }
