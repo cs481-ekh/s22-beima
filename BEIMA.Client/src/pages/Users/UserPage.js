@@ -19,6 +19,7 @@ const UserPage = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [userChanged, setUserChanged] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const { id } = useParams();
   
@@ -26,7 +27,9 @@ const UserPage = () => {
     setPageName('View User');
     const loadData = async () => {
       const user = (await GetUser(id)).response;
+      const currentUser = await getCurrentUser();
       setUser(user);
+      setCurrentUser(currentUser);
       setLoading(false);
       setUserChanged(false);
     }
@@ -58,6 +61,30 @@ const UserPage = () => {
   }
 
   /**
+* Renders a card that allows for input validation.
+* 
+* @param editable: can this input be used
+* @param id: id that should be set on the input
+* @param label: label of the input
+* @param value: value of the input
+* @param onChange: function to update value of the field in higher level <RenderItem>
+* @param hidden: boolean of whether the card should be hidden (default: false)
+* @returns 
+*/
+  const FormCardValidation = ({ editable, id, label, value, onChange, hidden }) => {
+    return (
+      <Card hidden={hidden}>
+        <Card.Body >
+          <Form.Group className="mb-3" controlId={id}>
+            <Form.Label>{label}</Form.Label>
+            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH} />
+          </Form.Group>
+        </Card.Body>
+      </Card>
+    )
+  }
+
+  /**
    * Renders a card with a dropdown field input. 
    * 
    * @param editable: can this input be used
@@ -80,6 +107,32 @@ const UserPage = () => {
     )
   }
 
+  // function checkPassword(){
+  //   let passwordErrors = {};
+  //   let requirements = new RegExp(Constants.PASSWORD_REGEX);
+    
+  //   if(userFields["Password"] === '') {
+  //     passwordErrors["Password"] = 'Password cannot be empty';
+  //   } else if (!(requirements.test(userFields["Password"])) || userFields["Password"].length < 8){
+  //     passwordErrors["Password"] = 'Password does not meet requirements. See Help page for more information.';
+  //   }
+
+  //   if(userFields["Password Confirmation"] === '') {
+  //     passwordErrors["Password Confirmation"] = 'Password Confirmation cannot be empty';
+  //   } else if (!(requirements.test(userFields["Password Confirmation"]))){
+  //     passwordErrors["Password Confirmation"] = 'Password does not meet requirements. See Help page for more information.';
+  //   }
+    
+  //   if((!('Password' in passwordErrors) && !('Password Confirmation' in passwordErrors)) &&
+  //      (userFields["Password"] !== userFields["Password Confirmation"])
+  //     ) {
+  //        passwordErrors["Password"] = 'Passwords do not match';
+  //        passwordErrors["Password Confirmation"] = 'Passwords do not match';
+  //   }
+    
+  //   return passwordErrors;
+  // }
+
   /**
    * Renders a custom form that enables a user
    * to update a user's fields
@@ -93,6 +146,8 @@ const UserPage = () => {
     const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
     const [role, setRole] = useState(user.role);
     const navigate = useNavigate();
 
@@ -105,7 +160,21 @@ const UserPage = () => {
         username: username,
         firstName: firstName,
         lastName : lastName,
+        password: password,
         role: role,
+      }
+
+      // Verify the new password meets requirements
+      let requirements = new RegExp(Constants.PASSWORD_REGEX);
+      if (password.length != 0 && (!(requirements.test(password)) || (password.length < 8))){
+        Notifications.error("Unable to Update User", "Password does not meet requirements. See Help page for more information.");
+        return;
+      }
+
+      // Verify the Confirm New Password field matches the New Password field
+      if(password !== passwordConfirm){
+        Notifications.error("Unable to Update User", "Passwords do not match.");
+        return;
       }
 
       // Call Update User
@@ -159,6 +228,10 @@ const UserPage = () => {
         setFirstName(value);
       }else if (target === 'userLastName'){
         setLastName(value);
+      } else if(target === "userPassword"){
+        setPassword(value);
+      } else if(target === "userPasswordConfirm"){
+        setPasswordConfirm(value);
       }
     }
 
@@ -204,7 +277,9 @@ const UserPage = () => {
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCard editable={editable} id="userName" label="Username" value={username} onChange={onChange} />
           <FormCard editable={editable} id="userFirstName" label="First Name" value={firstName} onChange={onChange} />
-          <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange}/>
+          <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange} />
+          <FormCardValidation editable={editable} id="userPassword" label="New Password" value={password} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
+          <FormCardValidation editable={editable} id="userPasswordConfirm" label="Confirm New Password" value={passwordConfirm} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
           <FormCardDropdown editable={editable} id="userRole" label="Role" dropDownText={selectedRole.name} items={availableRoles} onChange={changeSelectedRole} buttonStyle={roleDropDownStyle}></FormCardDropdown>
         </div>
   
