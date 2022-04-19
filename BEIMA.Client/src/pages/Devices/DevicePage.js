@@ -12,6 +12,10 @@ import GetDeviceType from '../../services/GetDeviceType';
 import GetBuilding from '../../services/GetBuilding.js';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import * as Constants from '../../Constants';
+import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
+import GetBuildingList from '../../services/GetBuildingList';
+
+const noBuildingObj = { name : 'No Assigned Building' };
 
 const DevicePage = () => {
   const [setPageName] = useOutletContext();
@@ -21,6 +25,8 @@ const DevicePage = () => {
   const [documents, setDocuments] = useState([])
   const [deviceType, setDeviceType] = useState(null)
   const [building, setBuilding] = useState(null)
+  const [availableBuildings, setAvailableBuildings] = useState(null);
+  const [deviceChanged, setDeviceChanged] = useState(false);
 
   useEffect(() => {
     setPageName('View Device')
@@ -37,18 +43,22 @@ const DevicePage = () => {
       if(device.location.buildingId !== null){
         building = (await GetBuilding(device.location.buildingId)).response;
       } else {
-        building = {name: 'No Assigned Building'};
+        building = noBuildingObj;
       }
+      let buildingsCall = await GetBuildingList();
+      const buildings = buildingsCall.response;
 
       setDevice(device)
       setImage(device.photo)
       setDocuments(device.files)
       setDeviceType(deviceType)
       setBuilding(building)
+      setAvailableBuildings(buildings);
       setLoading(false)
+      setDeviceChanged(false)
     }
    loadData();
-  },[id]) 
+  },[id, deviceChanged]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -103,6 +113,31 @@ const DevicePage = () => {
               />
             }            
           </Form.Group>                
+        </Card.Body>
+      </Card>
+    )
+  }
+
+  /**
+   * Renders a card with a dropdown field input. 
+   * 
+   * @param editable: can this input be used
+   * @param id: id that should be set on the input
+   * @param label: label of the input
+   * @param dropDownText: text of the currently selected item
+   * @param items: json containing objects with "id" and "name" key-value pairs
+   * @param onChange: function to update value of the field in higher level <RenderItem>
+   * @param buttonStyle: a CSS style to apply to the FilledDropDown
+   * @returns a FormCard that has a FilledDropDown in it
+   */
+  const FormCardDropdown = ({ editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
+    return (
+      <Card>
+        <Card.Body >
+          <Form.Group className="mb-3" controlId={id}>
+            <Form.Label>{label}</Form.Label>
+            <FilledDropDown editable={editable} dropDownText={dropDownText} items={items} selectFunction={onChange} buttonStyle={buttonStyle} dropDownId={"typeDropDown"} />
+          </Form.Group>
         </Card.Body>
       </Card>
     )
@@ -172,11 +207,11 @@ const DevicePage = () => {
    * @param deleteDocument: function to delete document in higher level RenderItem
    * @returns html
    */
-  const DocumentCard = ({editable, document, deleteDocument}) => {
+  const DocumentCard = ({editable, document, fileUrl, deleteDocument}) => {
     return (
       <Card>
         <Card.Body className={styles.documentCard}>
-          {document}
+          <a href={fileUrl}>{document}</a>
           { editable ? 
             <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteDocument(document)}/>
           : null}            
@@ -197,7 +232,7 @@ const DevicePage = () => {
    * @param setDocuments: function to set document names in higher level Device Page
    * @returns 
    */
-  const RenderItem = ({device, deviceType, image, documents}) => {
+  const RenderItem = ({device, deviceType, building, image, documents}) => {
     const [editable, setEditable] = useState(false)
     
     const [deviceID] = useState(device._id)
@@ -224,6 +259,9 @@ const DevicePage = () => {
     const [addedDocs, setAddedDocs] = useState([])
     const [removedDocs, setRemovedDocs] = useState([])
     const navigate = useNavigate();
+
+    const [selectedBuilding, setSelectedBuilding] = useState(device.location.buildingId !== "" || device.location.buildingId !== null ? { name : building.name, id: building.id } : noBuildingObj);
+    const [buildingDropDownStyle, setBuildingDropDownStyle] = useState(device.location.buildingId !== "" && device.location.buildingId !== null ? styles.dropDownSelected : styles.button);
 
     const updateDeviceCall = async () => {
       let warnings = [];
@@ -271,6 +309,8 @@ const DevicePage = () => {
         if(updateResult.status === Constants.HTTP_SUCCESS){
           Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
           setEditable(false)
+          setLoading(true);
+          setDeviceChanged(true);
         } else {
           Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
         }
@@ -301,6 +341,8 @@ const DevicePage = () => {
       setNotes(device.notes)
       setFields({...device.fields})
       setBuildingId(device.location.buildingId)
+      changeSelectedBuilding(device.location.buildingId);
+      setBuildingDropDownStyle(device.location.buildingId !== "" && device.location.buildingId !== null ? styles.dropDownSelected : styles.button)
       setLat(device.location.latitude)
       setLong(device.location.longitude)
       setLocNotes(device.location.notes)
@@ -336,8 +378,6 @@ const DevicePage = () => {
         setLat(value)
       } else if (target === 'deviceLongitude'){
         setLong(value)
-      } else if (target === 'deviceBuildingId'){
-        setBuildingId(value)
       }
     }
 
@@ -396,6 +436,24 @@ const DevicePage = () => {
       setRemovedDocs(delDocs)
     }
 
+    /**
+    * sets the state for the selected building from the dropdown
+    * @param buildingId: the buildingId 
+    */
+    function changeSelectedBuilding(buildingId) {
+      let building = availableBuildings.find(building => {
+        return building.id === buildingId;
+      })
+      if (buildingId === "" || buildingId === "Select Building" || buildingId === null) {
+        building = noBuildingObj;
+        setBuildingDropDownStyle(styles.button);
+      } else {
+        setBuildingDropDownStyle(styles.dropDownSelected)
+      }
+      setSelectedBuilding(building);
+      setBuildingId(building.id);
+    }
+
     return (
       <Form className={styles.form}>
         <Form.Group className="mb-3">
@@ -429,7 +487,7 @@ const DevicePage = () => {
                 <TiDelete color="red" className={styles.deleteDocBtn} size={20} onClick={() => deleteImage()}/>
               : null}  
               { imagePreviewUrl !== '' && imagePreviewUrl !== null?
-              <Image src={imagePreviewUrl} fluid/>
+              <a target="_blank" rel="noopener noreferrer" href={imagePreviewUrl}><Image src={imagePreviewUrl} fluid/></a>
               : "No image for device"}
             </Card.Body>
           </Card>
@@ -447,7 +505,7 @@ const DevicePage = () => {
           "No documents for device"
           : <></>}
           {docCopy.length > 0 ?
-          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} deleteDocument={deleteDocument}/> )
+          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} fileUrl={doc.fileUrl} deleteDocument={deleteDocument}/> )
           : <></>}
           {addedDocs.length > 0 ?
           Array.from(addedDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
@@ -463,7 +521,7 @@ const DevicePage = () => {
         </Form.Group>
         
         <div className={[styles.fields,'mb-3'].join(' ')}>
-          <FormCard editable={editable} id="deviceBuildingId" label="Building" value={buildingId} onChange={onChange}/>
+          <FormCardDropdown editable={editable} id="deviceBuilding" label="Building" dropDownText={selectedBuilding.name} items={availableBuildings} onChange={changeSelectedBuilding} buttonStyle={buildingDropDownStyle}></FormCardDropdown>
           <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange} />
           <FormCard editable={editable} id="deviceLongitude" label="Longitude" value={long} onChange={onChange}/>
         </div>
@@ -491,7 +549,7 @@ const DevicePage = () => {
     <div className={styles.item} id="devicePageContent">
       <ItemCard 
         title={loading ? 'Loading' : `${device.deviceTag} - ${deviceType.name} - ${building.name}`}
-        RenderItem={<RenderItem device={device} deviceType={deviceType} image={image} documents={documents}/>} 
+        RenderItem={<RenderItem device={device} deviceType={deviceType} building={building} image={image} documents={documents}/>} 
         loading={loading}
         route="/devices"
       />

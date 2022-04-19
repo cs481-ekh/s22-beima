@@ -40,7 +40,9 @@ const GetDeviceList = async(deviceTypeParams = [], buildingParams = []) => {
       deviceTag: item.deviceTag,
       serialNumber: item.serialNum,
       manufacturer: item.manufacturer,
-      notes: item.notes
+      notes: item.notes,
+      latitude: item.location.latitude,
+      longitude: item.location.longitude
     }
   })
 

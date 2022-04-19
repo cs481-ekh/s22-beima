@@ -25,3 +25,10 @@ Launch Visual Studio
 * API is ready to accept requests
 
 Databases and Collections will be created in the database as documents are added.
+
+
+Docker
+* Change the CurrentEnv to 'deploy' in the local.settings.json file. Other valid options: dev-local, dev-cloud. The cloud option requires services located in the cloud to be up and running with the appropriate connection strings present in the local.setings.json file
+* Build images with '&lt;sudo&gt; docker-compose build'
+* Run images with '&lt;sudo&gt; docker-compose up'
+* Remove cached/intermediate containers with '&lt;sudo&gt; docker system prune'

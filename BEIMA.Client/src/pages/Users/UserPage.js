@@ -18,6 +18,8 @@ const UserPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [userChanged, setUserChanged] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   const { id } = useParams();
   
@@ -25,12 +27,15 @@ const UserPage = () => {
     setPageName('View User');
     const loadData = async () => {
       const user = (await GetUser(id)).response;
+      const currentUser = await getCurrentUser();
       setUser(user);
+      setCurrentUser(currentUser);
       setLoading(false);
+      setUserChanged(false);
     }
    loadData();
 
-  },[id, setPageName])
+  },[id, userChanged, setPageName])
   
    /**
    * Renders an card styled input that lets a user change a field's input
@@ -56,23 +61,49 @@ const UserPage = () => {
   }
 
   /**
+* Renders a card that allows for input validation.
+* 
+* @param editable: can this input be used
+* @param id: id that should be set on the input
+* @param label: label of the input
+* @param value: value of the input
+* @param onChange: function to update value of the field in higher level <RenderItem>
+* @param hidden: boolean of whether the card should be hidden (default: false)
+* @returns 
+*/
+  const FormCardPassword = ({ editable, id, label, value, onChange, hidden }) => {
+    return (
+      <Card hidden={hidden}>
+        <Card.Body >
+          <Form.Group className="mb-3" controlId={id}>
+            <Form.Label>{label}</Form.Label>
+            <FormControl required type="password" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH} />
+          </Form.Group>
+        </Card.Body>
+      </Card>
+    )
+  }
+
+  /**
    * Renders a card with a dropdown field input. 
    * 
    * @param editable: can this input be used
    * @param id: id that should be set on the input
    * @param label: label of the input
-   * @param value: value of the input
+   * @param dropDownText: text of the currently selected item
+   * @param items: json containing objects with "id" and "name" key-value pairs
    * @param onChange: function to update value of the field in higher level <RenderItem>
-   * @returns 
+   * @param buttonStyle: a CSS style to apply to the FilledDropDown
+   * @returns a FormCard that has a FilledDropDown in it
    */
-   const FormCardDropdown = ({editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
+  const FormCardDropdown = ({ editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
     return (
       <Card>
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
             <FilledDropDown editable={editable} dropDownText={dropDownText} items={items} selectFunction={onChange} buttonStyle={buttonStyle} dropDownId={"typeDropDown"} />
-          </Form.Group>                
+          </Form.Group>
         </Card.Body>
       </Card>
     )
@@ -91,6 +122,8 @@ const UserPage = () => {
     const [username, setUsername] = useState(user.username);
     const [firstName, setFirstName] = useState(user.firstName);
     const [lastName, setLastName] = useState(user.lastName);
+    const [password, setPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
     const [role, setRole] = useState(user.role);
     const navigate = useNavigate();
 
@@ -103,7 +136,21 @@ const UserPage = () => {
         username: username,
         firstName: firstName,
         lastName : lastName,
+        password: password,
         role: role,
+      }
+
+      // Verify the new password meets requirements
+      let requirements = new RegExp(Constants.PASSWORD_REGEX);
+      if (password.length !== 0 && (!(requirements.test(password)) || (password.length < 8))){
+        Notifications.error("Unable to Update User", "Password does not meet requirements. See Help page for more information.");
+        return;
+      }
+
+      // Verify the Confirm New Password field matches the New Password field
+      if(password !== passwordConfirm){
+        Notifications.error("Unable to Update User", "Passwords do not match.");
+        return;
       }
 
       // Call Update User
@@ -111,6 +158,8 @@ const UserPage = () => {
       if(updateResult.status === Constants.HTTP_SUCCESS){
         Notifications.success("Update User Successful", `User ${username} updated successfully.`);
         setEditable(false);
+        setLoading(true);
+        setUserChanged(true);
       } else {
         Notifications.error("Unable to Update User", `Update of User ${username} failed.`);
       }
@@ -140,9 +189,11 @@ const UserPage = () => {
       setUsername(user.username);
       setFirstName(user.firstName);
       setLastName(user.firstName);
+      setPassword("");
+      setPasswordConfirm("");
       setRole(user.role);
       changeSelectedRole(user.role);
-      setRoleDropDownStyle(styles.button)
+      setRoleDropDownStyle(user.role !== "" && user.role !== "Select Role" ? styles.dropDownSelected : styles.button)
       setEditable(false);
     }
 
@@ -155,12 +206,17 @@ const UserPage = () => {
         setFirstName(value);
       }else if (target === 'userLastName'){
         setLastName(value);
+      } else if(target === "userPassword"){
+        setPassword(value);
+      } else if(target === "userPasswordConfirm"){
+        setPasswordConfirm(value);
       }
     }
 
-    /*
-* sets the state for the selected building from the dropdown
-*/
+    /**
+    * sets the state for the selected building from the dropdown
+    * @param roleId: the roleId
+    */
     function changeSelectedRole(roleId) {
       let role = availableRoles.find(role => {
         return role.id === roleId;
@@ -200,7 +256,9 @@ const UserPage = () => {
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCard editable={editable} id="userName" label="Username" value={username} onChange={onChange} />
           <FormCard editable={editable} id="userFirstName" label="First Name" value={firstName} onChange={onChange} />
-          <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange}/>
+          <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange} />
+          <FormCardPassword editable={editable} id="userPassword" label="New Password" value={password} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
+          <FormCardPassword editable={editable} id="userPasswordConfirm" label="Confirm New Password" value={passwordConfirm} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
           <FormCardDropdown editable={editable} id="userRole" label="Role" dropDownText={selectedRole.name} items={availableRoles} onChange={changeSelectedRole} buttonStyle={roleDropDownStyle}></FormCardDropdown>
         </div>
   
