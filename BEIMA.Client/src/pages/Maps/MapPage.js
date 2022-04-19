@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import styles from './MapPage.module.css'
 import GetDeviceList from '../../services/GetDeviceList';
-import { useOutletContext } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 import ReactMapGL, {Marker} from 'react-map-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -52,13 +51,15 @@ const MapPage = () => {
 
   return (
     <div className={styles.mapDiv}>
-      <ReactMapGL
-        {...viewport}
-        mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-        mapStyle={"mapbox://styles/mapbox/streets-v11"}
-        onDrag={(viewport) => {setViewport(viewport)}}
-        onZoom={(viewport) => {setViewport(viewport)}}
-      >{devices}</ReactMapGL>
+      {loading ? <h1>Loading</h1> :
+        <ReactMapGL
+          {...viewport}
+          mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+          mapStyle={"mapbox://styles/mapbox/streets-v11"}
+          onDrag={(viewport) => {setViewport(viewport)}}
+          onZoom={(viewport) => {setViewport(viewport)}}
+        >{devices}</ReactMapGL>
+      }
     </div>
   );
 }
