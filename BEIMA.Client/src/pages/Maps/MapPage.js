@@ -28,10 +28,7 @@ const MapPage = () => {
   }
 
   useEffect(() => {
-    setPageName('Map')
-  }, [setPageName]);
-
-  useEffect(() => {  
+    setPageName('Map');
     const loadData = async () => {
       setLoading(true)
       let devices = await DeviceListCall();
@@ -47,7 +44,7 @@ const MapPage = () => {
       setDevices(devices)
     }
     loadData()
-  },[navigate]);
+  },[setPageName, navigate]);
 
   return (
     <div className={styles.mapDiv}>
