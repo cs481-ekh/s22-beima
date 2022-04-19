@@ -9,12 +9,16 @@ import UpdateUser from '../../services/UpdateUser.js';
 import DeleteUser from '../../services/DeleteUser.js';
 import * as Notifications from '../../shared/Notifications/Notification.js';
 import { getCurrentUser } from "../../services/Authentication";
+import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 
 const UserPage = () => {
+  const availableRoles = [{name: "admin", id: "admin"}, {name: "user", id: "user"}];
+  const noRoleObj = { name : 'Select Role' };
+
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  
+
   const { id } = useParams();
   
   useEffect(() => {
@@ -50,7 +54,30 @@ const UserPage = () => {
       </Card>
     )
   }
-  
+
+  /**
+   * Renders a card with a dropdown field input. 
+   * 
+   * @param editable: can this input be used
+   * @param id: id that should be set on the input
+   * @param label: label of the input
+   * @param value: value of the input
+   * @param onChange: function to update value of the field in higher level <RenderItem>
+   * @returns 
+   */
+   const FormCardDropdown = ({editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
+    return (
+      <Card>
+        <Card.Body >
+          <Form.Group className="mb-3" controlId={id}>
+            <Form.Label>{label}</Form.Label>
+            <FilledDropDown editable={editable} dropDownText={dropDownText} items={items} selectFunction={onChange} buttonStyle={buttonStyle} dropDownId={"typeDropDown"} />
+          </Form.Group>                
+        </Card.Body>
+      </Card>
+    )
+  }
+
   /**
    * Renders a custom form that enables a user
    * to update a user's fields
@@ -66,6 +93,9 @@ const UserPage = () => {
     const [lastName, setLastName] = useState(user.lastName);
     const [role, setRole] = useState(user.role);
     const navigate = useNavigate();
+
+    const [selectedRole, setSelectedRole] = useState(user.role !== "" ? { name : user.role, id: user.role } : noRoleObj);
+    const [roleDropDownStyle, setRoleDropDownStyle] = useState(user.role !== "" && user.role !== "Select Role" ? styles.dropDownSelected : styles.button);
 
     const updateUserCall = async () => {
       const newUser = {
@@ -111,6 +141,8 @@ const UserPage = () => {
       setFirstName(user.firstName);
       setLastName(user.firstName);
       setRole(user.role);
+      changeSelectedRole(user.role);
+      setRoleDropDownStyle(styles.button)
       setEditable(false);
     }
 
@@ -123,9 +155,24 @@ const UserPage = () => {
         setFirstName(value);
       }else if (target === 'userLastName'){
         setLastName(value);
-      } else if (target === 'userRole'){
-        setRole(value);
       }
+    }
+
+    /*
+* sets the state for the selected building from the dropdown
+*/
+    function changeSelectedRole(roleId) {
+      let role = availableRoles.find(role => {
+        return role.id === roleId;
+      })
+      if(roleId === "" || roleId === "Select Role" || roleId === null){
+        role = noRoleObj;
+        setRoleDropDownStyle(styles.button);
+      } else {
+        setRoleDropDownStyle(styles.dropDownSelected)
+      }
+      setSelectedRole(role);
+      setRole(role.id);
     }
 
     return (
@@ -154,7 +201,7 @@ const UserPage = () => {
           <FormCard editable={editable} id="userName" label="Username" value={username} onChange={onChange} />
           <FormCard editable={editable} id="userFirstName" label="First Name" value={firstName} onChange={onChange} />
           <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange}/>
-          <FormCard editable={editable} id="userRole" label="Role" value={role} onChange={onChange}/>
+          <FormCardDropdown editable={editable} id="userRole" label="Role" dropDownText={selectedRole.name} items={availableRoles} onChange={changeSelectedRole} buttonStyle={roleDropDownStyle}></FormCardDropdown>
         </div>
   
       </Form>
