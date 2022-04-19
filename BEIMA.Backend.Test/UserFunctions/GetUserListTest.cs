@@ -8,6 +8,10 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using static BEIMA.Backend.Test.RequestFactory;
+using BEIMA.Backend.AuthService;
+using Microsoft.AspNetCore.Http;
+using BEIMA.Backend.Models;
+using System.Net;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {
@@ -38,6 +42,12 @@ namespace BEIMA.Backend.Test.UserFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -45,6 +55,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = (OkObjectResult)GetUserList.Run(request, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllUsers(), Times.Once));
 
             var getList = (List<User>)response.Value;
@@ -66,6 +77,40 @@ namespace BEIMA.Backend.Test.UserFunctions
                 Assert.That(lastMod.Date, Is.EqualTo(expectedLastMod["date"].ToUniversalTime()));
                 Assert.That(lastMod.User, Is.EqualTo(expectedLastMod["user"].AsString));
             }
+        }
+
+        [TestCaseSource(nameof(ClaimsFactory))]
+        public void InvalidCredentials_GetUserList_ReturnsUnauthorized(Claims claim)
+        {
+            // ARRANGE
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(claim)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = (ObjectResult)GetUserList.Run(request, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllUsers(), Times.Never));
+
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            Assert.That(response.Value, Is.EqualTo("Invalid credentials."));
+        }
+
+        private static IEnumerable<Claims?> ClaimsFactory()
+        {
+            yield return null;
+            yield return new Claims { Role = "nonadmin", Username = "Bob" };
         }
     }
 }

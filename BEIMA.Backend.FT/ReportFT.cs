@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
 
@@ -19,7 +20,7 @@ namespace BEIMA.Backend.FT
         [OneTimeSetUp]
         public async Task OneTimeSetUpAsync()
         {
-            // Delete all the devices in the database
+            // Delete all the devices in the database.
             var deviceList = await TestClient.GetDeviceList();
             foreach (var device in deviceList)
             {
@@ -28,7 +29,7 @@ namespace BEIMA.Backend.FT
                     await TestClient.DeleteDevice(device.Id);
                 }
             }
-            // Delete all the device types in the database
+            // Delete all the device types in the database.
             var deviceTypeList = await TestClient.GetDeviceTypeList();
             foreach (var deviceType in deviceTypeList)
             {
@@ -38,7 +39,7 @@ namespace BEIMA.Backend.FT
                 }
             }
 
-            // Delete all the buildings in the database
+            // Delete all the buildings in the database.
             var buildingList = await TestClient.GetBuildingList();
             foreach (var building in buildingList)
             {
@@ -48,7 +49,7 @@ namespace BEIMA.Backend.FT
                 }
             }
 
-            // Add back in a test device type
+            // Add back in a test device type.
             _deviceTypeId = await TestClient.AddDeviceType(
                 new DeviceTypeAdd
                 {
@@ -62,7 +63,7 @@ namespace BEIMA.Backend.FT
                 });
             _deviceTypeFieldUuid = (await TestClient.GetDeviceType(_deviceTypeId)).Fields?.Keys.Single();
 
-            // Add back in a test building
+            // Add back in a test building.
             _buildingId = await TestClient.AddBuilding(
                 new Building
                 {
@@ -76,7 +77,7 @@ namespace BEIMA.Backend.FT
                     },
                 });
 
-            // Add back in a test device
+            // Add back in a test device.
             _deviceId = await TestClient.AddDevice(
                 new Device
                 {
@@ -117,11 +118,26 @@ namespace BEIMA.Backend.FT
                 using (var entryStream = entry.Open())
                 using (var streamReader = new StreamReader(entryStream))
                 {
-                    // Read in and assert first line of the csv
+                    // Read in and assert first line of the csv.
                     var line1 = streamReader.ReadLine();
                     Assert.That(line1, Is.EqualTo("Id,DeviceTypeId,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,GenericField,BuildingId,Notes,Latitude,Longitude,Date,User"));
                 }
             }
+        }
+
+        [Test]
+        public void InvalidCredentials_AllDevicesReport_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            // ACT
+            var ex = Assert.ThrowsAsync<BeimaException>(async () =>
+                await UnauthorizedTestClient.AllDevicesReport()
+            );
+
+            // ASSERT
+            Assert.That(ex, Is.Not.Null);
+            Assert.That(ex?.Message, Does.Contain("Invalid credentials."));
+            Assert.That(ex?.StatusCode, Is.EqualTo(HttpStatusCode.Unauthorized));
         }
     }
 }

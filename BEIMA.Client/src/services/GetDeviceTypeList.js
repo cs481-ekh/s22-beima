@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {getCurrentUser, logout} from './Authentication.js';
+import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -7,11 +9,18 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return JSON with list of all devices or error message on failure
  */
 const GetDeviceTypeList = async() => {
-  const deviceTypeListCall = await axios.get(API_URL + "device-type-list").catch(function (error) {
+  let user = getCurrentUser();
+
+  const deviceTypeListCall = await axios.get(API_URL + "device-type-list", {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
   });
+
+  if(deviceTypeListCall.status === Constants.HTTP_UNAUTH_RESULT){
+    logout();
+    return;
+  }
 
   let filteredFields = deviceTypeListCall.data.map((item) => {
     return {

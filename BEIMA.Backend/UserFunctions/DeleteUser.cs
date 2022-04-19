@@ -1,4 +1,5 @@
-﻿using BEIMA.Backend.MongoService;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -29,6 +30,14 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user delete request.");
 
+            // Verify JWT token
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+            if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
+
             if (!ObjectId.TryParse(id, out _))
             {
                 return new BadRequestObjectResult(Resources.InvalidIdMessage);
@@ -39,13 +48,13 @@ namespace BEIMA.Backend.UserFunctions
 
             // Do not delete admin if they are the only admin in the system. Prevents admins from deleting all admin accounts.
             var userDoc = mongo.GetUser(userId);
-            if(userDoc == null)
+            if (userDoc == null)
             {
                 return new NotFoundObjectResult(Resources.UserNotFoundMessage);
             }
 
             var userToDelete = BsonSerializer.Deserialize<User>(userDoc);
-            if(userToDelete.Role == "admin")
+            if (userToDelete.Role == "admin")
             {
                 var adminFilter = MongoFilterGenerator.GetEqualsFilter("role", "admin");
                 var adminResults = mongo.GetFilteredUsers(adminFilter);

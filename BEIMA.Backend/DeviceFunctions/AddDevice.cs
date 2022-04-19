@@ -1,3 +1,4 @@
+using BEIMA.Backend.AuthService;
 using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.StorageService;
@@ -33,6 +34,14 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device post request.");
 
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
+            }
 
             Device device;
             DeviceType deviceType;
@@ -94,8 +103,8 @@ namespace BEIMA.Backend.DeviceFunctions
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
-            // TODO: Use actual user.
-            device.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            device.SetLastModified(DateTime.UtcNow, claims.Username);
 
             // Store attached files and add file uid to device
             var _storage = StorageDefinition.StorageInstance;

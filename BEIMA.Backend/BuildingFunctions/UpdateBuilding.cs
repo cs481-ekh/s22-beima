@@ -12,6 +12,7 @@ using BEIMA.Backend.MongoService;
 using MongoDB.Bson.Serialization;
 using BEIMA.Backend.Models;
 using System.Net;
+using BEIMA.Backend.AuthService;
 
 namespace BEIMA.Backend.BuildingFunctions
 {
@@ -34,6 +35,14 @@ namespace BEIMA.Backend.BuildingFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a building update request.");
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
+            }
 
             if (!ObjectId.TryParse(id, out _))
             {
@@ -59,7 +68,7 @@ namespace BEIMA.Backend.BuildingFunctions
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
 
-            building.SetLastModified(DateTime.UtcNow, "Anonymous");
+            building.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;

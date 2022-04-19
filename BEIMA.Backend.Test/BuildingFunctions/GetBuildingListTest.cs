@@ -1,5 +1,8 @@
-﻿using BEIMA.Backend.BuildingFunctions;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.BuildingFunctions;
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
@@ -7,6 +10,7 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test.BuildingFunctions
@@ -42,6 +46,13 @@ namespace BEIMA.Backend.Test.BuildingFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup mock authentication service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -49,6 +60,7 @@ namespace BEIMA.Backend.Test.BuildingFunctions
             var response = (OkObjectResult)GetBuildingList.Run(request, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllBuildings(), Times.Once));
 
             var getList = (List<Building>)response.Value;
@@ -72,6 +84,59 @@ namespace BEIMA.Backend.Test.BuildingFunctions
                 Assert.That(location.Latitude, Is.EqualTo(expectedLastLoc["latitude"].AsString));
                 Assert.That(location.Longitude, Is.EqualTo(expectedLastLoc["longitude"].AsString));
             }
+        }
+
+        [Test]
+        public void PopulatedDatabase_Unauthorized_GetBuildingList_ReturnsUnauthorized()
+        {
+            // ARRANGE
+            var building1 = new Building(ObjectId.GenerateNewId(), "Student Union", "1234", "Some notes 1.");
+            var building2 = new Building(ObjectId.GenerateNewId(), "Interactive Learning Center", "4321", "Some notes 2.");
+            var building3 = new Building(ObjectId.GenerateNewId(), "Albertons Library", "2468", "Some notes 3.");
+
+            building1.SetLastModified(DateTime.UtcNow, "Anonymous");
+            building2.SetLastModified(DateTime.UtcNow, "Anonymous");
+            building3.SetLastModified(DateTime.UtcNow, "Anonymous");
+
+            building1.SetLocation("0.123", "-0.321");
+            building2.SetLocation("1.234", "-4.321");
+            building3.SetLocation("1.001", "-2.002");
+
+            var buildingList = new List<BsonDocument>
+            {
+                building1.GetBsonDocument(),
+                building2.GetBsonDocument(),
+                building3.GetBsonDocument(),
+            };
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetAllBuildings())
+                  .Returns(buildingList)
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Setup mock authentication service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = (ObjectResult)GetBuildingList.Run(request, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllBuildings(), Times.Never));
+
+            Assert.IsNotNull(response);
+            Assert.That(response, Is.TypeOf(typeof(ObjectResult)));
+            Assert.That(((ObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            var retVal = ((ObjectResult)response).Value;
+
+            Assert.That(retVal, Is.EqualTo("Invalid credentials."));
         }
     }
 }
