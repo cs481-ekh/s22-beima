@@ -3,7 +3,7 @@
 describe('Device Page', () => {
   it('Visits a Device Page', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '623fbea68d12667c41fc7c03'
+    let deviceID = '6243428eb35327d66ce88fd9'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -56,7 +56,7 @@ describe('Device Page', () => {
   })
   it('Enables inputs on Edit Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '623fbea68d12667c41fc7c03'
+    let deviceID = '6243428eb35327d66ce88fd9'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -98,7 +98,7 @@ describe('Device Page', () => {
   })
   it('Resets fields on Cancel Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '623fbea68d12667c41fc7c03'
+    let deviceID = '6243428eb35327d66ce88fd9'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -107,43 +107,37 @@ describe('Device Page', () => {
 
     // Set fields
     cy.get('[id=deviceNotes]').scrollIntoView().clear().type("Test Notes")
-    cy.get('[id=deviceLatitude]').scrollIntoView().clear().type("Test Lat")
-    cy.get('[id=deviceLongitude]').scrollIntoView().clear().type("Test Long")
+    cy.get('[id=deviceLatitude]').scrollIntoView().clear().type("100")
+    cy.get('[id=deviceLongitude]').scrollIntoView().clear().type("100")
     cy.get('[id=locationNotes]').scrollIntoView().clear().type("Test Notes")
-
-    cy.get('[id=fields]').within(() => {
-      cy.get('input').each((val, index, collection) => {
-        console.log(val)
-        cy.wrap(val).scrollIntoView().clear().type("Test" + index)
-      })
-    })
+    cy.get('[id=deviceTag]').scrollIntoView().clear().type('Test0')
+    cy.get('[id=deviceModelNumber]').scrollIntoView().clear().type('Test1')
+    cy.get('[id=deviceSerialNumber]').scrollIntoView().clear().type('Test2')
+    cy.get('[id=deviceManufacturer]').scrollIntoView().clear().type('Test3')
+    cy.get('[id=deviceYearManufactured]').scrollIntoView().clear().type('4')
 
     // Validate input
     cy.get('[id=deviceNotes]').should('have.value', 'Test Notes')
-    cy.get('[id=deviceLatitude]').should('have.value', 'Test Lat')
-    cy.get('[id=deviceLongitude]').should('have.value', 'Test Long')
+    cy.get('[id=deviceLatitude]').should('have.value', '100')
+    cy.get('[id=deviceLongitude]').should('have.value', '100')
     cy.get('[id=locationNotes]').should('have.value', 'Test Notes')
     cy.get('[id=deviceTag]').should('have.value', 'Test0')
     cy.get('[id=deviceModelNumber]').should('have.value', 'Test1')
     cy.get('[id=deviceSerialNumber]').should('have.value', 'Test2')
     cy.get('[id=deviceManufacturer]').should('have.value', 'Test3')
-
-    cy.get('[id=fields]').within(() => {
-      cy.get('input').each((val, index, collection) => {
-        cy.wrap(val).should('have.value', 'Test' + index)
-      })
-    })
+    cy.get('[id=deviceYearManufactured]').should('have.value', '4')
 
     cy.get('[id=cancelbtn]').click()
 
     cy.get('[id=deviceNotes]').should('not.have.value', 'Test Notes')
-    cy.get('[id=deviceLatitude]').should('not.have.value', 'Test Lat')
-    cy.get('[id=deviceLongitude]').should('not.have.value', 'Test Long')
+    cy.get('[id=deviceLatitude]').should('not.have.value', '100')
+    cy.get('[id=deviceLongitude]').should('not.have.value', '100')
     cy.get('[id=locationNotes]').should('not.have.value', 'Test Notes')
     cy.get('[id=deviceTag]').should('not.have.value', 'Test0')
     cy.get('[id=deviceModelNumber]').should('not.have.value', 'Test1')
     cy.get('[id=deviceSerialNumber]').should('not.have.value', 'Test2')
     cy.get('[id=deviceManufacturer]').should('not.have.value', 'Test3')
+    cy.get('[id=deviceYearManufactured]').should('not.have.value', '4')
 
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {
@@ -156,7 +150,7 @@ describe('Device Page', () => {
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = '623fbea68d12667c41fc7c03'
+    let deviceID = '6243428eb35327d66ce88fd9'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)

@@ -13,22 +13,6 @@ describe('Login Page', () => {
     cy.get('.invalid-feedback').its('length').should('eq',2)
   })
 
-  it('Errors dont appear until touched', () => {
-    cy.visit('http://localhost:3000')
-    cy.get('.invalid-feedback').its('length').should('eq',2)
-    
-    cy.get('.invalid-feedback').each((val) => {
-      cy.wrap(val).should('not.be.visible')
-    })
-    cy.get('[id=submitBtn]').click()
-    cy.get('.invalid-feedback').each((val) => {
-      cy.wrap(val).should('be.visible')
-    })
-    cy.wait(1250)
-    cy.get('[id=submitBtn]').should('be.disabled')
-  })
-  
-
   it('No errors when valid', () =>{
     cy.visit('http://localhost:3000')
     cy.get('[id=username]').scrollIntoView().clear().type("aaaaaaaa")

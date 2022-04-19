@@ -130,8 +130,8 @@ const BuildingPage = () => {
 
     const cancel = () => {      
       setNumber(building.number)
-      setLat(building.latitude)
-      setLong(building.longitude)
+      setLat(building.location.latitude)
+      setLong(building.location.longitude)
       setNotes(building.notes)
       setEditable(false)
     }
