@@ -1,3 +1,26 @@
+## Minutes: 2022-04-19
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## 4/19 Scrum
+
+Discussion about getting map key on the env file in cloud.
+Discussion on root URL for web app.
+
+What everyone is working on right now:
+* Tom - make task to update package list
+* Ashlyn - have a PR up, done otherwise
+* Kenny - working on adding SDP sticker
+* Joe - don't have any active items
+* Keelan - have a PR up, done otherwise
+
+Action Items:
+* work on documentation, meeting at 6pm tomorrow to write stuff up
+
 ## Minutes: 2022-04-14
 ### Scribe: Keelan
 ### Attendees:
