@@ -143,7 +143,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 {
                     device.AddFile(fileUid, file.FileName);
                 }
-                else if (file.Name == "photo")
+                else if (file.Name == "photo" && file.Length > 0)
                 {
                     device.SetPhoto(fileUid, file.FileName);
                 }

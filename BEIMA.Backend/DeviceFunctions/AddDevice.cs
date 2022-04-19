@@ -107,7 +107,7 @@ namespace BEIMA.Backend.DeviceFunctions
                     var fileUid = await _storage.PutFile(file);
                     device.SetPhoto(fileUid, file.FileName);
                 }
-                else if (file.Name == "files" && file.Length > 0)
+                else if (file.Name == "files")
                 {
                     var fileUid = await _storage.PutFile(file);
                     device.AddFile(fileUid, file.FileName);
