@@ -71,7 +71,6 @@ const UserPage = () => {
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
             <FilledDropDown editable={editable} dropDownText={dropDownText} items={items} selectFunction={onChange} buttonStyle={buttonStyle} dropDownId={"typeDropDown"} />
-            {/* <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/> */}
           </Form.Group>                
         </Card.Body>
       </Card>
