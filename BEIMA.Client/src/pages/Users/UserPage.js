@@ -71,13 +71,13 @@ const UserPage = () => {
 * @param hidden: boolean of whether the card should be hidden (default: false)
 * @returns 
 */
-  const FormCardValidation = ({ editable, id, label, value, onChange, hidden }) => {
+  const FormCardPassword = ({ editable, id, label, value, onChange, hidden }) => {
     return (
       <Card hidden={hidden}>
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
-            <FormControl required type="text" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH} />
+            <FormControl required type="password" disabled={!editable} size="sm" value={value} onChange={onChange} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH} />
           </Form.Group>
         </Card.Body>
       </Card>
@@ -254,8 +254,8 @@ const UserPage = () => {
           <FormCard editable={editable} id="userName" label="Username" value={username} onChange={onChange} />
           <FormCard editable={editable} id="userFirstName" label="First Name" value={firstName} onChange={onChange} />
           <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange} />
-          <FormCardValidation editable={editable} id="userPassword" label="New Password" value={password} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
-          <FormCardValidation editable={editable} id="userPasswordConfirm" label="Confirm New Password" value={passwordConfirm} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
+          <FormCardPassword editable={editable} id="userPassword" label="New Password" value={password} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
+          <FormCardPassword editable={editable} id="userPasswordConfirm" label="Confirm New Password" value={passwordConfirm} onChange={onChange} hidden={currentUser.Role !== "admin" || !editable} />
           <FormCardDropdown editable={editable} id="userRole" label="Role" dropDownText={selectedRole.name} items={availableRoles} onChange={changeSelectedRole} buttonStyle={roleDropDownStyle}></FormCardDropdown>
         </div>
   
