@@ -15,7 +15,7 @@ import * as Constants from '../../Constants';
 import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import GetBuildingList from '../../services/GetBuildingList';
 
-const noBuildingObj = { name : 'Select Building' };
+const noBuildingObj = { name : 'No Assigned Building' };
 
 const DevicePage = () => {
   const [setPageName] = useOutletContext();
