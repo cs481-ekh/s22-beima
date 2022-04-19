@@ -140,7 +140,7 @@ const UserPage = () => {
 
       // Verify the new password meets requirements
       let requirements = new RegExp(Constants.PASSWORD_REGEX);
-      if (password.length != 0 && (!(requirements.test(password)) || (password.length < 8))){
+      if (password.length !== 0 && (!(requirements.test(password)) || (password.length < 8))){
         Notifications.error("Unable to Update User", "Password does not meet requirements. See Help page for more information.");
         return;
       }
