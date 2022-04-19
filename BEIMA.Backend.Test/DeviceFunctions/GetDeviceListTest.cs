@@ -1,5 +1,8 @@
-﻿using BEIMA.Backend.DeviceFunctions;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.DeviceFunctions;
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Primitives;
@@ -9,7 +12,9 @@ using Moq;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Linq;
+
 using static BEIMA.Backend.Test.RequestFactory;
 
 namespace BEIMA.Backend.Test.DeviceFunctions
@@ -18,7 +23,28 @@ namespace BEIMA.Backend.Test.DeviceFunctions
     public class GetDeviceListTest : UnitTestBase
     {
         [Test]
-        public void PopulatedDatabase_GetDeviceList_ReturnsListOfDevices()
+        public void PopulatedDatabase_NotAuthenticated_GetDeviceList_ReturnsUnauthorized()
+        {
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns<Claims>(null)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+            var response = (ObjectResult)GetDeviceList.Run(request, logger);
+
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.That(response, Is.TypeOf(typeof(ObjectResult)));
+            Assert.That(((ObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            var retVal = ((ObjectResult)response).Value;
+
+            Assert.That(retVal, Is.EqualTo("Invalid credentials."));
+        }
+
+        [Test]
+        public void PopulatedDatabase_IsAuthenticated_GetDeviceList_ReturnsListOfDevices()
         {
             // ARRANGE
             var device1 = new Device(ObjectId.GenerateNewId(), ObjectId.GenerateNewId(), "A-1", "Generic Inc.", "43", "x46b", 2005, "Comment");
@@ -39,11 +65,23 @@ namespace BEIMA.Backend.Test.DeviceFunctions
                 device2.GetBsonDocument(),
                 device3.GetBsonDocument(),
             };
+
+            var claims = new Claims()
+            {
+                Username = "Test"
+            };
+
             Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
             mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
                   .Returns(deviceList)
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(claims)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
 
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -52,6 +90,7 @@ namespace BEIMA.Backend.Test.DeviceFunctions
             var response = (OkObjectResult)GetDeviceList.Run(request, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
 
             var getList = (List<Device>)response.Value;

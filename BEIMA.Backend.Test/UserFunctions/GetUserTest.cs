@@ -8,6 +8,10 @@ using NUnit.Framework;
 using System;
 using System.Net;
 using static BEIMA.Backend.Test.RequestFactory;
+using BEIMA.Backend.AuthService;
+using Microsoft.AspNetCore.Http;
+using BEIMA.Backend.Models;
+using System.Collections.Generic;
 
 namespace BEIMA.Backend.Test.UserFunctions
 {
@@ -29,6 +33,13 @@ namespace BEIMA.Backend.Test.UserFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup mock auth service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             // Set up the http request.
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -37,6 +48,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = GetUser.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(NotFoundObjectResult)));
@@ -57,6 +69,13 @@ namespace BEIMA.Backend.Test.UserFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup mock auth service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -64,11 +83,43 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = GetUser.Run(request, id, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Never));
 
             Assert.That(response, Is.TypeOf(typeof(BadRequestObjectResult)));
             Assert.That(((BadRequestObjectResult)response).StatusCode, Is.EqualTo((int)HttpStatusCode.BadRequest));
             Assert.That(((BadRequestObjectResult)response).Value, Is.EqualTo("Invalid Id."));
+        }
+
+        [TestCaseSource(nameof(ClaimsFactory))]
+        public void InvalidCredentials_GetUser_ReturnsUser(Claims claim)
+        {
+            // ARRANGE
+            var testId = "1234567890abcdef12345678";
+
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            // Setup mock auth service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(claim)
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
+            var request = CreateHttpRequest(RequestMethod.GET);
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            // ACT
+            var response = (ObjectResult)GetUser.Run(request, testId, logger);
+
+            // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Never));
+
+            Assert.That(response, Is.Not.Null);
+            Assert.That(response.StatusCode, Is.EqualTo((int)HttpStatusCode.Unauthorized));
+            Assert.That(response.Value, Is.EqualTo("Invalid credentials."));
         }
 
         #endregion FailureTests
@@ -91,6 +142,13 @@ namespace BEIMA.Backend.Test.UserFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            // Setup mock auth service.
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.GET);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -98,6 +156,7 @@ namespace BEIMA.Backend.Test.UserFunctions
             var response = GetUser.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetUser(It.IsAny<ObjectId>()), Times.Once));
 
             Assert.That(response, Is.TypeOf(typeof(OkObjectResult)));
@@ -113,5 +172,10 @@ namespace BEIMA.Backend.Test.UserFunctions
 
         #endregion SuccessTests
 
+        private static IEnumerable<Claims?> ClaimsFactory()
+        {
+            yield return null;
+            yield return new Claims { Role = "nonadmin", Username = "Bob" };
+        }
     }
 }

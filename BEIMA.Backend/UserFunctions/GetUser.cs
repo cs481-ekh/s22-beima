@@ -1,4 +1,5 @@
-﻿using BEIMA.Backend.MongoService;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.MongoService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -28,6 +29,14 @@ namespace BEIMA.Backend.UserFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a user GET request.");
+
+            // Verify JWT token
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+            if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
 
             // Check if the id is valid.
             if (string.IsNullOrEmpty(id) || !ObjectId.TryParse(id, out _))

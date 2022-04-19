@@ -1,3 +1,4 @@
+using BEIMA.Backend.AuthService;
 using BEIMA.Backend.MongoService;
 using BEIMA.Backend.ReportService;
 using Microsoft.AspNetCore.Http;
@@ -29,6 +30,14 @@ namespace BEIMA.Backend.ReportFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed an all devices report request.");
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
 
             try
             {

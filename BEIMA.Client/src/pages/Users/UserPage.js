@@ -8,6 +8,7 @@ import GetUser from '../../services/GetUser.js';
 import UpdateUser from '../../services/UpdateUser.js';
 import DeleteUser from '../../services/DeleteUser.js';
 import * as Notifications from '../../shared/Notifications/Notification.js';
+import { getCurrentUser } from "../../services/Authentication";
 import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 
 const UserPage = () => {
@@ -120,16 +121,21 @@ const UserPage = () => {
     }
     
     const deleteUserCall = async () => {
-      let deleteNotif = await Notifications.warning("Warning: User Deletion", [`Are you sure you want to delete User ${username}?`]);
-      if(deleteNotif.isConfirmed){
-        let deleteResult = await DeleteUser(userId);
-        if(deleteResult.status === Constants.HTTP_SUCCESS){
-          Notifications.success("User Deletion Successful", `User ${username} successfully deleted.`);
-          navigate('/users');
-        } else if (deleteResult.status === Constants.HTTP_CONFLICT_RESULT){
-          Notifications.error("Unable to Delete User", `${deleteResult.response}`);
-        } else {
-          Notifications.error("Unable to Delete User", `Deletion of User ${username} failed.`);
+      let currentUser = getCurrentUser();
+      if(currentUser.Id === userId){
+        Notifications.error("Unable to Delete User", `Deletion of the current user is not allowed.`);
+      } else {
+        let deleteNotif = await Notifications.warning("Warning: User Deletion", [`Are you sure you want to delete User ${username}?`]);
+        if(deleteNotif.isConfirmed){
+          let deleteResult = await DeleteUser(userId);
+          if(deleteResult.status === Constants.HTTP_SUCCESS){
+            Notifications.success("User Deletion Successful", `User ${username} successfully deleted.`);
+            navigate('/users');
+          } else if (deleteResult.status === Constants.HTTP_CONFLICT_RESULT){
+            Notifications.error("Unable to Delete User", `${deleteResult.response}`);
+          } else {
+            Notifications.error("Unable to Delete User", `Deletion of User ${username} failed.`);
+          }
         }
       }
     }

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using MongoDB.Bson.Serialization;
+using BEIMA.Backend.AuthService;
 
 namespace BEIMA.Backend.DeviceTypeFunctions
 {
@@ -26,6 +27,14 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
+
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+
+            if (claims == null)
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
 
             if (!ObjectId.TryParse(id, out _))
             {
@@ -74,8 +83,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                 // Updated the devices affected by this device type change.
                 if (removedFields.Count() > 0 || addedFields.Count() > 0)
                 {
-                    // TODO: use database filter to only retrieve devices with the specified device type.
-                    var affectedDevices = mongo.GetAllDevices().Where(d => d["deviceTypeId"].AsObjectId.Equals(deviceType.Id));
+                    var affectedDevices = mongo.GetFilteredDevices(MongoFilterGenerator.GetEqualsFilter("deviceTypeId", deviceType.Id));
                     foreach (var device in affectedDevices)
                     {
                         var deviceObj = BsonSerializer.Deserialize<Device>(device);
@@ -110,7 +118,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
 
-            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;

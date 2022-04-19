@@ -1,4 +1,5 @@
 ﻿using BEIMA.Backend.Models;
+using MongoDB.Bson;
 using BEIMA.Backend.MongoService;
 using JWT;
 using JWT.Algorithms;
@@ -47,6 +48,7 @@ namespace BEIMA.Backend.AuthService
             {
                 Username = user.Username,
                 Role = user.Role,
+                Id = user.Id.ToString()
             };
             var secretKey = Environment.GetEnvironmentVariable("JwtKey");
             var token = _jwtEncoder.Encode(claims, secretKey);

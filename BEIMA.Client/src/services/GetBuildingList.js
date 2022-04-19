@@ -1,4 +1,6 @@
 import axios from 'axios';
+import {getCurrentUser, logout} from './Authentication.js';
+import * as Constants from '../Constants.js';
 const API_URL = process.env.REACT_APP_API_URL;
 
 /**
@@ -7,11 +9,18 @@ const API_URL = process.env.REACT_APP_API_URL;
  * @return JSON with list of all buildings or error message on failure
  */
 const GetBuildingList = async() => {
-  const buildingListCall = await axios.get(API_URL + "building-list").catch(function (error) {
+  let user = getCurrentUser();
+
+  const buildingListCall = await axios.get(API_URL + "building-list", {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
   });
+
+  if(buildingListCall.status === Constants.HTTP_UNAUTH_RESULT){
+    logout();
+    return;
+  }
 
   let filteredFields = buildingListCall.data.map((item) => {
     return {

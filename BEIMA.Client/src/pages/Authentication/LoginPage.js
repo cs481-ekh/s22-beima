@@ -1,8 +1,10 @@
 import { Card, Form, Button, Spinner } from "react-bootstrap";
 import { useOutletContext } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
-import styles from './LoginPage.module.css'
+import { login } from "../../services/Authentication";
+import styles from './LoginPage.module.css';
+import * as Constants from '../../Constants.js';
+import * as Notifications from '../../shared/Notifications/Notification.js';
 
 const LoginPage = () => {
   const [setPageName] = useOutletContext();
@@ -15,7 +17,7 @@ const LoginPage = () => {
   const [submitting, setSubmitting] = useState(false)
 
   useEffect(() => {
-    setPageName('Login')
+    setPageName('BEIMA Login')
   }, [setPageName])
 
 
@@ -66,17 +68,19 @@ const LoginPage = () => {
       return
     }
 
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    await delay(1000)
-
-    const json = {
+    const user = {
       username: username,
       password: password,
       remember: remember
     }
 
-    setSubmitting(false)
-    console.log(json)
+    let loginAttempt = await login(user);
+    if(loginAttempt.status === Constants.HTTP_SUCCESS){
+      window.location.reload(false);
+    } else {
+      Notifications.error("Login Attempt Failed", `${loginAttempt.response}`);
+    }
+    setSubmitting(false);
   }
 
   return (

@@ -18,6 +18,6 @@ namespace BEIMA.Backend.AuthService
         /// <summary>
         /// Gets and sets the currently defined instance of the authentication service
         /// </summary>
-        public static IAuthenticationService AuthticationInstance { get; set; } = AuthenticationService.Instance;
+        public static IAuthenticationService AuthenticationInstance { get; set; } = AuthenticationService.Instance;
     }
 }

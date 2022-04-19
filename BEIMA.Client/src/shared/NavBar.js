@@ -1,9 +1,14 @@
 import logo from './BSU-logo.png';
 import { Row, Col, Container } from 'react-bootstrap';
+import { useState } from "react";
+import { getCurrentUser } from '../services/Authentication';
 import './shared.css';
-import {Link} from "react-router-dom"
+import {Link} from "react-router-dom";
+import { logout } from '../services/Authentication';
 
 const NavBar = () => {
+  const [currentUser] = useState(getCurrentUser);
+
   return (
     <div className="sharedNavBar">
       <Container>
@@ -27,16 +32,22 @@ const NavBar = () => {
               <Row className="pageLink">
                 <Link to="/buildings" className="sharedText">Buildings</Link>
               </Row>
+              {currentUser.Role === 'admin' ?
               <Row className="pageLink">
                 <Link to="/users" className="sharedText">Users</Link>
               </Row>
+              :<></>}
               <Row className="pageLink">
                 <Link to="help" className="sharedText">? Help</Link>
+              </Row>
+              <Row className="pageLink">
+                <Link to="/" className="sharedText" onClick={() => logout()}>Logout</Link>
               </Row>
             </Col>
           </Row>
         </Col>
       </Container>
+
     </div>
   );
 }

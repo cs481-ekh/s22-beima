@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using static BEIMA.Backend.FT.TestObjects;
@@ -61,6 +62,16 @@ namespace BEIMA.Backend.FT
             BaseAddress = new Uri(baseUrl);
             _httpClient.Timeout = new TimeSpan(0, 1, 0);
             _httpClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        }
+
+        /// <summary>
+        /// Sets the authentication header of the http client to 'Bearer token'
+        /// for all outgoing http requests
+        /// </summary>
+        /// <param name="token">Jwt Token</param>
+        public void SetAuthenticationHeader(string token)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
 
         /// <summary>
@@ -157,6 +168,7 @@ namespace BEIMA.Backend.FT
                     form.Add(new StreamContent(file.OpenReadStream()), file.Name, file.FileName);
                 }
             }
+
 
             response = await _httpClient.PostAsync(route, form);
 

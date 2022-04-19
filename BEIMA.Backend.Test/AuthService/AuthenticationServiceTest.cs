@@ -1,4 +1,5 @@
 ﻿using BEIMA.Backend.AuthService;
+using MongoDB.Bson;
 using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
 using JWT;
@@ -54,7 +55,8 @@ namespace BEIMA.Backend.Test.AuthService
             User user = new User()
             {
                 Username = "username",
-                Role = "role"
+                Role = "role",
+                Id = new ObjectId("111111111111111111111111")
             };
 
             var token = authService.CreateToken(user);            
@@ -66,6 +68,7 @@ namespace BEIMA.Backend.Test.AuthService
             Assert.That(claims.Role, Is.EqualTo(user.Role));
             Assert.That(claims.Sub, Is.EqualTo(Claims.Subject));
             Assert.That(claims.Iss, Is.EqualTo(Claims.Issuer));
+            Assert.That(claims.Id.Contains(user.Id.ToString()));
         }
 
         [Test]
@@ -75,7 +78,8 @@ namespace BEIMA.Backend.Test.AuthService
             User user = new User()
             {
                 Username = "username",
-                Role = "role"
+                Role = "role",
+                Id = new ObjectId("111111111111111111111111")
             };
 
             var token = authService.CreateToken(user);
@@ -87,6 +91,7 @@ namespace BEIMA.Backend.Test.AuthService
             Assert.That(claims.Role, Is.EqualTo(user.Role));
             Assert.That(claims.Sub, Is.EqualTo(Claims.Subject));
             Assert.That(claims.Iss, Is.EqualTo(Claims.Issuer));
+            Assert.That(claims.Id.Contains(user.Id.ToString()));
         }
 
         [Test]
@@ -96,7 +101,8 @@ namespace BEIMA.Backend.Test.AuthService
             User user = new User()
             {
                 Username = "username",
-                Role = "role"
+                Role = "role",
+                Id = new ObjectId("111111111111111111111111")
             };
 
             var token = authService.CreateToken(user);
@@ -125,7 +131,8 @@ namespace BEIMA.Backend.Test.AuthService
             User user = new User()
             {
                 Username = "username",
-                Role = "role"
+                Role = "role",
+                Id = new ObjectId("111111111111111111111111")
             };
 
             var token = authService.CreateToken(user);

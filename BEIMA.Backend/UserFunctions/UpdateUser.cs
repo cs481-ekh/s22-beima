@@ -1,20 +1,20 @@
-﻿using System;
-using System.IO;
-using System.Threading.Tasks;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.Models;
+using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using MongoDB.Bson;
-using BEIMA.Backend.MongoService;
 using MongoDB.Bson.Serialization;
-using BEIMA.Backend.Models;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Net;
-using BCryptNet = BCrypt.Net.BCrypt;
-using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.UserFunctions
 {
@@ -37,6 +37,14 @@ namespace BEIMA.Backend.UserFunctions
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a user update request.");
+
+            // Verify JWT token
+            var authService = AuthenticationDefinition.AuthenticationInstance;
+            var claims = authService.ParseToken(req);
+            if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
+            {
+                return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
+            }
 
             if (!ObjectId.TryParse(id, out _))
             {
@@ -100,8 +108,7 @@ namespace BEIMA.Backend.UserFunctions
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
 
-            // TODO: Use actual username when authentication is implemented.
-            user.SetLastModified(DateTime.UtcNow, "Anonymous");
+            user.SetLastModified(DateTime.UtcNow, claims.Username);
 
             string message;
             HttpStatusCode statusCode;

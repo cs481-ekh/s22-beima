@@ -1,8 +1,12 @@
-﻿using BEIMA.Backend.DeviceTypeFunctions;
+﻿using BEIMA.Backend.AuthService;
+using BEIMA.Backend.DeviceTypeFunctions;
+using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
+using MongoDB.Driver;
 using Moq;
 using NUnit.Framework;
 using System;
@@ -30,6 +34,12 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDeviceType);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -37,8 +47,9 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             var response = await UpdateDeviceType.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDeviceType(It.IsAny<BsonDocument>()), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Never));
 
@@ -63,6 +74,12 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var request = CreateHttpRequest(RequestMethod.POST, body: TestData._testUpdateDeviceType);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
 
@@ -70,8 +87,9 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             var response = await UpdateDeviceType.Run(request, id, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Never));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDeviceType(It.IsAny<BsonDocument>()), Times.Never));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Never));
 
@@ -102,13 +120,19 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.ToString().Equals(testId))))
                   .Returns(origDeviceType.GetBsonDocument())
                   .Verifiable();
-            mockDb.Setup(mock => mock.GetAllDevices())
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
                   .Returns(new List<BsonDocument>())
                   .Verifiable();
             mockDb.Setup(mock => mock.UpdateDeviceType(It.IsAny<BsonDocument>()))
                   .Returns(deviceType.GetBsonDocument())
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
 
             var body = TestData._testUpdateDeviceType;
             var request = CreateHttpRequest(RequestMethod.POST, body: body);
@@ -118,8 +142,9 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             var response = await UpdateDeviceType.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDeviceType(It.IsAny<BsonDocument>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Never));
 
@@ -177,7 +202,7 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.ToString().Equals(testId))))
                   .Returns(origDeviceType.GetBsonDocument())
                   .Verifiable();
-            mockDb.Setup(mock => mock.GetAllDevices())
+            mockDb.Setup(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()))
                   .Returns(new List<BsonDocument> { origDevice.GetBsonDocument() })
                   .Verifiable();
             mockDb.Setup(mock => mock.UpdateDeviceType(It.IsAny<BsonDocument>()))
@@ -188,6 +213,12 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
                   .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
+            Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
+            mockAuth.Setup(mock => mock.ParseToken(It.IsAny<HttpRequest>()))
+                .Returns(new Claims { Role = Constants.ADMIN_ROLE, Username = "Bob" })
+                .Verifiable();
+            AuthenticationDefinition.AuthenticationInstance = mockAuth.Object;
+
             var body = TestData._testUpdateDeviceType;
             var request = CreateHttpRequest(RequestMethod.POST, body: body);
             var logger = (new LoggerFactory()).CreateLogger("Testing");
@@ -196,8 +227,9 @@ namespace BEIMA.Backend.Test.DeviceTypeFunctions
             var response = await UpdateDeviceType.Run(request, testId, logger);
 
             // ASSERT
+            Assert.DoesNotThrow(() => mockAuth.Verify(mock => mock.ParseToken(It.IsAny<HttpRequest>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
-            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetAllDevices(), Times.Once));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetFilteredDevices(It.IsAny<FilterDefinition<BsonDocument>>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDeviceType(It.IsAny<BsonDocument>()), Times.Once));
             Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.UpdateDevice(It.IsAny<BsonDocument>()), Times.Once));
 

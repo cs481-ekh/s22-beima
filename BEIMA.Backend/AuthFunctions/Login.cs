@@ -73,7 +73,7 @@ namespace BEIMA.Backend.AuthFunctions
             }
 
             // Create a jwt token
-            var authService = AuthenticationDefinition.AuthticationInstance;
+            var authService = AuthenticationDefinition.AuthenticationInstance;
             var token = authService.CreateToken(user);
             return new OkObjectResult(token);
         }
