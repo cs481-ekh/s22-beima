@@ -17,9 +17,7 @@ const UserPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  
 
-  
   const { id } = useParams();
   
   useEffect(() => {
@@ -80,8 +78,6 @@ const UserPage = () => {
     )
   }
 
-
-
   /**
    * Renders a custom form that enables a user
    * to update a user's fields
@@ -98,8 +94,8 @@ const UserPage = () => {
     const [role, setRole] = useState(user.role);
     const navigate = useNavigate();
 
-    const [selectedRole, setSelectedRole] = useState({ name : user.role, id: user.role });
-    const [roleDropDownStyle, setRoleDropDownStyle] = useState(styles.dropDownSelected);
+    const [selectedRole, setSelectedRole] = useState(user.role !== "" ? { name : user.role, id: user.role } : noRoleObj);
+    const [roleDropDownStyle, setRoleDropDownStyle] = useState(user.role !== "" && user.role !== "Select Role" ? styles.dropDownSelected : styles.button);
 
     const updateUserCall = async () => {
       const newUser = {
@@ -141,6 +137,7 @@ const UserPage = () => {
       setLastName(user.firstName);
       setRole(user.role);
       changeSelectedRole(user.role);
+      setRoleDropDownStyle(styles.button)
       setEditable(false);
     }
 
@@ -163,9 +160,14 @@ const UserPage = () => {
       let role = availableRoles.find(role => {
         return role.id === roleId;
       })
+      if(roleId === "" || roleId === "Select Role" || roleId === null){
+        role = noRoleObj;
+        setRoleDropDownStyle(styles.button);
+      } else {
+        setRoleDropDownStyle(styles.dropDownSelected)
+      }
       setSelectedRole(role);
       setRole(role.id);
-      setRoleDropDownStyle(styles.dropDownSelected);
     }
 
     return (
@@ -195,10 +197,6 @@ const UserPage = () => {
           <FormCard editable={editable} id="userFirstName" label="First Name" value={firstName} onChange={onChange} />
           <FormCard editable={editable} id="userLastName" label="Last Name" value={lastName} onChange={onChange}/>
           <FormCardDropdown editable={editable} id="userRole" label="Role" dropDownText={selectedRole.name} items={availableRoles} onChange={changeSelectedRole} buttonStyle={roleDropDownStyle}></FormCardDropdown>
-          {/* <Card editable={editable} id="userRole" label="Role" value={""} onChange={onChange}>
-            <FilledDropDown dropDownText={selectedRole.name} items={availableRoles} selectFunction={changeSelectedRole} buttonStyle={roleDropDownStyle} dropDownId={"typeDropDown"} />
-          </Card> */}
-          {/* <FormCard editable={editable} id="userRole" label="Role" value={role} onChange={onChange}> </FormCard> */}
         </div>
   
       </Form>
