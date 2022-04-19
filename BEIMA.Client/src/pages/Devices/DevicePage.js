@@ -306,6 +306,7 @@ const DevicePage = () => {
         if(updateResult.status === Constants.HTTP_SUCCESS){
           Notifications.success("Update Device Successful", `Device ${tag} updated successfully.`)
           setEditable(false)
+          setLoading(true);
           setDeviceChanged(true);
         } else {
           Notifications.error("Unable to Update Device", `Update of Device ${tag} failed.`);
