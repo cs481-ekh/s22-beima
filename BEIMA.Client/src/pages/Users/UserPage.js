@@ -18,6 +18,7 @@ const UserPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [userChanged, setUserChanged] = useState(false);
 
   const { id } = useParams();
   
@@ -27,10 +28,11 @@ const UserPage = () => {
       const user = (await GetUser(id)).response;
       setUser(user);
       setLoading(false);
+      setUserChanged(false);
     }
    loadData();
 
-  },[id, setPageName])
+  },[id, userChanged, setPageName])
   
    /**
    * Renders an card styled input that lets a user change a field's input
@@ -61,18 +63,20 @@ const UserPage = () => {
    * @param editable: can this input be used
    * @param id: id that should be set on the input
    * @param label: label of the input
-   * @param value: value of the input
+   * @param dropDownText: text of the currently selected item
+   * @param items: json containing objects with "id" and "name" key-value pairs
    * @param onChange: function to update value of the field in higher level <RenderItem>
-   * @returns 
+   * @param buttonStyle: a CSS style to apply to the FilledDropDown
+   * @returns a FormCard that has a FilledDropDown in it
    */
-   const FormCardDropdown = ({editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
+  const FormCardDropdown = ({ editable, id, label, dropDownText, items, onChange, buttonStyle }) => {
     return (
       <Card>
         <Card.Body >
           <Form.Group className="mb-3" controlId={id}>
             <Form.Label>{label}</Form.Label>
             <FilledDropDown editable={editable} dropDownText={dropDownText} items={items} selectFunction={onChange} buttonStyle={buttonStyle} dropDownId={"typeDropDown"} />
-          </Form.Group>                
+          </Form.Group>
         </Card.Body>
       </Card>
     )
@@ -111,6 +115,8 @@ const UserPage = () => {
       if(updateResult.status === Constants.HTTP_SUCCESS){
         Notifications.success("Update User Successful", `User ${username} updated successfully.`);
         setEditable(false);
+        setLoading(true);
+        setUserChanged(true);
       } else {
         Notifications.error("Unable to Update User", `Update of User ${username} failed.`);
       }
@@ -142,7 +148,7 @@ const UserPage = () => {
       setLastName(user.firstName);
       setRole(user.role);
       changeSelectedRole(user.role);
-      setRoleDropDownStyle(styles.button)
+      setRoleDropDownStyle(user.role !== "" && user.role !== "Select Role" ? styles.dropDownSelected : styles.button)
       setEditable(false);
     }
 
@@ -158,9 +164,10 @@ const UserPage = () => {
       }
     }
 
-    /*
-* sets the state for the selected building from the dropdown
-*/
+    /**
+    * sets the state for the selected building from the dropdown
+    * @param roleId: the roleId
+    */
     function changeSelectedRole(roleId) {
       let role = availableRoles.find(role => {
         return role.id === roleId;
