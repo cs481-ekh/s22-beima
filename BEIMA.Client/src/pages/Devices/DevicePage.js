@@ -15,8 +15,9 @@ import * as Constants from '../../Constants';
 import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
 import GetBuildingList from '../../services/GetBuildingList';
 
+const noBuildingObj = { name : 'Select Building' };
+
 const DevicePage = () => {
-  const noBuildingObj = { name : 'Select Building' };
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [device, setDevice] = useState(null);
@@ -57,7 +58,7 @@ const DevicePage = () => {
       setDeviceChanged(false)
     }
    loadData();
-  },[id, deviceChanged, noBuildingObj]) 
+  },[id, deviceChanged]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input
