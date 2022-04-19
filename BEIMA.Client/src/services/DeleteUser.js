@@ -13,7 +13,7 @@ export default async function deleteUser(userId) {
   let user = getCurrentUser();
 
   //performs the post and returns an error message or a success indicator
-  const dbCall = await axios.post(API_URL + "user/" + userId + "/delete", {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
+  const dbCall = await axios.post(API_URL + "user/" + userId + "/delete", null, {headers : {Authorization : `Bearer ${user.token}`}}).catch(function (error) {
       if (error.response) {
         return error.response;
     }
