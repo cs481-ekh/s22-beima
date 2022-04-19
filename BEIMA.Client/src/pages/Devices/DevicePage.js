@@ -41,7 +41,7 @@ const DevicePage = () => {
       if(device.location.buildingId !== null){
         building = (await GetBuilding(device.location.buildingId)).response;
       } else {
-        building = {name: 'No Assigned Building'};
+        building = noBuildingObj;
       }
       let buildingsCall = await GetBuildingList();
       const buildings = buildingsCall.response;
@@ -255,8 +255,8 @@ const DevicePage = () => {
     const [removedDocs, setRemovedDocs] = useState([])
     const navigate = useNavigate();
 
-    const [selectedBuilding, setSelectedBuilding] = useState(device.location.buildingId !== "" ? { name : building.name, id: building.id } : noBuildingObj);
-    const [buildingDropDownStyle, setBuildingDropDownStyle] = useState(device.location.buildingId !== "" && device.location.buildingId !== "Select Role" ? styles.dropDownSelected : styles.button);
+    const [selectedBuilding, setSelectedBuilding] = useState(device.location.buildingId !== "" || device.location.buildingId !== null ? { name : building.name, id: building.id } : noBuildingObj);
+    const [buildingDropDownStyle, setBuildingDropDownStyle] = useState(device.location.buildingId !== "" && device.location.buildingId !== null ? styles.dropDownSelected : styles.button);
 
     const updateDeviceCall = async () => {
       let warnings = [];
@@ -334,6 +334,8 @@ const DevicePage = () => {
       setNotes(device.notes)
       setFields({...device.fields})
       setBuildingId(device.location.buildingId)
+      changeSelectedBuilding(device.location.buildingId);
+      setBuildingDropDownStyle(device.location.buildingId !== "" && device.location.buildingId !== null ? styles.dropDownSelected : styles.button)
       setLat(device.location.latitude)
       setLong(device.location.longitude)
       setLocNotes(device.location.notes)
@@ -443,7 +445,7 @@ const DevicePage = () => {
         setBuildingDropDownStyle(styles.dropDownSelected)
       }
       setSelectedBuilding(building);
-      setBuilding(building.id);
+      setBuildingId(building.id);
     }
 
     return (
