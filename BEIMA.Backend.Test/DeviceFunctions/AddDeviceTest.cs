@@ -187,6 +187,59 @@ namespace BEIMA.Backend.Test.DeviceFunctions
         }
 
         [Test]
+        public async Task NoDevice_AddDevice_EmptyFileEmptyPhoto_ReturnsValidId()
+        {
+            // ARRANGE
+            var deviceType = new DeviceType(new ObjectId("12341234abcdabcd43214321"), null, null, null);
+            deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceType.AddField("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "TestName1");
+            deviceType.AddField("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "TestName2");
+
+            // Setup mock database client.
+            Mock<IMongoConnector> mockDb = new Mock<IMongoConnector>();
+            mockDb.Setup(mock => mock.GetDeviceType(It.Is<ObjectId>(oid => oid.Equals(new ObjectId("12341234abcdabcd43214321")))))
+                  .Returns(deviceType.GetBsonDocument())
+                  .Verifiable();
+            mockDb.Setup(mock => mock.InsertDevice(It.IsAny<BsonDocument>()))
+                  .Returns(ObjectId.GenerateNewId())
+                  .Verifiable();
+            MongoDefinition.MongoInstance = mockDb.Object;
+
+            Mock<IStorageProvider> mockStorage = new Mock<IStorageProvider>();
+            mockStorage.Setup(mock => mock.PutFile(It.IsAny<IFormFile>()))
+                .Returns(Task.FromResult(Guid.NewGuid().ToString() + ".txt"))
+                .Verifiable();
+
+            StorageDefinition.StorageInstance = mockStorage.Object;
+
+            // Create request
+            var data = TestData._testAddDeviceNoLocation;
+            var fileCollection = new FormFileCollection();
+            var logger = (new LoggerFactory()).CreateLogger("Testing");
+
+            string? deviceId;
+            using (var photoStream = new ByteArrayContent(TestData._emptyFileBytes).ReadAsStream())
+            using (var fileStream = new ByteArrayContent(TestData._emptyFileBytes).ReadAsStream())
+            {
+                fileCollection.Add(new FormFile(fileStream, 0, fileStream.Length, "files", "file.txt"));
+                fileCollection.Add(new FormFile(photoStream, 0, photoStream.Length, "photo", "photo.png"));
+
+                var request = CreateMultiPartHttpRequest(data, fileCollection);
+
+                // ACT
+                deviceId = ((ObjectResult)await AddDevice.Run(request, logger)).Value?.ToString();
+            }
+
+            // ASSERT
+            Assert.IsNotNull(deviceId);
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.GetDeviceType(It.IsAny<ObjectId>()), Times.Once));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.Is<IFormFile>(file => file.Equals(fileCollection[0]))), Times.Once));
+            Assert.DoesNotThrow(() => mockStorage.Verify(mock => mock.PutFile(It.Is<IFormFile>(file => file.Equals(fileCollection[1]))), Times.Never));
+            Assert.DoesNotThrow(() => mockDb.Verify(mock => mock.InsertDevice(It.IsAny<BsonDocument>()), Times.Once));
+            Assert.That(ObjectId.TryParse(deviceId, out _), Is.True);
+        }
+
+        [Test]
         public async Task NoBuilding_AddDevice_ReturnsBuildingNotFound()
         {
             // ARRANGE

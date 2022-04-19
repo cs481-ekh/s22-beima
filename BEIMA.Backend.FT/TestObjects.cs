@@ -8,6 +8,7 @@ namespace BEIMA.Backend.FT
     public class TestObjects
     {
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
+        public static readonly byte[] _emptyFileBytes = Encoding.ASCII.GetBytes("");
         public class Device
         {
             [JsonProperty(PropertyName = "_id")]

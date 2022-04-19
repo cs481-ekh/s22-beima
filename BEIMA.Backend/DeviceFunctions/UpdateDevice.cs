@@ -138,13 +138,14 @@ namespace BEIMA.Backend.DeviceFunctions
             var _storage = StorageDefinition.StorageInstance;
             foreach (var file in reqForm.Files)
             {
-                var fileUid = await _storage.PutFile(file);
                 if (file.Name == "files")
                 {
+                    var fileUid = await _storage.PutFile(file);
                     device.AddFile(fileUid, file.FileName);
                 }
                 else if (file.Name == "photo" && file.Length > 0)
                 {
+                    var fileUid = await _storage.PutFile(file);
                     device.SetPhoto(fileUid, file.FileName);
                 }
             }

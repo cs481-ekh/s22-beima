@@ -154,6 +154,7 @@ namespace BEIMA.Backend.Test
         public static readonly string _testValidKeysLoginRequest = GenerateValidKeysLoginRequest();
 
         public static readonly byte[] _fileBytes = Encoding.ASCII.GetBytes("TestOne");
+        public static readonly byte[] _emptyFileBytes = Encoding.ASCII.GetBytes("");
 
         private static string GenerateNullKeysLoginRequest()
         {
