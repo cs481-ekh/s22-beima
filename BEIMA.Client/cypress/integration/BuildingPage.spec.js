@@ -3,7 +3,7 @@
 describe('Building Page', () => {
   it('Visits a Building Page', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
-    let buildingID = '624f23d6e101166ba6527e9f'
+    let buildingID = ''
 
     // visit
     cy.visit('http://localhost:3000/buildings/' + buildingID)
@@ -35,7 +35,7 @@ describe('Building Page', () => {
   })
   it('Enables inputs on Edit Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
-    let buildingID = '624f23d6e101166ba6527e9f'
+    let buildingID = ''
 
     // visit
     cy.visit('http://localhost:3000/buildings/' + buildingID)
@@ -65,7 +65,7 @@ describe('Building Page', () => {
   })
   it('Resets fields on Cancel Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
-    let buildingID = '624f23d6e101166ba6527e9f'
+    let buildingID = ''
 
     cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.wait(2000)
@@ -95,7 +95,7 @@ describe('Building Page', () => {
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
     // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
-    let buildingID = '624f23d6e101166ba6527e9f'
+    let buildingID = ''
 
     cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.wait(2000)

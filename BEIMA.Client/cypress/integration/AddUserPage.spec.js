@@ -22,6 +22,7 @@ describe("Verify Data can be entered into fields", () => {
   })
 })
 
+// make sure this user is removed from the database before this test runs, or it wil fail
 describe("Verify Data in fields is cleared when Add User is selected with valid data", () => {
   it('Enter data, click Add User, verify fields are empty', () => {
     cy.visit('http://localhost:3000/users/addUser')
