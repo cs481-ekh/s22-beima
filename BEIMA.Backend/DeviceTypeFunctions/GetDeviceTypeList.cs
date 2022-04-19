@@ -32,6 +32,11 @@ namespace BEIMA.Backend.DeviceTypeFunctions
             var dotNetObjList = new List<object>();
             foreach (var deviceType in deviceTypes)
             {
+                // Find the total number of devices that are match this deviceType, and return the count of devices in the return object.
+                var filter = MongoFilterGenerator.GetEqualsFilter("deviceTypeId", deviceType.GetValue("_id"));
+                var deviceCount = mongo.GetFilteredDevices(filter).Count;
+                deviceType.Add("count", deviceCount);
+
                 var dotNetObj = BsonTypeMapper.MapToDotNetValue(deviceType);
                 dotNetObjList.Add(dotNetObj);
             }

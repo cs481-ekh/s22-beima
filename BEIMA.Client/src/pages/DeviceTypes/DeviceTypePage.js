@@ -116,7 +116,13 @@ const DeviceTypePage = () => {
       Object.entries(result).forEach(entry => {
         const [key, value] = entry;
         if(value === ""){
-          warnings.push(`"${key}" field is empty<br/>`);
+          let capitalize = key.split(/(?=[A-Z])/);
+          
+          for(let i = 0; i < capitalize.length; i++) {
+            capitalize[i] = (capitalize[i][0].toUpperCase() + capitalize[i].slice(1)).replace('Num', 'Number');
+          }
+          
+          warnings.push(`"${(capitalize).join(" ")}" field is empty<br/>`);
         }
       });
       

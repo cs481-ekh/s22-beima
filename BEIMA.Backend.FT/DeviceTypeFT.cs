@@ -163,6 +163,7 @@ namespace BEIMA.Backend.FT
                 Assert.That(deviceType.Description, Is.EqualTo(expectedDeviceType.Description));
                 Assert.That(deviceType.Name, Is.EqualTo(expectedDeviceType.Name));
                 Assert.That(deviceType.Notes, Is.EqualTo(expectedDeviceType.Notes));
+                Assert.That(deviceType.Count, Is.EqualTo(0));
 
                 Assert.That(deviceType.Fields, Is.Not.Null.And.Not.Empty);
                 if (deviceType.Fields != null)
@@ -453,6 +454,78 @@ namespace BEIMA.Backend.FT
             Assert.That(deviceType.Fields, Contains.Value(origDeviceType.Fields[0]));
             Assert.That(deviceType.Fields, Contains.Value(origDeviceType.Fields[1]));
             Assert.That(deviceType.Fields, Contains.Value(origDeviceType.Fields[2]));
+        }
+
+
+        [Test]
+        public async Task DeviceAndDeviceTypeInDatabase_GetDeviceTypeList_ReturnsDeviceTypeWithCount()
+        {
+            // ARRANGE
+            var origDeviceType = new DeviceTypeAdd
+            {
+                Description = "Boiler description.",
+                Name = "Boiler",
+                Notes = "Some boiler notes.",
+                Fields = new List<string>
+                {
+                    "Boiler Type",
+                    "Fuel Input Rate",
+                    "Output",
+                },
+            };
+
+            var deviceTypeId = await TestClient.AddDeviceType(origDeviceType);
+            var origItem = await TestClient.GetDeviceType(deviceTypeId);
+
+            var origDevice = new Device()
+            {
+                DeviceTag = "B-34",
+                DeviceTypeId = deviceTypeId,
+                Fields = new Dictionary<string, string> {
+                    { origItem.Fields?.Keys?.ToList()[0] ?? "Bad Fields", "Tall boiler." },
+                    { origItem.Fields?.Keys?.ToList()[1] ?? "Bad Fields", "23" },
+                    { origItem.Fields?.Keys?.ToList()[2] ?? "Bad Fields", "38" },
+                },
+                Location = new DeviceLocation()
+                {
+                    BuildingId = null,
+                    Latitude = "78.6",
+                    Longitude = "43.2",
+                    Notes = "Some notes."
+                },
+                Manufacturer = "Generic Inc.",
+                ModelNum = "1234",
+                Notes = "Some notes.",
+                SerialNum = "4321",
+                YearManufactured = 2001,
+            };
+
+            await TestClient.AddDevice(origDevice);
+
+            // ACT
+            var deviceTypeList = await TestClient.GetDeviceTypeList();
+
+            // ASSERT
+            Assert.That(deviceTypeList.Count, Is.EqualTo(1));
+            foreach(var deviceType in deviceTypeList)
+            {
+                Assert.That(deviceType.Name, Is.EqualTo(origDeviceType.Name));
+                Assert.That(deviceType.Notes, Is.EqualTo(origDeviceType.Notes));
+                Assert.That(deviceType.Description, Is.EqualTo(origDeviceType.Description));
+                Assert.That(deviceType.Count, Is.EqualTo(1));
+                Assert.That(deviceType.Fields, Is.Not.Null.And.Not.Empty);
+                Assert.That(deviceType.Fields?.Count, Is.EqualTo(origDeviceType.Fields.Count));
+                if (deviceType.Fields != null)
+                {
+                    foreach (var key in deviceType.Fields.Keys)
+                    {
+                        Assert.That(Guid.TryParse(key, out _), Is.True);
+                    }
+                }
+                Assert.That(deviceType.Fields, Contains.Value(origDeviceType.Fields[0]));
+                Assert.That(deviceType.Fields, Contains.Value(origDeviceType.Fields[1]));
+                Assert.That(deviceType.Fields, Contains.Value(origDeviceType.Fields[2]));
+            }
         }
     }
 }
