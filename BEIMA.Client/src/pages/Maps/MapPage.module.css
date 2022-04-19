@@ -1,0 +1,25 @@
+.mapDiv {
+    height: 90%;
+    width: 100%;
+    padding: 20px;
+}
+
+.markerContainer {
+    background-color: rgb(31, 80, 187);
+    padding: 5px;
+    border-radius: 7px;
+    cursor: pointer;
+}
+
+.markerContainer:hover {
+    background-color: rgb(60, 100, 205);
+    padding: 7px;
+}
+
+.markerText {
+    color: white;
+    font-style: bold;
+    font-size: large;
+    break-after: unset;
+    margin: 1px;
+}

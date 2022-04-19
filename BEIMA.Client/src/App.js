@@ -19,6 +19,7 @@ import LoginPage from './pages/Authentication/LoginPage';
 import BuildingListPage from './pages/Building/BuildingListPage';
 import AddBuildingPage from './pages/Building/AddBuildingPage';
 import BuildingPage from './pages/Building/BuildingPage';
+import MapPage from './pages/Maps/MapPage';
 import ListUsersPage from './pages/Users/ListUsersPage';
 import AddUserPage from './pages/Users/AddUserPage';
 import UserPage from './pages/Users/UserPage';
@@ -45,6 +46,7 @@ const App = () => {
           <Route path="buildings/:id" element={<BuildingPage/>}/>
           <Route path="buildings" element={<BuildingListPage/>}/>
           <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/> 
+          <Route path="map" element={<MapPage/>}/>
           {currentUser.Role === 'admin' ?
           <>
           <Route path="users" element={<ListUsersPage/>}/>
