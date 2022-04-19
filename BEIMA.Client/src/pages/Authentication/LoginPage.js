@@ -86,7 +86,7 @@ const LoginPage = () => {
   return (
     <Card className={styles.pageContent}>
       <Card.Body>
-        <Form>
+        <Form onSubmit={(e) => {e.preventDefault(); Authenticate();}}>
           <Form.Group className="mb-3" controlId="username">
             <Form.Label>Username</Form.Label>
             <Form.Control 
@@ -114,7 +114,7 @@ const LoginPage = () => {
             <Form.Check type="checkbox" label="Remember Me" onChange={HandleRemember} />
           </Form.Group>         
           
-          <Button variant="primary" className={styles.orageBtn} disabled={touched && (!validUsername || !validPassword)} onClick={Authenticate} id="submitBtn">
+          <Button variant="primary" className={styles.orageBtn} disabled={touched && (!validUsername || !validPassword)} type ="submit" id="submitBtn">
           {submitting ? <Spinner animation="border" size="sm"/> : "Login"}
           </Button>
                  
