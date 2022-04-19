@@ -23,7 +23,10 @@ const GetAllDeviceDevicesReport = async() => {
   }
   
   if (deviceReportCall.status !== Constants.HTTP_SUCCESS){
-    return deviceReportCall.status;
+    const res = {
+      status: deviceReportCall.status
+    }
+    return res
   }
 
   const blob = new Blob([deviceReportCall.data], {type: 'application/zip'})
@@ -33,6 +36,11 @@ const GetAllDeviceDevicesReport = async() => {
   link.download = "All Devices"
   document.body.appendChild(link);
   link.click()
+
+  const res = {
+    status: Constants.HTTP_SUCCESS
+  }
+  return res
 }
 
 export default GetAllDeviceDevicesReport

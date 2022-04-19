@@ -27,3 +27,12 @@
   flex-grow: 1;
 }
 
+.reportButton {
+  background-color: #D64309 !important;
+  border-color: #D64309 !important;
+}
+
+.reportButton:hover {
+  background-color: #BE3B08 !important;
+  border-color: #BE3B08 !important;
+}
