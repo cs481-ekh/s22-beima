@@ -49,3 +49,8 @@
 .sharedText:hover {
     color: #D64309;
 }
+
+.logout {
+    cursor:pointer;
+    user-select: none;
+}
