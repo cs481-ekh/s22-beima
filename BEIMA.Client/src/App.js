@@ -22,6 +22,7 @@ import BuildingPage from './pages/Building/BuildingPage';
 import MapPage from './pages/Maps/MapPage';
 import ListUsersPage from './pages/Users/ListUsersPage';
 import AddUserPage from './pages/Users/AddUserPage';
+import AboutPage from './pages/About/AboutPage'
 import UserPage from './pages/Users/UserPage';
 import NavBar from './shared/NavBar';
 import PageTitle from './shared/PageTitle';
@@ -35,32 +36,34 @@ const App = () => {
       <Routes>
         <Route path="/" element={<AppLayout />}>
           {currentUser.token !== '' ?
+            <>
+              <Route index element={<Navigate to="/devices" />}/>
+              <Route path="addDevice" element={<AddDevicePage/>}/>
+              <Route path="addDeviceType" element={<AddDeviceTypePage/>}/>
+              <Route path="devices" element={<DevicesPage/>}/>  
+              <Route path="devices/:id" element={<DevicePage/>}/>
+              <Route path="deviceTypes" element={<DeviceTypesPage/>}/>  
+              <Route path="deviceTypes/:typeId" element={<DeviceTypePage/>}/>
+              <Route path="buildings/:id" element={<BuildingPage/>}/>
+              <Route path="buildings" element={<BuildingListPage/>}/>
+              <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/> 
+              <Route path="map" element={<MapPage/>}/>
+              {currentUser.Role === 'admin' ?
+                <>
+                  <Route path="users" element={<ListUsersPage/>}/>
+                  <Route path="users/addUser" element={<AddUserPage/>}/>
+                  <Route path="users/:id" element={<UserPage/>}/>
+                </>
+              :<></>} 
+              <Route path="help" element={<HelpPage />} />
+              <Route path="about" element={<AboutPage />} />
+              <Route path="*" element={<Navigate to="/devices" />} />
+            </>
+          : 
           <>
-          <Route index element={<Navigate to="/devices" />}/>
-          <Route path="addDevice" element={<AddDevicePage/>}/>
-          <Route path="addDeviceType" element={<AddDeviceTypePage/>}/>
-          <Route path="devices" element={<DevicesPage/>}/>  
-          <Route path="devices/:id" element={<DevicePage/>}/>
-          <Route path="deviceTypes" element={<DeviceTypesPage/>}/>  
-          <Route path="deviceTypes/:typeId" element={<DeviceTypePage/>}/>
-          <Route path="buildings/:id" element={<BuildingPage/>}/>
-          <Route path="buildings" element={<BuildingListPage/>}/>
-          <Route path="buildings/addBuilding" element={<AddBuildingPage/>}/> 
-          <Route path="map" element={<MapPage/>}/>
-          {currentUser.Role === 'admin' ?
-          <>
-          <Route path="users" element={<ListUsersPage/>}/>
-          <Route path="users/addUser" element={<AddUserPage/>}/>
-          <Route path="users/:id" element={<UserPage/>}/>
-          </>
-          :<></>} 
-          <Route path="Help" element={<HelpPage />} />
-          <Route path="*" element={<Navigate to="/devices" />} />
-          </>
-          : <>
-          <Route index element={<Navigate to="/login" />}/>
-          <Route path="login" element={<LoginPage/>}/>
-          <Route path="*" element={<Navigate to="/login" />} />
+            <Route index element={<Navigate to="/login" />}/>
+            <Route path="login" element={<LoginPage/>}/>
+            <Route path="*" element={<Navigate to="/login" />} />
           </>}
         </Route>
       </Routes>

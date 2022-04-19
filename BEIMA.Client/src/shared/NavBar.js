@@ -44,7 +44,10 @@ const NavBar = () => {
                 <Link to="help" className="sharedText">? Help</Link>
               </Row>
               <Row className="pageLink">
-                <Link to="/" className="sharedText" onClick={() => logout()}>Logout</Link>
+                <Link to="about" className="sharedText">About</Link>
+              </Row>
+              <Row className="pageLink">
+                <div className="sharedText logout" onClick={() => logout()}>Logout</div>
               </Row>
             </Col>
           </Row>

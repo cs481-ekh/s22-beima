@@ -1,0 +1,16 @@
+.pageContent {
+ 
+  margin: 10px auto;
+  max-width:650px;
+}
+
+.container{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.section {
+  margin-bottom:5px;
+}
