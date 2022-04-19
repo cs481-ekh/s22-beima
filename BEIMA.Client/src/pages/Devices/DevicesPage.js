@@ -9,6 +9,7 @@ import GetBuilding from "../../services/GetBuilding";
 import GetBuildingList from '../../services/GetBuildingList.js';
 import * as Notifications from '../../shared/Notifications/Notification.js';
 import GetDeviceTypeList from '../../services/GetDeviceTypeList.js';
+import GetAllDeviceDevicesReport from "../../services/AllDevicesReport";
 import * as Constants from '../../Constants.js';
 import Select from 'react-select';
 
@@ -40,6 +41,18 @@ const getDeviceTypes = async () => {
   
   let data = deviceTypeData.response.map((item) => { return { label: item.name, value : item.id} });  
   return data;
+}
+
+/*
+* generates a zip containing a file entry per device type
+* filled with all devices associated with it
+* @return object containing status of the request
+*/
+const generateAllDevicesReport = async () => {
+  const reportResult = await GetAllDeviceDevicesReport();
+  if(reportResult.status !== Constants.HTTP_SUCCESS){
+    Notifications.error("Unable to generate devices report", `Contact support.`);
+  }
 }
 
 const DeviceFilter = ({loading, filterCallback}) => {
@@ -121,7 +134,8 @@ const DeviceFilter = ({loading, filterCallback}) => {
             onClick={() => filterCallback(mapSelectedFilters(deviceTypeSelect), mapSelectedFilters(buildingSelect))}
           >Apply Filters</Button>
           <Button id="clearFilterButton" onClick={() => {clearFilters(); filterCallback([],[])}}>Clear Filters</Button>
-        </div>           
+          <Button id="generateReportButton" className={styles.reportButton} onClick={() => generateAllDevicesReport()}>Generate All Devices Report</Button>
+        </div>
     </div>
   )
 }
