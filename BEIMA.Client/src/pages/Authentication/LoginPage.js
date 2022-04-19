@@ -114,7 +114,7 @@ const LoginPage = () => {
             <Form.Check type="checkbox" label="Remember Me" onChange={HandleRemember} />
           </Form.Group>         
           
-          <Button variant="primary" className={styles.orageBtn} disabled={touched && (!validUsername || !validPassword)} type ="submit" id="submitBtn">
+          <Button variant="primary" className={styles.orageBtn} disabled={touched && (!validUsername || !validPassword)} type="submit" id="submitBtn">
           {submitting ? <Spinner animation="border" size="sm"/> : "Login"}
           </Button>
                  
