@@ -3,7 +3,7 @@
 describe('Device Page', () => {
   it('Visits a Device Page', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = ''
+    let deviceID = '623fbea68d12667c41fc7c03'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -25,7 +25,6 @@ describe('Device Page', () => {
     cy.get('[id=imageDisplay]').should('exist')
     cy.get('[id=documents]').should('exist')
     cy.get('[id=deviceNotes]').should('exist')
-    cy.get('[id=deviceBuildingId]').should('exist')
     cy.get('[id=deviceLatitude]').should('exist')
     cy.get('[id=deviceLongitude]').should('exist')
     cy.get('[id=locationNotes]').should('exist')
@@ -42,7 +41,6 @@ describe('Device Page', () => {
 
     // disabled
     cy.get('[id=deviceNotes]').should('be.disabled')
-    cy.get('[id=deviceBuildingId]').should('be.disabled')
     cy.get('[id=deviceLatitude]').should('be.disabled')
     cy.get('[id=deviceLongitude]').should('be.disabled')
     cy.get('[id=locationNotes]').should('be.disabled')
@@ -58,7 +56,7 @@ describe('Device Page', () => {
   })
   it('Enables inputs on Edit Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = ''
+    let deviceID = '623fbea68d12667c41fc7c03'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -85,7 +83,6 @@ describe('Device Page', () => {
     cy.get('[id=imageUpload]').should('be.enabled')
     cy.get('[id=fileUpload]').should('be.enabled')
     cy.get('[id=deviceNotes]').should('be.enabled')
-    cy.get('[id=deviceBuildingId]').should('be.enabled')
     cy.get('[id=deviceLatitude]').should('be.enabled')
     cy.get('[id=deviceLongitude]').should('be.enabled')
     cy.get('[id=locationNotes]').should('be.enabled')
@@ -101,7 +98,7 @@ describe('Device Page', () => {
   })
   it('Resets fields on Cancel Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = ''
+    let deviceID = '623fbea68d12667c41fc7c03'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)
@@ -110,7 +107,6 @@ describe('Device Page', () => {
 
     // Set fields
     cy.get('[id=deviceNotes]').scrollIntoView().clear().type("Test Notes")
-    cy.get('[id=deviceBuildingId]').scrollIntoView().clear().type("Test BId")
     cy.get('[id=deviceLatitude]').scrollIntoView().clear().type("Test Lat")
     cy.get('[id=deviceLongitude]').scrollIntoView().clear().type("Test Long")
     cy.get('[id=locationNotes]').scrollIntoView().clear().type("Test Notes")
@@ -124,7 +120,6 @@ describe('Device Page', () => {
 
     // Validate input
     cy.get('[id=deviceNotes]').should('have.value', 'Test Notes')
-    cy.get('[id=deviceBuildingId]').should('have.value', 'Test BId')
     cy.get('[id=deviceLatitude]').should('have.value', 'Test Lat')
     cy.get('[id=deviceLongitude]').should('have.value', 'Test Long')
     cy.get('[id=locationNotes]').should('have.value', 'Test Notes')
@@ -142,7 +137,6 @@ describe('Device Page', () => {
     cy.get('[id=cancelbtn]').click()
 
     cy.get('[id=deviceNotes]').should('not.have.value', 'Test Notes')
-    cy.get('[id=deviceBuildingId]').should('not.have.value', 'Test BId')
     cy.get('[id=deviceLatitude]').should('not.have.value', 'Test Lat')
     cy.get('[id=deviceLongitude]').should('not.have.value', 'Test Long')
     cy.get('[id=locationNotes]').should('not.have.value', 'Test Notes')
@@ -162,7 +156,7 @@ describe('Device Page', () => {
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
     // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
-    let deviceID = ''
+    let deviceID = '623fbea68d12667c41fc7c03'
 
     // visit
     cy.visit('http://localhost:3000/devices/' + deviceID)

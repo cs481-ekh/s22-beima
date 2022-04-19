@@ -30,7 +30,8 @@ describe("Verify Data in fields is cleared when Add Device is selected", () => {
     cy.get('#inputLatitude').scrollIntoView().type("10.34452345")
     cy.get("[id='inputSerial Number']").scrollIntoView().type("12345")
     cy.get("#addDevice").scrollIntoView().click()
-    cy.get('#inputBuilding').should('have.value', '')
+    cy.contains('Proceed').click()
+    cy.get('#inputManufacturer').should('have.value', '')
     cy.get('#inputLatitude').should('have.value', '')
     cy.get("[id='inputSerial Number']").should('have.value', '')
   })
@@ -66,7 +67,7 @@ describe("Verify Data in fields is still present when invalid year manufactured 
     cy.get('#inputManufacturer').should('have.value', 'Home Depot')
     cy.get('#inputLatitude').should('have.value', '34')
     cy.get('#inputLongitude').should('have.value', '56')
-    cy.get("[id='inputYear Manufactured']").should('have.value', 'Not valid')
+    cy.get("[id='inputYear Manufactured']").should('have.value', 'Not ')
   })
 })
 
@@ -95,8 +96,8 @@ describe("check that selection was made", function () {
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
     cy.visit('http://localhost:3000/addDevice')
-    cy.get('#inputBuilding').scrollIntoView().type(randomString1024())
-    cy.get('#inputBuilding').should('not.include.value', 'This text should not be included')
+    cy.get('#inputNotes').scrollIntoView().type(randomString1024())
+    cy.get('#inputNotes').should('not.include.value', 'This text should not be included')
     
     function randomString1024() {
       var text = "";

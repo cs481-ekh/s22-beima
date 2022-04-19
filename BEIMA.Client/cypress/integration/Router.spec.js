@@ -2,6 +2,15 @@
 
 describe("Router Doesn't Redirect On Valid Pages", () =>{
   it('Visit Help Page', () => {
+    cy.visit('http://localhost:3000/')
+    cy.get('[id=username]').scrollIntoView().clear().type("testuser")
+
+    // REPLACE PASSWORD WITH VALID PASSWORD FROM TEST USER IN DATABASE
+    cy.get('[id=password]').scrollIntoView().clear().type("testUser1!")
+    cy.get('[id=submitBtn]').click()
+
+    cy.wait(700);
+
     cy.visit('http://localhost:3000/help')
     cy.url().should('include', '/help')
     cy.get('.sharedNavBar').contains('Devices')
@@ -30,11 +39,8 @@ describe("Router Doesn't Redirect On Valid Pages", () =>{
     cy.url().should('include', 'deviceTypes/5')
     cy.get('.pageTitle').contains('View Device Type')
   })
-  it('Visit Login Page', () => {
-    cy.visit('http://localhost:3000/login')
-    cy.url().should('include', 'login')
-    cy.get('.pageTitle').contains('Login')
-  })
+  // We do not test for routing to login page
+  // since it is only accessible when logged out
 })
 
 describe("Router Redirects On Invalid Pages", () => {
