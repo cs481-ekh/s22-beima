@@ -35,8 +35,8 @@ const AddDeviceTypePage = () => {
   const [setPageName] = useOutletContext();
   const [errorMessage, setErrorMessage] = useState('');
   const [isInvalid, setIsInvalid] = useState(false);
+  const [field, setField] = useState("");
   let fullTypeJSON = {};
-  let field;
 
   useEffect(() => {
       setPageName('Add Device Type')
@@ -63,7 +63,7 @@ const AddDeviceTypePage = () => {
     setIsInvalid(false);
     let newList = customDeviceFields.concat(newField);
     setCustomDeviceFields(newList);
-    event.target.form.elements.newFieldForm.value = "";
+    setField("")
   }
 
   async function saveDeviceTypeToDb(addButtonEvent){
@@ -171,7 +171,7 @@ const AddDeviceTypePage = () => {
           <Form>
             <Form.Group>
               <Form.Label>Add Custom Field</Form.Label>
-              <Form.Control name="newFieldForm" type="text" placeholder="Enter Field Name" id="newField" isInvalid={isInvalid} value={field} onChange={(event) => {field = event.target.value; setIsInvalid(false)}} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/> 
+              <Form.Control name="newFieldForm" as="textarea" rows="1" type="text" placeholder="Enter Field Name" id="newField" isInvalid={isInvalid} value={field} onChange={(event) => {setField(event.target.value); setIsInvalid(false)}} maxLength={Constants.MAX_INPUT_CHARACTER_LENGTH}/> 
               <Form.Control.Feedback type='invalid'>{errorMessage}</Form.Control.Feedback>
             </Form.Group>
             <Button variant="primary" type="button" className={styles.button} id="addField" onClick={(event) => addField(field, event)}>
