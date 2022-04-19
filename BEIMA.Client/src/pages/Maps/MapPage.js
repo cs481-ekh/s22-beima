@@ -47,7 +47,7 @@ const MapPage = () => {
       setDevices(devices)
     }
     loadData()
-  },[]);
+  },[navigate]);
 
   return (
     <div className={styles.mapDiv}>
