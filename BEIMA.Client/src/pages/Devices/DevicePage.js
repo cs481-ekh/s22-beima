@@ -520,7 +520,6 @@ const DevicePage = () => {
         
         <div className={[styles.fields,'mb-3'].join(' ')}>
           <FormCardDropdown editable={editable} id="deviceBuilding" label="Building" dropDownText={selectedBuilding.name} items={availableBuildings} onChange={changeSelectedBuilding} buttonStyle={buildingDropDownStyle}></FormCardDropdown>
-          <FormCard editable={editable} id="deviceBuildingId" label="Building" value={buildingId} onChange={onChange}/>
           <FormCard editable={editable} id="deviceLatitude" label="Latitude" value={lat} onChange={onChange} />
           <FormCard editable={editable} id="deviceLongitude" label="Longitude" value={long} onChange={onChange}/>
         </div>
