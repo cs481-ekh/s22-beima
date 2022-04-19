@@ -57,7 +57,7 @@ const DevicePage = () => {
       setDeviceChanged(false)
     }
    loadData();
-  },[id, deviceChanged]) 
+  },[id, deviceChanged, noBuildingObj]) 
 
   /**
    * Renders an card styled input that lets a user change a field's input
