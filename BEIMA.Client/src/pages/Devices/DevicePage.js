@@ -13,6 +13,7 @@ import GetBuilding from '../../services/GetBuilding.js';
 import { IoChevronBack, IoChevronForward } from "react-icons/io5";
 import * as Constants from '../../Constants';
 import FilledDropDown from '../../shared/DropDown/FilledDropDown.js';
+import GetBuildingList from '../../services/GetBuildingList';
 
 const DevicePage = () => {
   const noBuildingObj = { name : 'Select Building' };
@@ -42,12 +43,15 @@ const DevicePage = () => {
       } else {
         building = {name: 'No Assigned Building'};
       }
+      let buildingsCall = await GetBuildingList();
+      const buildings = buildingsCall.response;
 
       setDevice(device)
       setImage(device.photo)
       setDocuments(device.files)
       setDeviceType(deviceType)
       setBuilding(building)
+      setAvailableBuildings(buildings);
       setLoading(false)
     }
    loadData();
@@ -251,7 +255,7 @@ const DevicePage = () => {
     const [removedDocs, setRemovedDocs] = useState([])
     const navigate = useNavigate();
 
-    const [selectedBuilding, setSelectedBuilding] = useState(device.location.buildingId !== "" ? { name : building.name, id: building._id } : noBuildingObj);
+    const [selectedBuilding, setSelectedBuilding] = useState(device.location.buildingId !== "" ? { name : building.name, id: building.id } : noBuildingObj);
     const [buildingDropDownStyle, setBuildingDropDownStyle] = useState(device.location.buildingId !== "" && device.location.buildingId !== "Select Role" ? styles.dropDownSelected : styles.button);
 
     const updateDeviceCall = async () => {
