@@ -213,6 +213,8 @@ const UserPage = () => {
       setUsername(user.username);
       setFirstName(user.firstName);
       setLastName(user.firstName);
+      setPassword("");
+      setPasswordConfirm("");
       setRole(user.role);
       changeSelectedRole(user.role);
       setRoleDropDownStyle(user.role !== "" && user.role !== "Select Role" ? styles.dropDownSelected : styles.button)
