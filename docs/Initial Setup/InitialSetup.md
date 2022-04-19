@@ -25,3 +25,10 @@ Launch Visual Studio
 * API is ready to accept requests
 
 Databases and Collections will be created in the database as documents are added.
+
+
+Docker
+* Change the CurrentEnv to 'deploy'
+* Build images with '&lt;sudo&gt; docker-compose build'
+* Run images with '&lt;sudo&gt; docker-compose up'
+* Remove cached/intermediate containers with '&lt;sudo&gt; docker system prune'
