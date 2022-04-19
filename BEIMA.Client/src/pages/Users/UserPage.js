@@ -107,32 +107,6 @@ const UserPage = () => {
     )
   }
 
-  // function checkPassword(){
-  //   let passwordErrors = {};
-  //   let requirements = new RegExp(Constants.PASSWORD_REGEX);
-    
-  //   if(userFields["Password"] === '') {
-  //     passwordErrors["Password"] = 'Password cannot be empty';
-  //   } else if (!(requirements.test(userFields["Password"])) || userFields["Password"].length < 8){
-  //     passwordErrors["Password"] = 'Password does not meet requirements. See Help page for more information.';
-  //   }
-
-  //   if(userFields["Password Confirmation"] === '') {
-  //     passwordErrors["Password Confirmation"] = 'Password Confirmation cannot be empty';
-  //   } else if (!(requirements.test(userFields["Password Confirmation"]))){
-  //     passwordErrors["Password Confirmation"] = 'Password does not meet requirements. See Help page for more information.';
-  //   }
-    
-  //   if((!('Password' in passwordErrors) && !('Password Confirmation' in passwordErrors)) &&
-  //      (userFields["Password"] !== userFields["Password Confirmation"])
-  //     ) {
-  //        passwordErrors["Password"] = 'Passwords do not match';
-  //        passwordErrors["Password Confirmation"] = 'Passwords do not match';
-  //   }
-    
-  //   return passwordErrors;
-  // }
-
   /**
    * Renders a custom form that enables a user
    * to update a user's fields
