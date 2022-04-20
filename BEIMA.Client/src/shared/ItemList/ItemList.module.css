@@ -46,3 +46,9 @@
 .description {
   padding-top:5px;
 }
+
+.addButtonContainer {
+  display: flex;
+  justify-content: end;
+}
+

@@ -92,13 +92,20 @@ const List = ({list, RenderItem, isDeviceList}) => {
  * @param list: list of data to display
  * @param renderItem : details render object
  * @param loading: loading status
+ * @param filter: render item containing filter
+ * @param addButton: Button to navigate to add "x" page
  */
-const ItemList = ({list, RenderItem, loading, isDeviceList, filter}) => {
+const ItemList = ({list, RenderItem, loading, isDeviceList, filter, addButton}) => {
   return (
     <Card id="itemList">
       <Card.Body>
         {filter}
-        {loading ? <LoadingItemList/>: <List list={list} RenderItem={RenderItem} isDeviceList={isDeviceList}/>}
+        {loading ? <LoadingItemList/> : 
+          <>
+          <div className={styles.addButtonContainer}>{addButton}</div>
+          <List list={list} RenderItem={RenderItem} isDeviceList={isDeviceList}/>
+          </>
+        }
       </Card.Body>
     </Card>
   )
