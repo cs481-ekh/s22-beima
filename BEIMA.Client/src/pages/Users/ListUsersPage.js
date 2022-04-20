@@ -1,5 +1,5 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Button, Row, Col } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './ListUsersPage.module.css';
 import ItemList from "../../shared/ItemList/ItemList";
