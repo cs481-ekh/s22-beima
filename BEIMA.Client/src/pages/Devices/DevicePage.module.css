@@ -86,3 +86,8 @@
   border-color: #D64309 !important;
   color: #D64309 !important;
 }
+
+.addButton:hover, .button:hover, .dropDownSelected:hover {
+  background-color: #BE3B08 !important;
+  border-color: #BE3B08 !important;
+}
