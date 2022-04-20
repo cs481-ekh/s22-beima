@@ -505,7 +505,7 @@ const DevicePage = () => {
           "No documents for device"
           : <></>}
           {docCopy.length > 0 ?
-          docCopy.map((doc) => <DocumentCard key={doc.fileName} editable={editable} document={doc.fileName} fileUrl={doc.fileUrl} deleteDocument={deleteDocument}/> )
+          docCopy.map((doc) => <DocumentCard key={doc.fileUid} editable={editable} document={doc.fileName} fileUrl={doc.fileUrl} deleteDocument={deleteDocument}/> )
           : <></>}
           {addedDocs.length > 0 ?
           Array.from(addedDocs).map((file, i) => <DocumentCard key={i} editable={editable} document={file.name} deleteDocument={deleteDocument}/> )
