@@ -38,8 +38,7 @@ services:
     image: minio/minio:latest
     command: server /data
     ports:
-      - "9000"
-      - "9001:9001"
+      - "9000:9000"
     networks:
       internal:
         ipv4_address: 192.168.0.4
