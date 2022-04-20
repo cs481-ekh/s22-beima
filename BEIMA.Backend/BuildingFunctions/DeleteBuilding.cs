@@ -6,7 +6,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
-using System.Linq;
 
 namespace BEIMA.Backend.BuildingFunctions
 {
@@ -30,9 +29,9 @@ namespace BEIMA.Backend.BuildingFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a building delete request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
