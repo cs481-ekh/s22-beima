@@ -288,16 +288,12 @@ const AddDevicePage = () => {
         <Card.Body>
           <Form >
             <label>Select Device Type</label>
-            <Row className={styles.buttonGroup}>
-              <Col>
-                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
-              </Col>
-              <Col>
-                <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
+            <div className={styles.buttonGroup}>
+              <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
+              <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
                   Add Device
-                </Button>
-              </Col>
-            </Row>
+              </Button>
+            </div>
             <br/>
             <h4>Device Image</h4>
             <ImageFileUpload type="Device Image" multiple={false} onChange={setImage}/>
