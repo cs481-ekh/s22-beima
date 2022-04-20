@@ -1,6 +1,24 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/montserrat/Montserrat-Black.ttf') format("truetype");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('./fonts/montserrat/Montserrat-Regular.ttf') format("truetype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Cormorant Garamond';
+  src: url('./fonts/cormorant-garamond/CormorantGaramond-Regular.ttf') format("truetype");
+  font-weight: 400;
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Montserrat', 'Cormorant Garamond', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
