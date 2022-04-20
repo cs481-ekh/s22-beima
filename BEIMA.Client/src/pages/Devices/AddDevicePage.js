@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import { Card, Button, Row, Col, Form } from 'react-bootstrap';
+import { Card, Button, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
