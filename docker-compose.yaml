@@ -17,7 +17,7 @@ services:
   database:
     image: mongo
     ports:
-      - "27017:27017"
+      - "27017"
     volumes:
       - './data/mongo:/data/db'
     networks:
@@ -39,7 +39,6 @@ services:
     command: server /data
     ports:
       - "9000:9000"
-      - "9001:9001"
     networks:
       internal:
         ipv4_address: 192.168.0.4
