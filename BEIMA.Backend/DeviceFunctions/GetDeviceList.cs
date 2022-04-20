@@ -31,9 +31,9 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device list request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -114,6 +114,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             var devices = mongo.GetFilteredDevices(filter);
 
+            // Generate device list
             var dotNetObjList = new List<Device>();
             foreach (var device in devices)
             {

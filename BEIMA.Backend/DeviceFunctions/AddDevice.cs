@@ -34,10 +34,9 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device post request.");
 
-
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -62,6 +61,7 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Notes
                 );
 
+                // Check that building id is valid (allow null building ids)
                 var reqBuildingId = data.Location.BuildingId;
                 ObjectId? buildingId = reqBuildingId != null ? ObjectId.Parse(reqBuildingId) : null;
                 if (buildingId != null && mongo.GetBuilding((ObjectId)buildingId) is null)
@@ -76,7 +76,7 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                // Check that each field is a valid device type field.
+                // Check that each custom field is a valid device type custom field.
                 deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
                 if (data.Fields != null)
                 {
@@ -123,6 +123,7 @@ namespace BEIMA.Backend.DeviceFunctions
                 }
             }
 
+            // Validate device properties
             string message;
             HttpStatusCode statusCode;
             if (!Rules.IsDeviceValid(device, deviceType, out message, out statusCode))

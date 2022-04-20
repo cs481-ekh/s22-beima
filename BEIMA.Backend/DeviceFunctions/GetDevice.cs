@@ -8,7 +8,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using System;
 using System.Threading.Tasks;
 
 namespace BEIMA.Backend
@@ -33,9 +32,9 @@ namespace BEIMA.Backend
         {
             log.LogInformation("C# HTTP trigger function processed a device get request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -66,7 +65,7 @@ namespace BEIMA.Backend
             {
                 var presignedUrl = await _storage.GetPresignedURL(device.Photo.FileUid);
                 device.Photo.FileUrl = presignedUrl;
-            }                
+            }
 
             // Add url to every file
             foreach (var file in device.Files)
