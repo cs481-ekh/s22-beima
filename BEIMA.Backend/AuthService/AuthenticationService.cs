@@ -1,5 +1,4 @@
 ﻿using BEIMA.Backend.Models;
-using MongoDB.Bson;
 using BEIMA.Backend.MongoService;
 using JWT;
 using JWT.Algorithms;
@@ -7,10 +6,6 @@ using JWT.Builder;
 using JWT.Serializers;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BEIMA.Backend.AuthService
 {
@@ -26,7 +21,7 @@ namespace BEIMA.Backend.AuthService
         private readonly IJsonSerializer _serializer;
         private readonly IBase64UrlEncoder _base64Encoder;
         private readonly IJwtEncoder _jwtEncoder;
-        
+
         private AuthenticationService()
         {
             _algorithm = new HMACSHA256Algorithm();
