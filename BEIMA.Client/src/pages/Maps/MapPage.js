@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { Card } from "react-bootstrap";
 import styles from './MapPage.module.css'
 import GetDeviceList from '../../services/GetDeviceList';
 import { useOutletContext, useNavigate } from 'react-router-dom';
@@ -47,17 +48,19 @@ const MapPage = () => {
   },[setPageName, navigate]);
 
   return (
-    <div className={styles.mapDiv}>
-      {loading ? <h1>Loading</h1> :
-        <ReactMapGL
-          {...viewport}
-          mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
-          mapStyle={"mapbox://styles/mapbox/streets-v11"}
-          onDrag={(viewport) => {setViewport(viewport)}}
-          onZoom={(viewport) => {setViewport(viewport)}}
-        >{devices}</ReactMapGL>
-      }
-    </div>
+    <Card className={styles.mapDiv}>
+      <Card.Body>      
+        {loading ? <h1>Loading</h1> :
+          <ReactMapGL
+            {...viewport}
+            mapboxAccessToken={process.env.REACT_APP_MAPBOX_TOKEN}
+            mapStyle={"mapbox://styles/mapbox/streets-v11"}
+            onDrag={(viewport) => {setViewport(viewport)}}
+            onZoom={(viewport) => {setViewport(viewport)}}
+          >{devices}</ReactMapGL>
+        }
+      </Card.Body>
+    </Card>
   );
 }
 
