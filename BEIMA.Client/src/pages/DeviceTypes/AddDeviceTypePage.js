@@ -148,11 +148,13 @@ const AddDeviceTypePage = () => {
       <Card>
         <Card.Body>
           <Form>
-            <div>
-              <Button variant="primary" type="button" className={styles.addButton} id="addDeviceType" onClick={(event) => saveDeviceTypeToDb(event)}>
-                Add Device Type
-              </Button>
+            <div className={styles.formHeader}>
               <h4>Device Type Information</h4>
+              <div>
+                <Button variant="primary" type="button" className={styles.addButton} id="addDeviceType" onClick={(event) => saveDeviceTypeToDb(event)}>
+                  Add Device Type
+                </Button>
+              </div>
             </div>
             <FormList fields={Object.keys(typeAttributes)}/>
           </Form>  
