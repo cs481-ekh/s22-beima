@@ -16,6 +16,7 @@ const DeviceTypePage = () => {
   const [deviceType, setDeviceType] = useState(null)
   const [loading, setLoading] = useState(true)
   const [setPageName] = useOutletContext();
+  const [deviceTypeChanged, setDeviceTypeChanged] = useState(false);
 
   const { typeId } = useParams();
 
@@ -28,9 +29,10 @@ const DeviceTypePage = () => {
       type['deletedFields'] = [];
       setDeviceType(type)
       setLoading(false)
+      setDeviceTypeChanged(false)
     }
     loadData()
-  },[typeId, setPageName])
+  },[typeId, deviceTypeChanged, setPageName])
 
   /**
    * Renders a card styled field in a device type.
@@ -136,6 +138,8 @@ const DeviceTypePage = () => {
         if(updateResult.status === Constants.HTTP_SUCCESS){
           Notifications.success("Update Device Type Successful", `Device Type ${item.name} updated successfully.`)
           setEditable(false)
+          setLoading(true);
+          setDeviceTypeChanged(true);
         } else {
           Notifications.error("Unable to Update Device Type", `Update of Device Type ${item.name} failed.`);
         }
