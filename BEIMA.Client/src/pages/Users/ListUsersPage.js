@@ -8,8 +8,8 @@ import GetUserList from '../../services/GetUserList.js';
 const AddUserButton = () => {
   let navigate = useNavigate();
   return (    
-    <Button variant="primary" type="button" className={styles.addButton} id="addNewBuilding" onClick={() => navigate(`addBuilding`)}>
-      Add New Building
+    <Button variant="primary" type="button" className={styles.addButton} id="addNewUser" onClick={() => navigate(`addUser`)}>
+      Add New User
     </Button>
   )
 }
@@ -21,7 +21,7 @@ const ListUsersPage = () => {
   const [loading, setLoading] = useState(true);
   
   useEffect(() => {
-    setPageName('List Users')
+    setPageName('Users')
     const loadData = async () => {
       setLoading(true)
       let users = (await GetUserList()).response;
