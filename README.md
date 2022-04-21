@@ -38,4 +38,14 @@ MinIO is also supported as a storage provider when deploying on-premises. MinIO 
 
 Since our storage service has been abstracted, any storage provider can be used with BEIMA with very little refactoring required.
 
+### Testing
+BEIMA has been comprehensively tested on both the front and back end. On the backend, we have written 530+ functional and unit tests using NUnit. On the frontend, we have 65+ Cypress tests. 
+
+For our backend, we achieved 96.33% code coverage as of April 20, 2022.
+![image](https://user-images.githubusercontent.com/47615072/164368760-586fd06a-788a-4e10-8077-72e9b8df8697.png)
+
+This was on 12,779 lines of C# code, excluding comments. 
+
+### Continuous Integration and Continuous Deployment (CI/CD)
+Since BEIMA was built with a cloud-first mentality, we were able to create a comprehensive continuous integration and deployment process in the cloud. Since we used Azure Functions, whenever we put up pull requests in GitHub, we had a GitHub Action configured to automatically deploy and test BEIMA using Azure. This allowed us to receive continuous feedback from our customer since it deployed BEIMA on a publicly accessible server with our latest changes.
 
