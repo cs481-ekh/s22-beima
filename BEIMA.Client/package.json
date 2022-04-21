@@ -39,7 +39,7 @@
     "cypress": "start-server-and-test start http://localhost:3000 cypress:chrome",
     "eject": "react-scripts eject"
   },
-  "homepage": "./beima",
+  "homepage": "/beima",
   "eslintConfig": {
     "extends": [
       "react-app",

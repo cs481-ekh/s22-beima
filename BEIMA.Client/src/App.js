@@ -32,7 +32,7 @@ const App = () => {
   const [currentUser] = useState(getCurrentUser());
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={'/beima'}>
       <Routes>
         <Route path="/" element={<AppLayout />}>
           {currentUser.token !== '' ?
