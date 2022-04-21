@@ -33,7 +33,7 @@ namespace BEIMA.Backend.Test.ReportServices
         public void NullDeviceTypeAndNullDeviceList_GenerateReportByDeviceType_NullReturned()
         {
             // ACT
-            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(null, null);
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(null, null, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
@@ -43,7 +43,7 @@ namespace BEIMA.Backend.Test.ReportServices
         public void NullDeviceTypeListAndNullDeviceList_GenerateAllReport_NullReturned()
         {
             // ACT
-            var bytes = ReportWriter.GenerateAllDeviceReports(null, null);
+            var bytes = ReportWriter.GenerateAllDeviceReports(null, null, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
@@ -56,7 +56,7 @@ namespace BEIMA.Backend.Test.ReportServices
             var deviceTypes = new List<DeviceType>();
 
             // ACT
-            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, null);
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, null, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
@@ -119,7 +119,7 @@ namespace BEIMA.Backend.Test.ReportServices
         }
 
         [Test]
-        public void DeviceTypeAndNullDeviceList_GenerateReportByDeviceType_FileContainsOnlyHeader()
+        public void DeviceTypeAndNullDeviceList_GenerateReportByDeviceType_NullReturned()
         {
             // Arrange
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
@@ -129,14 +129,14 @@ namespace BEIMA.Backend.Test.ReportServices
             deviceTypeOne.AddField("boilerf3", "BoilerField3");
 
             // ACT
-            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, null);
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, null, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
         }
 
         [Test]
-        public void DeviceTypeAndEmptyDeviceList_GenerateReportByDeviceType_FileContainsOnlyHeader()
+        public void DeviceTypeAndEmptyDeviceList_GenerateReportByDeviceType_NullReturned()
         {
             // Arrange
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
@@ -148,14 +148,14 @@ namespace BEIMA.Backend.Test.ReportServices
             var deviceList = new List<Device>();
 
             // ACT
-            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, deviceList);
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, deviceList, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
         }
 
         [Test]
-        public void DeviceTypeListAndNullDeviceList_GenerateAllReport_ZipFileContainsFileWithOnlyHeader()
+        public void DeviceTypeListAndNullDeviceList_GenerateAllReport_NullReturned()
         {
             // Arrange
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
@@ -167,14 +167,14 @@ namespace BEIMA.Backend.Test.ReportServices
             var deviceTypeList = new List<DeviceType>() { deviceTypeOne };
 
             // ACT
-            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, null);
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, null, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
         }
 
         [Test]
-        public void DeviceTypeListAndEmptyDeviceList_GenerateAllReport_ZipFileContainsFileWithOnlyHeader()
+        public void DeviceTypeListAndEmptyDeviceList_GenerateAllReport_NullReturned()
         {
             // Arrange
             var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
@@ -187,7 +187,7 @@ namespace BEIMA.Backend.Test.ReportServices
             var deviceList = new List<Device>();
 
             // ACT
-            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, deviceList);
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypeList, deviceList, null);
 
             // Assert
             Assert.That(bytes, Is.Null);
@@ -287,16 +287,22 @@ namespace BEIMA.Backend.Test.ReportServices
             deviceTypeOne.AddField("boilerf2", "BoilerField2");
             deviceTypeOne.AddField("boilerf3", "BoilerField3");
 
+            var buildingOne = new Building()
+            {
+                Id = ObjectId.GenerateNewId(),
+                Name = "Farm",
+            };
+
             var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
             deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceOne.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes1", "1", "1");
+            deviceOne.SetLocation(buildingOne.Id, "dLocNotes1", "1", "1");
             deviceOne.AddField("boilerf1", "BoilerValue1D1");
             deviceOne.AddField("boilerf2", "BoilerValue2D1");
             deviceOne.AddField("boilerf3", "BoilerValue3D1");
 
             var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
             deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceTwo.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes2", "2", "2");
+            deviceTwo.SetLocation(buildingOne.Id, "dLocNotes2", "2", "2");
             deviceTwo.AddField("boilerf1", "BoilerValue1D2");
             deviceTwo.AddField("boilerf2", "BoilerValue2D2");
             deviceTwo.AddField("boilerf3", "BoilerValue3D2");
@@ -305,10 +311,15 @@ namespace BEIMA.Backend.Test.ReportServices
             {
                 deviceOne,
                 deviceTwo
-            };            
+            };
+
+            var buildings = new List<Building>()
+            {
+                buildingOne
+            };
 
             // ACT
-            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, devices);
+            var bytes = ReportWriter.GeneratDeviceReportByDeviceType(deviceTypeOne, devices, buildings);
 
             // Assert
             Assert.That(bytes, Is.Not.Null);
@@ -319,19 +330,19 @@ namespace BEIMA.Backend.Test.ReportServices
 
             var headers = new List<List<string>>()
             {
-                new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                 new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
-                new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                 new List<string>() { "Date", "User" }
             };
             var headerString = CombineColumnValues(headers);
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
-            var rowOne = DeviceToColumnValues(deviceOne);
+            var rowOne = DeviceToColumnValues(deviceOne, deviceTypeOne, buildingOne);
             var rowOneString = CombineColumnValues(rowOne);
             Assert.That(contentRows[1], Is.EqualTo(rowOneString));
 
-            var rowTwo = DeviceToColumnValues(deviceTwo);
+            var rowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne, buildingOne);
             var rowTwoString = CombineColumnValues(rowTwo);
             Assert.That(contentRows[2], Is.EqualTo(rowTwoString));
         }
@@ -351,23 +362,35 @@ namespace BEIMA.Backend.Test.ReportServices
             deviceTypeTwo.AddField("havcf1", "HvacField1");
             deviceTypeTwo.AddField("hvacf2", "HvacFeild2");
 
+            var buildingOne = new Building()
+            {
+                Id = ObjectId.GenerateNewId(),
+                Name = "Farm",
+            };
+
+            var buildingTwo = new Building()
+            {
+                Id = ObjectId.GenerateNewId(),
+                Name = "Farm",
+            };
+
             var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
             deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceOne.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes1", "1", "1");
+            deviceOne.SetLocation(buildingOne.Id, "dLocNotes1", "1", "1");
             deviceOne.AddField("boilerf1", "BoilerValue1D1");
             deviceOne.AddField("boilerf2", "BoilerValue2D1");
             deviceOne.AddField("boilerf3", "BoilerValue3D1");
 
             var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
             deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceTwo.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes2", "2", "2");
+            deviceTwo.SetLocation(buildingOne.Id, "dLocNotes2", "2", "2");
             deviceTwo.AddField("boilerf1", "BoilerValue1D2");
             deviceTwo.AddField("boilerf2", "BoilerValue2D2");
             deviceTwo.AddField("boilerf3", "BoilerValue3D2");
 
             var deviceThree = new Device(ObjectId.GenerateNewId(), deviceTypeTwo.Id, "dTag3", "dMan3", "dMod3", "dSer3", 2003, "dNote3");
             deviceThree.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceThree.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes3", "3", "3");
+            deviceThree.SetLocation(buildingTwo.Id, "dLocNotes3", "3", "3");
             deviceThree.AddField("havcf1", "HvacField1D3");
             deviceThree.AddField("hvacf2", "HvacFeild2D3");
 
@@ -381,10 +404,16 @@ namespace BEIMA.Backend.Test.ReportServices
             var deviceTypes = new List<DeviceType>() { 
                 deviceTypeOne,
                 deviceTypeTwo
-            };                        
+            };
+
+            var buildings = new List<Building>()
+            {
+                buildingOne,
+                buildingTwo
+            };
 
             // ACT
-            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices);
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices, buildings);
 
             //ASSERT 
             using (var memStream = new MemoryStream(bytes))
@@ -420,34 +449,34 @@ namespace BEIMA.Backend.Test.ReportServices
                 // Tests that file 1 has correct data
                 var file1Headers = new List<List<string>>()
                 {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
-                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
                 };
                 var file1HeaderString = CombineColumnValues(file1Headers);
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
-                var file1RowOne = DeviceToColumnValues(deviceOne);
+                var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne, buildingOne);
                 var file1RowOneString = CombineColumnValues(file1RowOne);
                 Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
 
-                var file1RowTwo = DeviceToColumnValues(deviceTwo);
+                var file1RowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne, buildingOne);
                 var file1RowTwoString = CombineColumnValues(file1RowTwo);
                 Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
 
                 // Tests that file 2 has correct data
                 var file2Headers = new List<List<string>>()
                 {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "HvacField1", "HvacFeild2" },
-                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
                 };
                 var file2HeaderString = CombineColumnValues(file2Headers);
                 Assert.That(file2Rows[0], Is.EqualTo(file2HeaderString));
 
-                var file2RowOne = DeviceToColumnValues(deviceThree);
+                var file2RowOne = DeviceToColumnValues(deviceThree, deviceTypeTwo, buildingTwo);
                 var file2RowOneString = CombineColumnValues(file2RowOne);
                 Assert.That(file2Rows[1], Is.EqualTo(file2RowOneString));
             }
@@ -470,14 +499,12 @@ namespace BEIMA.Backend.Test.ReportServices
 
             var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
             deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceOne.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes1", "1", "1");
             deviceOne.AddField("boilerf1", "BoilerValue1D1");
             deviceOne.AddField("boilerf2", "BoilerValue2D1");
             deviceOne.AddField("boilerf3", "BoilerValue3D1");
 
             var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
             deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
-            deviceTwo.SetLocation(new ObjectId("111111111111111111111111"), "dLocNotes2", "2", "2");
             deviceTwo.AddField("boilerf1", "BoilerValue1D2");
             deviceTwo.AddField("boilerf2", "BoilerValue2D2");
             deviceTwo.AddField("boilerf3", "BoilerValue3D2");
@@ -493,8 +520,10 @@ namespace BEIMA.Backend.Test.ReportServices
                 deviceTypeTwo
             };
 
+            var buildings = new List<Building>();
+
             // ACT
-            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices);
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices, buildings);
 
             //ASSERT 
             using (var memStream = new MemoryStream(bytes))
@@ -523,19 +552,19 @@ namespace BEIMA.Backend.Test.ReportServices
                 // Tests that file 1 has correct data
                 var file1Headers = new List<List<string>>()
                 {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
-                    new List<string>() { "BuildingId", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
                 };
                 var file1HeaderString = CombineColumnValues(file1Headers);
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
-                var file1RowOne = DeviceToColumnValues(deviceOne);
+                var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
                 var file1RowOneString = CombineColumnValues(file1RowOne);
                 Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
 
-                var file1RowTwo = DeviceToColumnValues(deviceTwo);
+                var file1RowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne);
                 var file1RowTwoString = CombineColumnValues(file1RowTwo);
                 Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
             }
@@ -601,13 +630,13 @@ namespace BEIMA.Backend.Test.ReportServices
         /// </summary>
         /// <param name="device">Devices whose values are being scraped</param>
         /// <returns>List of lists containing device propety values</returns>
-        private static List<List<string>> DeviceToColumnValues(Device device)
+        private static List<List<string>> DeviceToColumnValues(Device device, DeviceType deviceType, Building? building = null)
         {
             var columns = new List<List<string>>()
             {
                 new List<string>() { 
                     device.Id.ToString(), 
-                    device.DeviceTypeId.ToString(), 
+                    deviceType.Name, 
                     device.DeviceTag, device.Manufacturer, 
                     device.ModelNum, 
                     device.SerialNum, 
@@ -616,7 +645,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 },
                 device.Fields.ToArray().OrderBy(val => val.Key).Select(val => val.Value).ToList(),
                 new List<string>() { 
-                    device.Location?.BuildingId.ToString() ?? "", 
+                    building == null ? "" : building.Name, 
                     device.Location?.Notes ?? "", 
                     device.Location?.Latitude ?? "",
                     device.Location?.Longitude ?? ""
