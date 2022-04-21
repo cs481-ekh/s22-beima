@@ -78,26 +78,19 @@ namespace BEIMA.Backend.DeviceFunctions
 
                 // Check that each custom field is a valid device type custom field.
                 deviceType = BsonSerializer.Deserialize<DeviceType>(mongo.GetDeviceType(device.DeviceTypeId));
-                if (data.Fields != null)
-                {
-                    if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
-                    {
-                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
-                    }
-
-                    foreach (var field in data.Fields)
-                    {
-                        if (!deviceType.Fields.Contains(field.Key))
-                        {
-                            return new BadRequestObjectResult(Resources.CouldNotParseBody);
-                        }
-                    }
-                    device.SetFields(data.Fields);
-                }
-                else if (deviceType.Fields.ToDictionary().Count > 0)
+                if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
                 {
                     return new BadRequestObjectResult(Resources.CouldNotParseBody);
                 }
+
+                foreach (var field in data.Fields)
+                {
+                    if (!deviceType.Fields.Contains(field.Key))
+                    {
+                        return new BadRequestObjectResult(Resources.CouldNotParseBody);
+                    }
+                }
+                device.SetFields(data.Fields);
             }
             catch (Exception)
             {
