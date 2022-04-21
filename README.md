@@ -12,6 +12,8 @@ BEIMA was built with a cloud-first mentality, with the capacity to run on-premis
 ### Frontend
 We chose to build our web app using React. We chose React because of its ability to create rich and dynamic webpages with great performance. We wanted BEIMA to feel slick and modern, which meant having to create custom components with high interactivity. React allowed us to do exactly that, and we feel that we have accomplished those goals well.
 
+To serve the web app, we use Node.js. This is a necessity when developing in React, as Node.js contains all the packages we needed for all our UI development.
+
 ### Backend
 For our backend, we went with a serverless model, with the ability to substitute in on-premise software in place of serverless solutions.
 
