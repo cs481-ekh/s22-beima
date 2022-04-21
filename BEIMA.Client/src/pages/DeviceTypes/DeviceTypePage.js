@@ -280,7 +280,7 @@ const DeviceTypePage = () => {
   return (
     <div className={styles.item} id="deviceTypeContent">
       <ItemCard 
-        title={loading ? 'Loading' : deviceType.name}
+        title={loading ? 'Loading' : `${deviceType.name} - ${deviceType.count} Devices`}
         RenderItem={<RenderItem item={deviceType} setItem={setDeviceType}/>} 
         loading={loading}
         route="/deviceTypes"
