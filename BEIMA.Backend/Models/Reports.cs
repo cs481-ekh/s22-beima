@@ -3,8 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BEIMA.Backend.Models
 {
@@ -30,8 +28,8 @@ namespace BEIMA.Backend.Models
     {
         private static readonly string[] IgnoredPropNames = { "Fields", "LastModified" };
         public static List<PropertyInfo> GeneralProps { get; } = typeof(DeviceType).GetProperties().Where(prop => !IgnoredPropNames.Contains(prop.Name)).ToList();
-        
+
         // Must be hard coded as DeviceType uses BsonDocument instead of a c# object
-        public static Dictionary<string,string> LastModifiedProps { get; } = new Dictionary<string, string>(){ { "date", "Date"}, { "user", "User"} };
+        public static Dictionary<string, string> LastModifiedProps { get; } = new Dictionary<string, string>() { { "date", "Date" }, { "user", "User" } };
     }
 }
