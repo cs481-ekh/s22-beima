@@ -44,6 +44,7 @@ namespace BEIMA.Backend.ReportFunctions
                 var mongo = MongoDefinition.MongoInstance;
                 List<DeviceType> deviceTypes = new List<DeviceType>();
                 List<Device> devices = new List<Device>();
+                List<Building> buildings = new List<Building>();
 
                 // Retrieve all device types.
                 foreach (var deviceType in mongo.GetAllDeviceTypes())
@@ -57,8 +58,14 @@ namespace BEIMA.Backend.ReportFunctions
                     devices.Add(BsonSerializer.Deserialize<Device>(device));
                 }
 
+                // Retrieve all buildings.
+                foreach (var building in mongo.GetAllBuildings())
+                {
+                    buildings.Add(BsonSerializer.Deserialize<Building>(building));
+                }
+
                 // Generate and return zip file.
-                var filebytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices);
+                var filebytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices, buildings);
                 return new FileContentResult(filebytes, "application/octet-stream")
                 {
                     FileDownloadName = "devices_report.zip"
