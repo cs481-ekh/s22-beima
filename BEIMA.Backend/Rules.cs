@@ -6,7 +6,7 @@ using System.Net;
 namespace BEIMA.Backend
 {
     /// <summary>
-    /// Class for verifying and validating request data.
+    /// Class for verifying and validating request field data.
     /// </summary>
     public static class Rules
     {

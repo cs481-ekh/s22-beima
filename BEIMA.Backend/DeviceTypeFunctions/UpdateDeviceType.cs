@@ -1,20 +1,20 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using BEIMA.Backend.AuthService;
+using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using MongoDB.Bson;
-using System.Net;
-using BEIMA.Backend.MongoService;
-using System.Collections.Generic;
-using Newtonsoft.Json.Linq;
-using System.Linq;
 using MongoDB.Bson.Serialization;
-using BEIMA.Backend.AuthService;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace BEIMA.Backend.DeviceTypeFunctions
 {
@@ -28,9 +28,9 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
@@ -120,6 +120,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
 
             deviceType.SetLastModified(DateTime.UtcNow, claims.Username);
 
+            // Validate device type properties.
             string message;
             HttpStatusCode statusCode;
             if (!Rules.IsDeviceTypeValid(deviceType, out message, out statusCode))

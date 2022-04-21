@@ -30,9 +30,9 @@ namespace BEIMA.Backend.BuildingFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a building GET request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };

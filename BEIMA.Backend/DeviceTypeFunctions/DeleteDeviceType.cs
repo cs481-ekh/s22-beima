@@ -6,7 +6,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using MongoDB.Bson;
-using System.Linq;
 
 namespace BEIMA.Backend.DeviceTypeFunctions
 {
@@ -30,9 +29,9 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device type delete request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
@@ -52,6 +51,7 @@ namespace BEIMA.Backend.DeviceTypeFunctions
                 return new ConflictObjectResult(Resources.CannotDeleteDeviceTypeMessage);
             }
 
+            // Delete device type, or return failure if not found.
             if (!mongo.DeleteDeviceType(deviceTypeId))
             {
                 return new NotFoundObjectResult(Resources.DeviceTypeNotFoundMessage);

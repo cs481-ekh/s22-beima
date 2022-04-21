@@ -1,10 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BEIMA.Backend.MongoService
 {
@@ -21,7 +16,7 @@ namespace BEIMA.Backend.MongoService
         /// <returns>An "equals" filter of type FilterDefinition for BsonDocument</returns>
         public static FilterDefinition<BsonDocument> GetEqualsFilter(string key, dynamic value)
         {
-            if(value == null)
+            if (value == null)
             {
                 value = BsonNull.Value;
             }

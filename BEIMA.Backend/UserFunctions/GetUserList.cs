@@ -28,7 +28,7 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user list request.");
 
-            // Verify JWT token
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
             if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))

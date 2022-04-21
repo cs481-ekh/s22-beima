@@ -29,9 +29,9 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device type get request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };

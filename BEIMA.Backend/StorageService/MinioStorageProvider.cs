@@ -70,13 +70,14 @@ namespace BEIMA.Backend.StorageService
                     .WithContentType(file.ContentType)
                     .WithStreamData(stream)
                     .WithObjectSize(file.Length);
-                
+
                 await client.PutObjectAsync(putArgs);
                 return fileUid;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return null;
-            } 
+            }
         }
 
         /// <summary>
@@ -104,7 +105,8 @@ namespace BEIMA.Backend.StorageService
                     .WithExpiry(60 * 60 * 4);
                 var uri = await client.PresignedGetObjectAsync(uriArgs);
                 return uri;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return null;
             }
@@ -134,7 +136,7 @@ namespace BEIMA.Backend.StorageService
                         stream.CopyTo(ms);
                         ms.Position = 0;
                     });
-                    
+
                 await client.GetObjectAsync(getArgs);
                 return ms;
             }
@@ -190,7 +192,8 @@ namespace BEIMA.Backend.StorageService
                     .WithObject(fileUid);
                 await client.RemoveObjectAsync(delArgs);
                 return true;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return false;
             }

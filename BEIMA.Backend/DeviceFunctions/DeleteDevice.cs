@@ -34,9 +34,9 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -67,7 +67,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             // Create a list of file uids
             List<string> filesToDelete = device.Files.Select(val => val.FileUid).ToList();
-            if(device.Photo.FileUid != null)
+            if (device.Photo.FileUid != null)
             {
                 filesToDelete.Add(device.Photo.FileUid);
             }

@@ -1,20 +1,19 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using BEIMA.Backend.AuthService;
+using BEIMA.Backend.Models;
+using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using BEIMA.Backend.Models;
-using BEIMA.Backend.AuthService;
-using BEIMA.Backend.MongoService;
-using MongoDB.Bson.Serialization;
-using BCryptNet = BCrypt.Net.BCrypt;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using System.Net;
+using System.IO;
+using System.Threading.Tasks;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace BEIMA.Backend.AuthFunctions
 {
@@ -34,6 +33,8 @@ namespace BEIMA.Backend.AuthFunctions
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "login")] HttpRequest req,
             ILogger log)
         {
+            log.LogInformation("C# HTTP trigger function processed a login request.");
+
             List<BsonDocument> userDocs;
             string password;
             try
@@ -41,23 +42,24 @@ namespace BEIMA.Backend.AuthFunctions
                 // Deserialize request
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<LoginRequest>(requestBody);
-                
-                if(data == null || string.IsNullOrEmpty(data.Username) || string.IsNullOrEmpty(data.Password))
+
+                if (data == null || string.IsNullOrEmpty(data.Username) || string.IsNullOrEmpty(data.Password))
                 {
                     return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
                 }
                 password = data.Password;
 
                 // Get all users with request's username
-                var dbServce = MongoDefinition.MongoInstance;
+                var mongo = MongoDefinition.MongoInstance;
                 var usernameFilter = MongoFilterGenerator.GetEqualsFilter("username", data.Username.ToLower());
-                userDocs = dbServce.GetFilteredUsers(usernameFilter);
-            } catch (Exception)
+                userDocs = mongo.GetFilteredUsers(usernameFilter);
+            }
+            catch (Exception)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }
-            
-            if(userDocs == null || userDocs.Count == 0)
+
+            if (userDocs == null || userDocs.Count == 0)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
             }

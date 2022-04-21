@@ -1,7 +1,7 @@
-﻿using System;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using Newtonsoft.Json;
+using System;
 
 namespace BEIMA.Backend.MongoService
 {
@@ -113,7 +113,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="user">Username of the user who last modified the Building.</param>
         public void SetLastModified(DateTime? date, string user)
         {
-            //Check if null, if they are, then use defualt values
+            // Check if null, if they are, then use defualt values
             date ??= DateTime.UtcNow;
             user ??= string.Empty;
 

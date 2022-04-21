@@ -28,9 +28,9 @@ namespace BEIMA.Backend.BuildingFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a building list request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -38,6 +38,8 @@ namespace BEIMA.Backend.BuildingFunctions
 
             var mongo = MongoDefinition.MongoInstance;
             var buildings = mongo.GetAllBuildings();
+
+            // Add each building to the list.
             var buildingObjList = new List<Building>();
             foreach (var building in buildings)
             {
