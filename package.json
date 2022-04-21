@@ -33,7 +33,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "PUBLIC_URL=/beima react-scripts build",
     "test": "react-scripts test",
     "cypress:test": "cypress run -b chrome && cypress run -b firefox && cypress run -b edge",
     "cypress:chrome": "cypress run -b chrome",
@@ -61,6 +61,5 @@
   "devDependencies": {
     "@cypress/skip-test": "^2.6.1",
     "cypress": "^9.4.1"
-  },
-  "homepage": "."
+  }
 }
