@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - name: 'Checkout GitHub Action'
+    - name: 'Checkout GitHub Actions'
       uses: actions/checkout@v2
 
     - name: Build and Deploy
