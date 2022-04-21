@@ -55,14 +55,20 @@ namespace BEIMA.Backend
             // Check mandatory field lengths
             foreach (var prop in device.GetType().GetProperties())
             {
-                if (prop.PropertyType.Equals(typeof(string)) &&
-                    prop.GetValue(device) is not null &&
-                    prop.GetValue(device).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                if (prop.PropertyType.Equals(typeof(string)))
                 {
-                    message += message.Length > 0 ? '\n' : string.Empty;
-                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
-                    httpStatusCode = HttpStatusCode.BadRequest;
-                    isValid = false;
+                    if (prop.GetValue(device) is not null &&
+                    prop.GetValue(device).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                    {
+                        message += message.Length > 0 ? '\n' : string.Empty;
+                        message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                        httpStatusCode = HttpStatusCode.BadRequest;
+                        isValid = false;
+                    }
+                    else if (prop.GetValue(device) is null)
+                    {
+                        prop.SetValue(device, string.Empty);
+                    }
                 }
             }
 
@@ -136,14 +142,20 @@ namespace BEIMA.Backend
             // Check device type field name lengths
             foreach (var prop in deviceType.GetType().GetProperties())
             {
-                if (prop.PropertyType.Equals(typeof(string)) &&
-                    prop.GetValue(deviceType) is not null &&
-                    prop.GetValue(deviceType).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                if (prop.PropertyType.Equals(typeof(string)))
                 {
-                    message += message.Length > 0 ? '\n' : string.Empty;
-                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
-                    httpStatusCode = HttpStatusCode.BadRequest;
-                    isValid = false;
+                    if (prop.GetValue(deviceType) is not null &&
+                    prop.GetValue(deviceType).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                    {
+                        message += message.Length > 0 ? '\n' : string.Empty;
+                        message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                        httpStatusCode = HttpStatusCode.BadRequest;
+                        isValid = false;
+                    }
+                    else if (prop.GetValue(deviceType) is null)
+                    {
+                        prop.SetValue(deviceType, string.Empty);
+                    }
                 }
             }
 
@@ -183,14 +195,20 @@ namespace BEIMA.Backend
             // Check field lengths
             foreach (var prop in building.GetType().GetProperties())
             {
-                if (prop.PropertyType.Equals(typeof(string)) &&
-                    prop.GetValue(building) is not null &&
-                    prop.GetValue(building).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                if (prop.PropertyType.Equals(typeof(string)))
                 {
-                    message += message.Length > 0 ? '\n' : string.Empty;
-                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
-                    httpStatusCode = HttpStatusCode.BadRequest;
-                    isValid = false;
+                    if (prop.GetValue(building) is not null &&
+                    prop.GetValue(building).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                    {
+                        message += message.Length > 0 ? '\n' : string.Empty;
+                        message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                        httpStatusCode = HttpStatusCode.BadRequest;
+                        isValid = false;
+                    }
+                    else if (prop.GetValue(building) is null)
+                    {
+                        prop.SetValue(building, string.Empty);
+                    }
                 }
             }
 
@@ -221,14 +239,20 @@ namespace BEIMA.Backend
             // Check field lengths
             foreach (var prop in user.GetType().GetProperties())
             {
-                if (prop.PropertyType.Equals(typeof(string)) &&
-                    prop.GetValue(user) is not null &&
-                    prop.GetValue(user).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                if (prop.PropertyType.Equals(typeof(string)))
                 {
-                    message += message.Length > 0 ? '\n' : string.Empty;
-                    message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
-                    httpStatusCode = HttpStatusCode.BadRequest;
-                    isValid = false;
+                    if (prop.GetValue(user) is not null &&
+                    prop.GetValue(user).ToString().Length > Constants.MAX_CHARACTER_LENGTH)
+                    {
+                        message += message.Length > 0 ? '\n' : string.Empty;
+                        message += string.Format(Resources.MaxCharacterLengthExceededMessage, prop.Name);
+                        httpStatusCode = HttpStatusCode.BadRequest;
+                        isValid = false;
+                    }
+                    else if (prop.GetValue(user) is null)
+                    {
+                        prop.SetValue(user, string.Empty);
+                    }
                 }
             }
 
