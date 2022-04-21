@@ -35,7 +35,7 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user post request.");
 
-            // Verify JWT token
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
             if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
@@ -82,6 +82,7 @@ namespace BEIMA.Backend.UserFunctions
 
             user.SetLastModified(DateTime.UtcNow, claims.Username);
 
+            // Validate user properties
             string message;
             HttpStatusCode statusCode;
             if (!Rules.IsUserValid(user, out message, out statusCode))
@@ -93,7 +94,7 @@ namespace BEIMA.Backend.UserFunctions
 
             var id = mongo.InsertUser(user.GetBsonDocument());
 
-            //InsertUser returned a null result, meaning it failed, so send a 500 error
+            // InsertUser returned a null result, meaning it failed, so send a 500 error
             if (id == null)
             {
                 var response = new ObjectResult(Resources.InternalServerErrorMessage);

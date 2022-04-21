@@ -38,7 +38,7 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user update request.");
 
-            // Verify JWT token
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
             if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
@@ -110,6 +110,7 @@ namespace BEIMA.Backend.UserFunctions
 
             user.SetLastModified(DateTime.UtcNow, claims.Username);
 
+            // Validate user properties
             string message;
             HttpStatusCode statusCode;
             if (!Rules.IsUserValid(user, out message, out statusCode))
@@ -132,7 +133,7 @@ namespace BEIMA.Backend.UserFunctions
 
             var updatedUser = BsonSerializer.Deserialize<User>(updatedUserDocument);
 
-            //Do not expose password.
+            // Do not expose password.
             updatedUser.Password = string.Empty;
 
             return new OkObjectResult(updatedUser);
