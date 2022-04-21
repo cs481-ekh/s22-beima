@@ -13,7 +13,7 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public sealed class MongoConnector : IMongoConnector
     {
-        //Public class members
+        // Public class members
         public ServerType CurrentServerType { get; }
 
         //Contains instance variables
@@ -27,7 +27,9 @@ namespace BEIMA.Backend.MongoService
         private readonly string buildingCollection = Environment.GetEnvironmentVariable("BuildingCollectionName");
         private readonly string userCollection = Environment.GetEnvironmentVariable("UserCollectionName");
 
-        //Singleton design pattern, used to get an instance of the MongoConnector
+        /// <summary>
+        /// Singleton design pattern, used to get an instance of the MongoConnector
+        /// </summary>
         public static MongoConnector Instance { get { return instance.Value; } }
 
         //Private constructor, used for singleton pattern. Cannot be called externally.
@@ -247,6 +249,7 @@ namespace BEIMA.Backend.MongoService
         #endregion
 
         #region Device Methods
+
         /// <summary>
         /// Inserts a device into the "devices" collection
         /// </summary>
@@ -305,9 +308,11 @@ namespace BEIMA.Backend.MongoService
         {
             return Update(doc, beimaDb, deviceCollection);
         }
+
         #endregion
 
         #region DeviceType Methods
+
         /// <summary>
         /// Gets a device type from the "deviceTypes" collection, given an objectID.
         /// </summary>
@@ -366,6 +371,7 @@ namespace BEIMA.Backend.MongoService
         {
             return Update(doc, beimaDb, deviceTypeCollection);
         }
+
         #endregion
 
         #region Building Methods

@@ -11,7 +11,7 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public class DeviceType
     {
-        //Properties of a DeviceType object
+        // Properties of a DeviceType object
         [BsonId]
         [JsonProperty(PropertyName = "_id")]
         public ObjectId Id { get; set; }
@@ -108,7 +108,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="user">Username of the user who last modified the DeviceType.</param>
         public void SetLastModified(DateTime? date, string user)
         {
-            //Check if null, if they are, then use defualt values
+            // Check if null, if they are, then use defualt values
             date ??= DateTime.UtcNow;
             user ??= string.Empty;
 

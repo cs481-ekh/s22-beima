@@ -13,6 +13,7 @@ namespace BEIMA.Backend.MongoService
     {
         [BsonElement("date")]
         public DateTime Date { get; set; }
+
         [BsonElement("user")]
         public string User { get; set; }
     }
@@ -25,6 +26,7 @@ namespace BEIMA.Backend.MongoService
     {
         [BsonElement("fileName")]
         public string FileName { get; set; }
+
         [BsonElement("fileUid")]
         public string FileUid { get; set; }
 
@@ -39,10 +41,13 @@ namespace BEIMA.Backend.MongoService
     {
         [BsonElement("buildingId")]
         public ObjectId? BuildingId { get; set; }
+
         [BsonElement("notes")]
         public string Notes { get; set; }
+
         [BsonElement("latitude")]
         public string Latitude { get; set; }
+
         [BsonElement("longitude")]
         public string Longitude { get; set; }
     }
@@ -53,7 +58,7 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public class Device
     {
-        //Properties of a Device object
+        // Properties of a Device object
         [BsonId]
         [JsonProperty(PropertyName = "_id")]
         public ObjectId Id { get; set; }
@@ -200,7 +205,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="longitude">The longitude of the physical location of the device.</param>
         public void SetLocation(ObjectId? buildingId, string notes, string latitude, string longitude)
         {
-            //Check if null, if they are, then use empty string
+            // Check if null, if they are, then use empty string
             Location = new DeviceLocation()
             {
                 BuildingId = buildingId,
@@ -217,7 +222,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="user">Username of the user who last modified the Device.</param>
         public void SetLastModified(DateTime? date, string user)
         {
-            //Check if null, if they are, then use defualt values
+            // Check if null, if they are, then use defualt values
             LastModified = new DeviceLastModified()
             {
                 Date = date ??= DateTime.UtcNow,
