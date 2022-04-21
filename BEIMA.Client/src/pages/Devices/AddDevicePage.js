@@ -176,7 +176,7 @@ const AddDevicePage = () => {
     
     const formFields = addButtonEvent.target.form.elements;
     const dbJson = await createJSON(formFields);
-    if(dbJson){
+    if(dbJson && Object.keys(errors).length === 0){
       AddDevice(dbJson, deviceImage, deviceAdditionalDocs).then(response => {
         //reset the form or show a message regarding insertion failure
         if(response.status === Constants.HTTP_SUCCESS){
@@ -257,7 +257,7 @@ const AddDevicePage = () => {
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
-      return false;
+      return;
     } else if (warnings.length > 0) {
       isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
     }
