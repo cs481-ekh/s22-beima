@@ -1,5 +1,7 @@
 # BSU Energy Infrastructure Mapping App (BEIMA)
 
+[![beima Actions Status](https://github.com/cs481-ekh/s22-beima/actions/workflows/beima.yml/badge.svg)](https://github.com/cs481-ekh/s22-beima/actions)
+
 The Energy Infrastructure Management Department at Boise State University needs a system to easily track energy infrastructure information across campus. The application needs to map, record, display, and manage campus utility infrastructure data in a simple and effective manner.
 
 BEIMA satisfies this need by allowing university employees to take a location-tagged photo of a piece of equipment on their smartphone or tablet for upload. Using a desktop browser, the user inputs the equipment’s relevant characteristics, the location-tagged photo, and additional documents if needed. The entered information is populated into a searchable database so the user can access the interface and display it in an organized and user-friendly interface via lists and individual device views.
@@ -36,4 +38,4 @@ MinIO is also supported as a storage provider when deploying on-premises. MinIO 
 
 Since our storage service has been abstracted, any storage provider can be used with BEIMA with very little refactoring required.
 
-[![beima Actions Status](https://github.com/cs481-ekh/s22-beima/actions/workflows/beima.yml/badge.svg)](https://github.com/cs481-ekh/s22-beima/actions)
+
