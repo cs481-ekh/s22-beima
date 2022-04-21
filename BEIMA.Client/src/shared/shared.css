@@ -2,50 +2,65 @@
     flex-direction: column;
 }
 .logo {
-    text-align: center;
-    margin-top: 4%;
+    margin-top: 10px;
+    padding: 10px 20px
 }
 .sharedNavBar {
     background-color: #0033A0;
     display: flex;
-    max-width: 245px;
-    min-width: 160px;
-    width: 27%;
-    min-height: 100%;
-    overflow: hidden;
+    box-shadow: 0px 50px 8px #333;
+    z-index: 1;
+    font-family: 'Montserrat';
 }
+
 .bsu-logo {
-    justify-content: center;
-    max-width: 72%;
-    max-height: 21%;
-    width: auto;
-    height: auto;
+    max-width:250px;
 }
 .sharedText, .sharedHeader {
-    font-family: Arial;
     color: white;
     text-align: center;
     text-decoration: none;
 }
-.pageTitle {
-    font-family: Arial;
+.toolbar {
+    height:50px;
     text-align: left;
-    padding-left: 1%;
-    border: thin solid gray;
-    margin: 1%;
+    padding:10px;
+    box-shadow: 0px 0px 8px #333;
 }
-.sharedHeader, .pageLink {
-    padding: 2% 
+
+.toolbarTitle {
+    margin:0px;
 }
+
 .sharedText {
-    font-weight: bolder;
+    display: flex;
+    padding:10px 0px;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px 20px;
 }
-.sharedHeader {
-    font-size: x-large;
-    font-weight: bolder;
-    border-bottom: thin solid white;
-    letter-spacing: .2rem;
+
+.navbarDivider {
+    color: white;
+    font-size: 20px;
+    font-weight: 900;
+    padding: 0px 20px;
 }
+
+.textIcon {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
 .sharedText:hover {
-    color: #D64309;
+    background:#1947a9;
+    box-shadow: 0px 0px 1px 1px #1947a9;
+    color:white
+}
+
+.logout {
+    cursor:pointer;
+    user-select: none;
 }

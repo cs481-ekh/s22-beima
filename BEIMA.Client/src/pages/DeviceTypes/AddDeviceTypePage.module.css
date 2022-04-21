@@ -1,5 +1,5 @@
 .typeform {
-  margin: 10px 5% 0px 5%;
+  margin: 25px 5% 0px 5%;
 }
 
 .button, .addButton{
@@ -10,4 +10,17 @@
 
 .listButton, .addButton { 
   float: right;
+}
+
+.formHeader {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.addButton:hover, .button:hover {
+  background-color: #BE3B08 !important;
+  border-color: #BE3B08 !important;
 }

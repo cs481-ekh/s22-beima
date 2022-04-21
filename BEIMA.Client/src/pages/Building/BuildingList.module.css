@@ -1,5 +1,5 @@
 .list {
-  margin: 10px 5% 0px 5%;
+  margin: 25px 5% 0px 5%;
 }
 
 .details{
@@ -13,5 +13,9 @@
 .addButton {
   background-color: #D64309 !important;
   border-color: #D64309 !important;
-  float: right;
+}
+
+.addButton:hover {
+  background-color: #BE3B08 !important;
+  border-color: #BE3B08 !important;
 }

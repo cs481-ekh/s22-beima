@@ -1,5 +1,5 @@
 .fieldform {
-    margin: 10px 5% 0px 5%;
+    margin: 25px 5% 0px 5%;
 }
 
 .addButton, .button{
@@ -8,12 +8,12 @@
 
 }
 
-.addButton {
-  float: right;
-}
-
 .buttonGroup {
+  display: flex;
+  gap:10px;
+  flex-wrap: wrap;
   flex-direction: row;
+  justify-content: space-between;
 }
 
 .fileupload {
@@ -28,4 +28,9 @@
   background-color: #FFFFFF !important;
   border-color: #D64309 !important;
   color: #D64309 !important;
+}
+
+.addButton:hover, .button:hover, .dropDownSelected:hover {
+    background-color: #BE3B08 !important;
+    border-color: #BE3B08 !important;
 }

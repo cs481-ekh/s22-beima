@@ -1,16 +1,24 @@
 import { useOutletContext, useNavigate } from 'react-router-dom';
-import { Button, Row, Col } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './ListUsersPage.module.css';
 import ItemList from "../../shared/ItemList/ItemList";
 import GetUserList from '../../services/GetUserList.js';
 
+const AddUserButton = () => {
+  let navigate = useNavigate();
+  return (    
+    <Button variant="primary" type="button" className={styles.addButton} id="addNewBuilding" onClick={() => navigate(`addBuilding`)}>
+      Add New Building
+    </Button>
+  )
+}
+
+
 const ListUsersPage = () => {
   const [userList, setUserList] = useState([]);
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
-  
-  let navigate = useNavigate();
   
   useEffect(() => {
     setPageName('List Users')
@@ -39,15 +47,7 @@ const ListUsersPage = () => {
   
   return (
     <div className={styles.fieldform} id="userListContent">
-      <Row>
-        <Col>
-          <Button variant="primary" type="button" className={styles.addButton} id="addNewUser" onClick={() => navigate(`addUser`)}>
-            Add New User
-          </Button>
-        </Col>
-      </Row>
-      <br/>
-      <ItemList list={userList} RenderItem={RenderItem} loading={loading}/>
+      <ItemList list={userList} RenderItem={RenderItem} loading={loading} addButton={<AddUserButton/>}/>
     </div>
   )
 }

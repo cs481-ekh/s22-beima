@@ -13,7 +13,9 @@ namespace BEIMA.Backend.StorageService
 
         private StorageProvider()
         {
-            if (Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
+            var environment = Environment.GetEnvironmentVariable("CurrentEnv");
+
+            if (environment == "dev-local" || environment == "deploy")
             {
                 _storage = new MinioStorageProvider();
             }

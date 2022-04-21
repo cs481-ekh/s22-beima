@@ -28,6 +28,7 @@ const GetDeviceTypeList = async() => {
       name: item.name,
       description: item.description,
       notes: item.notes,
+      numDevices : item.count,
       lastModified: item.lastModified.date
     }
   })
