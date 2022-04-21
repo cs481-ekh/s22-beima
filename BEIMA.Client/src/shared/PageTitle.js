@@ -11,7 +11,11 @@ function CapitalizeAndAssignValue(text){
 const PageTitle = (props) => {
     const { pageName } = props;
     var name = CapitalizeAndAssignValue(pageName);
-    return <h3 className="pageTitle">{name}</h3>;
+    return (
+        <div className="toolbar">
+            <h3 className="toolbarTitle">{name}</h3>
+        </div>
+    )
 }
 
 export default PageTitle;

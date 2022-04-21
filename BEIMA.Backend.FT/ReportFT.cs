@@ -120,7 +120,7 @@ namespace BEIMA.Backend.FT
                 {
                     // Read in and assert first line of the csv.
                     var line1 = streamReader.ReadLine();
-                    Assert.That(line1, Is.EqualTo("Id,DeviceTypeId,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,GenericField,BuildingId,Notes,Latitude,Longitude,Date,User"));
+                    Assert.That(line1, Is.EqualTo("Id,DeviceTypeName,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,GenericField,BuildingName,Notes,Latitude,Longitude,Date,User"));
                 }
             }
         }

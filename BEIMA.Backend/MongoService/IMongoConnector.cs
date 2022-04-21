@@ -9,7 +9,19 @@ namespace BEIMA.Backend.MongoService
     /// </summary>
     public interface IMongoConnector
     {
+        /// <summary>
+        /// Singleton design pattern, used to get an instance of the MongoConnector
+        /// </summary>
         public static MongoConnector Instance { get; }
+
+        #region Device Methods
+
+        /// <summary>
+        /// Inserts a device into the "devices" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertDevice(BsonDocument doc);
 
         /// <summary>
         /// Gets a device from the "devices" collection, given an objectID.
@@ -19,17 +31,17 @@ namespace BEIMA.Backend.MongoService
         public BsonDocument GetDevice(ObjectId objectId);
 
         /// <summary>
+        /// Gets a list of Device BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter);
+
+        /// <summary>
         /// Gets a device from the "devices" collection, given an objectID.
         /// </summary>
         /// <returns>BsonDocument that was requested</returns>
         public List<BsonDocument> GetAllDevices();
-
-        /// <summary>
-        /// Inserts a device into the "devices" collection
-        /// </summary>
-        /// <param name="doc">BsonDocument that contains the fully formed device document (including all required and optional fields)</param>
-        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
-        public ObjectId? InsertDevice(BsonDocument doc);
 
         /// <summary>
         /// Deletes from the "devices" collection, given the objectID.
@@ -45,6 +57,17 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateDevice(BsonDocument doc);
 
+        #endregion
+
+        #region DeviceType Methods
+
+        /// <summary>
+        /// Inserts a device into the "deviceTypes" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertDeviceType(BsonDocument doc);
+
         /// <summary>
         /// Gets a device type from the "deviceTypes" collection, given an objectID.
         /// </summary>
@@ -57,13 +80,6 @@ namespace BEIMA.Backend.MongoService
         /// </summary>
         /// <returns>BsonDocument that was requested</returns>
         public List<BsonDocument> GetAllDeviceTypes();
-
-        /// <summary>
-        /// Inserts a device into the "deviceTypes" collection
-        /// </summary>
-        /// <param name="doc">BsonDocument that contains the fully formed device type document (including all required and optional fields)</param>
-        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
-        public ObjectId? InsertDeviceType(BsonDocument doc);
 
         /// <summary>
         /// Deletes from the "deviceTypes" collection, given the objectID.
@@ -79,6 +95,17 @@ namespace BEIMA.Backend.MongoService
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateDeviceType(BsonDocument doc);
 
+        #endregion
+
+        #region Building Methods
+
+        /// <summary>
+        /// Inserts a building into the "buildings" collection
+        /// </summary>
+        /// <param name="doc">BsonDocument that contains the fully formed building document</param>
+        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
+        public ObjectId? InsertBuilding(BsonDocument doc);
+
         /// <summary>
         /// Gets a Building from the "buildings" collection, given an objectID.
         /// </summary>
@@ -93,25 +120,11 @@ namespace BEIMA.Backend.MongoService
         public List<BsonDocument> GetAllBuildings();
 
         /// <summary>
-        /// Inserts a building into the "buildings" collection
-        /// </summary>
-        /// <param name="doc">BsonDocument that contains the fully formed building document</param>
-        /// <returns>ObjectId of the newly inserted object if successful, null if failed</returns>
-        public ObjectId? InsertBuilding(BsonDocument doc);
-
-        /// <summary>
         /// Deletes from the "buildings" collection, given the objectID.
         /// </summary>
         /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
         /// <returns>true if successful, false if not successful</returns>
         public bool DeleteBuilding(ObjectId objectId);
-
-        /// <summary>
-        /// Gets all devices that match the parameter filter's criteria
-        /// </summary>
-        /// <param name="filter"></param>
-        /// <returns></returns>
-        public List<BsonDocument> GetFilteredDevices(FilterDefinition<BsonDocument> filter);
 
         /// <summary>
         /// Updates a building in the "buildings" collection, given a fully formed updated building.
@@ -120,12 +133,9 @@ namespace BEIMA.Backend.MongoService
         /// <returns>The updated BsonDocument, or null if nothing was updated.</returns>
         public BsonDocument UpdateBuilding(BsonDocument doc);
 
-        /// <summary>
-        /// Gets a list of User BsonDocuments using the passed in filter.
-        /// </summary>
-        /// <param name="filter">The filter to be applied.</param>
-        /// <returns>List of BsonDocuments</returns>
-        public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
+        #endregion
+
+        #region User Methods
 
         /// Inserts a user into the "users" collection
         /// </summary>
@@ -139,6 +149,13 @@ namespace BEIMA.Backend.MongoService
         /// <param name="objectId">Corresponds to the "_id" field for a given document inside of MongoDB</param>
         /// <returns>BsonDocument that was requested</returns>
         public BsonDocument GetUser(ObjectId objectId);
+
+        /// <summary>
+        /// Gets a list of User BsonDocuments using the passed in filter.
+        /// </summary>
+        /// <param name="filter">The filter to be applied.</param>
+        /// <returns>List of BsonDocuments</returns>
+        public List<BsonDocument> GetFilteredUsers(FilterDefinition<BsonDocument> filter);
 
         /// <summary>
         /// Gets all users from the "users" collection.
@@ -159,5 +176,7 @@ namespace BEIMA.Backend.MongoService
         /// <param name="doc">BsonDocument containing the updated BsonDocument.</param>
         /// <returns>true if successful, false if unsuccessful</returns>
         public BsonDocument UpdateUser(BsonDocument doc);
+
+        #endregion
     }
 }

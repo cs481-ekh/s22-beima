@@ -13,6 +13,7 @@ const BuildingPage = () => {
   const [setPageName] = useOutletContext();
   const [loading, setLoading] = useState(true);
   const [building, setBuilding] = useState(null);
+  const [buildingChanged, setBuildingChanged] = useState(false);
 
   const { id } = useParams();
 
@@ -21,10 +22,11 @@ const BuildingPage = () => {
       const building = (await GetBuilding(id)).response;
       setBuilding(building)
       setLoading(false)
+      setBuildingChanged(false);
     }
    loadData();
     setPageName('View Building')
-  },[setPageName, id])
+  },[setPageName, buildingChanged, id])
 
   /**
    * Renders an card styled input that lets a user change a field's input
@@ -108,8 +110,11 @@ const BuildingPage = () => {
       if(updateResult.status === Constants.HTTP_SUCCESS){
         Notifications.success("Update Building Successful", `Building ${name} updated successfully.`);
         setEditable(false);
+        setLoading(true);
+        setBuildingChanged(true);
       } else {
         Notifications.error("Unable to Update Building", `Update of Building ${name} failed.`);
+        cancel();
       }
     }
 

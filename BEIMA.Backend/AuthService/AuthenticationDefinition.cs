@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace BEIMA.Backend.AuthService
+﻿namespace BEIMA.Backend.AuthService
 {
     /// <summary>
     /// Helps to store the instance of the authentication service being used.

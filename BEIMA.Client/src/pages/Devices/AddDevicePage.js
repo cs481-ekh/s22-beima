@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router-dom';
-import { Card, Button, Row, Col, Form } from 'react-bootstrap';
+import { Card, Button, Form } from 'react-bootstrap';
 import { useEffect, useState } from "react";
 import styles from './AddDevicePage.module.css';
 import FormListWithErrorFeedback from '../../shared/FormList/FormListWithErrorFeedback.js';
@@ -176,7 +176,7 @@ const AddDevicePage = () => {
     
     const formFields = addButtonEvent.target.form.elements;
     const dbJson = await createJSON(formFields);
-    if(dbJson){
+    if(dbJson && Object.keys(errors).length === 0){
       AddDevice(dbJson, deviceImage, deviceAdditionalDocs).then(response => {
         //reset the form or show a message regarding insertion failure
         if(response.status === Constants.HTTP_SUCCESS){
@@ -257,7 +257,7 @@ const AddDevicePage = () => {
     //display errors when present or attempt insert when valid data is present
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
-      return false;
+      return;
     } else if (warnings.length > 0) {
       isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
     }
@@ -288,16 +288,12 @@ const AddDevicePage = () => {
         <Card.Body>
           <Form >
             <label>Select Device Type</label>
-            <Row className={styles.buttonGroup}>
-              <Col>
-                <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
-              </Col>
-              <Col>
-                <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
+            <div className={styles.buttonGroup}>
+              <FilledDropDown dropDownText={selectedDeviceType.name} items={deviceTypes} selectFunction={getFieldsForTypeId} buttonStyle={deviceTypeDropDownStyle} dropDownId={"typeDropDown"} />
+              <Button variant="primary" type="button" className={styles.addButton} id="addDevice" onClick={saveDeviceToDb}>
                   Add Device
-                </Button>
-              </Col>
-            </Row>
+              </Button>
+            </div>
             <br/>
             <h4>Device Image</h4>
             <ImageFileUpload type="Device Image" multiple={false} onChange={setImage}/>

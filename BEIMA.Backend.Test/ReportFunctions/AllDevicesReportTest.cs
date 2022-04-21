@@ -19,7 +19,7 @@ using static BEIMA.Backend.Test.RequestFactory;
 namespace BEIMA.Backend.Test.ReportFunctions
 {
     [TestFixture]
-    public class AddDevicesReportTest : UnitTestBase
+    public class AllDevicesReportTest : UnitTestBase
     {
         [Test]
         public void DeviceAndDeviceTypeInDb_AllDevicesReport_ReturnsValidZipFileByteArray()
@@ -29,8 +29,26 @@ namespace BEIMA.Backend.Test.ReportFunctions
             deviceType.AddField(Guid.NewGuid().ToString(), "TestField");
             deviceType.SetLastModified(DateTime.UtcNow, "Anonymous");
 
+            var buildingOne = new Building()
+            {
+                Id = ObjectId.GenerateNewId(),
+                Name = "Farm",
+                Number = "5",
+                Notes = "It smells",
+                Location = new BuildingLocation()
+                {
+                    Latitude = "",
+                    Longitude = ""
+                },
+                LastModified = new BuildingLastModified()
+                {
+                    Date = DateTime.UtcNow,
+                    User = "Anonymous"
+                }
+            };
+
             var device = new Device(ObjectId.GenerateNewId(), deviceType.Id, "A-1", "Generic Inc.", "1234", "asdf", 2022, "Some notes");
-            device.SetLocation(ObjectId.GenerateNewId(), "Some notes.", "1.234", "5.678");
+            device.SetLocation(buildingOne.Id, "Some notes.", "1.234", "5.678");
             device.AddField(deviceType.Fields.Single().Name, "TestValue");
             device.SetLastModified(DateTime.UtcNow, "Anonymous");
 
@@ -41,6 +59,9 @@ namespace BEIMA.Backend.Test.ReportFunctions
             mockDb.Setup(mock => mock.GetAllDevices())
                   .Returns(new List<BsonDocument> { device.GetBsonDocument() })
                   .Verifiable();
+            mockDb.Setup(mock => mock.GetAllBuildings())
+                .Returns(new List<BsonDocument> { buildingOne.GetBsonDocument() })
+                .Verifiable();
             MongoDefinition.MongoInstance = mockDb.Object;
 
             Mock<IAuthenticationService> mockAuth = new Mock<IAuthenticationService>();
@@ -74,8 +95,8 @@ namespace BEIMA.Backend.Test.ReportFunctions
                     // Read in and assert on each line of the csv
                     var line1 = streamReader.ReadLine();
                     var line2 = streamReader.ReadLine();
-                    Assert.That(line1, Is.EqualTo("Id,DeviceTypeId,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,TestField,BuildingId,Notes,Latitude,Longitude,Date,User"));
-                    Assert.That(line2, Does.Match(@"^[0-9a-fA-F]{24},[0-9a-fA-F]{24},A-1,Generic Inc.,1234,asdf,2022,Some notes,TestValue,[0-9a-fA-F]{24},Some notes.,1.234,5.678,DATE,Anonymous"
+                    Assert.That(line1, Is.EqualTo("Id,DeviceTypeName,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,TestField,BuildingName,Notes,Latitude,Longitude,Date,User"));
+                    Assert.That(line2, Does.Match(@"^[0-9a-fA-F]{24},Generic,A-1,Generic Inc.,1234,asdf,2022,Some notes,TestValue,Farm,Some notes.,1.234,5.678,DATE,Anonymous"
                                                   .Replace("DATE", device.LastModified.Date.ToString())));
                 }
             }

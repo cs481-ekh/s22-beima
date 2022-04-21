@@ -1,7 +1,6 @@
 .mapDiv {
-    height: 90%;
-    width: 100%;
-    padding: 20px;
+    height: calc(100% - 100px);
+    margin: 25px 5% 25px 5%;
 }
 
 .markerContainer {
@@ -22,4 +21,17 @@
     font-size: large;
     break-after: unset;
     margin: 1px;
+}
+
+.loadingItem {
+    padding: 14px 0px;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+  }
+  
+.loadingItem span {
+    border-radius: 5px;
+}
+
+.mapLoading {
+    margin: 25px 5% 25px 5%;
 }

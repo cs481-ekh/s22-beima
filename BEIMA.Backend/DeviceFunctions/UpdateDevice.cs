@@ -1,21 +1,20 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using BEIMA.Backend.AuthService;
+using BEIMA.Backend.Models;
+using BEIMA.Backend.MongoService;
+using BEIMA.Backend.StorageService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using MongoDB.Bson;
-using BEIMA.Backend.MongoService;
-using System.Net;
-using BEIMA.Backend.Models;
 using MongoDB.Bson.Serialization;
-using System.Linq;
-using BEIMA.Backend.StorageService;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
-using BEIMA.Backend.AuthService;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace BEIMA.Backend.DeviceFunctions
 {
@@ -39,9 +38,9 @@ namespace BEIMA.Backend.DeviceFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -104,7 +103,7 @@ namespace BEIMA.Backend.DeviceFunctions
                     data.Location.Longitude
                 );
 
-                // Check that each request field matches the device type fields
+                // Check that each device custom field matches the device type custom fields
                 if (data.Fields != null)
                 {
                     if (data.Fields.Count != deviceType.Fields.ToDictionary().Count)
@@ -160,6 +159,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             device.SetLastModified(DateTime.UtcNow, claims.Username);
 
+            // Validate device properties
             string message;
             HttpStatusCode statusCode;
             if (!Rules.IsDeviceValid(device, deviceType, out message, out statusCode))
@@ -187,6 +187,7 @@ namespace BEIMA.Backend.DeviceFunctions
 
             var updatedDevice = BsonSerializer.Deserialize<Device>(updatedDeviceDocument);
 
+            // Get updated device presigned urls for files.
             if (updatedDevice.Photo.FileUid != null)
             {
                 var presignedUrl = await _storage.GetPresignedURL(updatedDevice.Photo.FileUid);

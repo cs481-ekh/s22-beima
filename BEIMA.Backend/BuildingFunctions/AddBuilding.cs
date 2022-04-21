@@ -1,17 +1,17 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using BEIMA.Backend.AuthService;
+using BEIMA.Backend.Models;
+using BEIMA.Backend.MongoService;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using BEIMA.Backend.MongoService;
 using MongoDB.Bson;
-using BEIMA.Backend.Models;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 using System.Net;
-using BEIMA.Backend.AuthService;
+using System.Threading.Tasks;
 
 namespace BEIMA.Backend.BuildingFunctions
 {
@@ -33,9 +33,9 @@ namespace BEIMA.Backend.BuildingFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a building post request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = 401 };
@@ -44,6 +44,7 @@ namespace BEIMA.Backend.BuildingFunctions
             Building building;
             try
             {
+                // Parse building object from request.
                 string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
                 var data = JsonConvert.DeserializeObject<BuildingRequest>(requestBody);
                 building = new Building(ObjectId.GenerateNewId(),
@@ -56,9 +57,9 @@ namespace BEIMA.Backend.BuildingFunctions
             {
                 return new BadRequestObjectResult(Resources.CouldNotParseBody);
             }
-            // TODO: Use actual user.
             building.SetLastModified(DateTime.UtcNow, claims.Username);
 
+            // Validate building properties.
             string message;
             HttpStatusCode statusCode;
             if (!Rules.IsBuildingValid(building, out message, out statusCode))

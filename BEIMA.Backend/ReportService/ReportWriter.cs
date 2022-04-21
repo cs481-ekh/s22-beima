@@ -26,7 +26,7 @@ namespace BEIMA.Backend.ReportService
         /// <returns>Byte[] containing a file filled with devicetype data and the number of devices associated with that devicetype</returns>
         public static byte[] GenerateDeviceTypeReport(List<DeviceType> deviceTypes, List<Device> devices, string delimiter = ",")
         {
-            if(deviceTypes == null || deviceTypes.Count == 0)
+            if (deviceTypes == null || deviceTypes.Count == 0)
             {
                 return null;
             }
@@ -39,7 +39,7 @@ namespace BEIMA.Backend.ReportService
             }
 
             // Get all devices and add them to the dict based on deviceTypeId
-            if(devices != null)
+            if (devices != null)
             {
                 foreach (var device in devices)
                 {
@@ -49,7 +49,7 @@ namespace BEIMA.Backend.ReportService
                         typeToDevices[device.DeviceTypeId].Add(device);
                     }
                 }
-            }            
+            }
 
             byte[] fileBytes;
             using (var stream = new MemoryStream())
@@ -89,23 +89,30 @@ namespace BEIMA.Backend.ReportService
         /// </summary>
         /// <param name="deviceType">DeviceType that the report should be based on</param>
         /// <param name="devices">List of all devices assoicated with deviceType</param>
+        /// <param name="buildings">List of all buildings in db</param>
         /// <param name="delimiter">String used to seperate every value in the report</param>
         /// <returns>Byte[] containing a file filled with device data associated with the passed in deviceTypeId</returns>
-        public static byte[] GeneratDeviceReportByDeviceType(DeviceType deviceType, List<Device> devices, string delimiter = ",")
+        public static byte[] GeneratDeviceReportByDeviceType(DeviceType deviceType, List<Device> devices, List<Building> buildings, string delimiter = ",")
         {
             // Return if deviceType is null
-            if(deviceType == null)
+            if (deviceType == null)
             {
                 return null;
             }
 
-            if(devices == null || devices.Count == 0)
+            if (devices == null || devices.Count == 0)
             {
                 return null;
             }
+
+            if (buildings == null)
+            {
+                buildings = new List<Building>();
+            }
+
 
             byte[] fileBytes;
-            using(var stream = new MemoryStream())
+            using (var stream = new MemoryStream())
             using (var csvWriter = new StreamWriter(stream))
             {
                 // Create object containing all props and fields that need to be printed
@@ -122,16 +129,16 @@ namespace BEIMA.Backend.ReportService
 
                 // Write all device data                            
                 for (var i = 0; i < devices.Count; i++)
-                {                                        
+                {
                     var device = devices[i];
                     // Ensure that device doesn't print if it doesn't match deviceType Id. Should not happen.
-                    if(device.DeviceTypeId != deviceType.Id)
+                    if (device.DeviceTypeId != deviceType.Id)
                     {
                         continue;
                     }
 
                     // Write device's values
-                    var values = GenerateDeviceValues(device, deviceType);
+                    var values = GenerateDeviceValues(device, deviceType, buildings);
                     var valueString = string.Join(delimiter, values);
                     if (i != devices.Count - 1)
                     {
@@ -156,9 +163,10 @@ namespace BEIMA.Backend.ReportService
         /// </summary>
         /// <param name="deviceTypes">List of all device types in the database</param>
         /// <param name="devices">List of all devices in the database</param>
+        /// <param name="buildings">List of all buildings in db</param>
         /// <param name="delimiter">String used to seperate every value in the report</param> 
         /// <returns>Byte[] containing a zipfile of device type files filled with associated devices</returns>
-        public static byte[] GenerateAllDeviceReports(List<DeviceType> deviceTypes, List<Device> devices, string delimiter = ",")
+        public static byte[] GenerateAllDeviceReports(List<DeviceType> deviceTypes, List<Device> devices, List<Building> buildings, string delimiter = ",")
         {
             // Return if no devicesTypes
             if (deviceTypes == null || deviceTypes.Count == 0)
@@ -173,7 +181,7 @@ namespace BEIMA.Backend.ReportService
 
             // Create dict to group devices based on device type id
             var typeToDevices = new Dictionary<ObjectId, List<Device>>();
-            foreach(var deviceType in deviceTypes)
+            foreach (var deviceType in deviceTypes)
             {
                 typeToDevices.Add(deviceType.Id, new List<Device>());
             }
@@ -185,12 +193,12 @@ namespace BEIMA.Backend.ReportService
                 if (typeToDevices.ContainsKey(device.DeviceTypeId))
                 {
                     typeToDevices[device.DeviceTypeId].Add(device);
-                }                
+                }
             }
 
             // Remove any deviceTypes that do not have any devices
             typeToDevices = typeToDevices.Where(item => item.Value.Count > 0).ToDictionary(item => item.Key, item => item.Value);
-            if(typeToDevices.Keys.Count == 0)
+            if (typeToDevices.Keys.Count == 0)
             {
                 return null;
             }
@@ -225,9 +233,9 @@ namespace BEIMA.Backend.ReportService
                             {
                                 // Write device's values
                                 var device = deviceTypeDevices[i];
-                                var values = GenerateDeviceValues(device, deviceType);
+                                var values = GenerateDeviceValues(device, deviceType, buildings);
                                 var valueString = string.Join(delimiter, values);
-                                if(i != deviceTypeDevices.Count - 1)
+                                if (i != deviceTypeDevices.Count - 1)
                                 {
                                     valueString += Environment.NewLine;
                                 }
@@ -275,7 +283,7 @@ namespace BEIMA.Backend.ReportService
         /// </summary>
         /// <param name="deviceType">DeviceType that the values should be based on</param>
         /// <param name="associatedDevices">List of devices associated with the DeviceType</param>
-        /// <returns></returns>
+        /// <returns>List of device type property values.</returns>
         private static List<string> GenerateDeviceTypeReportValues(DeviceType deviceType, List<Device> associatedDevices)
         {
             var values = new List<string>();
@@ -290,10 +298,10 @@ namespace BEIMA.Backend.ReportService
 
             // Add all of the last modified values contained in the deviceType
             var sortedLastModifiedKeys = DeviceTypeReportProps.LastModifiedProps.OrderBy(val => val.Key).Select(val => val.Key);
-            foreach(var key in sortedLastModifiedKeys)
+            foreach (var key in sortedLastModifiedKeys)
             {
                 var val = "";
-                if(deviceType.LastModified != null && deviceType.LastModified.Contains(key))
+                if (deviceType.LastModified != null && deviceType.LastModified.Contains(key))
                 {
                     val = deviceType.LastModified[key].ToString();
                 }
@@ -318,7 +326,7 @@ namespace BEIMA.Backend.ReportService
             var headers = new List<string>();
 
             // Add all of the general prop names associated with the Device object
-            var generalProps = DeviceReportProps.GeneralProps.Select(p => p.Name);
+            var generalProps = DeviceReportProps.GeneralProps.Select(p => p.Name).Select(name => name == "DeviceTypeId" ? "DeviceTypeName" : name);
             headers.AddRange(generalProps);
 
             // Create a list of the device types's field values ordered by the field keys
@@ -326,7 +334,7 @@ namespace BEIMA.Backend.ReportService
             headers.AddRange(sortedFieldsValues);
 
             // Add all of the location prop names associated with the DeviceLocation object
-            var locationProps = DeviceReportProps.LocationProps.Select(p => p.Name);
+            var locationProps = DeviceReportProps.LocationProps.Select(p => p.Name).Select(name => name == "BuildingId" ? "BuildingName" : name);
             headers.AddRange(locationProps);
 
             // Add all of the last modified prop names associated with the DeviceLastModified object
@@ -342,8 +350,9 @@ namespace BEIMA.Backend.ReportService
         /// </summary>
         /// <param name="device">Device that's data values should be used</param>
         /// <param name="deviceType">DeviceType that the field keys should be based on</param>
-        /// <returns></returns>
-        private static List<string> GenerateDeviceValues(Device device, DeviceType deviceType)
+        /// <param name="buildings">Buildings that the building id should be based on</param>
+        /// <returns>List of device property values.</returns>
+        private static List<string> GenerateDeviceValues(Device device, DeviceType deviceType, List<Building> buildings)
         {
             var values = new List<string>();
 
@@ -352,6 +361,10 @@ namespace BEIMA.Backend.ReportService
             {
                 var propVal = prop.GetValue(device);
                 string value = propVal != null ? propVal.ToString() : "";
+                if (prop.Name == "DeviceTypeId" && propVal != null)
+                {
+                    value = deviceType.Name;
+                }
                 values.Add(value);
             }
 
@@ -369,13 +382,33 @@ namespace BEIMA.Backend.ReportService
             }
 
             // Add all of the location values contained in the device
-            foreach(var prop in DeviceReportProps.LocationProps)
+            foreach (var prop in DeviceReportProps.LocationProps)
             {
                 string value = "";
                 if (device.Location != null)
                 {
                     var propval = prop.GetValue(device.Location);
-                    value = propval != null ? propval.ToString() : "";
+
+                    if (propval != null && !String.IsNullOrEmpty(propval.ToString()))
+                    {
+                        if (prop.Name == "BuildingId")
+                        {
+                            try
+                            {
+                                var id = ObjectId.Parse(propval.ToString());
+                                value = buildings.Where(b => b.Id == id).Single().Name;
+                            }
+                            catch (Exception)
+                            {
+                                value = "";
+                            }
+
+                        }
+                        else
+                        {
+                            value = propval.ToString();
+                        }
+                    }
                 }
                 values.Add(value);
             }
@@ -391,7 +424,7 @@ namespace BEIMA.Backend.ReportService
                 }
                 values.Add(value);
             }
-            
+
             return values;
         }
     }

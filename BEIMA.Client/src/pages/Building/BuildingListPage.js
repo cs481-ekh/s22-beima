@@ -5,11 +5,19 @@ import ItemList from "../../shared/ItemList/ItemList";
 import { useOutletContext, useNavigate } from 'react-router-dom';
 import GetBuildingList from '../../services/GetBuildingList.js';
 
+const AddBuildingButton = () => {
+  let navigate = useNavigate();
+  return (
+    <Button variant="primary" type="button" className={styles.addButton} id="addNewBuilding" onClick={() => navigate(`addBuilding`)}>
+      Add New Building
+    </Button>
+  )
+}
+
 const BuildingListPage = () => {
   const [buildings, setBuildings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [setPageName] = useOutletContext();
-  let navigate = useNavigate();
 
   useEffect(() => {
     const loadData = async () => {
@@ -41,13 +49,11 @@ const BuildingListPage = () => {
     <div className={styles.fieldform} id="buildingListContent">
       <Row>
         <Col>
-          <Button variant="primary" type="button" className={styles.addButton} id="addNewBuilding" onClick={() => navigate(`addBuilding`)}>
-            Add New Building
-          </Button>
+         
         </Col>
       </Row>
       <br/>
-      <ItemList list={buildings} RenderItem={RenderItem} loading={loading}/>
+      <ItemList list={buildings} RenderItem={RenderItem} loading={loading} addButton={<AddBuildingButton/>}/>
     </div>
   )
 }

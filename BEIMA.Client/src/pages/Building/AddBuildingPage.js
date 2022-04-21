@@ -28,9 +28,10 @@ const AddBuildingPage = () => {
   }, [setPageName])
   
   // gathers all the input and puts it into JSON, files are just assigned to state variables for now
-  function createJSON(formFields){
+  async function createJSON(formFields){
     let fieldValues = {};
     let newErrors = {};
+    let warnings = [];
 
     for(let i = 0; i < formFields.length; i++){
       let formName = formFields[i].name;
@@ -38,6 +39,10 @@ const AddBuildingPage = () => {
       
       if(fieldNames.includes(formName)){
         let formJSON;
+
+        if(formFields[i].value.length === 0){
+          warnings.push(`"${formName}" field is empty<br/>`);
+        }
         
         //lat lon validation
         if (formName === 'Latitude' || formName === 'Longitude') {
@@ -56,9 +61,15 @@ const AddBuildingPage = () => {
     }
     fieldValues["Location"] = location;
 
+    let isConfirmed = true;
     if ( Object.keys(newErrors).length > 0 ) {
       setErrors(newErrors);
-    } else {
+      return;
+    } else if (warnings.length > 0){
+      isConfirmed = (await Notifications.multiWarning('Warning', warnings)).isConfirmed;
+    } 
+    
+    if(isConfirmed) {
       setErrors({});
       return fieldValues;
     }
@@ -66,7 +77,7 @@ const AddBuildingPage = () => {
     
   async function saveBuildingToDB(addButtonEvent){
     let formFields = addButtonEvent.target.form.elements;
-    let fullJSON = createJSON(formFields);
+    let fullJSON = await createJSON(formFields);
   
     if(fullJSON && Object.keys(errors).length === 0){
       AddBuilding(fullJSON).then(response => {

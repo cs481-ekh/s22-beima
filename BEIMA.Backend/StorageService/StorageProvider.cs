@@ -1,25 +1,25 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BEIMA.Backend.StorageService
 {
     public class StorageProvider : IStorageProvider
     {
-        //Contains instance variables
+        // Contains instance variables
         private readonly IStorageProvider _storage = null;
         private static readonly Lazy<StorageProvider> instance = new(() => new StorageProvider());
 
         private StorageProvider()
         {
-            if(Environment.GetEnvironmentVariable("CurrentEnv") == "dev-local")
+            var environment = Environment.GetEnvironmentVariable("CurrentEnv");
+
+            if (environment == "dev-local" || environment == "deploy")
             {
                 _storage = new MinioStorageProvider();
-            } else
+            }
+            else
             {
                 _storage = new AzureStorageProvider();
             }

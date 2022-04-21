@@ -30,7 +30,7 @@ namespace BEIMA.Backend.UserFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a user delete request.");
 
-            // Verify JWT token
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
             if (claims == null || !claims.Role.Equals(Constants.ADMIN_ROLE))
@@ -46,13 +46,14 @@ namespace BEIMA.Backend.UserFunctions
             var mongo = MongoDefinition.MongoInstance;
             var userId = new ObjectId(id);
 
-            // Do not delete admin if they are the only admin in the system. Prevents admins from deleting all admin accounts.
+            // Verify that the user exists in the first place
             var userDoc = mongo.GetUser(userId);
             if (userDoc == null)
             {
                 return new NotFoundObjectResult(Resources.UserNotFoundMessage);
             }
 
+            // Do not delete admin if they are the only admin in the system. Prevents admins from deleting all admin accounts.
             var userToDelete = BsonSerializer.Deserialize<User>(userDoc);
             if (userToDelete.Role == "admin")
             {

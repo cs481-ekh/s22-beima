@@ -9,40 +9,35 @@ services:
       context: .
       dockerfile: ./BEIMA.Client/Dockerfile
     ports:
-      - "3000:3000"
+      - "${HOST_PORT:-3000}:3000"
     networks:
-      internal:
-        ipv4_address: 192.168.0.5
+      - internal
 
   database:
     image: mongo
     ports:
-      - "27017:27017"
+      - "27017"
     volumes:
       - './data/mongo:/data/db'
     networks:
-      internal:
-        ipv4_address: 192.168.0.2
+      - internal
 
   api:
     build:
       context: .
       dockerfile: ./BEIMA.Backend/Dockerfile
     ports:
-      - "7071:7071"
+      - "${HOST_PORT:-7071}:7071"
     networks:
-      internal:
-        ipv4_address: 192.168.0.3
+      - internal
 
   minio:
     image: minio/minio:latest
     command: server /data
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "${HOST_PORT:-9000}:9000"
     networks:
-      internal:
-        ipv4_address: 192.168.0.4
+      - internal
     volumes:
       - './data/minio:/data'
     entrypoint: sh
@@ -50,8 +45,4 @@ services:
 
 networks:
   # The presence of these objects is sufficient to define them
-  internal: 
-    ipam:
-      driver: default
-      config:
-        - subnet: 192.168.0.0/24
+  internal: {}

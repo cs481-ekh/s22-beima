@@ -28,9 +28,9 @@ namespace BEIMA.Backend.DeviceTypeFunctions
         {
             log.LogInformation("C# HTTP trigger function processed a device type get list request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
@@ -38,6 +38,8 @@ namespace BEIMA.Backend.DeviceTypeFunctions
 
             var mongo = MongoDefinition.MongoInstance;
             var deviceTypes = mongo.GetAllDeviceTypes();
+
+            // Generate device type list
             var dotNetObjList = new List<object>();
             foreach (var deviceType in deviceTypes)
             {

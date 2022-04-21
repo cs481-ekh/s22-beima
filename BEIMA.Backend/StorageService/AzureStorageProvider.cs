@@ -2,10 +2,7 @@
 using Azure.Storage.Sas;
 using Microsoft.AspNetCore.Http;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BEIMA.Backend.StorageService
@@ -57,9 +54,10 @@ namespace BEIMA.Backend.StorageService
                 using (Stream stream = file.OpenReadStream())
                 {
                     await client.UploadAsync(stream);
-                }                   
+                }
                 return fileUid;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return null;
             }
@@ -100,8 +98,8 @@ namespace BEIMA.Backend.StorageService
             {
                 return null;
             }
-
         }
+
         /// <summary>
         /// Gets a stream to the requested file. Used for downloading a file. Will be
         /// used in conjuction with return new FileStreamResult(stream, "application/octet-stream");
@@ -123,8 +121,8 @@ namespace BEIMA.Backend.StorageService
                 stream.CopyTo(ms);
                 ms.Position = 0;
                 return ms;
-
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return null;
             }
@@ -147,7 +145,8 @@ namespace BEIMA.Backend.StorageService
                 var client = containerClient.GetBlobClient(fileUid);
                 var response = await client.ExistsAsync();
                 return response.Value;
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return false;
             }
@@ -175,7 +174,8 @@ namespace BEIMA.Backend.StorageService
                 var client = containerClient.GetBlobClient(fileUid);
                 var result = await client.DeleteIfExistsAsync();
                 return result.Value;
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 return false;
             }

@@ -23,7 +23,7 @@ namespace BEIMA.Backend.ReportFunctions
         /// </summary>
         /// <param name="req">The http request.</param>
         /// <param name="log">The logger to log to.</param>
-        /// <returns>An http response containing the all devices report.</returns>
+        /// <returns>An http response containing the all devices report in a zip file.</returns>
         [FunctionName("AllDevicesReport")]
         public static IActionResult Run(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "report/devices")] HttpRequest req,
@@ -31,9 +31,9 @@ namespace BEIMA.Backend.ReportFunctions
         {
             log.LogInformation("C# HTTP trigger function processed an all devices report request.");
 
+            // Authenticate
             var authService = AuthenticationDefinition.AuthenticationInstance;
             var claims = authService.ParseToken(req);
-
             if (claims == null)
             {
                 return new ObjectResult(Resources.UnauthorizedMessage) { StatusCode = StatusCodes.Status401Unauthorized };
@@ -44,6 +44,7 @@ namespace BEIMA.Backend.ReportFunctions
                 var mongo = MongoDefinition.MongoInstance;
                 List<DeviceType> deviceTypes = new List<DeviceType>();
                 List<Device> devices = new List<Device>();
+                List<Building> buildings = new List<Building>();
 
                 // Retrieve all device types.
                 foreach (var deviceType in mongo.GetAllDeviceTypes())
@@ -57,8 +58,14 @@ namespace BEIMA.Backend.ReportFunctions
                     devices.Add(BsonSerializer.Deserialize<Device>(device));
                 }
 
+                // Retrieve all buildings.
+                foreach (var building in mongo.GetAllBuildings())
+                {
+                    buildings.Add(BsonSerializer.Deserialize<Building>(building));
+                }
+
                 // Generate and return zip file.
-                var filebytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices);
+                var filebytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices, buildings);
                 return new FileContentResult(filebytes, "application/octet-stream")
                 {
                     FileDownloadName = "devices_report.zip"
