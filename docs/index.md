@@ -31,8 +31,10 @@ Lists can be filtered to show results that are relevant to the current need and 
 |![MINIO_wordmark-92high](https://user-images.githubusercontent.com/46760776/162550629-f63193b7-6d9c-445c-9087-12e9409b6c6a.png)|MinIO was selected to handle storage of all additional documents and images that the user uploads.|
 
 # How it looks
-![biema-login](https://user-images.githubusercontent.com/46760776/162551255-ad90162f-d89e-4cb1-85d1-005bad5a50c4.jpg)
-![beima-devices](https://user-images.githubusercontent.com/46760776/162551260-e21f9dae-fb72-40df-8640-8492dae05674.jpg)
-![beima-device-types](https://user-images.githubusercontent.com/46760776/162551266-ae547e22-dbfc-4084-ba5b-d14762110486.jpg)
-![beima-add-device](https://user-images.githubusercontent.com/46760776/162551272-ab928bb6-2008-4cf8-a300-25fbc596f42a.jpg)
-![beima-add-device-type](https://user-images.githubusercontent.com/46760776/162551276-6de9a271-b5a9-43ec-8f61-6f449686ecfd.jpg)
+![ioLogin](https://user-images.githubusercontent.com/46760776/164535744-4949ecd7-f45e-41e0-8e31-834899eed55b.png)
+![ioDeviceList](https://user-images.githubusercontent.com/46760776/164535771-a5582fb5-4159-4e92-b900-d9041cbac231.png)
+![ioDeviceTypes](https://user-images.githubusercontent.com/46760776/164535786-417920bf-6179-4805-b5dd-ad3a4ce45b29.png)
+![ioDeviceList](https://user-images.githubusercontent.com/46760776/164535804-133d5498-b319-4704-bbd3-a6de97049ed9.png)
+![ioAddDevice](https://user-images.githubusercontent.com/46760776/164535814-250e9340-a3c5-4037-b932-58dc48f1cd2e.png)
+![ioMap](https://user-images.githubusercontent.com/46760776/164535830-66933392-ade0-4d14-b8a0-16ce94572a00.png)
+
