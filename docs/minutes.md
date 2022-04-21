@@ -1,3 +1,24 @@
+## Minutes: 2022-04-20
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Tom Hess
+	Keelan Chen
+	Ashlyn Adamson
+## Documentation Writing Meeting
+
+Discussion about SDP deployment - Tom suspects local.settings.json file and .env files are missing on SDP, will follow up with Dr. Henderson tomorrow during class time. Ashlyn and Joe will be there with Tom.
+
+Discussion about data persistence in Docker: per Tom, the data will persist and the MinIO and Mongo data will stay there after restarts.
+
+Will assign out different user manual sections to each person, then reconvene tomorrow to discuss.
+* Tom - Device
+* Joe - DeviceType
+* Ashlyn - Building
+* Keelan - User
+* Kenny - Map
+
 ## Minutes: 2022-04-19
 ### Scribe: Keelan
 ### Attendees:
