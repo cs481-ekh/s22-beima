@@ -95,8 +95,8 @@ namespace BEIMA.Backend.Test.ReportFunctions
                     // Read in and assert on each line of the csv
                     var line1 = streamReader.ReadLine();
                     var line2 = streamReader.ReadLine();
-                    Assert.That(line1, Is.EqualTo("Id,DeviceTypeId,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,TestField,BuildingName,Notes,Latitude,Longitude,Date,User"));
-                    Assert.That(line2, Does.Match(@"^[0-9a-fA-F]{24},[0-9a-fA-F]{24},A-1,Generic Inc.,1234,asdf,2022,Some notes,TestValue,Farm,Some notes.,1.234,5.678,DATE,Anonymous"
+                    Assert.That(line1, Is.EqualTo("Id,DeviceTypeName,DeviceTag,Manufacturer,ModelNum,SerialNum,YearManufactured,Notes,TestField,BuildingName,Notes,Latitude,Longitude,Date,User"));
+                    Assert.That(line2, Does.Match(@"^[0-9a-fA-F]{24},Generic,A-1,Generic Inc.,1234,asdf,2022,Some notes,TestValue,Farm,Some notes.,1.234,5.678,DATE,Anonymous"
                                                   .Replace("DATE", device.LastModified.Date.ToString())));
                 }
             }
