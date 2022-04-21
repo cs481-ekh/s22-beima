@@ -326,7 +326,7 @@ namespace BEIMA.Backend.ReportService
             var headers = new List<string>();
 
             // Add all of the general prop names associated with the Device object
-            var generalProps = DeviceReportProps.GeneralProps.Select(p => p.Name);
+            var generalProps = DeviceReportProps.GeneralProps.Select(p => p.Name).Select(name => name == "DeviceTypeId" ? "DeviceTypeName" : name);
             headers.AddRange(generalProps);
 
             // Create a list of the device types's field values ordered by the field keys
@@ -360,6 +360,10 @@ namespace BEIMA.Backend.ReportService
             {
                 var propVal = prop.GetValue(device);
                 string value = propVal != null ? propVal.ToString() : "";
+                if (prop.Name == "DeviceTypeId" && propVal != null)
+                {
+                    value = deviceType.Name;
+                }                
                 values.Add(value);
             }
 

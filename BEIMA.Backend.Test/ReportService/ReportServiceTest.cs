@@ -330,7 +330,7 @@ namespace BEIMA.Backend.Test.ReportServices
 
             var headers = new List<List<string>>()
             {
-                new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                 new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
                 new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                 new List<string>() { "Date", "User" }
@@ -338,11 +338,11 @@ namespace BEIMA.Backend.Test.ReportServices
             var headerString = CombineColumnValues(headers);
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
-            var rowOne = DeviceAndBuildingToColumnValues(deviceOne, buildingOne);
+            var rowOne = DeviceToColumnValues(deviceOne, deviceTypeOne, buildingOne);
             var rowOneString = CombineColumnValues(rowOne);
             Assert.That(contentRows[1], Is.EqualTo(rowOneString));
 
-            var rowTwo = DeviceAndBuildingToColumnValues(deviceTwo, buildingOne);
+            var rowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne, buildingOne);
             var rowTwoString = CombineColumnValues(rowTwo);
             Assert.That(contentRows[2], Is.EqualTo(rowTwoString));
         }
@@ -449,7 +449,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 // Tests that file 1 has correct data
                 var file1Headers = new List<List<string>>()
                 {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
                     new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
@@ -457,18 +457,18 @@ namespace BEIMA.Backend.Test.ReportServices
                 var file1HeaderString = CombineColumnValues(file1Headers);
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
-                var file1RowOne = DeviceAndBuildingToColumnValues(deviceOne, buildingOne);
+                var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne, buildingOne);
                 var file1RowOneString = CombineColumnValues(file1RowOne);
                 Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
 
-                var file1RowTwo = DeviceAndBuildingToColumnValues(deviceTwo, buildingOne);
+                var file1RowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne, buildingOne);
                 var file1RowTwoString = CombineColumnValues(file1RowTwo);
                 Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
 
                 // Tests that file 2 has correct data
                 var file2Headers = new List<List<string>>()
                 {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "HvacField1", "HvacFeild2" },
                     new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
@@ -476,7 +476,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 var file2HeaderString = CombineColumnValues(file2Headers);
                 Assert.That(file2Rows[0], Is.EqualTo(file2HeaderString));
 
-                var file2RowOne = DeviceAndBuildingToColumnValues(deviceThree, buildingTwo);
+                var file2RowOne = DeviceToColumnValues(deviceThree, deviceTypeTwo, buildingTwo);
                 var file2RowOneString = CombineColumnValues(file2RowOne);
                 Assert.That(file2Rows[1], Is.EqualTo(file2RowOneString));
             }
@@ -552,7 +552,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 // Tests that file 1 has correct data
                 var file1Headers = new List<List<string>>()
                 {
-                    new List<string>() { "Id", "DeviceTypeId", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
                     new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
@@ -560,11 +560,11 @@ namespace BEIMA.Backend.Test.ReportServices
                 var file1HeaderString = CombineColumnValues(file1Headers);
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
-                var file1RowOne = DeviceAndBuildingToColumnValues(deviceOne);
+                var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
                 var file1RowOneString = CombineColumnValues(file1RowOne);
                 Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
 
-                var file1RowTwo = DeviceAndBuildingToColumnValues(deviceTwo);
+                var file1RowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne);
                 var file1RowTwoString = CombineColumnValues(file1RowTwo);
                 Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
             }
@@ -630,13 +630,13 @@ namespace BEIMA.Backend.Test.ReportServices
         /// </summary>
         /// <param name="device">Devices whose values are being scraped</param>
         /// <returns>List of lists containing device propety values</returns>
-        private static List<List<string>> DeviceAndBuildingToColumnValues(Device device, Building building = null)
+        private static List<List<string>> DeviceToColumnValues(Device device, DeviceType deviceType, Building? building = null)
         {
             var columns = new List<List<string>>()
             {
                 new List<string>() { 
                     device.Id.ToString(), 
-                    device.DeviceTypeId.ToString(), 
+                    deviceType.Name, 
                     device.DeviceTag, device.Manufacturer, 
                     device.ModelNum, 
                     device.SerialNum, 
