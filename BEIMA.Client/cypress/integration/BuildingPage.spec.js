@@ -2,8 +2,11 @@
 
 describe('Building Page', () => {
   it('Visits a Building Page', () => {
+    // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
+    let buildingID = ''
+
     // visit
-    cy.visit('http://localhost:3000/buildings/5')
+    cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.get('[id=buildingPageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
@@ -31,8 +34,11 @@ describe('Building Page', () => {
     cy.get('[id=buildingLongitude]').should('be.disabled')
   })
   it('Enables inputs on Edit Button Click', () => {
+    // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
+    let buildingID = ''
+
     // visit
-    cy.visit('http://localhost:3000/buildings/5')
+    cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.get('[id=buildingPageContent]').should('exist')
     cy.get('[id=itemCard]').should('exist')
 
@@ -58,7 +64,10 @@ describe('Building Page', () => {
     cy.get('[id=buildingLongitude]').should('be.enabled')
   })
   it('Resets fields on Cancel Button Click', () => {
-    cy.visit('http://localhost:3000/buildings/5')
+    // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
+    let buildingID = '624f1538c2757b97166fb492'
+
+    cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.wait(2000)
     cy.get('[id=editbtn]').click()
 
@@ -85,7 +94,10 @@ describe('Building Page', () => {
 
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
-    cy.visit('http://localhost:3000/buildings/5')
+    // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
+    let buildingID = ''
+
+    cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.wait(2000)
     cy.get('[id=editbtn]').click()
     cy.get('[id=buildingNotes]').scrollIntoView().type(randomString1024())

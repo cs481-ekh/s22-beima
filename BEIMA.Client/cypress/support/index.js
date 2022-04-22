@@ -18,3 +18,19 @@ import './commands'
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+/// <reference types="cypress" />
+
+before(() => {
+  cy.visit('http://localhost:3000/')
+  cy.get('[id=username]').scrollIntoView().clear().type("testuser")
+
+  // REPLACE PASSWORD WITH VALID PASSWORD FROM TEST USER IN DATABASE
+  cy.get('[id=password]').scrollIntoView().clear().type("testUser1!")
+  cy.get('[id=submitBtn]').click()
+
+  cy.wait(700)
+})
+
+after(() => {
+  cy.get('.sharedNavBar').contains("Logout").click();
+})

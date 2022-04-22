@@ -25,7 +25,6 @@ describe('Device Page', () => {
     cy.get('[id=imageDisplay]').should('exist')
     cy.get('[id=documents]').should('exist')
     cy.get('[id=deviceNotes]').should('exist')
-    cy.get('[id=deviceBuildingId]').should('exist')
     cy.get('[id=deviceLatitude]').should('exist')
     cy.get('[id=deviceLongitude]').should('exist')
     cy.get('[id=locationNotes]').should('exist')
@@ -42,7 +41,6 @@ describe('Device Page', () => {
 
     // disabled
     cy.get('[id=deviceNotes]').should('be.disabled')
-    cy.get('[id=deviceBuildingId]').should('be.disabled')
     cy.get('[id=deviceLatitude]').should('be.disabled')
     cy.get('[id=deviceLongitude]').should('be.disabled')
     cy.get('[id=locationNotes]').should('be.disabled')
@@ -85,7 +83,6 @@ describe('Device Page', () => {
     cy.get('[id=imageUpload]').should('be.enabled')
     cy.get('[id=fileUpload]').should('be.enabled')
     cy.get('[id=deviceNotes]').should('be.enabled')
-    cy.get('[id=deviceBuildingId]').should('be.enabled')
     cy.get('[id=deviceLatitude]').should('be.enabled')
     cy.get('[id=deviceLongitude]').should('be.enabled')
     cy.get('[id=locationNotes]').should('be.enabled')
@@ -110,46 +107,37 @@ describe('Device Page', () => {
 
     // Set fields
     cy.get('[id=deviceNotes]').scrollIntoView().clear().type("Test Notes")
-    cy.get('[id=deviceBuildingId]').scrollIntoView().clear().type("Test BId")
-    cy.get('[id=deviceLatitude]').scrollIntoView().clear().type("Test Lat")
-    cy.get('[id=deviceLongitude]').scrollIntoView().clear().type("Test Long")
+    cy.get('[id=deviceLatitude]').scrollIntoView().clear().type("100")
+    cy.get('[id=deviceLongitude]').scrollIntoView().clear().type("100")
     cy.get('[id=locationNotes]').scrollIntoView().clear().type("Test Notes")
-
-    cy.get('[id=fields]').within(() => {
-      cy.get('input').each((val, index, collection) => {
-        console.log(val)
-        cy.wrap(val).scrollIntoView().clear().type("Test" + index)
-      })
-    })
+    cy.get('[id=deviceTag]').scrollIntoView().clear().type('Test0')
+    cy.get('[id=deviceModelNumber]').scrollIntoView().clear().type('Test1')
+    cy.get('[id=deviceSerialNumber]').scrollIntoView().clear().type('Test2')
+    cy.get('[id=deviceManufacturer]').scrollIntoView().clear().type('Test3')
+    cy.get('[id=deviceYearManufactured]').scrollIntoView().clear().type('4')
 
     // Validate input
     cy.get('[id=deviceNotes]').should('have.value', 'Test Notes')
-    cy.get('[id=deviceBuildingId]').should('have.value', 'Test BId')
-    cy.get('[id=deviceLatitude]').should('have.value', 'Test Lat')
-    cy.get('[id=deviceLongitude]').should('have.value', 'Test Long')
+    cy.get('[id=deviceLatitude]').should('have.value', '100')
+    cy.get('[id=deviceLongitude]').should('have.value', '100')
     cy.get('[id=locationNotes]').should('have.value', 'Test Notes')
     cy.get('[id=deviceTag]').should('have.value', 'Test0')
     cy.get('[id=deviceModelNumber]').should('have.value', 'Test1')
     cy.get('[id=deviceSerialNumber]').should('have.value', 'Test2')
     cy.get('[id=deviceManufacturer]').should('have.value', 'Test3')
-
-    cy.get('[id=fields]').within(() => {
-      cy.get('input').each((val, index, collection) => {
-        cy.wrap(val).should('have.value', 'Test' + index)
-      })
-    })
+    cy.get('[id=deviceYearManufactured]').should('have.value', '4')
 
     cy.get('[id=cancelbtn]').click()
 
     cy.get('[id=deviceNotes]').should('not.have.value', 'Test Notes')
-    cy.get('[id=deviceBuildingId]').should('not.have.value', 'Test BId')
-    cy.get('[id=deviceLatitude]').should('not.have.value', 'Test Lat')
-    cy.get('[id=deviceLongitude]').should('not.have.value', 'Test Long')
+    cy.get('[id=deviceLatitude]').should('not.have.value', '100')
+    cy.get('[id=deviceLongitude]').should('not.have.value', '100')
     cy.get('[id=locationNotes]').should('not.have.value', 'Test Notes')
     cy.get('[id=deviceTag]').should('not.have.value', 'Test0')
     cy.get('[id=deviceModelNumber]').should('not.have.value', 'Test1')
     cy.get('[id=deviceSerialNumber]').should('not.have.value', 'Test2')
     cy.get('[id=deviceManufacturer]').should('not.have.value', 'Test3')
+    cy.get('[id=deviceYearManufactured]').should('not.have.value', '4')
 
     cy.get('[id=fields]').within(() => {
       cy.get('input').each((val, index, collection) => {

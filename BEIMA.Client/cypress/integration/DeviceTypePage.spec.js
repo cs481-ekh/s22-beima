@@ -2,8 +2,11 @@
 
 describe('Device Type Page', () => {
   it('Visits a Device Type Page', () => {
-    // visist
-    cy.visit('http://localhost:3000/deviceTypes/5')
+    // WHEN TESTING, CHANGE THIS TO A VALID DEVICE TYPE ID THAT IS IN THE DATABASE
+    let deviceTypeID = ''
+
+    // visit
+    cy.visit('http://localhost:3000/deviceTypes/' + deviceTypeID)
 
     // exist
     cy.get('[id=deviceTypeContent]').should('exist')
@@ -32,8 +35,11 @@ describe('Device Type Page', () => {
 
   })
   it('Enables inputs on Edit Button Click', () => {
+    // WHEN TESTING, CHANGE THIS TO A VALID DEVICE TYPE ID THAT IS IN THE DATABASE
+    let deviceTypeID = ''
+
     // visit
-    cy.visit('http://localhost:3000/deviceTypes/5')
+    cy.visit('http://localhost:3000/deviceTypes/' + deviceTypeID)
 
     // wait
     cy.wait(1250)
@@ -54,7 +60,10 @@ describe('Device Type Page', () => {
     cy.get('[id=notes]').should('be.enabled')
   })
   it('Resets fields on Cancel Button Click', () => {
-    cy.visit('http://localhost:3000/deviceTypes/5')
+    // WHEN TESTING, CHANGE THIS TO A VALID DEVICE TYPE ID THAT IS IN THE DATABASE
+    let deviceTypeID = ''
+
+    cy.visit('http://localhost:3000/deviceTypes/' + deviceTypeID)
     cy.wait(1250)
     cy.get('[id=editbtn]').click()
     cy.get('[id=addbtn]').click()
@@ -83,8 +92,10 @@ describe('Device Type Page', () => {
 
 describe("Verify the max character length of 1024", function () {
   it('Insert more than 1024 chars into input field, verify only 1024 are there', function (){
-    
-    cy.visit('http://localhost:3000/deviceTypes/5')
+    // WHEN TESTING, CHANGE THIS TO A VALID DEVICE TYPE ID THAT IS IN THE DATABASE
+    let deviceTypeID = ''
+
+    cy.visit('http://localhost:3000/deviceTypes/' + deviceTypeID)
     cy.wait(2000)
     cy.get('[id=editbtn]').click()
     cy.get('[id=description]').scrollIntoView().type(randomString1024())
