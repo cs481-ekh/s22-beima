@@ -1,3 +1,34 @@
+## Minutes: 2022-04-21
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Keelan Chen
+	Ashlyn Adamson
+### Absences
+	Tom Hess - excused, this meeting was outside our normal time due to the earlier meeting with Dr. Henderson, so this meeting was scheduled with very short notice and Tom could not make this one.
+## Documentation Review and Handoff Prep Meeting
+
+We will stop development tonight and focus only on Docker and documentation going forward.
+
+Presentation plan for tomorrow:
+
+* One person will present
+* Ashlyn to send user manual tonight
+* Let Brian know that we are still in the process of deploying to SDP
+* Use Azure for demo
+* Mention default user credentials
+* Map API key - need to speak with Dr. Henderson
+
+Ashlyn's notes from Docker meeting with Dr. Henderson:
+
+* Docker meeting with Henderson: add HOST_PORT_API and HOST_PORT_MINIO, we are 22004 host port
+* add beima prefix to endpoints, will need to update the .env for front end too
+* update route in beimaclient class
+* exlcude data folder from docker - docker ignore 
+* need to fix pathing for src in client "homepage": "./beima"
+
+
 ## Minutes: 2022-04-20
 ### Scribe: Keelan
 ### Attendees:
