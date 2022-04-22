@@ -28,6 +28,7 @@ describe("Verify Data in fields is cleared when Add Building is selected", () =>
     cy.get('#inputLatitude').scrollIntoView().type("10.34452345")
     cy.get("#inputLongitude").scrollIntoView().type("12.355")
     cy.get("#addBuilding").scrollIntoView().click()
+    cy.contains('Proceed').click()
     cy.get('#inputName').should('have.value', '')
     cy.get('#inputLatitude').should('have.value', '')
     cy.get("#inputLongitude").should('have.value', '')

@@ -1,16 +1,13 @@
 /// <reference types="cypress" />
 
 describe("Router Doesn't Redirect On Valid Pages", () =>{
+  // WHEN TESTING, CHANGE THIS TO A VALID DEVICE TYPE ID THAT IS IN THE DATABASE
+  let deviceTypeID = ''
+
+   // WHEN TESTING, CHANGE THIS TO A VALID DEVICE ID THAT IS IN THE DATABASE
+   let deviceID = ''
+
   it('Visit Help Page', () => {
-    cy.visit('http://localhost:3000/')
-    cy.get('[id=username]').scrollIntoView().clear().type("testuser")
-
-    // REPLACE PASSWORD WITH VALID PASSWORD FROM TEST USER IN DATABASE
-    cy.get('[id=password]').scrollIntoView().clear().type("")
-    cy.get('[id=submitBtn]').click()
-
-    cy.wait(700);
-
     cy.visit('http://localhost:3000/help')
     cy.url().should('include', '/help')
     cy.get('.sharedNavBar').contains('Devices')
@@ -22,22 +19,18 @@ describe("Router Doesn't Redirect On Valid Pages", () =>{
   it('Visit Device Types Page', () => {
     cy.visit('http://localhost:3000/deviceTypes')
     cy.url().should('include', 'deviceTypes')
-    cy.get('.pageTitle').contains('Device Types')
   })
   it('Visit Devices Page', () => {
     cy.visit('http://localhost:3000/devices')
     cy.url().should('include', 'devices')
-    cy.get('.pageTitle').contains('Devices')
   })
   it('Visit Device Page', () => {
-    cy.visit('http://localhost:3000/devices/5')
-    cy.url().should('include', 'devices/5')
-    cy.get('.pageTitle').contains('View Device')
+    cy.visit('http://localhost:3000/devices/' + deviceID)
+    cy.url().should('include', 'devices/' + deviceID)
   })
   it('Visit Device Template Page', () => {
-    cy.visit('http://localhost:3000/deviceTypes/5')
-    cy.url().should('include', 'deviceTypes/5')
-    cy.get('.pageTitle').contains('View Device Type')
+    cy.visit('http://localhost:3000/deviceTypes/' + deviceTypeID)
+    cy.url().should('include', 'deviceTypes/' + deviceTypeID)
   })
   // We do not test for routing to login page
   // since it is only accessible when logged out

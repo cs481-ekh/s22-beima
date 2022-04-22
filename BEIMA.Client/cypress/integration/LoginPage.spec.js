@@ -35,6 +35,5 @@ describe('Login Page', () => {
     cy.get('[id=password]').should('have.value', "aaaaaaaa")
     cy.get('[id=rememberMe]').should('be.checked')
   })
-
-  
 })
+// The after command in support/index.js will fail since it tries to logout when the application is already logged out

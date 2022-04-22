@@ -65,7 +65,7 @@ describe('Building Page', () => {
   })
   it('Resets fields on Cancel Button Click', () => {
     // WHEN TESTING, CHANGE THIS TO A VALID BUILDING ID THAT IS IN THE DATABASE
-    let buildingID = ''
+    let buildingID = '624f1538c2757b97166fb492'
 
     cy.visit('http://localhost:3000/buildings/' + buildingID)
     cy.wait(2000)
