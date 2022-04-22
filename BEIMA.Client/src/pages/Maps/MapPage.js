@@ -93,6 +93,7 @@ const MapPage = () => {
               mapStyle={"mapbox://styles/mapbox/streets-v11"}
               onDrag={(viewport) => {setViewport(viewport)}}
               onZoom={(viewport) => {setViewport(viewport)}}
+              onRotate={(viewport) => {setViewport(viewport)}}
             >{devices}</ReactMapGL>
           </Card.Body>
         </Card>
