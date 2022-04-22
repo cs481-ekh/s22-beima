@@ -1,3 +1,28 @@
+## Minutes: 2022-04-22
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore - late (arrived 12:08pm)
+	Kenny Miller
+	Keelan Chen
+	Ashlyn Adamson
+	Tom Hess
+	Brian Emtman
+## Project Handoff Sponsor Meeting
+
+Ashlyn took over the demo since Joe was late, went over all the new BEIMA features (login page, map, filtering, CSV, link to user manual, etc)
+
+Still in process of deploying to SDP, will get that link over to Brian
+
+(notes on BEIMA)
+Brian: impressed with how much progress was made these past few weeks
+
+Joe took back over after the demo, presented the user manual
+
+(notes on user manual)
+Brian: manual is clearly laid out, doesn't have any questions yet, UI seems straightforward
+
+Brian will provide check off, will wait until deployed to SDP to send that to Dr. Henderson
+
 ## Minutes: 2022-04-21
 ### Scribe: Keelan
 ### Attendees:
