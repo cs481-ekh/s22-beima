@@ -9,7 +9,7 @@ services:
       context: .
       dockerfile: ./BEIMA.Client/Dockerfile
     ports:
-      - "${HOST_PORT:-3000}:3000"
+      - "${HOST_PORT_WEB:-3000}:3000"
     networks:
       - internal
 
@@ -27,7 +27,7 @@ services:
       context: .
       dockerfile: ./BEIMA.Backend/Dockerfile
     ports:
-      - "${HOST_PORT:-7071}:7071"
+      - "${HOST_PORT_API:-7071}:7071"
     networks:
       - internal
 
@@ -35,7 +35,7 @@ services:
     image: minio/minio:latest
     command: server /data
     ports:
-      - "${HOST_PORT:-9000}:9000"
+      - "${HOST_PORT_MINIO:-9000}:9000"
     networks:
       - internal
     volumes:
