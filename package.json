@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@cypress/skip-test": "^2.6.1",
-    "react-hook-form": "^7.27.1"
-  }
-}
