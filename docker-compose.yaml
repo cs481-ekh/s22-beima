@@ -42,6 +42,13 @@ services:
       - './data/minio:/data'
     entrypoint: sh
     command: -c 'mkdir -p /data/files && minio server --address ":9000" --console-address ":9001" /data'
+    
+  proxy:
+    build:
+      context: .
+      dockerfile: ./proxy/Dockerfile
+    ports:
+      - "80:80"
 
 networks:
   # The presence of these objects is sufficient to define them
