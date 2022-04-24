@@ -32,4 +32,4 @@ Docker
 * Build images with '&lt;sudo&gt; docker-compose build'
 * Run images with '&lt;sudo&gt; docker-compose up'
 * Remove cached/intermediate containers with '&lt;sudo&gt; docker system prune'
-* To test deployment locally uncomment the procy config in docker-compose.yaml
+* To test deployment locally, uncomment the proxy config in docker-compose.yaml and set the local.settings.json to "deploy"
