@@ -12,9 +12,9 @@ namespace BEIMA.Backend.FT
     /// </summary>
     public class FunctionalTestBase
     {
-        public BeimaClient TestClient = new BeimaClient("http://localhost:7071/beima");
-        public BeimaClient NonAdminTestClient = new BeimaClient("http://localhost:7071/beima");
-        public BeimaClient UnauthorizedTestClient = new BeimaClient("http://localhost:7071/beima");
+        public BeimaClient TestClient = new BeimaClient("http://localhost:7071/beima/");
+        public BeimaClient NonAdminTestClient = new BeimaClient("http://localhost:7071/beima/");
+        public BeimaClient UnauthorizedTestClient = new BeimaClient("http://localhost:7071/beima/");
         public readonly string TestUsername = "first.admin";
         public readonly string NonAdminTestUsername = "non.admin";
         public readonly string TestPassword = "Abcdefg12345!";
@@ -38,7 +38,7 @@ namespace BEIMA.Backend.FT
             }
             // Uncomment for Azure server:
             // BeimaClient Client = new BeimaClient("https://beima-service.azurewebsites.net");
-            TestClient = new BeimaClient("http://localhost:7071/beima");
+            TestClient = new BeimaClient("http://localhost:7071/beima/");
 
             // Have at least one admin user in the DB at all times as tests will need it for auth
             var token = await TestClient.Login(new LoginRequest() { Username = TestUsername, Password = TestPassword });
