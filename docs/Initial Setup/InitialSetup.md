@@ -18,6 +18,8 @@ Enter ./BEIMA.Client/ directory
 Execute:
 * npm install (to install dependencies)
 * npm start (launches front end in browser)
+* The URL will need "/beima" added to the end of it to access the site
+  * It may be possible to update this behavior and have it launch with the addition already in place
 
 Launch Visual Studio
 * Open ./BEIMA.Backend/BEIMA.Backend.sln
