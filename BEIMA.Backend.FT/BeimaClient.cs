@@ -194,7 +194,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The device with the given id.</returns>
         public async Task<Device> GetDevice(string id)
         {
-            var response = await SendRequest($"api/device/{id}", HttpVerb.GET);
+            var response = await SendRequest($"device/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
         }
@@ -206,7 +206,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The device list.</returns>
         public async Task<List<Device>> GetDeviceList(string query = "")
         {
-            var response = await SendRequest("api/device-list", HttpVerb.GET, queryString: query);
+            var response = await SendRequest("device-list", HttpVerb.GET, queryString: query);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Device>>(content);
         }
@@ -218,7 +218,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new device.</returns>
         public async Task<string> AddDevice(Device device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendMultiPartRequest("api/device", device, files, queryString);
+            var response = await SendMultiPartRequest("device", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -230,7 +230,7 @@ namespace BEIMA.Backend.FT
         /// <returns>True if the deletion was successful, otherwise false.</returns>
         public async Task<bool> DeleteDevice(string id)
         {
-            var response = await SendRequest($"api/device/{id}/delete", HttpVerb.POST);
+            var response = await SendRequest($"device/{id}/delete", HttpVerb.POST);
             return response.IsSuccessStatusCode;
         }
 
@@ -241,7 +241,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new device.</returns>
         public async Task<Device> UpdateDevice(DeviceUpdate device, FormFileCollection? files = null, string? queryString = "")
         {
-            var response = await SendMultiPartRequest($"api/device/{device.Id}/update", device, files, queryString);
+            var response = await SendMultiPartRequest($"device/{device.Id}/update", device, files, queryString);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Device>(content);
         }
@@ -257,7 +257,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The device type with the given id.</returns>
         public async Task<DeviceType> GetDeviceType(string id)
         {
-            var response = await SendRequest($"api/device-type/{id}", HttpVerb.GET);
+            var response = await SendRequest($"device-type/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DeviceType>(content);
         }
@@ -268,7 +268,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The device type list.</returns>
         public async Task<List<DeviceType>> GetDeviceTypeList()
         {
-            var response = await SendRequest("api/device-type-list", HttpVerb.GET);
+            var response = await SendRequest("device-type-list", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<DeviceType>>(content);
         }
@@ -280,7 +280,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new device type.</returns>
         public async Task<string> AddDeviceType(DeviceTypeAdd deviceType)
         {
-            var response = await SendRequest("api/device-type", HttpVerb.POST, deviceType);
+            var response = await SendRequest("device-type", HttpVerb.POST, deviceType);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -292,7 +292,7 @@ namespace BEIMA.Backend.FT
         /// <returns>True if the deletion was successful, otherwise false.</returns>
         public async Task<bool> DeleteDeviceType(string id)
         {
-            var response = await SendRequest($"api/device-type/{id}/delete", HttpVerb.POST);
+            var response = await SendRequest($"device-type/{id}/delete", HttpVerb.POST);
             return response.IsSuccessStatusCode;
         }
 
@@ -303,7 +303,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new device type.</returns>
         public async Task<DeviceType> UpdateDeviceType(DeviceTypeUpdate deviceType)
         {
-            var response = await SendRequest($"api/device-type/{deviceType.Id}/update", HttpVerb.POST, deviceType);
+            var response = await SendRequest($"device-type/{deviceType.Id}/update", HttpVerb.POST, deviceType);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<DeviceType>(content);
         }
@@ -319,7 +319,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The building with the given id.</returns>
         public async Task<Building> GetBuilding(string id)
         {
-            var response = await SendRequest($"api/building/{id}", HttpVerb.GET);
+            var response = await SendRequest($"building/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Building>(content);
         }
@@ -330,7 +330,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The building list.</returns>
         public async Task<List<Building>> GetBuildingList()
         {
-            var response = await SendRequest("api/building-list", HttpVerb.GET);
+            var response = await SendRequest("building-list", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Building>>(content);
         }
@@ -342,7 +342,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new building.</returns>
         public async Task<string> AddBuilding(Building building)
         {
-            var response = await SendRequest("api/building", HttpVerb.POST, building);
+            var response = await SendRequest("building", HttpVerb.POST, building);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -354,7 +354,7 @@ namespace BEIMA.Backend.FT
         /// <returns>True if the deletion was successful, otherwise false.</returns>
         public async Task<bool> DeleteBuilding(string id)
         {
-            var response = await SendRequest($"api/building/{id}/delete", HttpVerb.POST);
+            var response = await SendRequest($"building/{id}/delete", HttpVerb.POST);
             return response.IsSuccessStatusCode;
         }
 
@@ -365,7 +365,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new building.</returns>
         public async Task<Building> UpdateBuilding(Building building)
         {
-            var response = await SendRequest($"api/building/{building.Id}/update", HttpVerb.POST, building);
+            var response = await SendRequest($"building/{building.Id}/update", HttpVerb.POST, building);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<Building>(content);
         }
@@ -381,7 +381,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new user.</returns>
         public async Task<string> AddUser(User user)
         {
-            var response = await SendRequest("api/user", HttpVerb.POST, user);
+            var response = await SendRequest("user", HttpVerb.POST, user);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -393,7 +393,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The user with the given id.</returns>
         public async Task<User> GetUser(string id)
         {
-            var response = await SendRequest($"api/user/{id}", HttpVerb.GET);
+            var response = await SendRequest($"user/{id}", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<User>(content);
         }
@@ -404,7 +404,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The user list.</returns>
         public async Task<List<User>> GetUserList()
         {
-            var response = await SendRequest("api/user-list", HttpVerb.GET);
+            var response = await SendRequest("user-list", HttpVerb.GET);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<User>>(content);
         }
@@ -416,7 +416,7 @@ namespace BEIMA.Backend.FT
         /// <returns>True if the deletion was successful, otherwise false.</returns>
         public async Task<bool> DeleteUser(string id)
         {
-            var response = await SendRequest($"api/user/{id}/delete", HttpVerb.POST);
+            var response = await SendRequest($"user/{id}/delete", HttpVerb.POST);
             return response.IsSuccessStatusCode;
         }
 
@@ -427,7 +427,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The id of the new user.</returns>
         public async Task<User> UpdateUser(User user)
         {
-            var response = await SendRequest($"api/user/{user.Id}/update", HttpVerb.POST, user);
+            var response = await SendRequest($"user/{user.Id}/update", HttpVerb.POST, user);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<User>(content);
         }
@@ -443,7 +443,7 @@ namespace BEIMA.Backend.FT
         /// <returns>Jwt token for the user.</returns>
         public async Task<string> Login(LoginRequest data)
         {
-            var response = await SendRequest("api/login", HttpVerb.POST, data);
+            var response = await SendRequest("login", HttpVerb.POST, data);
             var content = await response.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<string>(content);
         }
@@ -457,7 +457,7 @@ namespace BEIMA.Backend.FT
         /// <returns>The zip file byte contents containing the device reports.</returns>
         public async Task<byte[]> AllDevicesReport()
         {
-            var response = await SendRequest($"api/report/devices", HttpVerb.GET);
+            var response = await SendRequest($"report/devices", HttpVerb.GET);
             var content = await response.Content.ReadAsByteArrayAsync();
             return content;
         }
