@@ -9,9 +9,9 @@ Install Minio
 
 Clone project into chosen location
 
-Place environment variable file ".env" at ./BEIMA.Client/.env
-Place the "local.settings.json" file at ./BEIMA.Backend/local.settings.json
-Valid CurrentEnv settings for local.settings.json are dev-cloud, dev-local, deploy
+Place environment variable file ".env" at ./BEIMA.Client/.env and ensure all lines except those under the Local Dev heading are commented with " # "
+Place the "local.settings.json" file at ./BEIMA.Backend/local.settings.json make sure CurrentEnv is set to dev-local
+Valid CurrentEnv settings for local.settings.json are dev-local, deploy
 
 Enter ./BEIMA.Client/ directory
 
@@ -28,7 +28,8 @@ Databases and Collections will be created in the database as documents are added
 
 
 Docker
-* Change the CurrentEnv to 'deploy' in the local.settings.json file. Other valid options: dev-local, dev-cloud. The cloud option requires services located in the cloud to be up and running with the appropriate connection strings present in the local.setings.json file
+* Change the CurrentEnv to 'deploy' in the local.settings.json file.
 * Build images with '&lt;sudo&gt; docker-compose build'
 * Run images with '&lt;sudo&gt; docker-compose up'
 * Remove cached/intermediate containers with '&lt;sudo&gt; docker system prune'
+* To test deployment locally uncomment the procy config in docker-compose.yaml
