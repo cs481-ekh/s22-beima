@@ -1,8 +1,11 @@
 ﻿using BEIMA.Backend.Models;
 using BEIMA.Backend.MongoService;
+using CsvHelper;
+using CsvHelper.Configuration;
 using MongoDB.Bson;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -53,12 +56,16 @@ namespace BEIMA.Backend.ReportService
 
             byte[] fileBytes;
             using (var stream = new MemoryStream())
-            using (var csvWriter = new StreamWriter(stream))
+            using (var writer = new StreamWriter(stream))                                  // Create writer to write device/device type data to memory stream
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))                    // Create csv writer to handle escaping characters
             {
                 // Write headers
                 var headers = GenerateDeviceTypeReportHeaders();
-                var headerString = string.Join(delimiter, headers);
-                csvWriter.WriteLine(headerString);
+                headers.ForEach(val =>
+                {
+                    csv.WriteField(val);
+                });
+                csv.NextRecord(); ;
 
                 // Write all deviceType data                            
                 for (var i = 0; i < deviceTypes.Count; i++)
@@ -68,15 +75,14 @@ namespace BEIMA.Backend.ReportService
 
                     // Write device's values
                     var values = GenerateDeviceTypeReportValues(deviceType, deviceTypeDevices);
-                    var valueString = string.Join(delimiter, values);
-                    if (i != deviceTypes.Count - 1)
+                    values.ForEach(val =>
                     {
-                        valueString += Environment.NewLine;
-                    }
-                    csvWriter.Write(valueString);
+                        csv.WriteField(val);
+                    });
+                    csv.NextRecord();
                 }
                 // Flush writer and copy data to byte[]
-                csvWriter.Flush();
+                csv.Flush();
                 fileBytes = stream.ToArray();
             }
             return fileBytes;
@@ -113,19 +119,19 @@ namespace BEIMA.Backend.ReportService
 
             byte[] fileBytes;
             using (var stream = new MemoryStream())
-            using (var csvWriter = new StreamWriter(stream))
+            using (var writer = new StreamWriter(stream))                                  // Create writer to write device/device type data to memory stream
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))                    // Create csv writer to handle escaping characters
             {
                 // Create object containing all props and fields that need to be printed
                 var fieldsKeys = deviceType.Fields.Elements.Select(element => element.Name).ToList();
 
                 // Write headers
                 var headers = GenerateDeviceReportHeaders(deviceType);
-                var headerString = string.Join(delimiter, headers);
-                if (devices.Count > 0)
+                headers.ForEach(val =>
                 {
-                    headerString += Environment.NewLine;
-                }
-                csvWriter.Write(headerString);
+                    csv.WriteField(val);
+                });
+                csv.NextRecord();
 
                 // Write all device data                            
                 for (var i = 0; i < devices.Count; i++)
@@ -139,15 +145,14 @@ namespace BEIMA.Backend.ReportService
 
                     // Write device's values
                     var values = GenerateDeviceValues(device, deviceType, buildings);
-                    var valueString = string.Join(delimiter, values);
-                    if (i != devices.Count - 1)
+                    values.ForEach(val =>
                     {
-                        valueString += Environment.NewLine;
-                    }
-                    csvWriter.Write(valueString);
+                        csv.WriteField(val);
+                    });
+                    csv.NextRecord();
                 }
                 // Flush writer and copy data to byte[]
-                csvWriter.Flush();
+                csv.Flush();
                 fileBytes = stream.ToArray();
             }
             return fileBytes;
@@ -218,15 +223,20 @@ namespace BEIMA.Backend.ReportService
 
                         var deviceTypeDevices = typeToDevices[deviceType.Id];
 
-                        var fileInZip = zipStream.CreateEntry($"{deviceType.Name}.csv", CompressionLevel.Optimal); // Create new zip file entry that can be streamed into
-                        using (var fileInZipStream = fileInZip.Open())                                             // Open zip file entry's stream
-                        using (var dataStream = new MemoryStream())                                                // Create memory stream that data can be written into
-                        using (var csvWriter = new StreamWriter(dataStream))                                       // Create writer to write device/device type data to memory stream
+                        var entryName = deviceType.Name.Trim().Replace("\"", ""); //Remove whitespace and quotes as it can lead issues with openning archive
+                        var shortenedName = entryName.Length > 10 ? entryName.Substring(0, 10) : entryName; //Shorten file name
+
+                        var fileInZip = zipStream.CreateEntry($"{shortenedName}.csv", CompressionLevel.Optimal); // Create new zip file entry that can be streamed into
+                        using (var writer = new StreamWriter(fileInZip.Open()))                                  // Create writer to write device/device type data to memory stream
+                        using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))                    // Create csv writer to handle escaping characters
                         {
                             // Write file headers                            
                             var headers = GenerateDeviceReportHeaders(deviceType);
-                            var headerString = string.Join(delimiter, headers);
-                            csvWriter.WriteLine(headerString);
+                            headers.ForEach(val =>
+                            {
+                                csv.WriteField(val);
+                            });
+                            csv.NextRecord();
 
                             // Write all device data                            
                             for (var i = 0; i < deviceTypeDevices.Count; i++)
@@ -234,17 +244,12 @@ namespace BEIMA.Backend.ReportService
                                 // Write device's values
                                 var device = deviceTypeDevices[i];
                                 var values = GenerateDeviceValues(device, deviceType, buildings);
-                                var valueString = string.Join(delimiter, values);
-                                if (i != deviceTypeDevices.Count - 1)
+                                values.ForEach(val =>
                                 {
-                                    valueString += Environment.NewLine;
-                                }
-                                csvWriter.Write(valueString);
+                                    csv.WriteField(val);
+                                });
+                                csv.NextRecord();
                             }
-                            // Flush writer and copy data in datastream to zip file entry's stream
-                            csvWriter.Flush();
-                            dataStream.Position = 0;
-                            dataStream.CopyTo(fileInZipStream);
                         }
                     }
                 }
@@ -300,12 +305,12 @@ namespace BEIMA.Backend.ReportService
             var sortedLastModifiedKeys = DeviceTypeReportProps.LastModifiedProps.OrderBy(val => val.Key).Select(val => val.Key);
             foreach (var key in sortedLastModifiedKeys)
             {
-                var val = "";
+                var value = "";
                 if (deviceType.LastModified != null && deviceType.LastModified.Contains(key))
                 {
-                    val = deviceType.LastModified[key].ToString();
+                    value = deviceType.LastModified[key].ToString();
                 }
-                values.Add(val);
+                values.Add(value);
             }
 
             // Add a count of the number of devices associated with the devices
@@ -350,7 +355,6 @@ namespace BEIMA.Backend.ReportService
         /// </summary>
         /// <param name="device">Device that's data values should be used</param>
         /// <param name="deviceType">DeviceType that the field keys should be based on</param>
-        /// <param name="buildings">Buildings that the building id should be based on</param>
         /// <returns>List of device property values.</returns>
         private static List<string> GenerateDeviceValues(Device device, DeviceType deviceType, List<Building> buildings)
         {
