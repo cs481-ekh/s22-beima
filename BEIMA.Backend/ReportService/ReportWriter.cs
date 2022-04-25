@@ -355,6 +355,7 @@ namespace BEIMA.Backend.ReportService
         /// </summary>
         /// <param name="device">Device that's data values should be used</param>
         /// <param name="deviceType">DeviceType that the field keys should be based on</param>
+        /// <param name="buildings">Buildings that the building id should be based on</param>
         /// <returns>List of device property values.</returns>
         private static List<string> GenerateDeviceValues(Device device, DeviceType deviceType, List<Building> buildings)
         {
