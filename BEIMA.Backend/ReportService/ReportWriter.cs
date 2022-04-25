@@ -223,7 +223,7 @@ namespace BEIMA.Backend.ReportService
 
                         var deviceTypeDevices = typeToDevices[deviceType.Id];
 
-                        var entryName = deviceType.Name.Trim().Replace("\"", ""); //Remove whitespace and quotes as it can lead issues with openning archive
+                        var entryName = deviceType.Name.Trim().Replace("\"", "").Replace(" ","_"); //Remove whitespace and quotes as it can lead issues with openning archive
                         var shortenedName = entryName.Length > 10 ? entryName.Substring(0, 10) : entryName; //Shorten file name
 
                         var fileInZip = zipStream.CreateEntry($"{shortenedName}.csv", CompressionLevel.Optimal); // Create new zip file entry that can be streamed into
