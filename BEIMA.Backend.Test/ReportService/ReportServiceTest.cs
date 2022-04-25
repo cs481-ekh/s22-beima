@@ -85,7 +85,7 @@ namespace BEIMA.Backend.Test.ReportServices
             // Assert
             Assert.That(bytes, Is.Not.Null);
             var content = Encoding.UTF8.GetString(bytes);
-            var contentRows = content.Split(Environment.NewLine);
+            var contentRows = content.Split("\r\n");
             Assert.That(contentRows.Count, Is.EqualTo(3));
 
             var headers = new List<List<string>>()
@@ -95,7 +95,6 @@ namespace BEIMA.Backend.Test.ReportServices
                 new List<string>() { "DeviceCount"}
             };
             var headerString = CombineColumnValues(headers);
-            headerString += Environment.NewLine;
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
             var rowOneDeviceList = new List<Device>();
@@ -251,7 +250,7 @@ namespace BEIMA.Backend.Test.ReportServices
             Assert.That(bytes, Is.Not.Null);
 
             var content = Encoding.UTF8.GetString(bytes);
-            var contentRows = content.Split(Environment.NewLine);
+            var contentRows = content.Split("\r\n");
             Assert.That(contentRows.Count, Is.EqualTo(4));
 
             var headers = new List<List<string>>()
@@ -261,7 +260,6 @@ namespace BEIMA.Backend.Test.ReportServices
                 new List<string>() { "DeviceCount"}
             };
             var headerString = CombineColumnValues(headers);
-            headerString += Environment.NewLine;
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
             var rowOneDeviceList = new List<Device>() { 
@@ -327,7 +325,7 @@ namespace BEIMA.Backend.Test.ReportServices
             Assert.That(bytes, Is.Not.Null);
 
             var content = Encoding.UTF8.GetString(bytes);
-            var contentRows = content.Split(Environment.NewLine);
+            var contentRows = content.Split("\r\n");
             Assert.That(contentRows.Count, Is.EqualTo(4));
 
             var headers = new List<List<string>>()
@@ -338,7 +336,6 @@ namespace BEIMA.Backend.Test.ReportServices
                 new List<string>() { "Date", "User" }
             };
             var headerString = CombineColumnValues(headers);
-            headerString += Environment.NewLine;
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
             var rowOne = DeviceToColumnValues(deviceOne, deviceTypeOne, buildingOne);
@@ -443,8 +440,8 @@ namespace BEIMA.Backend.Test.ReportServices
                 }
 
                 // Test that there is a header row and a row for every device
-                var file1Rows = file1Text.Split(Environment.NewLine);
-                var file2Rows = file2Text.Split(Environment.NewLine);
+                var file1Rows = file1Text.Split("\r\n");
+                var file2Rows = file2Text.Split("\r\n");
 
                 Assert.That(file1Rows.Count, Is.EqualTo(4));
                 Assert.That(file2Rows.Count, Is.EqualTo(3));
@@ -477,7 +474,6 @@ namespace BEIMA.Backend.Test.ReportServices
                     new List<string>() { "Date", "User" }
                 };
                 var file2HeaderString = CombineColumnValues(file2Headers);
-                file2HeaderString += Environment.NewLine;
                 Assert.That(file2Rows[0], Is.EqualTo(file2HeaderString));
 
                 var file2RowOne = DeviceToColumnValues(deviceThree, deviceTypeTwo, buildingTwo);
@@ -549,7 +545,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 }
 
                 // Test that there is a header row and a row for every device
-                var file1Rows = file1Text.Split(Environment.NewLine);
+                var file1Rows = file1Text.Split("\r\n");
 
                 Assert.That(file1Rows.Count, Is.EqualTo(4));
 
@@ -562,7 +558,6 @@ namespace BEIMA.Backend.Test.ReportServices
                     new List<string>() { "Date", "User" }
                 };
                 var file1HeaderString = CombineColumnValues(file1Headers);
-                file1HeaderString += Environment.NewLine;
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
                 var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
@@ -638,7 +633,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 }
 
                 // Test that there is a header row and a row for every device
-                var file1Rows = file1Text.Split(Environment.NewLine);
+                var file1Rows = file1Text.Split("\r\n");
 
                 Assert.That(file1Rows.Count, Is.EqualTo(4));
 
@@ -651,7 +646,6 @@ namespace BEIMA.Backend.Test.ReportServices
                     new List<string>() { "Date", "User" }
                 };
                 var file1HeaderString = CombineColumnValues(file1Headers);
-                file1HeaderString += Environment.NewLine;
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
                 var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
