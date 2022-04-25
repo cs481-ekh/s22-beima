@@ -86,7 +86,7 @@ namespace BEIMA.Backend.Test.ReportServices
             Assert.That(bytes, Is.Not.Null);
             var content = Encoding.UTF8.GetString(bytes);
             var contentRows = content.Split(Environment.NewLine);
-            Assert.That(contentRows.Count, Is.EqualTo(2));
+            Assert.That(contentRows.Count, Is.EqualTo(3));
 
             var headers = new List<List<string>>()
             {
@@ -251,7 +251,7 @@ namespace BEIMA.Backend.Test.ReportServices
 
             var content = Encoding.UTF8.GetString(bytes);
             var contentRows = content.Split(Environment.NewLine);
-            Assert.That(contentRows.Count, Is.EqualTo(3));
+            Assert.That(contentRows.Count, Is.EqualTo(4));
 
             var headers = new List<List<string>>()
             {
@@ -326,7 +326,7 @@ namespace BEIMA.Backend.Test.ReportServices
 
             var content = Encoding.UTF8.GetString(bytes);
             var contentRows = content.Split(Environment.NewLine);
-            Assert.That(contentRows.Count, Is.EqualTo(3));
+            Assert.That(contentRows.Count, Is.EqualTo(4));
 
             var headers = new List<List<string>>()
             {
@@ -443,8 +443,8 @@ namespace BEIMA.Backend.Test.ReportServices
                 var file1Rows = file1Text.Split(Environment.NewLine);
                 var file2Rows = file2Text.Split(Environment.NewLine);
 
-                Assert.That(file1Rows.Count, Is.EqualTo(3));
-                Assert.That(file2Rows.Count, Is.EqualTo(2));
+                Assert.That(file1Rows.Count, Is.EqualTo(4));
+                Assert.That(file2Rows.Count, Is.EqualTo(3));
 
                 // Tests that file 1 has correct data
                 var file1Headers = new List<List<string>>()
@@ -547,13 +547,101 @@ namespace BEIMA.Backend.Test.ReportServices
                 // Test that there is a header row and a row for every device
                 var file1Rows = file1Text.Split(Environment.NewLine);
 
-                Assert.That(file1Rows.Count, Is.EqualTo(3));
+                Assert.That(file1Rows.Count, Is.EqualTo(4));
 
                 // Tests that file 1 has correct data
                 var file1Headers = new List<List<string>>()
                 {
                     new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
                     new List<string>() { "BoilerField1", "BoilerField2", "BoilerField3" },
+                    new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
+                    new List<string>() { "Date", "User" }
+                };
+                var file1HeaderString = CombineColumnValues(file1Headers);
+                Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
+
+                var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
+                var file1RowOneString = CombineColumnValues(file1RowOne);
+                Assert.That(file1Rows[1], Is.EqualTo(file1RowOneString));
+
+                var file1RowTwo = DeviceToColumnValues(deviceTwo, deviceTypeOne);
+                var file1RowTwoString = CombineColumnValues(file1RowTwo);
+                Assert.That(file1Rows[2], Is.EqualTo(file1RowTwoString));
+            }
+        }
+
+        [Test]
+        public void DevicesAndDeviceTypesExists_OnlyOneDeviceTypeHasDevices_ColumnHasCommaAndQuote_GenerateAllReport_ZipContainsOneDeviceTypeWithDeviceData_CommaAndQuoteEscaped()
+        {
+            // Test Data
+            var deviceTypeOne = new DeviceType(ObjectId.GenerateNewId(), "Boiler", "This is a boiler", "Boiler type notes");
+            deviceTypeOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeOne.AddField("boilerf1", "BoilerField1, \"field1");
+            deviceTypeOne.AddField("boilerf2", "BoilerField2, \"field2");
+            deviceTypeOne.AddField("boilerf3", "BoilerField3, \"field3");
+
+            var deviceTypeTwo = new DeviceType(ObjectId.GenerateNewId(), "Hvac", "This is a hvac", "Hvac type notes");
+            deviceTypeTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTypeTwo.AddField("havcf1", "HvacField1");
+            deviceTypeTwo.AddField("hvacf2", "HvacFeild2");
+
+            var deviceOne = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag1", "dMan1", "dMod1", "dSer1", 2001, "dNote1");
+            deviceOne.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceOne.AddField("boilerf1", "BoilerValue1D1");
+            deviceOne.AddField("boilerf2", "BoilerValue2D1");
+            deviceOne.AddField("boilerf3", "BoilerValue3D1");
+
+            var deviceTwo = new Device(ObjectId.GenerateNewId(), deviceTypeOne.Id, "dTag2", "dMan2", "dMod2", "dSer2", 2002, "dNote2");
+            deviceTwo.SetLastModified(DateTime.UtcNow, "Anonymous");
+            deviceTwo.AddField("boilerf1", "BoilerValue1D2");
+            deviceTwo.AddField("boilerf2", "BoilerValue2D2");
+            deviceTwo.AddField("boilerf3", "BoilerValue3D2");
+
+            var devices = new List<Device>()
+            {
+                deviceOne,
+                deviceTwo,
+            };
+
+            var deviceTypes = new List<DeviceType>() {
+                deviceTypeOne,
+                deviceTypeTwo
+            };
+
+            var buildings = new List<Building>();
+
+            // ACT
+            var bytes = ReportWriter.GenerateAllDeviceReports(deviceTypes, devices, buildings);
+
+            //ASSERT 
+            using (var memStream = new MemoryStream(bytes))
+            {
+                var zipFile = new ZipArchive(memStream);
+
+                // Test that the zip has the right amount of files and that they have the right names
+                Assert.That(zipFile.Entries.Count, Is.EqualTo(1));
+
+                var file1 = zipFile.Entries[0];
+
+                Assert.That(file1.Name, Is.EqualTo($"{deviceTypeOne.Name}.csv"));
+
+                // Read all the files and validate their content
+                string file1Text;
+                using (var readerOne = new StreamReader(file1.Open()))
+                {
+                    file1Text = readerOne.ReadToEnd();
+                }
+
+                // Test that there is a header row and a row for every device
+                var file1Rows = file1Text.Split(Environment.NewLine);
+
+                Assert.That(file1Rows.Count, Is.EqualTo(4));
+
+                // Tests that file 1 has correct data
+                var file1Headers = new List<List<string>>()
+                {
+                    new List<string>() { "Id", "DeviceTypeName", "DeviceTag", "Manufacturer", "ModelNum", "SerialNum", "YearManufactured", "Notes" },
+                    new List<string>() { "\"BoilerField1, \"\"field1\"", "\"BoilerField2, \"\"field2\"", "\"BoilerField3, \"\"field3\"" },
                     new List<string>() { "BuildingName", "Notes", "Latitude", "Longitude" },
                     new List<string>() { "Date", "User" }
                 };
