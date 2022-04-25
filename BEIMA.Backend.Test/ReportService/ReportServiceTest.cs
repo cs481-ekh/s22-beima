@@ -95,6 +95,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 new List<string>() { "DeviceCount"}
             };
             var headerString = CombineColumnValues(headers);
+            headerString += Environment.NewLine;
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
             var rowOneDeviceList = new List<Device>();
@@ -260,6 +261,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 new List<string>() { "DeviceCount"}
             };
             var headerString = CombineColumnValues(headers);
+            headerString += Environment.NewLine;
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
             var rowOneDeviceList = new List<Device>() { 
@@ -336,6 +338,7 @@ namespace BEIMA.Backend.Test.ReportServices
                 new List<string>() { "Date", "User" }
             };
             var headerString = CombineColumnValues(headers);
+            headerString += Environment.NewLine;
             Assert.That(contentRows[0], Is.EqualTo(headerString));
 
             var rowOne = DeviceToColumnValues(deviceOne, deviceTypeOne, buildingOne);
@@ -474,6 +477,7 @@ namespace BEIMA.Backend.Test.ReportServices
                     new List<string>() { "Date", "User" }
                 };
                 var file2HeaderString = CombineColumnValues(file2Headers);
+                file2HeaderString += Environment.NewLine;
                 Assert.That(file2Rows[0], Is.EqualTo(file2HeaderString));
 
                 var file2RowOne = DeviceToColumnValues(deviceThree, deviceTypeTwo, buildingTwo);
@@ -558,6 +562,7 @@ namespace BEIMA.Backend.Test.ReportServices
                     new List<string>() { "Date", "User" }
                 };
                 var file1HeaderString = CombineColumnValues(file1Headers);
+                file1HeaderString += Environment.NewLine;
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
                 var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
@@ -646,6 +651,7 @@ namespace BEIMA.Backend.Test.ReportServices
                     new List<string>() { "Date", "User" }
                 };
                 var file1HeaderString = CombineColumnValues(file1Headers);
+                file1HeaderString += Environment.NewLine;
                 Assert.That(file1Rows[0], Is.EqualTo(file1HeaderString));
 
                 var file1RowOne = DeviceToColumnValues(deviceOne, deviceTypeOne);
