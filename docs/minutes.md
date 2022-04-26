@@ -1,3 +1,21 @@
+## Minutes: 2022-04-26
+### Scribe: Keelan
+### Attendees:
+	Joseph Moore
+	Kenny Miller
+	Keelan Chen
+	Ashlyn Adamson
+	Tom Hess
+## Pre-Showcase Meeting
+
+We have a slide deck and architecture diagram, everyone feel free to contribut. Ashlyn will have the slide deck and the Azure environment open 
+
+Ashlyn bringing laptop for showcase, Tom bringing HDMI cord
+
+Kenny and Tom - troubles getting deployed on SDP during the morning meeting with Dr. Henderson, Dr. Henderson will keep trying on his end. Tom sent an email to Dr. Henderson this morning containing full instructions for deploying.
+
+Work on the slide deck and the handoff document whenever we are able to.
+
 ## Minutes: 2022-04-22
 ### Scribe: Keelan
 ### Attendees:
